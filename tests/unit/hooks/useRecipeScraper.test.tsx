@@ -49,7 +49,7 @@ describe('useRecipeScraper', () => {
     });
 
     test('returns success result with recipe data', async () => {
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -70,7 +70,7 @@ describe('useRecipeScraper', () => {
     test('downloads image to cache when present', async () => {
       mockDownloadImageToCacheSuccess('/cached/image.jpg');
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -89,7 +89,7 @@ describe('useRecipeScraper', () => {
     test('keeps original image URL when download fails', async () => {
       mockDownloadImageToCacheFailure();
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -114,14 +114,14 @@ describe('useRecipeScraper', () => {
           )
       );
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
       expect(result.current.isLoading).toBe(false);
 
       let promise: Promise<unknown>;
-      act(() => {
+      await act(() => {
         promise = result.current.scrapeAndPrepare('https://example.com');
       });
 
@@ -141,7 +141,7 @@ describe('useRecipeScraper', () => {
     test('returns translated error for unknown error type', async () => {
       mockScrapeRecipeFromHtmlError('Recipe not found', 'UnknownError');
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -160,7 +160,7 @@ describe('useRecipeScraper', () => {
     test('returns translated error for NoSchemaFoundInWildMode', async () => {
       mockScrapeRecipeFromHtmlError('No schema found', 'NoSchemaFoundInWildMode');
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -178,7 +178,7 @@ describe('useRecipeScraper', () => {
     test('returns translated error for network failures', async () => {
       mockFetch.mockRejectedValue(new Error('Connection refused'));
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -196,7 +196,7 @@ describe('useRecipeScraper', () => {
     test('handles non-Error thrown during scraping (serializeError string path)', async () => {
       mockFetch.mockRejectedValue('plain string thrown');
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -211,7 +211,7 @@ describe('useRecipeScraper', () => {
     test('clearError resets error state', async () => {
       mockScrapeRecipeFromHtmlError('Some error', 'SomeErrorType');
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -221,7 +221,7 @@ describe('useRecipeScraper', () => {
 
       expect(result.current.error).toBe('urlDialog.errorScraping');
 
-      act(() => {
+      await act(() => {
         result.current.clearError();
       });
 
@@ -247,7 +247,7 @@ describe('useRecipeScraper', () => {
       mockFetchHtmlSuccess(htmlWithJsonLd);
       mockDownloadImageToCacheSuccess('/cached/real-image.jpg');
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -262,7 +262,7 @@ describe('useRecipeScraper', () => {
       mockScrapeRecipeFromHtmlSuccess(createEmptyScrapedRecipe({ image: PLACEHOLDER_URL }));
       mockFetchHtmlSuccess('<html></html>');
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -278,7 +278,7 @@ describe('useRecipeScraper', () => {
     test('sets authRequired when AuthenticationRequired error returned', async () => {
       mockScrapeRecipeFromHtmlError('Login required', 'AuthenticationRequired', 'quitoque.fr');
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -295,7 +295,7 @@ describe('useRecipeScraper', () => {
     test('extracts host from URL when not provided in error', async () => {
       mockScrapeRecipeFromHtmlError('Login required', 'AuthenticationRequired');
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -309,7 +309,7 @@ describe('useRecipeScraper', () => {
     test('clearAuthRequired resets authRequired state', async () => {
       mockScrapeRecipeFromHtmlError('Login required', 'AuthenticationRequired', 'quitoque.fr');
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -319,7 +319,7 @@ describe('useRecipeScraper', () => {
 
       expect(result.current.authRequired).not.toBeNull();
 
-      act(() => {
+      await act(() => {
         result.current.clearAuthRequired();
       });
 
@@ -331,7 +331,7 @@ describe('useRecipeScraper', () => {
     test('returns success result with recipe data', async () => {
       mockScrapeRecipeAuthenticatedSuccess(hellofreshKeftasRecipe);
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -358,7 +358,7 @@ describe('useRecipeScraper', () => {
     test('clears authRequired on successful authenticated scrape', async () => {
       mockScrapeRecipeFromHtmlError('Login required', 'AuthenticationRequired', 'quitoque.fr');
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -384,7 +384,7 @@ describe('useRecipeScraper', () => {
     test('returns error on authentication failure', async () => {
       mockScrapeRecipeAuthenticatedError('Invalid credentials', 'AuthenticationFailed');
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -406,7 +406,7 @@ describe('useRecipeScraper', () => {
     test('handles network failure during authenticated scrape', async () => {
       mockScrapeRecipeAuthenticated.mockRejectedValue(new Error('Connection refused'));
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
@@ -433,14 +433,14 @@ describe('useRecipeScraper', () => {
           )
       );
 
-      const { result } = renderHook(() => useRecipeScraper(), {
+      const { result } = await renderHook(() => useRecipeScraper(), {
         wrapper: createWrapper(),
       });
 
       expect(result.current.isLoading).toBe(false);
 
       let promise: Promise<unknown>;
-      act(() => {
+      await act(() => {
         promise = result.current.scrapeWithAuth(
           'https://www.quitoque.fr/recipe/123',
           'user@test.com',

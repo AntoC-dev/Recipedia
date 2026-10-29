@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import { RecipePreparationField } from '@screens/recipe/fields/PreparationField';
@@ -18,9 +18,9 @@ jest.mock('@components/organisms/RecipePreparation', () => {
 });
 
 describe('RecipePreparationField', () => {
-  test('readOnly mode renders steps from form value via display organism', () => {
+  test('readOnly mode renders steps from form value via display organism', async () => {
     const steps = [{ title: 'Step 1', description: 'Mix' }];
-    const { getByTestId } = renderWithForm(
+    const { getByTestId } = await renderWithForm(
       RecipePreparationField,
       form => ({
         form,
@@ -33,8 +33,8 @@ describe('RecipePreparationField', () => {
     expect(JSON.parse(getByTestId('RecipePreparation::Steps').props.children)).toEqual(steps);
   });
 
-  test('edit mode appends a new step when the section add button is pressed', () => {
-    const { getByTestId, form } = renderWithForm(
+  test('edit mode appends a new step when the section add button is pressed', async () => {
+    const { getByTestId, form } = await renderWithForm(
       RecipePreparationField,
       f => ({
         form: f,
@@ -44,14 +44,16 @@ describe('RecipePreparationField', () => {
       }),
       { recipePreparation: [{ title: 'Step 1', description: 'Mix' }] }
     );
-    fireEvent.press(getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction'));
+    await fireEvent.press(
+      getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction')
+    );
     expect(form.getValues('recipePreparation')).toHaveLength(2);
     expect(form.getValues('recipePreparation')![1]).toEqual({ title: '', description: '' });
   });
 
-  test('addOCR mode + empty steps renders empty-add block with OCR + manual buttons', () => {
+  test('addOCR mode + empty steps renders empty-add block with OCR + manual buttons', async () => {
     const openModal = jest.fn();
-    const { getByTestId } = renderWithForm(
+    const { getByTestId } = await renderWithForm(
       RecipePreparationField,
       f => ({
         form: f,
@@ -61,12 +63,14 @@ describe('RecipePreparationField', () => {
       }),
       { recipePreparation: [] }
     );
-    fireEvent.press(getByTestId('RecipePreparation::OpenModal::RoundButton::OnPressFunction'));
+    await fireEvent.press(
+      getByTestId('RecipePreparation::OpenModal::RoundButton::OnPressFunction')
+    );
     expect(openModal).toHaveBeenCalledWith('PREPARATION');
   });
 
-  test('addOCR mode + non-empty steps renders the editable section with rows', () => {
-    const { queryByTestId, getByTestId } = renderWithForm(
+  test('addOCR mode + non-empty steps renders the editable section with rows', async () => {
+    const { queryByTestId, getByTestId } = await renderWithForm(
       RecipePreparationField,
       f => ({
         form: f,
@@ -83,8 +87,8 @@ describe('RecipePreparationField', () => {
   });
 
   describe('step reordering', () => {
-    test('no reorder affordance is rendered in the editable step row', () => {
-      const { queryByTestId } = renderWithForm(
+    test('no reorder affordance is rendered in the editable step row', async () => {
+      const { queryByTestId } = await renderWithForm(
         RecipePreparationField,
         f => ({
           form: f,
@@ -106,8 +110,8 @@ describe('RecipePreparationField', () => {
     });
   });
 
-  test('committing a step title via blur writes only to that row in the form value', () => {
-    const { getByTestId, form } = renderWithForm(
+  test('committing a step title via blur writes only to that row in the form value', async () => {
+    const { getByTestId, form } = await renderWithForm(
       RecipePreparationField,
       f => ({
         form: f,
@@ -125,17 +129,15 @@ describe('RecipePreparationField', () => {
     const titleInput = getByTestId(
       'RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput'
     );
-    act(() => {
-      fireEvent(titleInput, 'endEditing', { nativeEvent: { text: 'Updated step 2 title' } });
-    });
+    await fireEvent(titleInput, 'endEditing', { nativeEvent: { text: 'Updated step 2 title' } });
     const prep = form.getValues('recipePreparation')!;
     expect(prep[0]).toEqual({ title: 'Step 1', description: 'Mix' });
     expect(prep[1]).toEqual({ title: 'Updated step 2 title', description: 'Bake' });
   });
 
   describe('live commit', () => {
-    test('typing a step title commits to the form without blur', () => {
-      const { getByTestId, form } = renderWithForm(
+    test('typing a step title commits to the form without blur', async () => {
+      const { getByTestId, form } = await renderWithForm(
         RecipePreparationField,
         f => ({
           form: f,
@@ -153,16 +155,14 @@ describe('RecipePreparationField', () => {
       const titleInput = getByTestId(
         'RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput'
       );
-      act(() => {
-        fireEvent.changeText(titleInput, 'Live step 2 title');
-      });
+      await fireEvent.changeText(titleInput, 'Live step 2 title');
       const prep = form.getValues('recipePreparation')!;
       expect(prep[0]).toEqual({ title: 'Step 1', description: 'Mix' });
       expect(prep[1]).toEqual({ title: 'Live step 2 title', description: 'Bake' });
     });
 
-    test('typing a step description commits to the form without blur', () => {
-      const { getByTestId, form } = renderWithForm(
+    test('typing a step description commits to the form without blur', async () => {
+      const { getByTestId, form } = await renderWithForm(
         RecipePreparationField,
         f => ({
           form: f,
@@ -175,14 +175,12 @@ describe('RecipePreparationField', () => {
       const descInput = getByTestId(
         'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
       );
-      act(() => {
-        fireEvent.changeText(descInput, 'Live description');
-      });
+      await fireEvent.changeText(descInput, 'Live description');
       expect(form.getValues('recipePreparation')![0]!.description).toBe('Live description');
     });
 
-    test('typing does not mark the step touched, so no inline error surfaces', () => {
-      const { getByTestId, queryByTestId } = renderWithForm(
+    test('typing does not mark the step touched, so no inline error surfaces', async () => {
+      const { getByTestId, queryByTestId } = await renderWithForm(
         RecipePreparationField,
         f => ({
           form: f,
@@ -195,16 +193,14 @@ describe('RecipePreparationField', () => {
       const descInput = getByTestId(
         'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
       );
-      act(() => {
-        fireEvent.changeText(descInput, '');
-      });
+      await fireEvent.changeText(descInput, '');
       expect(queryByTestId('RecipePreparation::EditableStep::0::DescriptionError')).toBeNull();
     });
   });
 
   describe('inline error', () => {
-    test('does not surface a description error before the step has been touched', () => {
-      const { queryByTestId } = renderWithForm(
+    test('does not surface a description error before the step has been touched', async () => {
+      const { queryByTestId } = await renderWithForm(
         RecipePreparationField,
         f => ({
           form: f,
@@ -218,7 +214,7 @@ describe('RecipePreparationField', () => {
     });
 
     test('surfaces a description error after the description input has been blurred empty', async () => {
-      const { getByTestId } = renderWithForm(
+      const { getByTestId } = await renderWithForm(
         RecipePreparationField,
         f => ({
           form: f,
@@ -231,9 +227,7 @@ describe('RecipePreparationField', () => {
       const descInput = getByTestId(
         'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
       );
-      await act(async () => {
-        fireEvent(descInput, 'endEditing', { nativeEvent: { text: '' } });
-      });
+      await fireEvent(descInput, 'endEditing', { nativeEvent: { text: '' } });
       await waitFor(() => {
         expect(
           getByTestId('RecipePreparation::EditableStep::0::DescriptionError').props.children
@@ -242,7 +236,7 @@ describe('RecipePreparationField', () => {
     });
 
     test('clears the description error once the user types a non-empty description', async () => {
-      const { getByTestId, queryByTestId } = renderWithForm(
+      const { getByTestId, queryByTestId } = await renderWithForm(
         RecipePreparationField,
         f => ({
           form: f,
@@ -255,17 +249,13 @@ describe('RecipePreparationField', () => {
       const descInput = getByTestId(
         'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
       );
-      await act(async () => {
-        fireEvent(descInput, 'endEditing', { nativeEvent: { text: '' } });
-      });
+      await fireEvent(descInput, 'endEditing', { nativeEvent: { text: '' } });
       await waitFor(() => {
         expect(
           getByTestId('RecipePreparation::EditableStep::0::DescriptionError').props.children
         ).toBeTruthy();
       });
-      await act(async () => {
-        fireEvent(descInput, 'endEditing', { nativeEvent: { text: 'Now filled' } });
-      });
+      await fireEvent(descInput, 'endEditing', { nativeEvent: { text: 'Now filled' } });
       await waitFor(() => {
         expect(queryByTestId('RecipePreparation::EditableStep::0::DescriptionError')).toBeNull();
       });

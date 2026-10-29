@@ -140,10 +140,10 @@ describe('useRecipeScraperValidation', () => {
     await database.closeAndReset();
   });
 
-  test('does not trigger validation when not in addScrape mode', () => {
+  test('does not trigger validation when not in addScrape mode', async () => {
     const wrapper = createReadOnlyWrapper();
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useRecipeScraperValidation();
         return useRecipeDialogs();
@@ -154,10 +154,10 @@ describe('useRecipeScraperValidation', () => {
     expect(result.current.validationQueue).toBeNull();
   });
 
-  test('does not trigger validation when no ingredients or tags', () => {
+  test('does not trigger validation when no ingredients or tags', async () => {
     const wrapper = createWrapper([], []);
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useRecipeScraperValidation();
         return useRecipeDialogs();
@@ -171,7 +171,7 @@ describe('useRecipeScraperValidation', () => {
   test('starts ingredient validation when ingredients need validation', async () => {
     const wrapper = createWrapper([createMockIngredient('UnknownIngredient')], []);
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useRecipeScraperValidation();
         return useRecipeDialogs();
@@ -188,7 +188,7 @@ describe('useRecipeScraperValidation', () => {
   test('starts tag validation when tags need validation', async () => {
     const wrapper = createWrapper([], [createMockTag('UnknownTag')]);
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useRecipeScraperValidation();
         return useRecipeDialogs();
@@ -208,7 +208,7 @@ describe('useRecipeScraperValidation', () => {
       [createMockTag('UnknownTag')]
     );
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useRecipeScraperValidation();
         return useRecipeDialogs();
@@ -226,7 +226,7 @@ describe('useRecipeScraperValidation', () => {
     const knownIngredientName = testIngredients[0]!.name;
     const wrapper = createWrapper([createMockIngredient(knownIngredientName)], []);
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useRecipeScraperValidation();
         return useRecipeDialogs();
@@ -243,7 +243,7 @@ describe('useRecipeScraperValidation', () => {
     const knownTagName = testTags[0]!.name;
     const wrapper = createWrapper([], [createMockTag(knownTagName)]);
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useRecipeScraperValidation();
         return useRecipeDialogs();
@@ -260,7 +260,7 @@ describe('useRecipeScraperValidation', () => {
     const unknownIngredientName = 'UnknownIngredient';
     const wrapper = createWrapper([createMockIngredient(unknownIngredientName)], []);
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useRecipeScraperValidation();
         return {
@@ -285,7 +285,7 @@ describe('useRecipeScraperValidation', () => {
       season: [],
     };
 
-    act(() => {
+    await act(() => {
       queue.onValidated(
         { name: unknownIngredientName, quantity: '100', similarItems: [] },
         validatedIngredient
@@ -314,7 +314,7 @@ describe('useRecipeScraperValidation', () => {
 
     const renderWithIngredients = async (ingredients: FormIngredientElement[]) => {
       const wrapper = createWrapper(ingredients, []);
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => {
           useRecipeScraperValidation();
           return { dialogs: useRecipeDialogs(), form: useRecipeForm() };
@@ -327,14 +327,14 @@ describe('useRecipeScraperValidation', () => {
       return result;
     };
 
-    const validateRawName = (
+    const validateRawName = async (
       result: Awaited<ReturnType<typeof renderWithIngredients>>,
       rawName: string,
       validated: ingredientTableElement
     ) => {
       const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
       const original = queue.items.find(item => item.name === rawName)!;
-      act(() => {
+      await act(() => {
         queue.onValidated(original, validated);
       });
     };
@@ -346,7 +346,7 @@ describe('useRecipeScraperValidation', () => {
         { name: 'UnknownAfter', quantity: '2', unit: 'g' },
       ]);
 
-      validateRawName(result, 'Pois chiches', poisChiche);
+      await validateRawName(result, 'Pois chiches', poisChiche);
 
       const rows = result.current.form.form.getValues('recipeIngredients');
       expect(rows.map(row => row.name)).toEqual(['UnknownBefore', 'Pois chiche', 'UnknownAfter']);
@@ -363,7 +363,7 @@ describe('useRecipeScraperValidation', () => {
         { name: 'Pois chiches', quantity: '50', unit: 'g' },
       ]);
 
-      validateRawName(result, 'Pois chiches', poisChiche);
+      await validateRawName(result, 'Pois chiches', poisChiche);
 
       const rows = result.current.form.form.getValues('recipeIngredients');
       expect(rows.map(row => [row.name, (row as ingredientTableElement).id, row.quantity])).toEqual(
@@ -379,7 +379,7 @@ describe('useRecipeScraperValidation', () => {
     const unknownIngredientName = 'UnknownIngredient';
     const wrapper = createWrapper([createMockIngredient(unknownIngredientName)], []);
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useRecipeScraperValidation();
         return {
@@ -396,7 +396,7 @@ describe('useRecipeScraperValidation', () => {
 
     const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
 
-    act(() => {
+    await act(() => {
       queue.onDismissed?.({
         name: unknownIngredientName,
         quantity: '100',
@@ -418,7 +418,7 @@ describe('useRecipeScraperValidation', () => {
     const unknownTagName = 'UnknownTag';
     const wrapper = createWrapper([], [createMockTag(unknownTagName)]);
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useRecipeScraperValidation();
         return {
@@ -436,7 +436,7 @@ describe('useRecipeScraperValidation', () => {
     const queue = result.current.dialogs.validationQueue as TagValidationProps;
     const validatedTag = { id: 42, name: unknownTagName };
 
-    act(() => {
+    await act(() => {
       queue.onValidated({ id: 0, name: unknownTagName, similarItems: [] }, validatedTag);
     });
 
@@ -452,7 +452,7 @@ describe('useRecipeScraperValidation', () => {
     const unknownTagName = 'UnknownTag';
     const wrapper = createWrapper([], [createMockTag(unknownTagName)]);
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useRecipeScraperValidation();
         return {
@@ -469,7 +469,7 @@ describe('useRecipeScraperValidation', () => {
 
     const queue = result.current.dialogs.validationQueue as TagValidationProps;
 
-    act(() => {
+    await act(() => {
       queue.onDismissed?.({ id: 0, name: unknownTagName, similarItems: [] });
     });
 
@@ -483,7 +483,7 @@ describe('useRecipeScraperValidation', () => {
     const unknownTagName = 'UnknownTag';
     const wrapper = createWrapper([], [createMockTag(unknownTagName)]);
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useRecipeScraperValidation();
         return {
@@ -498,13 +498,13 @@ describe('useRecipeScraperValidation', () => {
       expect(result.current.dialogs.validationQueue).not.toBeNull();
     });
 
-    act(() => {
+    await act(() => {
       result.current.form.form.setValue('recipeTags', undefined as never);
     });
 
     const queue = result.current.dialogs.validationQueue as TagValidationProps;
 
-    act(() => {
+    await act(() => {
       queue.onValidated(
         { id: 0, name: unknownTagName, similarItems: [] },
         { id: 42, name: unknownTagName }
@@ -520,7 +520,7 @@ describe('useRecipeScraperValidation', () => {
     const unknownTagName = 'UnknownTag';
     const wrapper = createWrapper([], [createMockTag(unknownTagName)]);
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useRecipeScraperValidation();
         return {
@@ -535,13 +535,13 @@ describe('useRecipeScraperValidation', () => {
       expect(result.current.dialogs.validationQueue).not.toBeNull();
     });
 
-    act(() => {
+    await act(() => {
       result.current.form.form.setValue('recipeTags', undefined as never);
     });
 
     const queue = result.current.dialogs.validationQueue as TagValidationProps;
 
-    act(() => {
+    await act(() => {
       queue.onDismissed?.({ id: 0, name: unknownTagName, similarItems: [] });
     });
 
@@ -558,7 +558,7 @@ describe('useRecipeScraperValidation', () => {
       [createMockTag(unknownTagName)]
     );
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useRecipeScraperValidation();
         return useRecipeDialogs();
@@ -570,7 +570,7 @@ describe('useRecipeScraperValidation', () => {
       expect(result.current.validationQueue?.type).toBe('Tag');
     });
 
-    act(() => {
+    await act(() => {
       result.current.clearValidationQueue();
     });
 

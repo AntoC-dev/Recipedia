@@ -37,8 +37,8 @@ const createFindSimilarIngredients = (results: Record<string, (typeof dbIngredie
 
 describe('useValidationReviewState', () => {
   describe('initialization', () => {
-    test('initializes all items as pending', () => {
-      const { result } = renderHook(() =>
+    test('initializes all items as pending', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           mockTags,
           mockIngredients,
@@ -53,11 +53,11 @@ describe('useValidationReviewState', () => {
       result.current.ingredients.forEach(i => expect(i.reviewState.status).toBe('pending'));
     });
 
-    test('computes similarity on init', () => {
+    test('computes similarity on init', async () => {
       const findTags = createFindSimilarTags({ quickmeals: [dbTag] });
       const findIngs = createFindSimilarIngredients({ tomatoe: [dbIngredient] });
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(mockTags, mockIngredients, findTags, findIngs)
       );
 
@@ -68,11 +68,11 @@ describe('useValidationReviewState', () => {
       expect(tomatoeItem?.similarItems).toEqual([dbIngredient]);
     });
 
-    test('filters out exact matches from similarItems', () => {
+    test('filters out exact matches from similarItems', async () => {
       const exactMatch = { id: 1, name: 'Italian' };
       const findTags = createFindSimilarTags({ italian: [exactMatch] });
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(mockTags, [], findTags, createFindSimilarIngredients())
       );
 
@@ -80,13 +80,13 @@ describe('useValidationReviewState', () => {
       expect(italianItem?.similarItems).toEqual([]);
     });
 
-    test('skips ingredients without name', () => {
+    test('skips ingredients without name', async () => {
       const ingredientsWithEmpty = [
         { unit: 'g', quantity: '100', type: ingredientType.vegetable },
         { name: 'Tomato', unit: 'g', quantity: '100', type: ingredientType.vegetable },
       ];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           [],
           ingredientsWithEmpty,
@@ -98,8 +98,8 @@ describe('useValidationReviewState', () => {
       expect(result.current.ingredients).toHaveLength(1);
     });
 
-    test('allResolved is false initially with items', () => {
-      const { result } = renderHook(() =>
+    test('allResolved is false initially with items', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           mockTags,
           [],
@@ -111,8 +111,8 @@ describe('useValidationReviewState', () => {
       expect(result.current.allResolved).toBe(false);
     });
 
-    test('allResolved is false with empty lists', () => {
-      const { result } = renderHook(() =>
+    test('allResolved is false with empty lists', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState([], [], createFindSimilarTags(), createFindSimilarIngredients())
       );
 
@@ -121,8 +121,8 @@ describe('useValidationReviewState', () => {
   });
 
   describe('sorting', () => {
-    test('sorts tags alphabetically', () => {
-      const { result } = renderHook(() =>
+    test('sorts tags alphabetically', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           mockTags,
           [],
@@ -135,8 +135,8 @@ describe('useValidationReviewState', () => {
       expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)));
     });
 
-    test('sorts ingredients alphabetically', () => {
-      const { result } = renderHook(() =>
+    test('sorts ingredients alphabetically', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           [],
           mockIngredients,
@@ -151,8 +151,8 @@ describe('useValidationReviewState', () => {
   });
 
   describe('resolveTag', () => {
-    test('marks tag as resolved with resolution', () => {
-      const { result } = renderHook(() =>
+    test('marks tag as resolved with resolution', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           mockTags,
           [],
@@ -161,7 +161,7 @@ describe('useValidationReviewState', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.resolveTag('Italian', {
           type: 'use-suggested',
           resolvedItem: { id: 10, name: 'Italian Cuisine' },
@@ -175,8 +175,8 @@ describe('useValidationReviewState', () => {
   });
 
   describe('resolveIngredient', () => {
-    test('marks ingredient as resolved with resolution', () => {
-      const { result } = renderHook(() =>
+    test('marks ingredient as resolved with resolution', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           [],
           mockIngredients,
@@ -185,7 +185,7 @@ describe('useValidationReviewState', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.resolveIngredient('Tomatoe', {
           type: 'pick-existing',
           resolvedItem: dbIngredient,
@@ -199,8 +199,8 @@ describe('useValidationReviewState', () => {
   });
 
   describe('skipTag', () => {
-    test('marks tag as skipped', () => {
-      const { result } = renderHook(() =>
+    test('marks tag as skipped', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           mockTags,
           [],
@@ -209,7 +209,7 @@ describe('useValidationReviewState', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.skipTag('Italian');
       });
 
@@ -219,8 +219,8 @@ describe('useValidationReviewState', () => {
   });
 
   describe('skipIngredient', () => {
-    test('marks ingredient as skipped', () => {
-      const { result } = renderHook(() =>
+    test('marks ingredient as skipped', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           [],
           mockIngredients,
@@ -229,7 +229,7 @@ describe('useValidationReviewState', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.skipIngredient('Tomatoe');
       });
 
@@ -239,14 +239,14 @@ describe('useValidationReviewState', () => {
   });
 
   describe('undoTag', () => {
-    test('resets resolved tag to pending and re-checks similarity', () => {
+    test('resets resolved tag to pending and re-checks similarity', async () => {
       const findTags = createFindSimilarTags({ italian: [{ id: 50, name: 'New Italian' }] });
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(mockTags, [], findTags, createFindSimilarIngredients())
       );
 
-      act(() => {
+      await act(() => {
         result.current.resolveTag('Italian', {
           type: 'add-new',
           resolvedItem: { id: 10, name: 'Italian' },
@@ -259,7 +259,7 @@ describe('useValidationReviewState', () => {
 
       findTags.mockReturnValue([{ id: 60, name: 'Italian Refreshed' }]);
 
-      act(() => {
+      await act(() => {
         result.current.undoTag('Italian');
       });
 
@@ -269,8 +269,8 @@ describe('useValidationReviewState', () => {
   });
 
   describe('undoIngredient', () => {
-    test('resets resolved ingredient to pending', () => {
-      const { result } = renderHook(() =>
+    test('resets resolved ingredient to pending', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           [],
           mockIngredients,
@@ -279,14 +279,14 @@ describe('useValidationReviewState', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.resolveIngredient('Tomatoe', {
           type: 'add-new',
           resolvedItem: dbIngredient,
         });
       });
 
-      act(() => {
+      await act(() => {
         result.current.undoIngredient('Tomatoe');
       });
 
@@ -296,14 +296,14 @@ describe('useValidationReviewState', () => {
   });
 
   describe('undo single-item recheck', () => {
-    test('undoTag invokes findSimilarTags only for the undone item', () => {
+    test('undoTag invokes findSimilarTags only for the undone item', async () => {
       const findTags = createFindSimilarTags();
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(mockTags, [], findTags, createFindSimilarIngredients())
       );
 
-      act(() => {
+      await act(() => {
         result.current.resolveTag('Italian', {
           type: 'use-suggested',
           resolvedItem: { id: 10, name: 'Italian Cuisine' },
@@ -312,7 +312,7 @@ describe('useValidationReviewState', () => {
 
       findTags.mockClear();
 
-      act(() => {
+      await act(() => {
         result.current.undoTag('Italian');
       });
 
@@ -320,14 +320,14 @@ describe('useValidationReviewState', () => {
       expect(findTags).toHaveBeenCalledWith('Italian');
     });
 
-    test('undoIngredient invokes findSimilarIngredients only for the undone item', () => {
+    test('undoIngredient invokes findSimilarIngredients only for the undone item', async () => {
       const findIngs = createFindSimilarIngredients();
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState([], mockIngredients, createFindSimilarTags(), findIngs)
       );
 
-      act(() => {
+      await act(() => {
         result.current.resolveIngredient('Tomatoe', {
           type: 'use-suggested',
           resolvedItem: dbIngredient,
@@ -336,7 +336,7 @@ describe('useValidationReviewState', () => {
 
       findIngs.mockClear();
 
-      act(() => {
+      await act(() => {
         result.current.undoIngredient('Tomatoe');
       });
 
@@ -344,7 +344,7 @@ describe('useValidationReviewState', () => {
       expect(findIngs).toHaveBeenCalledWith('Tomatoe');
     });
 
-    test('undoTag refreshes similarity only for the undone tag, leaves others untouched', () => {
+    test('undoTag refreshes similarity only for the undone tag, leaves others untouched', async () => {
       const initialItalianMatch = { id: 50, name: 'Italian Original' };
       const dessertMatch = { id: 51, name: 'Dessert Original' };
       const findTags = createFindSimilarTags({
@@ -352,11 +352,11 @@ describe('useValidationReviewState', () => {
         dessert: [dessertMatch],
       });
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(mockTags, [], findTags, createFindSimilarIngredients())
       );
 
-      act(() => {
+      await act(() => {
         result.current.skipTag('Italian');
       });
 
@@ -365,7 +365,7 @@ describe('useValidationReviewState', () => {
         name === 'Italian' ? [refreshedItalianMatch] : [dessertMatch]
       );
 
-      act(() => {
+      await act(() => {
         result.current.undoTag('Italian');
       });
 
@@ -376,22 +376,22 @@ describe('useValidationReviewState', () => {
       expect(dessert?.similarItems).toEqual([dessertMatch]);
     });
 
-    test('undoTag excludes the undone tag itself from refreshed similarity results', () => {
+    test('undoTag excludes the undone tag itself from refreshed similarity results', async () => {
       const selfMatch = { id: 1, name: 'Italian' };
       const otherMatch = { id: 70, name: 'Italian Fusion' };
       const findTags = createFindSimilarTags();
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(mockTags, [], findTags, createFindSimilarIngredients())
       );
 
-      act(() => {
+      await act(() => {
         result.current.skipTag('Italian');
       });
 
       findTags.mockReturnValue([selfMatch, otherMatch]);
 
-      act(() => {
+      await act(() => {
         result.current.undoTag('Italian');
       });
 
@@ -399,17 +399,17 @@ describe('useValidationReviewState', () => {
       expect(italian?.similarItems).toEqual([otherMatch]);
     });
 
-    test('undoTag with a name not in the list leaves all tags untouched', () => {
+    test('undoTag with a name not in the list leaves all tags untouched', async () => {
       const findTags = createFindSimilarTags();
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(mockTags, [], findTags, createFindSimilarIngredients())
       );
 
       const before = result.current.tags;
       findTags.mockClear();
 
-      act(() => {
+      await act(() => {
         result.current.undoTag('NotAnyKnownTag');
       });
 
@@ -419,17 +419,17 @@ describe('useValidationReviewState', () => {
       });
     });
 
-    test('undoIngredient with a name not in the list leaves all ingredients untouched', () => {
+    test('undoIngredient with a name not in the list leaves all ingredients untouched', async () => {
       const findIngs = createFindSimilarIngredients();
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState([], mockIngredients, createFindSimilarTags(), findIngs)
       );
 
       const before = result.current.ingredients;
       findIngs.mockClear();
 
-      act(() => {
+      await act(() => {
         result.current.undoIngredient('NotAnyKnownIngredient');
       });
 
@@ -439,7 +439,7 @@ describe('useValidationReviewState', () => {
       });
     });
 
-    test('undoIngredient excludes the undone ingredient from refreshed similarity results', () => {
+    test('undoIngredient excludes the undone ingredient from refreshed similarity results', async () => {
       const selfMatch = {
         id: 99,
         name: 'Tomatoe',
@@ -456,17 +456,17 @@ describe('useValidationReviewState', () => {
       };
       const findIngs = createFindSimilarIngredients();
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState([], mockIngredients, createFindSimilarTags(), findIngs)
       );
 
-      act(() => {
+      await act(() => {
         result.current.skipIngredient('Tomatoe');
       });
 
       findIngs.mockReturnValue([selfMatch, otherMatch]);
 
-      act(() => {
+      await act(() => {
         result.current.undoIngredient('Tomatoe');
       });
 
@@ -476,8 +476,8 @@ describe('useValidationReviewState', () => {
   });
 
   describe('allResolved', () => {
-    test('returns true when all items are resolved or skipped', () => {
-      const { result } = renderHook(() =>
+    test('returns true when all items are resolved or skipped', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           [mockTags[0]!],
           [mockIngredients[0]!],
@@ -486,22 +486,22 @@ describe('useValidationReviewState', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.resolveTag('Italian', {
           type: 'add-new',
           resolvedItem: { id: 10, name: 'Italian' },
         });
       });
 
-      act(() => {
+      await act(() => {
         result.current.skipIngredient('Tomatoe');
       });
 
       expect(result.current.allResolved).toBe(true);
     });
 
-    test('returns false when some items are still pending', () => {
-      const { result } = renderHook(() =>
+    test('returns false when some items are still pending', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           mockTags,
           [],
@@ -510,7 +510,7 @@ describe('useValidationReviewState', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.resolveTag('Italian', {
           type: 'add-new',
           resolvedItem: { id: 10, name: 'Italian' },
@@ -522,14 +522,14 @@ describe('useValidationReviewState', () => {
   });
 
   describe('auto-dedup after add-new', () => {
-    test('auto-resolves pending tags that share the just-added name', () => {
+    test('auto-resolves pending tags that share the just-added name', async () => {
       const tagsWithDup = [
         { id: 1, name: 'Italian' },
         { id: 2, name: 'italian' },
         { id: 3, name: 'Dessert' },
       ];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           tagsWithDup,
           [],
@@ -539,7 +539,7 @@ describe('useValidationReviewState', () => {
       );
 
       const savedTag = { id: 99, name: 'Italian' };
-      act(() => {
+      await act(() => {
         result.current.resolveTag('Italian', { type: 'add-new', resolvedItem: savedTag });
       });
 
@@ -552,14 +552,14 @@ describe('useValidationReviewState', () => {
       expect(unrelated?.reviewState.status).toBe('pending');
     });
 
-    test('auto-resolves pending ingredients that share the just-added name', () => {
+    test('auto-resolves pending ingredients that share the just-added name', async () => {
       const ingredientsWithDup = [
         { name: 'Tomatoe', unit: 'g', quantity: '200', type: ingredientType.vegetable },
         { name: 'tomatoe', unit: 'g', quantity: '100', type: ingredientType.vegetable },
         { name: 'Chiken', unit: 'g', quantity: '300', type: ingredientType.meat },
       ];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           [],
           ingredientsWithDup,
@@ -575,7 +575,7 @@ describe('useValidationReviewState', () => {
         type: ingredientType.vegetable,
         season: [],
       };
-      act(() => {
+      await act(() => {
         result.current.resolveIngredient('Tomatoe', { type: 'add-new', resolvedItem: savedIng });
       });
 
@@ -587,7 +587,7 @@ describe('useValidationReviewState', () => {
       expect(unrelated?.reviewState.status).toBe('pending');
     });
 
-    test('auto-resolve does not call the fuzzy finder', () => {
+    test('auto-resolve does not call the fuzzy finder', async () => {
       const findTags = createFindSimilarTags();
       const findIngs = createFindSimilarIngredients();
       const tagsWithDup = [
@@ -595,14 +595,14 @@ describe('useValidationReviewState', () => {
         { id: 2, name: 'italian' },
       ];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(tagsWithDup, [], findTags, findIngs)
       );
 
       findTags.mockClear();
       findIngs.mockClear();
 
-      act(() => {
+      await act(() => {
         result.current.resolveTag('Italian', {
           type: 'add-new',
           resolvedItem: { id: 99, name: 'Italian' },
@@ -613,8 +613,8 @@ describe('useValidationReviewState', () => {
       expect(findIngs).not.toHaveBeenCalled();
     });
 
-    test('auto-resolve does not touch non-matching non-pending items', () => {
-      const { result } = renderHook(() =>
+    test('auto-resolve does not touch non-matching non-pending items', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           mockTags,
           [],
@@ -623,11 +623,11 @@ describe('useValidationReviewState', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.skipTag('Dessert');
       });
 
-      act(() => {
+      await act(() => {
         result.current.resolveTag('Italian', {
           type: 'add-new',
           resolvedItem: { id: 99, name: 'Italian' },
@@ -638,8 +638,8 @@ describe('useValidationReviewState', () => {
       expect(dessert?.reviewState.status).toBe('skipped');
     });
 
-    test('auto-resolve is a no-op when no other pending item shares the name', () => {
-      const { result } = renderHook(() =>
+    test('auto-resolve is a no-op when no other pending item shares the name', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           [],
           mockIngredients,
@@ -648,7 +648,7 @@ describe('useValidationReviewState', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.resolveIngredient('Tomatoe', {
           type: 'add-new',
           resolvedItem: dbIngredient,
@@ -659,18 +659,18 @@ describe('useValidationReviewState', () => {
       expect(chiken?.reviewState.status).toBe('pending');
     });
 
-    test('appends the added tag to similarItems of other pending tags it fuzzy-matches', () => {
+    test('appends the added tag to similarItems of other pending tags it fuzzy-matches', async () => {
       const tags = [
         { id: 1, name: 'Italian' },
         { id: 2, name: 'Italan' },
         { id: 3, name: 'Dessert' },
       ];
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(tags, [], createFindSimilarTags(), createFindSimilarIngredients())
       );
 
       const addedTag = { id: 50, name: 'Italian' };
-      act(() => {
+      await act(() => {
         result.current.resolveTag('Italian', { type: 'add-new', resolvedItem: addedTag });
       });
 
@@ -681,13 +681,13 @@ describe('useValidationReviewState', () => {
       expect(dessertItem?.similarItems.some(s => s.name === 'Italian')).toBe(false);
     });
 
-    test('appends the added ingredient to similarItems of fuzzy-matching pending ingredients', () => {
+    test('appends the added ingredient to similarItems of fuzzy-matching pending ingredients', async () => {
       const ingredients = [
         { name: 'Tomato', unit: 'g', quantity: '200', type: ingredientType.vegetable },
         { name: 'Tomatoe', unit: 'g', quantity: '100', type: ingredientType.vegetable },
         { name: 'Chicken', unit: 'g', quantity: '300', type: ingredientType.meat },
       ];
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           [],
           ingredients,
@@ -703,7 +703,7 @@ describe('useValidationReviewState', () => {
         type: ingredientType.vegetable,
         season: [],
       };
-      act(() => {
+      await act(() => {
         result.current.resolveIngredient('Tomato', { type: 'add-new', resolvedItem: savedIng });
       });
 
@@ -714,20 +714,20 @@ describe('useValidationReviewState', () => {
       expect(chickenItem?.similarItems.some(s => s.name === 'Tomato')).toBe(false);
     });
 
-    test('does not duplicate the added item in similarItems on repeated triggers', () => {
+    test('does not duplicate the added item in similarItems on repeated triggers', async () => {
       const tags = [
         { id: 1, name: 'Italian' },
         { id: 2, name: 'Italan' },
       ];
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(tags, [], createFindSimilarTags(), createFindSimilarIngredients())
       );
 
       const addedTag = { id: 50, name: 'Italian' };
-      act(() => {
+      await act(() => {
         result.current.resolveTag('Italian', { type: 'add-new', resolvedItem: addedTag });
       });
-      act(() => {
+      await act(() => {
         result.current.undoTag('Italan');
         result.current.resolveTag('Italian', { type: 'add-new', resolvedItem: addedTag });
       });
@@ -737,23 +737,23 @@ describe('useValidationReviewState', () => {
       expect(matches).toHaveLength(1);
     });
 
-    test('does not append the added item to non-pending items similarItems', () => {
+    test('does not append the added item to non-pending items similarItems', async () => {
       const tags = [
         { id: 1, name: 'Italian' },
         { id: 2, name: 'Italan' },
       ];
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(tags, [], createFindSimilarTags(), createFindSimilarIngredients())
       );
 
-      act(() => {
+      await act(() => {
         result.current.skipTag('Italan');
       });
 
       const initialSimilar = result.current.tags.find(t => t.name === 'Italan')?.similarItems ?? [];
 
       const addedTag = { id: 50, name: 'Italian' };
-      act(() => {
+      await act(() => {
         result.current.resolveTag('Italian', { type: 'add-new', resolvedItem: addedTag });
       });
 
@@ -761,20 +761,20 @@ describe('useValidationReviewState', () => {
       expect(italanItem?.similarItems).toBe(initialSimilar);
     });
 
-    test('does not re-check already resolved items', () => {
+    test('does not re-check already resolved items', async () => {
       const findTags = createFindSimilarTags();
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(mockTags, [], findTags, createFindSimilarIngredients())
       );
 
-      act(() => {
+      await act(() => {
         result.current.skipTag('QuickMeals');
       });
 
       findTags.mockClear();
 
-      act(() => {
+      await act(() => {
         result.current.resolveTag('Italian', {
           type: 'add-new',
           resolvedItem: { id: 99, name: 'Italian' },
@@ -787,16 +787,16 @@ describe('useValidationReviewState', () => {
       expect(callsForQuickMeals).toHaveLength(0);
     });
 
-    test('does not trigger re-check for non add-new resolutions', () => {
+    test('does not trigger re-check for non add-new resolutions', async () => {
       const findTags = createFindSimilarTags();
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationReviewState(mockTags, [], findTags, createFindSimilarIngredients())
       );
 
       findTags.mockClear();
 
-      act(() => {
+      await act(() => {
         result.current.resolveTag('Italian', {
           type: 'use-suggested',
           resolvedItem: { id: 10, name: 'Italian Cuisine' },
@@ -808,8 +808,8 @@ describe('useValidationReviewState', () => {
   });
 
   describe('getResolutionMappings', () => {
-    test('returns tag and ingredient mappings for resolved items', () => {
-      const { result } = renderHook(() =>
+    test('returns tag and ingredient mappings for resolved items', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           [mockTags[0]!],
           [mockIngredients[0]!],
@@ -818,14 +818,14 @@ describe('useValidationReviewState', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.resolveTag('Italian', {
           type: 'add-new',
           resolvedItem: { id: 10, name: 'Italian Cuisine' },
         });
       });
 
-      act(() => {
+      await act(() => {
         result.current.resolveIngredient('Tomatoe', {
           type: 'pick-existing',
           resolvedItem: dbIngredient,
@@ -841,8 +841,8 @@ describe('useValidationReviewState', () => {
       expect(ingredientMappings.get('tomatoe')?.name).toBe('Tomato');
     });
 
-    test('excludes skipped items from mappings', () => {
-      const { result } = renderHook(() =>
+    test('excludes skipped items from mappings', async () => {
+      const { result } = await renderHook(() =>
         useValidationReviewState(
           mockTags,
           [],
@@ -851,11 +851,11 @@ describe('useValidationReviewState', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.skipTag('Italian');
       });
 
-      act(() => {
+      await act(() => {
         result.current.resolveTag('QuickMeals', {
           type: 'add-new',
           resolvedItem: dbTag,

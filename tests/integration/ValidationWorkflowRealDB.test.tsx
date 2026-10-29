@@ -48,15 +48,15 @@ function buildTag(name: string): TagDraft {
   return { name };
 }
 
-function renderWorkflow(recipes: ConvertedImportRecipe[], db: RecipeDatabase) {
-  const { result: tagResult } = renderHook(() => useTags());
-  const { result: ingredientResult } = renderHook(() => useIngredients());
+async function renderWorkflow(recipes: ConvertedImportRecipe[], db: RecipeDatabase) {
+  const { result: tagResult } = await renderHook(() => useTags());
+  const { result: ingredientResult } = await renderHook(() => useIngredients());
 
   const findSimilarTags = (name: string) => tagResult.current.findSimilarTags(name);
   const findSimilarIngredients = (name: string) =>
     ingredientResult.current.findSimilarIngredients(name);
 
-  const { result } = renderHook(() =>
+  const { result } = await renderHook(() =>
     useValidationWorkflow(
       recipes,
       db.addMultipleRecipes.bind(db),
@@ -86,7 +86,7 @@ describe('useValidationWorkflow with real DB', () => {
       await db.addMultipleIngredients([buildIngredient('Tomato')]);
 
       const recipes = [buildRecipe('Pasta', [], ['Tomato'])];
-      const result = renderWorkflow(recipes, db);
+      const result = await renderWorkflow(recipes, db);
 
       await waitFor(
         () => {
@@ -108,7 +108,7 @@ describe('useValidationWorkflow with real DB', () => {
       await db.addMultipleTags([buildTag('Italian')]);
 
       const recipes = [buildRecipe('Pasta', ['Italian'], ['Chicken'])];
-      const result = renderWorkflow(recipes, db);
+      const result = await renderWorkflow(recipes, db);
 
       await waitFor(
         () => {
@@ -129,7 +129,7 @@ describe('useValidationWorkflow with real DB', () => {
       await db.addMultipleIngredients([buildIngredient('tomato')]);
 
       const recipes = [buildRecipe('Pasta', [], ['Tomato'])];
-      const result = renderWorkflow(recipes, db);
+      const result = await renderWorkflow(recipes, db);
 
       await waitFor(
         () => {
@@ -147,7 +147,7 @@ describe('useValidationWorkflow with real DB', () => {
       await db.addMultipleIngredients([buildIngredient('Tomato')]);
 
       const recipes = [buildRecipe('Pasta', [], ['Tomatoe'])];
-      const result = renderWorkflow(recipes, db);
+      const result = await renderWorkflow(recipes, db);
 
       await waitFor(
         () => {
@@ -166,7 +166,7 @@ describe('useValidationWorkflow with real DB', () => {
       await db.addMultipleIngredients([buildIngredient('Chicken')]);
 
       const recipes = [buildRecipe('Pasta', ['Italyan'], ['Chicken'])];
-      const result = renderWorkflow(recipes, db);
+      const result = await renderWorkflow(recipes, db);
 
       await waitFor(
         () => {
@@ -184,7 +184,7 @@ describe('useValidationWorkflow with real DB', () => {
   describe('no match at all', () => {
     test('brand new ingredient with empty DB routes to reviewing', async () => {
       const recipes = [buildRecipe('Pasta', [], ['XyzUnknownIngredient99'])];
-      const result = renderWorkflow(recipes, db);
+      const result = await renderWorkflow(recipes, db);
 
       await waitFor(
         () => {
@@ -203,7 +203,7 @@ describe('useValidationWorkflow with real DB', () => {
       await db.addMultipleIngredients([buildIngredient('Chicken')]);
 
       const recipes = [buildRecipe('Pasta', ['XyzBrandNewTag99'], ['Chicken'])];
-      const result = renderWorkflow(recipes, db);
+      const result = await renderWorkflow(recipes, db);
 
       await waitFor(
         () => {
@@ -222,17 +222,17 @@ describe('useValidationWorkflow with real DB', () => {
       const dbIngredient = await db.addIngredient(buildIngredient('Tomato'));
 
       const recipes = [buildRecipe('Pasta', [], ['Tomatoe'])];
-      const result = renderWorkflow(recipes, db);
+      const result = await renderWorkflow(recipes, db);
 
       await waitFor(() => {
         expect(result.current.phase).toBe('reviewing');
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('Tomatoe', dbIngredient);
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.startImport();
       });
 
@@ -251,18 +251,18 @@ describe('useValidationWorkflow with real DB', () => {
       const dbIngredient2 = await db.addIngredient(buildIngredient('Rice'));
 
       const recipes = [buildRecipe('Pasta', [], ['Chickin']), buildRecipe('Pizza', [], ['Ryce'])];
-      const result = renderWorkflow(recipes, db);
+      const result = await renderWorkflow(recipes, db);
 
       await waitFor(() => {
         expect(result.current.phase).toBe('reviewing');
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('Chickin', dbIngredient1);
         result.current.handlers.onIngredientValidated('Ryce', dbIngredient2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.startImport();
       });
 
@@ -279,14 +279,14 @@ describe('useValidationWorkflow with real DB', () => {
     test('starts as initializing then moves to reviewing for unknown ingredients', async () => {
       const recipes = [buildRecipe('Pasta', [], ['UnknownIngredient'])];
 
-      const { result: tagResult } = renderHook(() => useTags());
-      const { result: ingredientResult } = renderHook(() => useIngredients());
+      const { result: tagResult } = await renderHook(() => useTags());
+      const { result: ingredientResult } = await renderHook(() => useIngredients());
 
       const findSimilarTags = (name: string) => tagResult.current.findSimilarTags(name);
       const findSimilarIngredients = (name: string) =>
         ingredientResult.current.findSimilarIngredients(name);
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           db.addMultipleRecipes.bind(db),
@@ -305,7 +305,7 @@ describe('useValidationWorkflow with real DB', () => {
 
     test('full phase sequence: initializing → reviewing → importing → complete', async () => {
       const recipes = [buildRecipe('Pasta', [], ['SomeNewIng'])];
-      const result = renderWorkflow(recipes, db);
+      const result = await renderWorkflow(recipes, db);
 
       expect(result.current.phase).toBe('initializing');
 
@@ -321,11 +321,11 @@ describe('useValidationWorkflow with real DB', () => {
         season: [],
       };
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('SomeNewIng', validatedIngredient);
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.startImport();
       });
 
@@ -340,7 +340,7 @@ describe('useValidationWorkflow with real DB', () => {
       await db.addMultipleIngredients([buildIngredient('Chicken')]);
 
       const recipes = [buildRecipe('Pasta', ['NewTagHere'], ['Chicken'])];
-      const result = renderWorkflow(recipes, db);
+      const result = await renderWorkflow(recipes, db);
 
       await waitFor(() => {
         expect(result.current.phase).toBe('reviewing');
@@ -349,7 +349,7 @@ describe('useValidationWorkflow with real DB', () => {
       const originalTag: tagTableElement = { id: 0, name: 'NewTagHere' };
       const validatedTag: tagTableElement = { id: 99, name: 'Italian' };
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onTagValidated(originalTag, validatedTag);
       });
 
@@ -358,7 +358,7 @@ describe('useValidationWorkflow with real DB', () => {
 
     test('onIngredientValidated adds mapping to validation state', async () => {
       const recipes = [buildRecipe('Pasta', [], ['NewIngHere'])];
-      const result = renderWorkflow(recipes, db);
+      const result = await renderWorkflow(recipes, db);
 
       await waitFor(() => {
         expect(result.current.phase).toBe('reviewing');
@@ -372,7 +372,7 @@ describe('useValidationWorkflow with real DB', () => {
         season: [],
       };
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('NewIngHere', validatedIngredient);
       });
 
@@ -384,18 +384,18 @@ describe('useValidationWorkflow with real DB', () => {
       const dbTag = await db.addTag(buildTag('TagA'));
 
       const recipes = [buildRecipe('Pasta', ['TagX'], ['IngX'])];
-      const result = renderWorkflow(recipes, db);
+      const result = await renderWorkflow(recipes, db);
 
       await waitFor(() => {
         expect(result.current.phase).toBe('reviewing');
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onTagValidated({ id: 0, name: 'TagX' }, dbTag);
         result.current.handlers.onIngredientValidated('IngX', dbIngredient);
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.startImport();
       });
 
@@ -411,14 +411,14 @@ describe('useValidationWorkflow with real DB', () => {
     test('progress is null during initializing and populated during reviewing', async () => {
       const recipes = [buildRecipe('Pasta', ['TagX', 'TagY'], ['IngX'])];
 
-      const { result: tagResult } = renderHook(() => useTags());
-      const { result: ingredientResult } = renderHook(() => useIngredients());
+      const { result: tagResult } = await renderHook(() => useTags());
+      const { result: ingredientResult } = await renderHook(() => useIngredients());
 
       const findSimilarTags = (name: string) => tagResult.current.findSimilarTags(name);
       const findSimilarIngredients = (name: string) =>
         ingredientResult.current.findSimilarIngredients(name);
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           db.addMultipleRecipes.bind(db),

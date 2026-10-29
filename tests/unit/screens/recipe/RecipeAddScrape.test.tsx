@@ -99,7 +99,7 @@ describe('RecipeAddScrape', () => {
 
       const { getByTestId } = await renderRoute(scrapedRoute);
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       await waitFor(() => {
         expect(addRecipeSpy).toHaveBeenCalled();
@@ -131,14 +131,14 @@ describe('RecipeAddScrape', () => {
 
       const { getByTestId } = await renderRoute(scrapedRoute);
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
       });
       expect(getByTestId('Recipe::Alert::Title').props.children).toBe('addAnyway');
 
-      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+      await fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
 
       await waitFor(() => {
         expect(mockNavigation.goBack).toHaveBeenCalled();
@@ -163,7 +163,7 @@ describe('RecipeAddScrape', () => {
         },
       };
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RecipeFormScreen
           mode='addFromScrape'
           routeProps={scrapedRoute}
@@ -173,13 +173,13 @@ describe('RecipeAddScrape', () => {
         />
       );
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
       });
 
-      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+      await fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
 
       expect(onSaveSuccess).toHaveBeenCalledWith(expect.objectContaining({ persons: 4 }), 8);
     });
@@ -202,7 +202,7 @@ describe('RecipeAddScrape', () => {
         },
       };
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RecipeFormScreen
           mode='addFromScrape'
           routeProps={scrapedRoute}
@@ -212,13 +212,13 @@ describe('RecipeAddScrape', () => {
         />
       );
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
       });
 
-      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+      await fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
 
       expect(onSaveSuccess).toHaveBeenCalledWith(
         expect.objectContaining({ persons: 4 }),
@@ -248,7 +248,7 @@ describe('RecipeAddScrape', () => {
 
       const { getByTestId } = await renderRoute(scrapedRoute);
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
@@ -280,7 +280,7 @@ describe('RecipeAddScrape', () => {
 
       const { getByTestId } = await renderRoute(scrapedRoute);
 
-      fireEvent.press(getByTestId('Recipe::AppBar::BackButton'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::BackButton'));
 
       expect(mockNavigation.goBack).toHaveBeenCalled();
     });

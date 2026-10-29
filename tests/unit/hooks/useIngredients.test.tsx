@@ -39,7 +39,7 @@ describe('useIngredients', () => {
     test('repeated findSimilarIngredients calls return consistent results for the same corpus', async () => {
       await database.addMultipleIngredients([makeIngredient('Tomato'), makeIngredient('Onion')]);
 
-      const { result } = renderHook(() => useIngredients());
+      const { result } = await renderHook(() => useIngredients());
       const first = result.current.findSimilarIngredients('Tomato');
 
       for (let i = 0; i < 10; i++) {
@@ -51,14 +51,14 @@ describe('useIngredients', () => {
     test('findSimilarIngredients reflects new data after an ingredient is added', async () => {
       await database.addIngredient(makeIngredient('Tomato'));
 
-      const { result, rerender } = renderHook(() => useIngredients());
+      const { result, rerender } = await renderHook(() => useIngredients());
       expect(result.current.findSimilarIngredients('Tomato').map(i => i.name)).toContain('Tomato');
       expect(result.current.findSimilarIngredients('Chicken')).toEqual([]);
 
       await act(async () => {
         await database.addIngredient(makeIngredient('Chicken'));
       });
-      rerender({});
+      await rerender({});
 
       expect(result.current.findSimilarIngredients('Chicken').map(i => i.name)).toContain(
         'Chicken'
@@ -68,21 +68,21 @@ describe('useIngredients', () => {
     test('findSimilarIngredientsDetailed returns exact match for cleaned name', async () => {
       await database.addIngredient(makeIngredient('Tomato'));
 
-      const { result } = renderHook(() => useIngredients());
+      const { result } = await renderHook(() => useIngredients());
 
       const detailed = result.current.findSimilarIngredientsDetailed('Tomato (canned)');
       expect(detailed.exact?.name).toBe('Tomato');
       expect(detailed.similar).toEqual([]);
     });
 
-    test('findSimilarIngredients returns an empty array for an empty corpus', () => {
-      const { result } = renderHook(() => useIngredients());
+    test('findSimilarIngredients returns an empty array for an empty corpus', async () => {
+      const { result } = await renderHook(() => useIngredients());
       expect(result.current.findSimilarIngredients('Anything')).toEqual([]);
     });
 
     test('findSimilarIngredientsDetailed returns { similar: [] } for an empty query', async () => {
       await database.addIngredient(makeIngredient('Tomato'));
-      const { result } = renderHook(() => useIngredients());
+      const { result } = await renderHook(() => useIngredients());
       const detailed = result.current.findSimilarIngredientsDetailed('');
       expect(detailed.exact).toBeUndefined();
       expect(detailed.similar).toEqual([]);
@@ -91,7 +91,7 @@ describe('useIngredients', () => {
 
   describe('database delegators', () => {
     test('addIngredient delegates to RecipeDatabase.addIngredient', async () => {
-      const { result } = renderHook(() => useIngredients());
+      const { result } = await renderHook(() => useIngredients());
       const created = await result.current.addIngredient(makeIngredient('Tomato'));
       expect(created.name).toBe('Tomato');
       expect(database.get_ingredients().map(i => i.name)).toContain('Tomato');
@@ -100,7 +100,7 @@ describe('useIngredients', () => {
     test('editIngredient delegates to RecipeDatabase.editIngredient', async () => {
       await database.addIngredient(makeIngredient('Tomato'));
       const stored = database.get_ingredients().find(i => i.name === 'Tomato')!;
-      const { result } = renderHook(() => useIngredients());
+      const { result } = await renderHook(() => useIngredients());
       const ok = await result.current.editIngredient({ ...stored, name: 'Tomate' });
       expect(ok).toBe(true);
       expect(database.get_ingredients().map(i => i.name)).toContain('Tomate');
@@ -109,14 +109,14 @@ describe('useIngredients', () => {
     test('deleteIngredient delegates to RecipeDatabase.deleteIngredient', async () => {
       await database.addIngredient(makeIngredient('Tomato'));
       const stored = database.get_ingredients().find(i => i.name === 'Tomato')!;
-      const { result } = renderHook(() => useIngredients());
+      const { result } = await renderHook(() => useIngredients());
       const ok = await result.current.deleteIngredient(stored);
       expect(ok).toBe(true);
       expect(database.get_ingredients().map(i => i.name)).not.toContain('Tomato');
     });
 
     test('addMultipleIngredients delegates to RecipeDatabase.addMultipleIngredients', async () => {
-      const { result } = renderHook(() => useIngredients());
+      const { result } = await renderHook(() => useIngredients());
       await result.current.addMultipleIngredients([
         makeIngredient('Tomato'),
         makeIngredient('Onion'),
@@ -128,7 +128,7 @@ describe('useIngredients', () => {
 
     test('getRandomIngredients returns from database for the requested type', async () => {
       await database.addMultipleIngredients([makeIngredient('Tomato'), makeIngredient('Onion')]);
-      const { result } = renderHook(() => useIngredients());
+      const { result } = await renderHook(() => useIngredients());
       const random = result.current.getRandomIngredients(ingredientType.vegetable, 2);
       expect(random).toHaveLength(2);
       random.forEach(i => expect(i.type).toBe(ingredientType.vegetable));

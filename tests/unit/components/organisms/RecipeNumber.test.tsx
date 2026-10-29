@@ -48,7 +48,7 @@ describe('RecipeNumber Component', () => {
     },
   };
 
-  const renderRecipeNumber = (props: RecipeNumberProps = defaultProps) => {
+  const renderRecipeNumber = async (props: RecipeNumberProps = defaultProps) => {
     return render(<RecipeNumber {...props} />);
   };
 
@@ -111,20 +111,20 @@ describe('RecipeNumber Component', () => {
     jest.clearAllMocks();
   });
 
-  test('renders in read-only mode with correct text display', () => {
-    const { getByTestId, queryByTestId } = renderRecipeNumber();
+  test('renders in read-only mode with correct text display', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeNumber();
     assertComponent(getByTestId, queryByTestId, defaultProps);
   });
 
-  test('renders in editable mode with text input and prefix/suffix', () => {
-    const { getByTestId, queryByTestId } = renderRecipeNumber(defaultEditProps);
+  test('renders in editable mode with text input and prefix/suffix', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeNumber(defaultEditProps);
 
     assertComponent(getByTestId, queryByTestId, defaultEditProps);
   });
 
-  test('handles text input changes in editable mode correctly', () => {
+  test('handles text input changes in editable mode correctly', async () => {
     const inputChange = { ...defaultEditProps };
-    const { getByTestId, queryByTestId } = renderRecipeNumber(inputChange);
+    const { getByTestId, queryByTestId } = await renderRecipeNumber(inputChange);
 
     assertComponent(getByTestId, queryByTestId, inputChange);
 
@@ -133,8 +133,8 @@ describe('RecipeNumber Component', () => {
 
     let textNewValue = '8';
 
-    fireEvent.changeText(textInput, textNewValue);
-    fireEvent(textInput, 'onBlur');
+    await fireEvent.changeText(textInput, textNewValue);
+    await fireEvent(textInput, 'onBlur');
 
     expect(mockSetTextToEdit).toHaveBeenCalledTimes(1);
     expect(mockSetTextToEdit).toHaveBeenCalledWith(Number(textNewValue));
@@ -142,51 +142,55 @@ describe('RecipeNumber Component', () => {
 
     textNewValue = 'abc';
 
-    fireEvent.changeText(textInput, textNewValue);
-    fireEvent(textInput, 'onBlur');
+    await fireEvent.changeText(textInput, textNewValue);
+    await fireEvent(textInput, 'onBlur');
     expect(mockSetTextToEdit).toHaveBeenCalledWith(defaultValueNumber);
     assertComponent(getByTestId, queryByTestId, inputChange);
 
     textNewValue = '2.5';
 
-    fireEvent.changeText(textInput, textNewValue);
-    fireEvent(textInput, 'onBlur');
+    await fireEvent.changeText(textInput, textNewValue);
+    await fireEvent(textInput, 'onBlur');
     expect(mockSetTextToEdit).toHaveBeenCalledWith(Number(textNewValue));
     assertComponent(getByTestId, queryByTestId, inputChange);
   });
 
-  test('handles default value correctly in editable mode', () => {
+  test('handles default value correctly in editable mode', async () => {
     const props = {
       ...defaultEditProps,
       numberProps: { ...defaultEditProps.numberProps, textEditable: defaultValueNumber },
     };
-    const { getByTestId, queryByTestId } = renderRecipeNumber(props);
+    const { getByTestId, queryByTestId } = await renderRecipeNumber(props);
 
     assertComponent(getByTestId, queryByTestId, props);
   });
 
-  test('renders in add mode with dual button options', () => {
-    const { getByTestId, queryByTestId } = renderRecipeNumber(defaultAddProps);
+  test('renders in add mode with dual button options', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeNumber(defaultAddProps);
 
     assertComponent(getByTestId, queryByTestId, defaultAddProps);
   });
 
-  test('handles button presses in add mode correctly', () => {
-    const { getByTestId } = renderRecipeNumber(defaultAddProps);
+  test('handles button presses in add mode correctly', async () => {
+    const { getByTestId } = await renderRecipeNumber(defaultAddProps);
 
     expect(mockOpenModal).not.toHaveBeenCalled();
     expect(mockManuallyFill).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('test-recipe-number::OpenModal::RoundButton::OnPressFunction'));
+    await fireEvent.press(
+      getByTestId('test-recipe-number::OpenModal::RoundButton::OnPressFunction')
+    );
     expect(mockOpenModal).toHaveBeenCalledTimes(1);
     expect(mockManuallyFill).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('test-recipe-number::ManuallyFill::RoundButton::OnPressFunction'));
+    await fireEvent.press(
+      getByTestId('test-recipe-number::ManuallyFill::RoundButton::OnPressFunction')
+    );
     expect(mockManuallyFill).toHaveBeenCalledTimes(1);
     expect(mockOpenModal).toHaveBeenCalledTimes(1);
   });
 
-  test('handles different prefix and suffix text combinations', () => {
+  test('handles different prefix and suffix text combinations', async () => {
     const testCases = [
       { prefix: 'Cook for', suffix: 'hours' },
       { prefix: '', suffix: 'minutes' },
@@ -195,7 +199,7 @@ describe('RecipeNumber Component', () => {
       { prefix: 'Very long prefix text here', suffix: 'very long suffix text here' },
     ];
 
-    testCases.forEach(({ prefix, suffix }) => {
+    for (const { prefix, suffix } of testCases) {
       const props: RecipeNumberProps = {
         ...defaultProps,
         numberProps: {
@@ -207,16 +211,16 @@ describe('RecipeNumber Component', () => {
           setTextToEdit: mockSetTextToEdit,
         },
       };
-      const { getByTestId, queryByTestId, unmount } = renderRecipeNumber(props);
+      const { getByTestId, queryByTestId, unmount } = await renderRecipeNumber(props);
 
       assertComponent(getByTestId, queryByTestId, props);
-      unmount();
-    });
+      await unmount();
+    }
   });
 
-  test('maintains state correctly across mode transitions', () => {
+  test('maintains state correctly across mode transitions', async () => {
     const maintainStateProps = { ...defaultEditProps };
-    const { getByTestId, queryByTestId, rerender } = renderRecipeNumber(maintainStateProps);
+    const { getByTestId, queryByTestId, rerender } = await renderRecipeNumber(maintainStateProps);
     assertComponent(getByTestId, queryByTestId, defaultEditProps);
 
     maintainStateProps.numberProps = {
@@ -227,17 +231,17 @@ describe('RecipeNumber Component', () => {
       openModal: mockOpenModal,
       manuallyFill: mockManuallyFill,
     };
-    rerender(<RecipeNumber {...maintainStateProps} />);
+    await rerender(<RecipeNumber {...maintainStateProps} />);
     assertComponent(getByTestId, queryByTestId, maintainStateProps);
 
     maintainStateProps.numberProps = { editType: 'read', text: 'Final: 45 minutes' };
-    rerender(<RecipeNumber {...maintainStateProps} />);
+    await rerender(<RecipeNumber {...maintainStateProps} />);
 
     assertComponent(getByTestId, queryByTestId, maintainStateProps);
   });
 
-  test('handles edge cases with numeric input validation', () => {
-    const { getByTestId } = renderRecipeNumber(defaultEditProps);
+  test('handles edge cases with numeric input validation', async () => {
+    const { getByTestId } = await renderRecipeNumber(defaultEditProps);
     const textInput = getByTestId('test-recipe-number::NumericTextInput');
 
     const testCases = [
@@ -248,14 +252,14 @@ describe('RecipeNumber Component', () => {
       { input: '  5  ', expected: 5 },
     ];
 
-    testCases.forEach(({ input, expected }, index) => {
-      fireEvent.changeText(textInput, input);
-      fireEvent(textInput, 'onBlur');
+    for (const [index, { input, expected }] of testCases.entries()) {
+      await fireEvent.changeText(textInput, input);
+      await fireEvent(textInput, 'onBlur');
       expect(mockSetTextToEdit).toHaveBeenNthCalledWith(index + 1, expected);
-    });
+    }
   });
 
-  test('uses different testID correctly for multiple instances', () => {
+  test('uses different testID correctly for multiple instances', async () => {
     const customTestId = 'custom-recipe-number';
     const customProps: RecipeNumberProps = {
       testID: customTestId,
@@ -269,13 +273,13 @@ describe('RecipeNumber Component', () => {
       },
     };
 
-    const { getByTestId, queryByTestId } = renderRecipeNumber(customProps);
+    const { getByTestId, queryByTestId } = await renderRecipeNumber(customProps);
 
     assertComponent(getByTestId, queryByTestId, customProps);
   });
 
-  test('handles rapid successive interactions without errors', () => {
-    const { getByTestId, queryByTestId } = renderRecipeNumber(defaultAddProps);
+  test('handles rapid successive interactions without errors', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeNumber(defaultAddProps);
 
     const openModalButton = getByTestId(
       'test-recipe-number::OpenModal::RoundButton::OnPressFunction'
@@ -284,27 +288,29 @@ describe('RecipeNumber Component', () => {
       'test-recipe-number::ManuallyFill::RoundButton::OnPressFunction'
     );
 
-    fireEvent.press(openModalButton);
-    fireEvent.press(manualFillButton);
-    fireEvent.press(openModalButton);
-    fireEvent.press(manualFillButton);
-    fireEvent.press(openModalButton);
+    await fireEvent.press(openModalButton);
+    await fireEvent.press(manualFillButton);
+    await fireEvent.press(openModalButton);
+    await fireEvent.press(manualFillButton);
+    await fireEvent.press(openModalButton);
 
     expect(mockOpenModal).toHaveBeenCalledTimes(3);
     expect(mockManuallyFill).toHaveBeenCalledTimes(2);
     assertComponent(getByTestId, queryByTestId, defaultAddProps);
   });
 
-  test('preserves callback functionality across prop changes', () => {
-    const { getByTestId, rerender } = renderRecipeNumber(defaultAddProps);
+  test('preserves callback functionality across prop changes', async () => {
+    const { getByTestId, rerender } = await renderRecipeNumber(defaultAddProps);
 
-    fireEvent.press(getByTestId('test-recipe-number::OpenModal::RoundButton::OnPressFunction'));
+    await fireEvent.press(
+      getByTestId('test-recipe-number::OpenModal::RoundButton::OnPressFunction')
+    );
     expect(mockOpenModal).toHaveBeenCalledTimes(1);
 
     const newMockOpenModal = jest.fn();
     const newMockManuallyFill = jest.fn();
 
-    rerender(
+    await rerender(
       <RecipeNumber
         testID='test-recipe-number'
         numberProps={{
@@ -318,8 +324,12 @@ describe('RecipeNumber Component', () => {
       />
     );
 
-    fireEvent.press(getByTestId('test-recipe-number::OpenModal::RoundButton::OnPressFunction'));
-    fireEvent.press(getByTestId('test-recipe-number::ManuallyFill::RoundButton::OnPressFunction'));
+    await fireEvent.press(
+      getByTestId('test-recipe-number::OpenModal::RoundButton::OnPressFunction')
+    );
+    await fireEvent.press(
+      getByTestId('test-recipe-number::ManuallyFill::RoundButton::OnPressFunction')
+    );
 
     expect(newMockOpenModal).toHaveBeenCalledTimes(1);
     expect(newMockManuallyFill).toHaveBeenCalledTimes(1);
@@ -327,7 +337,7 @@ describe('RecipeNumber Component', () => {
     expect(mockManuallyFill).not.toHaveBeenCalled();
   });
 
-  test('displays various text content correctly in read-only mode', () => {
+  test('displays various text content correctly in read-only mode', async () => {
     const readOnlyTexts = [
       'Simple text',
       'Text with numbers: 123',
@@ -338,20 +348,20 @@ describe('RecipeNumber Component', () => {
       'Text with emoji: 🍕👨‍🍳',
     ];
 
-    readOnlyTexts.forEach(text => {
+    for (const text of readOnlyTexts) {
       const readOnlyProps: RecipeNumberProps = {
         testID: defaultTestId,
         numberProps: { editType: 'read', text },
       };
-      const { getByTestId, queryByTestId, unmount } = renderRecipeNumber(readOnlyProps);
+      const { getByTestId, queryByTestId, unmount } = await renderRecipeNumber(readOnlyProps);
 
       assertComponent(getByTestId, queryByTestId, readOnlyProps);
-      unmount();
-    });
+      await unmount();
+    }
   });
 
-  test('maintains component stability during complex prop changes', () => {
-    const { getByTestId, queryByTestId, rerender } = renderRecipeNumber(defaultEditProps);
+  test('maintains component stability during complex prop changes', async () => {
+    const { getByTestId, queryByTestId, rerender } = await renderRecipeNumber(defaultEditProps);
 
     assertComponent(getByTestId, queryByTestId, defaultEditProps);
 
@@ -364,54 +374,54 @@ describe('RecipeNumber Component', () => {
         textEditable: 15,
       },
     };
-    rerender(<RecipeNumber {...updatedProps} />);
+    await rerender(<RecipeNumber {...updatedProps} />);
 
     assertComponent(getByTestId, queryByTestId, updatedProps);
 
     const textInput = getByTestId('test-recipe-number::NumericTextInput');
-    fireEvent.changeText(textInput, '20');
-    fireEvent(textInput, 'onBlur');
+    await fireEvent.changeText(textInput, '20');
+    await fireEvent(textInput, 'onBlur');
     expect(mockSetTextToEdit).toHaveBeenCalledWith(20);
   });
 
   describe('error display', () => {
-    test('does not render error helper when error prop is absent', () => {
-      const { queryByTestId } = renderRecipeNumber(defaultEditProps);
+    test('does not render error helper when error prop is absent', async () => {
+      const { queryByTestId } = await renderRecipeNumber(defaultEditProps);
       expect(queryByTestId(defaultTestId + '::Error')).toBeNull();
     });
 
-    test('renders error helper with the provided message in editable mode', () => {
+    test('renders error helper with the provided message in editable mode', async () => {
       const propsWithError: RecipeNumberProps = {
         ...defaultEditProps,
         error: 'Persons must be set',
       };
-      const { getByTestId } = renderRecipeNumber(propsWithError);
+      const { getByTestId } = await renderRecipeNumber(propsWithError);
       const helper = getByTestId(defaultTestId + '::Error');
       expect(helper.props.children).toBe('Persons must be set');
       expect(helper.props.type).toBe('error');
     });
 
-    test('renders error helper in read-only mode when provided', () => {
+    test('renders error helper in read-only mode when provided', async () => {
       const propsWithError: RecipeNumberProps = {
         ...defaultProps,
         error: 'Should not normally appear here',
       };
-      const { getByTestId } = renderRecipeNumber(propsWithError);
+      const { getByTestId } = await renderRecipeNumber(propsWithError);
       expect(getByTestId(defaultTestId + '::Error').props.children).toBe(
         'Should not normally appear here'
       );
     });
 
-    test('renders error helper in add mode', () => {
+    test('renders error helper in add mode', async () => {
       const propsWithError: RecipeNumberProps = {
         ...defaultAddProps,
         error: 'Time is required',
       };
-      const { getByTestId } = renderRecipeNumber(propsWithError);
+      const { getByTestId } = await renderRecipeNumber(propsWithError);
       expect(getByTestId(defaultTestId + '::Error').props.children).toBe('Time is required');
     });
 
-    test('forwards onBlur to the underlying numeric input', () => {
+    test('forwards onBlur to the underlying numeric input', async () => {
       const onBlur = jest.fn();
       const props: RecipeNumberProps = {
         testID: defaultTestId,
@@ -425,9 +435,9 @@ describe('RecipeNumber Component', () => {
         },
         onBlur,
       };
-      const { getByTestId } = renderRecipeNumber(props);
+      const { getByTestId } = await renderRecipeNumber(props);
       const input = getByTestId(defaultTestId + '::NumericTextInput');
-      fireEvent(input, 'onBlur');
+      await fireEvent(input, 'onBlur');
       expect(onBlur).toHaveBeenCalled();
     });
   });

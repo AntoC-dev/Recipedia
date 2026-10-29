@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, waitFor, RenderResult } from '@testing-library/react-native';
 import { TagsSettings } from '@screens/TagsSettings';
 import { isTagEqual, TagDraft, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { mockNavigationFunctions } from '@mocks/deps/react-navigation-mock';
@@ -32,7 +32,7 @@ const defaultProps = {
 } as any;
 
 const renderTagsSettings = async () => {
-  const result = render(<TagsSettings {...defaultProps} />);
+  const result = await render(<TagsSettings {...defaultProps} />);
 
   await waitFor(() => {
     expect(result.getByTestId('TagsSettings::SettingsItemList::Type')).toBeTruthy();
@@ -43,8 +43,8 @@ const renderTagsSettings = async () => {
   return result;
 };
 
-type GetByIdType = ReturnType<typeof render>['getByTestId'];
-type QueryByIdType = ReturnType<typeof render>['queryByTestId'];
+type GetByIdType = RenderResult['getByTestId'];
+type QueryByIdType = RenderResult['queryByTestId'];
 
 function dialogIsNotOpen(queryByTestId: QueryByIdType) {
   expect(queryByTestId('TagsSettings::ItemDialog::IsVisible')).toBeNull();
@@ -98,7 +98,7 @@ describe('TagsSettings Screen', () => {
 
   test('opens add dialog when add button is pressed and save value', async () => {
     const { getByTestId } = await renderTagsSettings();
-    fireEvent.press(getByTestId('TagsSettings::BottomActionButton'));
+    await fireEvent.press(getByTestId('TagsSettings::BottomActionButton'));
 
     await waitFor(() => {
       expect(getByTestId('TagsSettings::ItemDialog::Item')).toBeTruthy();
@@ -106,7 +106,7 @@ describe('TagsSettings Screen', () => {
 
     dialogIsOpen({ name: '' }, 'add', getByTestId);
 
-    fireEvent.press(getByTestId('TagsSettings::ItemDialog::Item::OnConfirm'));
+    await fireEvent.press(getByTestId('TagsSettings::ItemDialog::Item::OnConfirm'));
 
     await waitFor(() => {
       expect(db.get_tags().length).toEqual(sortedDataset.length + 1);
@@ -117,7 +117,7 @@ describe('TagsSettings Screen', () => {
 
   test('opens edit dialog when edit button is pressed and save value', async () => {
     const { getByTestId } = await renderTagsSettings();
-    fireEvent.press(getByTestId('TagsSettings::SettingsItemList::OnEdit'));
+    await fireEvent.press(getByTestId('TagsSettings::SettingsItemList::OnEdit'));
 
     await waitFor(() => {
       expect(getByTestId('TagsSettings::ItemDialog::Item')).toBeTruthy();
@@ -125,7 +125,7 @@ describe('TagsSettings Screen', () => {
 
     dialogIsOpen(sortedDataset[0]!, 'edit', getByTestId);
 
-    fireEvent.press(getByTestId('TagsSettings::ItemDialog::Item::OnConfirm'));
+    await fireEvent.press(getByTestId('TagsSettings::ItemDialog::Item::OnConfirm'));
 
     await waitFor(() => {
       expect(db.get_tags().find(tag => isTagEqual(tag, sortedDataset[0]!))).toBeUndefined();
@@ -136,7 +136,7 @@ describe('TagsSettings Screen', () => {
 
   test('opens delete dialog when delete button is pressed and save value', async () => {
     const { getByTestId } = await renderTagsSettings();
-    fireEvent.press(getByTestId('TagsSettings::SettingsItemList::OnDelete'));
+    await fireEvent.press(getByTestId('TagsSettings::SettingsItemList::OnDelete'));
 
     await waitFor(() => {
       expect(getByTestId('TagsSettings::ItemDialog::Item')).toBeTruthy();
@@ -144,7 +144,7 @@ describe('TagsSettings Screen', () => {
 
     dialogIsOpen(sortedDataset[0]!, 'delete', getByTestId);
 
-    fireEvent.press(getByTestId('TagsSettings::ItemDialog::Item::OnConfirm'));
+    await fireEvent.press(getByTestId('TagsSettings::ItemDialog::Item::OnConfirm'));
 
     await waitFor(() => {
       expect(db.get_tags().length).toEqual(sortedDataset.length - 1);

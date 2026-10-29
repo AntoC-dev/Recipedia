@@ -140,7 +140,7 @@ describe('Shopping Screen Performance', () => {
         const item = shopping[0];
         const listItem = screen.queryByTestId(`ShoppingScreen::SectionList::${item!.name}`);
         if (listItem) {
-          fireEvent(listItem, 'longPress');
+          await fireEvent(listItem, 'longPress');
         }
       }
     };

@@ -41,8 +41,8 @@ describe('FiltersSelection Component', () => {
     jest.clearAllMocks();
   });
 
-  test('renders correctly with filters', () => {
-    const { getByTestId } = render(<FiltersSelection {...defaultProps} />);
+  test('renders correctly with filters', async () => {
+    const { getByTestId } = await render(<FiltersSelection {...defaultProps} />);
 
     // Check that filter chips are rendered with correct text
     expect(getByTestId('FiltersSelection::FiltersSelection::0::Chip')).toBeTruthy();
@@ -59,31 +59,31 @@ describe('FiltersSelection Component', () => {
     expect(getByTestId('FiltersSelection::FiltersToggleButtons')).toHaveTextContent('addFilter');
   });
 
-  test('toggles filter mode on button press', () => {
-    const { getByTestId } = render(<FiltersSelection {...defaultProps} />);
+  test('toggles filter mode on button press', async () => {
+    const { getByTestId } = await render(<FiltersSelection {...defaultProps} />);
 
     // Should show "Add Filter" button when not in adding mode
     expect(getByTestId('FiltersSelection::FiltersToggleButtons')).toHaveTextContent('addFilter');
 
-    fireEvent.press(getByTestId('FiltersSelection::FiltersToggleButtons'));
+    await fireEvent.press(getByTestId('FiltersSelection::FiltersToggleButtons'));
     expect(mockSetAddingAFilter).toHaveBeenCalledWith(expect.any(Function));
   });
 
-  test('shows show results button when in adding filter mode', () => {
+  test('shows show results button when in adding filter mode', async () => {
     const props = { ...defaultProps, addingFilterMode: true };
-    const { getByTestId } = render(<FiltersSelection {...props} />);
+    const { getByTestId } = await render(<FiltersSelection {...props} />);
 
     // Should show "See Filter Result" button when in adding mode
     expect(getByTestId('FiltersSelection::FiltersToggleButtons')).toHaveTextContent(
       'seeFilterResult'
     );
 
-    fireEvent.press(getByTestId('FiltersSelection::FiltersToggleButtons'));
+    await fireEvent.press(getByTestId('FiltersSelection::FiltersToggleButtons'));
     expect(mockSetAddingAFilter).toHaveBeenCalledWith(expect.any(Function));
   });
 
-  test('calls onRemoveFilter when filter is removed', () => {
-    const { getByTestId } = render(<FiltersSelection {...defaultProps} />);
+  test('calls onRemoveFilter when filter is removed', async () => {
+    const { getByTestId } = await render(<FiltersSelection {...defaultProps} />);
 
     // Check that filter chips exist and have correct text
     expect(getByTestId('FiltersSelection::FiltersSelection::0::Chip::Children')).toHaveTextContent(
@@ -94,17 +94,17 @@ describe('FiltersSelection Component', () => {
     );
 
     // Click on the remove button of the first filter
-    fireEvent.press(getByTestId('FiltersSelection::FiltersSelection::0::Chip'));
+    await fireEvent.press(getByTestId('FiltersSelection::FiltersSelection::0::Chip'));
     expect(mockOnRemoveFilter).toHaveBeenCalledWith('Italian');
 
     // Click on the remove button of the second filter
-    fireEvent.press(getByTestId('FiltersSelection::FiltersSelection::1::Chip'));
+    await fireEvent.press(getByTestId('FiltersSelection::FiltersSelection::1::Chip'));
     expect(mockOnRemoveFilter).toHaveBeenCalledWith('Vegetarian');
   });
 
-  test('renders correctly with empty filters', () => {
+  test('renders correctly with empty filters', async () => {
     const props = { ...defaultProps, filters: [] };
-    const { getByTestId, queryByTestId } = render(<FiltersSelection {...props} />);
+    const { getByTestId, queryByTestId } = await render(<FiltersSelection {...props} />);
 
     // Should not render any filter chips
     expect(queryByTestId('FiltersSelection::FiltersSelection::0::Chip')).toBeNull();
@@ -114,18 +114,18 @@ describe('FiltersSelection Component', () => {
     expect(getByTestId('FiltersSelection::FiltersToggleButtons')).toHaveTextContent('addFilter');
   });
 
-  test('translates preparation time filter values for display', () => {
+  test('translates preparation time filter values for display', async () => {
     const props = { ...defaultProps, filters: [prepTimeValues[0]!] };
-    const { getByTestId } = render(<FiltersSelection {...props} />);
+    const { getByTestId } = await render(<FiltersSelection {...props} />);
 
     expect(getByTestId('FiltersSelection::FiltersSelection::0::Chip::Children')).toHaveTextContent(
       '0-10 min'
     );
   });
 
-  test('translates the in-season filter value for display', () => {
+  test('translates the in-season filter value for display', async () => {
     const props = { ...defaultProps, filters: [listFilter.inSeason] };
-    const { getByTestId } = render(<FiltersSelection {...props} />);
+    const { getByTestId } = await render(<FiltersSelection {...props} />);
 
     expect(getByTestId('FiltersSelection::FiltersSelection::0::Chip::Children')).toHaveTextContent(
       listFilter.inSeason
@@ -146,7 +146,7 @@ describe('FiltersSelection Component', () => {
       setMockCopilotState({ isActive: true, currentStep: null });
       const onToggleButtonTop = jest.fn();
 
-      render(
+      await render(
         <FiltersSelection
           {...defaultProps}
           screenFocused={true}
@@ -168,7 +168,7 @@ describe('FiltersSelection Component', () => {
       setMockCopilotState({ isActive: true, currentStep: null });
       const onToggleButtonTop = jest.fn();
 
-      render(
+      await render(
         <FiltersSelection
           {...defaultProps}
           screenFocused={true}
@@ -179,13 +179,13 @@ describe('FiltersSelection Component', () => {
       await waitFor(() => expect(onToggleButtonTop).toHaveBeenCalledWith(31), { timeout: 5000 });
     });
 
-    test('does not measure when the screen is not focused', () => {
+    test('does not measure when the screen is not focused', async () => {
       const measureInWindow = jest.fn();
       MockNativeMethods.measureInWindow.mockImplementation(measureInWindow);
       setMockCopilotState({ isActive: true, currentStep: null });
       const onToggleButtonTop = jest.fn();
 
-      render(
+      await render(
         <FiltersSelection
           {...defaultProps}
           screenFocused={false}
@@ -197,13 +197,13 @@ describe('FiltersSelection Component', () => {
       expect(onToggleButtonTop).not.toHaveBeenCalled();
     });
 
-    test('does not measure when copilot is not available', () => {
+    test('does not measure when copilot is not available', async () => {
       const measureInWindow = jest.fn();
       MockNativeMethods.measureInWindow.mockImplementation(measureInWindow);
       setMockCopilotState({ isActive: false });
       const onToggleButtonTop = jest.fn();
 
-      render(
+      await render(
         <FiltersSelection
           {...defaultProps}
           screenFocused={true}
@@ -215,7 +215,7 @@ describe('FiltersSelection Component', () => {
       expect(onToggleButtonTop).not.toHaveBeenCalled();
     });
 
-    test('ignores a measurement callback that resolves after the effect is cleaned up', () => {
+    test('ignores a measurement callback that resolves after the effect is cleaned up', async () => {
       const frames: FrameRequestCallback[] = [];
       const rafSpy = jest
         .spyOn(global, 'requestAnimationFrame')
@@ -232,7 +232,7 @@ describe('FiltersSelection Component', () => {
       setMockCopilotState({ isActive: true, currentStep: null });
       const onToggleButtonTop = jest.fn();
 
-      const { rerender } = render(
+      const { rerender } = await render(
         <FiltersSelection
           {...defaultProps}
           screenFocused={true}
@@ -242,7 +242,7 @@ describe('FiltersSelection Component', () => {
 
       const staleFrame = frames[0]!;
 
-      rerender(
+      await rerender(
         <FiltersSelection {...defaultProps} screenFocused={true} onToggleButtonTop={() => {}} />
       );
 
@@ -268,35 +268,35 @@ describe('FiltersSelection Component', () => {
       jest.useRealTimers();
     });
 
-    test('does not run the demo when reduced motion is enabled', () => {
+    test('does not run the demo when reduced motion is enabled', async () => {
       mockUseReducedMotion.mockReturnValue(true);
       setMockCopilotState({
         isActive: true,
         currentStep: { order: TUTORIAL_STEPS.Search.order, name: 'Search', text: 'Search step' },
       });
 
-      render(<FiltersSelection {...defaultProps} />);
+      await render(<FiltersSelection {...defaultProps} />);
 
       jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL * 2);
 
       expect(mockSetAddingAFilter).not.toHaveBeenCalled();
     });
 
-    test('renders the toggle button without owning a copilot step when copilot is available', () => {
+    test('renders the toggle button without owning a copilot step when copilot is available', async () => {
       setMockCopilotState({
         isActive: true,
         currentStep: { order: TUTORIAL_STEPS.Search.order, name: 'Search', text: 'Search step' },
       });
-      const { getByTestId, queryByTestId } = render(<FiltersSelection {...defaultProps} />);
+      const { getByTestId, queryByTestId } = await render(<FiltersSelection {...defaultProps} />);
 
       expect(queryByTestId('CopilotStep::Search')).toBeNull();
       expect(getByTestId('FiltersSelection::FiltersToggleButtons')).toBeTruthy();
       expect(getByTestId('FiltersSelection::FiltersToggleButtons')).toHaveTextContent('addFilter');
     });
-    test('renders the toggle button when copilot is not available', () => {
+    test('renders the toggle button when copilot is not available', async () => {
       setMockCopilotState({ isActive: false });
 
-      const { getByTestId } = render(<FiltersSelection {...defaultProps} />);
+      const { getByTestId } = await render(<FiltersSelection {...defaultProps} />);
 
       expect(getByTestId('FiltersSelection::FiltersToggleButtons')).toBeTruthy();
       expect(getByTestId('FiltersSelection::FiltersToggleButtons')).toHaveTextContent('addFilter');
@@ -309,7 +309,7 @@ describe('FiltersSelection Component', () => {
         currentStep: { order: TUTORIAL_STEPS.Search.order, name: 'Search', text: 'Search step' },
       });
 
-      render(<FiltersSelection {...defaultProps} />);
+      await render(<FiltersSelection {...defaultProps} />);
 
       await waitFor(() => {
         expect(mockEvents.on).toHaveBeenCalledWith('stepChange', expect.any(Function));
@@ -327,7 +327,7 @@ describe('FiltersSelection Component', () => {
         currentStep: { order: TUTORIAL_STEPS.Search.order, name: 'Search', text: 'Search step' },
       });
 
-      render(<FiltersSelection {...defaultProps} />);
+      await render(<FiltersSelection {...defaultProps} />);
 
       await waitFor(() => {
         expect(mockEvents.on).toHaveBeenCalledWith('stepChange', expect.any(Function));
@@ -350,7 +350,7 @@ describe('FiltersSelection Component', () => {
         currentStep: { order: 1, name: 'Home', text: 'Home step' },
       });
 
-      render(<FiltersSelection {...defaultProps} />);
+      await render(<FiltersSelection {...defaultProps} />);
 
       await waitFor(() => {
         expect(mockEvents.on).toHaveBeenCalledWith('stepChange', expect.any(Function));
@@ -377,7 +377,7 @@ describe('FiltersSelection Component', () => {
         currentStep: { order: TUTORIAL_STEPS.Search.order, name: 'Search', text: 'Search step' },
       });
 
-      render(<FiltersSelection {...defaultProps} />);
+      await render(<FiltersSelection {...defaultProps} />);
 
       await waitFor(() => {
         expect(mockEvents.on).toHaveBeenCalledWith('stop', expect.any(Function));
@@ -395,27 +395,27 @@ describe('FiltersSelection Component', () => {
         currentStep: { order: TUTORIAL_STEPS.Search.order, name: 'Search', text: 'Search step' },
       });
 
-      const { unmount } = render(<FiltersSelection {...defaultProps} />);
+      const { unmount } = await render(<FiltersSelection {...defaultProps} />);
 
       await waitFor(() => {
         expect(mockEvents.on).toHaveBeenCalled();
       });
 
-      unmount();
+      await unmount();
 
       expect(mockEvents.off).toHaveBeenCalledWith('stepChange', expect.any(Function));
       expect(mockEvents.off).toHaveBeenCalledWith('stop', expect.any(Function));
       expect(mockSetAddingAFilter).toHaveBeenCalledWith(false);
     });
 
-    test('does not set up listeners when copilot events unavailable', () => {
+    test('does not set up listeners when copilot events unavailable', async () => {
       const mockEvents = getMockCopilotEvents();
       setMockCopilotState({
         isActive: true,
         copilotEvents: null,
       });
 
-      render(<FiltersSelection {...defaultProps} />);
+      await render(<FiltersSelection {...defaultProps} />);
 
       expect(mockEvents.on).not.toHaveBeenCalled();
     });

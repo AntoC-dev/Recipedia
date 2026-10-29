@@ -18,8 +18,8 @@ describe('NutritionEditForm', () => {
     jest.clearAllMocks();
   });
 
-  test('renders with portion weight input', () => {
-    const { getByTestId } = render(
+  test('renders with portion weight input', async () => {
+    const { getByTestId } = await render(
       <NutritionEditForm
         portionWeight={defaultPortionWeight}
         onPortionWeightChange={mockOnPortionWeightChange}
@@ -36,10 +36,10 @@ describe('NutritionEditForm', () => {
     );
   });
 
-  test('calls onPortionWeightChange when weight input changes', () => {
+  test('calls onPortionWeightChange when weight input changes', async () => {
     const localMockOnChange = jest.fn();
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <NutritionEditForm
         portionWeight={100}
         onPortionWeightChange={localMockOnChange}
@@ -49,15 +49,15 @@ describe('NutritionEditForm', () => {
 
     const newWeight = 200;
     const input = getByTestId(defaultTestId + '::PortionWeightNumericTextInput');
-    fireEvent.changeText(input, newWeight.toString());
-    fireEvent(input, 'onBlur');
+    await fireEvent.changeText(input, newWeight.toString());
+    await fireEvent(input, 'onBlur');
     expect(localMockOnChange).toHaveBeenCalledWith(newWeight);
   });
 
-  test('handles invalid input gracefully', () => {
+  test('handles invalid input gracefully', async () => {
     const localMockOnChange = jest.fn();
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <NutritionEditForm
         portionWeight={100}
         onPortionWeightChange={localMockOnChange}
@@ -66,14 +66,14 @@ describe('NutritionEditForm', () => {
     );
 
     const input = getByTestId(defaultTestId + '::PortionWeightNumericTextInput');
-    fireEvent.changeText(input, 'invalid');
-    fireEvent(input, 'onBlur');
+    await fireEvent.changeText(input, 'invalid');
+    await fireEvent(input, 'onBlur');
 
     expect(localMockOnChange).toHaveBeenCalledWith(defaultValueNumber);
   });
 
-  test('shows remove button when showRemoveButton is true', () => {
-    const { getByTestId } = render(
+  test('shows remove button when showRemoveButton is true', async () => {
+    const { getByTestId } = await render(
       <NutritionEditForm
         portionWeight={defaultPortionWeight}
         onPortionWeightChange={mockOnPortionWeightChange}
@@ -93,8 +93,8 @@ describe('NutritionEditForm', () => {
     expect(getByTestId(defaultTestId + '::RemoveButton')).toBeTruthy();
   });
 
-  test('does not show remove button when showRemoveButton is false', () => {
-    const { queryByTestId } = render(
+  test('does not show remove button when showRemoveButton is false', async () => {
+    const { queryByTestId } = await render(
       <NutritionEditForm
         portionWeight={defaultPortionWeight}
         onPortionWeightChange={mockOnPortionWeightChange}
@@ -106,10 +106,10 @@ describe('NutritionEditForm', () => {
     expect(queryByTestId(defaultTestId + '::RemoveButton')).toBeNull();
   });
 
-  test('calls onRemoveNutrition when remove button pressed', () => {
+  test('calls onRemoveNutrition when remove button pressed', async () => {
     const localMockOnRemove = jest.fn();
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <NutritionEditForm
         portionWeight={defaultPortionWeight}
         onPortionWeightChange={mockOnPortionWeightChange}
@@ -119,13 +119,13 @@ describe('NutritionEditForm', () => {
       />
     );
 
-    fireEvent.press(getByTestId(defaultTestId + '::RemoveButton'));
+    await fireEvent.press(getByTestId(defaultTestId + '::RemoveButton'));
     expect(localMockOnRemove).toHaveBeenCalled();
   });
 
-  test('renders with custom testId', () => {
+  test('renders with custom testId', async () => {
     const customTestId = 'CustomTest';
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <NutritionEditForm
         portionWeight={defaultPortionWeight}
         onPortionWeightChange={mockOnPortionWeightChange}

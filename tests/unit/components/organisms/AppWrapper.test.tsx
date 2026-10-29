@@ -31,15 +31,15 @@ describe('AppWrapper Component', () => {
   });
 
   afterEach(async () => {
-    cleanup();
+    await cleanup();
     jest.clearAllTimers();
     await database.closeAndReset();
   });
 
-  test('shows loading state initially', () => {
+  test('shows loading state initially', async () => {
     isFirstLaunch.mockImplementation(() => new Promise(() => {}));
 
-    const { queryByTestId } = render(<AppWrapper />);
+    const { queryByTestId } = await render(<AppWrapper />);
 
     expect(queryByTestId('WelcomeScreen')).toBeNull();
     expect(queryByTestId('TutorialProvider')).toBeNull();
@@ -49,7 +49,7 @@ describe('AppWrapper Component', () => {
   test('shows welcome screen on first launch', async () => {
     isFirstLaunch.mockResolvedValue(true);
 
-    const { getByTestId, queryByTestId } = render(<AppWrapper />);
+    const { getByTestId, queryByTestId } = await render(<AppWrapper />);
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen')).toBeTruthy();
@@ -61,7 +61,7 @@ describe('AppWrapper Component', () => {
   test('shows main app when not first launch', async () => {
     isFirstLaunch.mockResolvedValue(false);
 
-    const { getByTestId, queryByTestId } = render(<AppWrapper />);
+    const { getByTestId, queryByTestId } = await render(<AppWrapper />);
 
     await waitFor(() => {
       expect(getByTestId('RootNavigator')).toBeTruthy();
@@ -77,13 +77,13 @@ describe('AppWrapper Component', () => {
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
 
-    const { getByTestId, queryByTestId } = render(<AppWrapper />);
+    const { getByTestId, queryByTestId } = await render(<AppWrapper />);
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('WelcomeScreen::StartTutorial'));
+    await fireEvent.press(getByTestId('WelcomeScreen::StartTutorial'));
 
     await waitFor(() => {
       expect(getByTestId('TutorialProvider')).toBeTruthy();
@@ -94,13 +94,13 @@ describe('AppWrapper Component', () => {
   test('skips to main app from welcome screen', async () => {
     isFirstLaunch.mockResolvedValue(true);
 
-    const { getByTestId, queryByTestId } = render(<AppWrapper />);
+    const { getByTestId, queryByTestId } = await render(<AppWrapper />);
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('WelcomeScreen::Skip'));
+    await fireEvent.press(getByTestId('WelcomeScreen::Skip'));
 
     await waitFor(() => {
       expect(getByTestId('RootNavigator')).toBeTruthy();
@@ -119,20 +119,20 @@ describe('AppWrapper Component', () => {
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
 
-    const { getByTestId, queryByTestId } = render(<AppWrapper />);
+    const { getByTestId, queryByTestId } = await render(<AppWrapper />);
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('WelcomeScreen::StartTutorial'));
+    await fireEvent.press(getByTestId('WelcomeScreen::StartTutorial'));
 
     await waitFor(() => {
       expect(getByTestId('TutorialProvider')).toBeTruthy();
       expect(queryByTestId('WelcomeScreen')).toBeNull();
     });
 
-    fireEvent.press(getByTestId('TutorialProvider::Complete'));
+    await fireEvent.press(getByTestId('TutorialProvider::Complete'));
 
     await waitFor(() => {
       expect(getByTestId('RootNavigator')).toBeTruthy();
@@ -157,13 +157,13 @@ describe('AppWrapper Component', () => {
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
 
-    const { getByTestId, queryByTestId } = render(<AppWrapper />);
+    const { getByTestId, queryByTestId } = await render(<AppWrapper />);
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('WelcomeScreen::StartTutorial'));
+    await fireEvent.press(getByTestId('WelcomeScreen::StartTutorial'));
 
     await waitFor(() => {
       expect(getByTestId('TutorialProvider')).toBeTruthy();
@@ -179,7 +179,7 @@ describe('AppWrapper Component', () => {
   test('calls deleteOldLogFiles on mount', async () => {
     isFirstLaunch.mockResolvedValue(false);
 
-    render(<AppWrapper />);
+    await render(<AppWrapper />);
 
     await waitFor(() => {
       expect(mockDeleteOldLogFiles).toHaveBeenCalledTimes(1);
@@ -196,14 +196,14 @@ describe('AppWrapper Component', () => {
     await database.addRecipeToMenu(testRecipes[1]!);
     expect(database.get_menu().length).toBeGreaterThan(0);
 
-    const { getByTestId, queryByTestId } = render(<AppWrapper />);
+    const { getByTestId, queryByTestId } = await render(<AppWrapper />);
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen')).toBeTruthy();
     });
 
     const skipButton = getByTestId('WelcomeScreen::Skip');
-    fireEvent.press(skipButton);
+    await fireEvent.press(skipButton);
 
     await waitFor(() => {
       expect(getByTestId('RootNavigator')).toBeTruthy();
@@ -231,7 +231,7 @@ describe('AppWrapper Component', () => {
     test('throws the decode error so an error boundary can catch it', async () => {
       await corruptIngredientType(database, testIngredients[0]!.id);
 
-      expect(() => render(<AppWrapper />)).toThrow(/has an unknown type "not-a-real-type"/);
+      await expect(render(<AppWrapper />)).rejects.toThrow(/has an unknown type "not-a-real-type"/);
     });
   });
 });

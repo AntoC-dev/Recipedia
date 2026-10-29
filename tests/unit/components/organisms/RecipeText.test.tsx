@@ -33,7 +33,7 @@ describe('RecipeText Component', () => {
     value: 'This is a paragraph of recipe content with detailed instructions.',
   };
 
-  const renderRecipeText = (overrideProps = {}) => {
+  const renderRecipeText = async (overrideProps = {}) => {
     const defaultProps = {
       rootText: headlineText,
       testID: 'test-recipe-text',
@@ -83,37 +83,37 @@ describe('RecipeText Component', () => {
     jest.clearAllMocks();
   });
 
-  test('renders in read-only mode with headline text', () => {
-    const { getByTestId, queryByTestId } = renderRecipeText();
+  test('renders in read-only mode with headline text', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeText();
 
     assertBasicStructure(getByTestId);
     assertReadOnlyMode(queryByTestId);
   });
 
-  test('renders title text with correct variant mapping', () => {
-    const { getByTestId } = renderRecipeText({
+  test('renders title text with correct variant mapping', async () => {
+    const { getByTestId } = await renderRecipeText({
       rootText: titleText,
     });
 
     assertBasicStructure(getByTestId, titleText.value);
   });
 
-  test('renders paragraph text with correct variant mapping', () => {
-    const { getByTestId } = renderRecipeText({
+  test('renders paragraph text with correct variant mapping', async () => {
+    const { getByTestId } = await renderRecipeText({
       rootText: paragraphText,
     });
 
     assertBasicStructure(getByTestId, paragraphText.value);
   });
 
-  test('renders in editable mode with text input', () => {
+  test('renders in editable mode with text input', async () => {
     const editableProps: RecipeTextEditProps = {
       editType: 'editable',
       textEditable: 'Editable recipe content',
       setTextToEdit: mockSetTextToEdit,
     };
 
-    const { getByTestId, queryByTestId } = renderRecipeText({
+    const { getByTestId, queryByTestId } = await renderRecipeText({
       addOrEditProps: {
         testID: 'test-recipe-text',
         ...editableProps,
@@ -126,13 +126,13 @@ describe('RecipeText Component', () => {
     expect(getByTestId('test-recipe-text::CustomTextInput').props.multiline).toBe(true);
   });
 
-  test('renders in add mode with modal button', () => {
+  test('renders in add mode with modal button', async () => {
     const addProps: RecipeTextAddProps = {
       editType: 'add',
       openModal: mockOpenModal,
     };
 
-    const { getByTestId, queryByTestId } = renderRecipeText({
+    const { getByTestId, queryByTestId } = await renderRecipeText({
       addOrEditProps: {
         testID: 'test-recipe-text',
         ...addProps,
@@ -143,14 +143,14 @@ describe('RecipeText Component', () => {
     assertAddMode(getByTestId, queryByTestId);
   });
 
-  test('handles text editing interactions correctly', () => {
+  test('handles text editing interactions correctly', async () => {
     const editableProps: RecipeTextEditProps = {
       editType: 'editable',
       textEditable: 'Initial text',
       setTextToEdit: mockSetTextToEdit,
     };
 
-    const { getByTestId } = renderRecipeText({
+    const { getByTestId } = await renderRecipeText({
       addOrEditProps: {
         testID: 'test-recipe-text',
         ...editableProps,
@@ -161,24 +161,24 @@ describe('RecipeText Component', () => {
     expect(textInput.props.value).toBe('Initial text');
     expect(mockSetTextToEdit).not.toHaveBeenCalled();
 
-    fireEvent.changeText(textInput, 'Updated text content');
+    await fireEvent.changeText(textInput, 'Updated text content');
     expect(mockSetTextToEdit).toHaveBeenCalledTimes(1);
     expect(mockSetTextToEdit).toHaveBeenCalledWith('Updated text content');
 
-    fireEvent.changeText(textInput, '');
+    await fireEvent.changeText(textInput, '');
     expect(mockSetTextToEdit).toHaveBeenCalledWith('');
 
-    fireEvent.changeText(textInput, 'Text with émojis 🍰 and special chars @#$');
+    await fireEvent.changeText(textInput, 'Text with émojis 🍰 and special chars @#$');
     expect(mockSetTextToEdit).toHaveBeenCalledWith('Text with émojis 🍰 and special chars @#$');
   });
 
-  test('handles modal opening interaction correctly', () => {
+  test('handles modal opening interaction correctly', async () => {
     const addProps: RecipeTextAddProps = {
       editType: 'add',
       openModal: mockOpenModal,
     };
 
-    const { getByTestId } = renderRecipeText({
+    const { getByTestId } = await renderRecipeText({
       addOrEditProps: {
         testID: 'test-recipe-text',
         ...addProps,
@@ -188,18 +188,18 @@ describe('RecipeText Component', () => {
     expect(mockOpenModal).not.toHaveBeenCalled();
 
     const modalButton = getByTestId('test-recipe-text::OpenModal::RoundButton::OnPressFunction');
-    fireEvent.press(modalButton);
+    await fireEvent.press(modalButton);
 
     expect(mockOpenModal).toHaveBeenCalledTimes(1);
 
-    fireEvent.press(modalButton);
-    fireEvent.press(modalButton);
+    await fireEvent.press(modalButton);
+    await fireEvent.press(modalButton);
     expect(mockOpenModal).toHaveBeenCalledTimes(3);
   });
 
-  test('applies correct container styles based on edit type', () => {
+  test('applies correct container styles based on edit type', async () => {
     {
-      const { getByTestId } = renderRecipeText({
+      const { getByTestId } = await renderRecipeText({
         addOrEditProps: {
           testID: 'test-recipe-text',
           editType: 'add',
@@ -211,7 +211,7 @@ describe('RecipeText Component', () => {
     }
 
     {
-      const { getByTestId } = renderRecipeText({
+      const { getByTestId } = await renderRecipeText({
         addOrEditProps: {
           testID: 'test-recipe-text',
           editType: 'editable',
@@ -224,28 +224,28 @@ describe('RecipeText Component', () => {
     }
   });
 
-  test('handles different text styles and content correctly', () => {
+  test('handles different text styles and content correctly', async () => {
     const textVariations = [
       { config: headlineText },
       { config: titleText },
       { config: paragraphText },
     ];
 
-    textVariations.forEach(({ config }) => {
-      const { getByTestId, unmount } = renderRecipeText({
+    for (const { config } of textVariations) {
+      const { getByTestId, unmount } = await renderRecipeText({
         rootText: config,
       });
 
       assertBasicStructure(getByTestId, config.value);
 
-      unmount();
-    });
+      await unmount();
+    }
   });
 
-  test('uses custom testID correctly throughout component hierarchy', () => {
+  test('uses custom testID correctly throughout component hierarchy', async () => {
     const customTestId = 'custom-recipe-text-id';
 
-    const { getByTestId, queryByTestId } = renderRecipeText({
+    const { getByTestId, queryByTestId } = await renderRecipeText({
       testID: customTestId,
       addOrEditProps: {
         testID: customTestId,
@@ -262,7 +262,7 @@ describe('RecipeText Component', () => {
     expect(queryByTestId('test-recipe-text::CustomTextInput')).toBeNull();
   });
 
-  test('handles edge cases in text content', () => {
+  test('handles edge cases in text content', async () => {
     const edgeCases = [
       { value: '', style: 'paragraph' as const },
       { value: '   ', style: 'title' as const },
@@ -276,19 +276,19 @@ describe('RecipeText Component', () => {
       { value: 'Unicode and emojis: 🍰🧁🍪 café crème naïve résumé', style: 'headline' as const },
     ];
 
-    edgeCases.forEach(textConfig => {
-      const { getByTestId, unmount } = renderRecipeText({
+    for (const textConfig of edgeCases) {
+      const { getByTestId, unmount } = await renderRecipeText({
         rootText: textConfig,
       });
 
       expect(getByTestId('test-recipe-text::Text').props.children).toBe(textConfig.value);
 
-      unmount();
-    });
+      await unmount();
+    }
   });
 
-  test('maintains functionality across prop changes', () => {
-    const { getByTestId, queryByTestId, rerender } = renderRecipeText({
+  test('maintains functionality across prop changes', async () => {
+    const { getByTestId, queryByTestId, rerender } = await renderRecipeText({
       addOrEditProps: {
         testID: 'test-recipe-text',
         editType: 'editable',
@@ -299,7 +299,7 @@ describe('RecipeText Component', () => {
 
     assertEditableMode(getByTestId, queryByTestId, 'initial text');
 
-    rerender(
+    await rerender(
       <RecipeText
         rootText={titleText}
         testID='test-recipe-text'
@@ -314,18 +314,18 @@ describe('RecipeText Component', () => {
     assertAddMode(getByTestId, queryByTestId);
     assertBasicStructure(getByTestId, titleText.value);
 
-    rerender(<RecipeText rootText={paragraphText} testID='test-recipe-text' />);
+    await rerender(<RecipeText rootText={paragraphText} testID='test-recipe-text' />);
 
     assertReadOnlyMode(queryByTestId);
     assertBasicStructure(getByTestId, paragraphText.value);
   });
 
-  test('handles discriminated union props correctly', () => {
+  test('handles discriminated union props correctly', async () => {
     const {
       getByTestId: getByTestIdEdit,
       queryByTestId: queryByTestIdEdit,
       unmount: unmountEdit,
-    } = renderRecipeText({
+    } = await renderRecipeText({
       addOrEditProps: {
         testID: 'test-recipe-text',
         editType: 'editable',
@@ -336,21 +336,23 @@ describe('RecipeText Component', () => {
 
     assertEditableMode(getByTestIdEdit, queryByTestIdEdit, 'editable content');
 
-    unmountEdit();
+    await unmountEdit();
 
-    const { getByTestId: getByTestIdAdd, queryByTestId: queryByTestIdAdd } = renderRecipeText({
-      addOrEditProps: {
-        testID: 'test-recipe-text',
-        editType: 'add',
-        openModal: mockOpenModal,
-      },
-    });
+    const { getByTestId: getByTestIdAdd, queryByTestId: queryByTestIdAdd } = await renderRecipeText(
+      {
+        addOrEditProps: {
+          testID: 'test-recipe-text',
+          editType: 'add',
+          openModal: mockOpenModal,
+        },
+      }
+    );
 
     assertAddMode(getByTestIdAdd, queryByTestIdAdd);
   });
 
-  test('preserves callback references across rapid interactions', () => {
-    const { getByTestId } = renderRecipeText({
+  test('preserves callback references across rapid interactions', async () => {
+    const { getByTestId } = await renderRecipeText({
       addOrEditProps: {
         testID: 'test-recipe-text',
         editType: 'editable',
@@ -361,9 +363,9 @@ describe('RecipeText Component', () => {
 
     const textInput = getByTestId('test-recipe-text::CustomTextInput');
 
-    fireEvent.changeText(textInput, 'change 1');
-    fireEvent.changeText(textInput, 'change 2');
-    fireEvent.changeText(textInput, 'change 3');
+    await fireEvent.changeText(textInput, 'change 1');
+    await fireEvent.changeText(textInput, 'change 2');
+    await fireEvent.changeText(textInput, 'change 3');
 
     expect(mockSetTextToEdit).toHaveBeenCalledTimes(3);
     expect(mockSetTextToEdit).toHaveBeenNthCalledWith(1, 'change 1');
@@ -371,8 +373,8 @@ describe('RecipeText Component', () => {
     expect(mockSetTextToEdit).toHaveBeenNthCalledWith(3, 'change 3');
   });
 
-  test('maintains component stability during complex state changes', () => {
-    const { getByTestId, rerender } = renderRecipeText();
+  test('maintains component stability during complex state changes', async () => {
+    const { getByTestId, rerender } = await renderRecipeText();
 
     const stateSequence = [
       { rootText: paragraphText, addOrEditProps: undefined },
@@ -396,8 +398,8 @@ describe('RecipeText Component', () => {
       { rootText: headlineText, addOrEditProps: undefined },
     ];
 
-    stateSequence.forEach(state => {
-      rerender(
+    for (const state of stateSequence) {
+      await rerender(
         <RecipeText
           rootText={state.rootText}
           testID='test-recipe-text'
@@ -406,12 +408,12 @@ describe('RecipeText Component', () => {
       );
 
       expect(getByTestId('test-recipe-text::Text').props.children).toBe(state.rootText.value);
-    });
+    }
   });
 
   describe('error display', () => {
-    test('does not render error helper when error prop is absent', () => {
-      const { queryByTestId } = renderRecipeText({
+    test('does not render error helper when error prop is absent', async () => {
+      const { queryByTestId } = await renderRecipeText({
         addOrEditProps: {
           testID: 'test-recipe-text',
           editType: 'editable',
@@ -422,8 +424,8 @@ describe('RecipeText Component', () => {
       expect(queryByTestId('test-recipe-text::Error')).toBeNull();
     });
 
-    test('renders error helper with the provided message in editable mode', () => {
-      const { getByTestId } = renderRecipeText({
+    test('renders error helper with the provided message in editable mode', async () => {
+      const { getByTestId } = await renderRecipeText({
         addOrEditProps: {
           testID: 'test-recipe-text',
           editType: 'editable',
@@ -437,8 +439,8 @@ describe('RecipeText Component', () => {
       expect(helper.props.type).toBe('error');
     });
 
-    test('renders error helper alongside add mode', () => {
-      const { getByTestId } = renderRecipeText({
+    test('renders error helper alongside add mode', async () => {
+      const { getByTestId } = await renderRecipeText({
         addOrEditProps: {
           testID: 'test-recipe-text',
           editType: 'add',
@@ -449,14 +451,14 @@ describe('RecipeText Component', () => {
       expect(getByTestId('test-recipe-text::Error').props.children).toBe('Required');
     });
 
-    test('does not render error in read-only mode when no error provided', () => {
-      const { queryByTestId } = renderRecipeText();
+    test('does not render error in read-only mode when no error provided', async () => {
+      const { queryByTestId } = await renderRecipeText();
       expect(queryByTestId('test-recipe-text::Error')).toBeNull();
     });
 
-    test('forwards onBlur to the underlying text input', () => {
+    test('forwards onBlur to the underlying text input', async () => {
       const onBlur = jest.fn();
-      const { getByTestId } = renderRecipeText({
+      const { getByTestId } = await renderRecipeText({
         addOrEditProps: {
           testID: 'test-recipe-text',
           editType: 'editable',

@@ -28,7 +28,7 @@ describe('LanguageSettings Screen', () => {
   });
 
   test('renders correctly with available languages', async () => {
-    const { getByTestId } = render(<LanguageSettings {...(defaultProps as any)} />);
+    const { getByTestId } = await render(<LanguageSettings {...(defaultProps as any)} />);
 
     await waitFor(() => {
       expect(getByTestId('LanguageSettings::Item::0')).toBeTruthy();
@@ -41,7 +41,7 @@ describe('LanguageSettings Screen', () => {
   });
 
   test('changes language when a language option is pressed', async () => {
-    const { getByTestId } = render(<LanguageSettings {...defaultProps} />);
+    const { getByTestId } = await render(<LanguageSettings {...defaultProps} />);
 
     // Wait for the component to load
     await waitFor(() => {
@@ -49,7 +49,7 @@ describe('LanguageSettings Screen', () => {
     });
 
     // Press the French language option
-    fireEvent.press(getByTestId('LanguageSettings::Item::1'));
+    await fireEvent.press(getByTestId('LanguageSettings::Item::1'));
 
     // Wait for the language to change
     await waitFor(() => {

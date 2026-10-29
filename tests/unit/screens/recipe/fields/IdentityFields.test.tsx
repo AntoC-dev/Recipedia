@@ -19,8 +19,8 @@ jest.mock('@components/organisms/RecipeText', () => ({
 }));
 
 describe('RecipeImageField', () => {
-  test('renders image from form value', () => {
-    const { getByTestId } = renderWithForm(
+  test('renders image from form value', async () => {
+    const { getByTestId } = await renderWithForm(
       RecipeImageField,
       form => ({
         form,
@@ -32,8 +32,8 @@ describe('RecipeImageField', () => {
     expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('file:///a.jpg');
   });
 
-  test('passes the stack mode button label key', () => {
-    const { getByTestId } = renderWithForm(RecipeImageField, form => ({
+  test('passes the stack mode button label key', async () => {
+    const { getByTestId } = await renderWithForm(RecipeImageField, form => ({
       form,
       stackMode: recipeStateType.addOCR,
       openModalForField: jest.fn(),
@@ -43,33 +43,33 @@ describe('RecipeImageField', () => {
     );
   });
 
-  test('falls back to empty string when value undefined', () => {
-    const { getByTestId, form } = renderWithForm(RecipeImageField, f => ({
+  test('falls back to empty string when value undefined', async () => {
+    const { getByTestId, form } = await renderWithForm(RecipeImageField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
       openModalForField: jest.fn(),
     }));
-    act(() => {
+    await act(() => {
       form.setValue('recipeImage', undefined as unknown as string);
     });
     expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('');
   });
 
-  test('forwards openModalForField to underlying RecipeImage', () => {
+  test('forwards openModalForField to underlying RecipeImage', async () => {
     const openModal = jest.fn();
-    const { getByTestId } = renderWithForm(RecipeImageField, f => ({
+    const { getByTestId } = await renderWithForm(RecipeImageField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
       openModalForField: openModal,
     }));
-    fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+    await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
     expect(openModal).toHaveBeenCalled();
   });
 });
 
 describe('RecipeTitleField', () => {
-  test('renders title from form value', () => {
-    const { getByTestId } = renderWithForm(
+  test('renders title from form value', async () => {
+    const { getByTestId } = await renderWithForm(
       RecipeTitleField,
       form => ({
         form,
@@ -82,19 +82,19 @@ describe('RecipeTitleField', () => {
     expect(getByTestId('RecipeTitle::TextEditable').props.children).toBe('Pancakes');
   });
 
-  test('setter writes through to form.setValue', () => {
-    const { getByTestId, form } = renderWithForm(RecipeTitleField, f => ({
+  test('setter writes through to form.setValue', async () => {
+    const { getByTestId, form } = await renderWithForm(RecipeTitleField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
       openModalForField: jest.fn(),
       t,
     }));
-    fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'New Title');
+    await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'New Title');
     expect(form.getValues('recipeTitle')).toBe('New Title');
   });
 
   test('does not show error when user types without blurring', async () => {
-    const { getByTestId, queryByTestId } = renderWithForm(
+    const { getByTestId, queryByTestId } = await renderWithForm(
       RecipeTitleField,
       f => ({
         form: f,
@@ -104,14 +104,12 @@ describe('RecipeTitleField', () => {
       }),
       { recipeTitle: 'Pancakes' }
     );
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), '');
-    });
+    await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', '');
     expect(queryByTestId('RecipeTitle::Error')).toBeNull();
   });
 
   test('shows inline error once the user blurs an invalid field', async () => {
-    const { getByTestId } = renderWithForm(
+    const { getByTestId } = await renderWithForm(
       RecipeTitleField,
       f => ({
         form: f,
@@ -121,19 +119,15 @@ describe('RecipeTitleField', () => {
       }),
       { recipeTitle: 'Pancakes' }
     );
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), '');
-    });
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipeTitle::OnBlur'));
-    });
+    await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', '');
+    await fireEvent.press(getByTestId('RecipeTitle::OnBlur'));
     expect(getByTestId('RecipeTitle::Error').props.children).toBe(
       'alerts.inlineErrors.titleRecipe'
     );
   });
 
   test('keeps the title editable in addOCR mode after the scanned value is erased so the inline error surfaces', async () => {
-    const { getByTestId, queryByTestId } = renderWithForm(
+    const { getByTestId, queryByTestId } = await renderWithForm(
       RecipeTitleField,
       f => ({
         form: f,
@@ -143,20 +137,16 @@ describe('RecipeTitleField', () => {
       }),
       { recipeTitle: 'Scanned Title' }
     );
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), '');
-    });
+    await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', '');
     expect(queryByTestId('RecipeTitle::OpenModal')).toBeNull();
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipeTitle::OnBlur'));
-    });
+    await fireEvent.press(getByTestId('RecipeTitle::OnBlur'));
     expect(getByTestId('RecipeTitle::Error').props.children).toBe(
       'alerts.inlineErrors.titleRecipe'
     );
   });
 
   test('does not show error when programmatic setValue does not mark the field touched', async () => {
-    const { queryByTestId, form } = renderWithForm(
+    const { queryByTestId, form } = await renderWithForm(
       RecipeTitleField,
       f => ({
         form: f,
@@ -176,7 +166,7 @@ describe('RecipeTitleField', () => {
   });
 
   test('clears inline error after form.reset() wipes touchedFields', async () => {
-    const { getByTestId, queryByTestId, form } = renderWithForm(
+    const { getByTestId, queryByTestId, form } = await renderWithForm(
       RecipeTitleField,
       f => ({
         form: f,
@@ -186,12 +176,8 @@ describe('RecipeTitleField', () => {
       }),
       { recipeTitle: 'Pancakes' }
     );
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), '');
-    });
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipeTitle::OnBlur'));
-    });
+    await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', '');
+    await fireEvent.press(getByTestId('RecipeTitle::OnBlur'));
     expect(getByTestId('RecipeTitle::Error').props.children).toBe(
       'alerts.inlineErrors.titleRecipe'
     );
@@ -201,8 +187,8 @@ describe('RecipeTitleField', () => {
     expect(queryByTestId('RecipeTitle::Error')).toBeNull();
   });
 
-  test('renders title field without inline error before submit', () => {
-    const { queryByTestId } = renderWithForm(RecipeTitleField, f => ({
+  test('renders title field without inline error before submit', async () => {
+    const { queryByTestId } = await renderWithForm(RecipeTitleField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
       openModalForField: jest.fn(),
@@ -211,8 +197,8 @@ describe('RecipeTitleField', () => {
     expect(queryByTestId('RecipeTitle::Error')).toBeNull();
   });
 
-  test('shows the OCR button in addOCR mode while the title is empty and untouched', () => {
-    const { getByTestId, queryByTestId } = renderWithForm(RecipeTitleField, form => ({
+  test('shows the OCR button in addOCR mode while the title is empty and untouched', async () => {
+    const { getByTestId, queryByTestId } = await renderWithForm(RecipeTitleField, form => ({
       form,
       stackMode: recipeStateType.addOCR,
       openModalForField: jest.fn(),
@@ -222,20 +208,20 @@ describe('RecipeTitleField', () => {
     expect(queryByTestId('RecipeTitle::TextEditable')).toBeNull();
   });
 
-  test('opens the OCR modal when the add button is pressed in addOCR mode', () => {
+  test('opens the OCR modal when the add button is pressed in addOCR mode', async () => {
     const openModalForField = jest.fn();
-    const { getByTestId } = renderWithForm(RecipeTitleField, form => ({
+    const { getByTestId } = await renderWithForm(RecipeTitleField, form => ({
       form,
       stackMode: recipeStateType.addOCR,
       openModalForField,
       t,
     }));
-    fireEvent.press(getByTestId('RecipeTitle::OpenModal'));
+    await fireEvent.press(getByTestId('RecipeTitle::OpenModal'));
     expect(openModalForField).toHaveBeenCalled();
   });
 
-  test('shows no editable input in readOnly mode', () => {
-    const { queryByTestId } = renderWithForm(
+  test('shows no editable input in readOnly mode', async () => {
+    const { queryByTestId } = await renderWithForm(
       RecipeTitleField,
       form => ({
         form,
@@ -248,14 +234,14 @@ describe('RecipeTitleField', () => {
     expect(queryByTestId('RecipeTitle::TextEditable')).toBeNull();
   });
 
-  test('falls back to empty string when form value is undefined', () => {
-    const { getByTestId, form } = renderWithForm(RecipeTitleField, f => ({
+  test('falls back to empty string when form value is undefined', async () => {
+    const { getByTestId, form } = await renderWithForm(RecipeTitleField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
       openModalForField: jest.fn(),
       t,
     }));
-    act(() => {
+    await act(() => {
       form.setValue('recipeTitle', undefined as never);
     });
     expect(getByTestId('RecipeTitle::TextEditable').props.children).toBe('');
@@ -263,8 +249,8 @@ describe('RecipeTitleField', () => {
 });
 
 describe('RecipeDescriptionField', () => {
-  test('renders description from form value', () => {
-    const { getByTestId } = renderWithForm(
+  test('renders description from form value', async () => {
+    const { getByTestId } = await renderWithForm(
       RecipeDescriptionField,
       form => ({
         form,
@@ -278,26 +264,24 @@ describe('RecipeDescriptionField', () => {
   });
 
   test('onBlur does not produce an error since description is optional', async () => {
-    const { getByTestId, queryByTestId } = renderWithForm(RecipeDescriptionField, f => ({
+    const { getByTestId, queryByTestId } = await renderWithForm(RecipeDescriptionField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
       openModalForField: jest.fn(),
       t,
     }));
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipeDescription::OnBlur'));
-    });
+    await fireEvent.press(getByTestId('RecipeDescription::OnBlur'));
     expect(queryByTestId('RecipeDescription::Error')).toBeNull();
   });
 
-  test('falls back to empty string when form value is undefined', () => {
-    const { getByTestId, form } = renderWithForm(RecipeDescriptionField, (f: Form) => ({
+  test('falls back to empty string when form value is undefined', async () => {
+    const { getByTestId, form } = await renderWithForm(RecipeDescriptionField, (f: Form) => ({
       form: f,
       stackMode: recipeStateType.edit,
       openModalForField: jest.fn(),
       t,
     }));
-    act(() => {
+    await act(() => {
       form.setValue('recipeDescription', undefined as never);
     });
     expect(getByTestId('RecipeDescription::TextEditable').props.children).toBe('');

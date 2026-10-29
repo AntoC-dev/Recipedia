@@ -12,11 +12,14 @@ import { corruptIngredientType } from '@test-helpers/corruptIngredientType';
 describe('decodeError exposure across the focused hooks', () => {
   const db = RecipeDatabase.getInstance();
 
-  const hookReaders: [string, () => Error | null][] = [
-    ['useRecipes', () => renderHook(() => useRecipes()).result.current.decodeError],
-    ['useMenu', () => renderHook(() => useMenu()).result.current.decodeError],
-    ['useIngredients', () => renderHook(() => useIngredients()).result.current.decodeError],
-    ['useTags', () => renderHook(() => useTags()).result.current.decodeError],
+  const hookReaders: [string, () => Promise<Error | null>][] = [
+    ['useRecipes', async () => (await renderHook(() => useRecipes())).result.current.decodeError],
+    ['useMenu', async () => (await renderHook(() => useMenu())).result.current.decodeError],
+    [
+      'useIngredients',
+      async () => (await renderHook(() => useIngredients())).result.current.decodeError,
+    ],
+    ['useTags', async () => (await renderHook(() => useTags())).result.current.decodeError],
   ];
 
   beforeEach(async () => {
@@ -30,8 +33,8 @@ describe('decodeError exposure across the focused hooks', () => {
     await db.closeAndReset();
   });
 
-  test.each(hookReaders)('%s exposes null while every row decodes', (_name, read) => {
-    expect(read()).toBeNull();
+  test.each(hookReaders)('%s exposes null while every row decodes', async (_name, read) => {
+    expect(await read()).toBeNull();
   });
 
   test.each(hookReaders)(
@@ -39,7 +42,7 @@ describe('decodeError exposure across the focused hooks', () => {
     async (_name, read) => {
       await corruptIngredientType(db, testIngredients[0]!.id);
 
-      expect(read()?.message).toMatch(/has an unknown type "not-a-real-type"/);
+      expect((await read())?.message).toMatch(/has an unknown type "not-a-real-type"/);
     }
   );
 });

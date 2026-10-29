@@ -70,7 +70,7 @@ describe('focused database hooks', () => {
 
   describe('scaleAllRecipesForNewDefaultPersons', () => {
     test('scales all recipes to new default persons count', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -92,7 +92,7 @@ describe('focused database hooks', () => {
     });
 
     test('progress starts undefined and returns to undefined after scaling', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -108,7 +108,7 @@ describe('focused database hooks', () => {
     });
 
     test('clears progress after scaling completes', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -122,7 +122,7 @@ describe('focused database hooks', () => {
     });
 
     test('swallows a scaleAndUpdateRecipe rejection and clears progress', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -143,7 +143,7 @@ describe('focused database hooks', () => {
     });
 
     test('does nothing when no recipes need scaling', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -168,7 +168,7 @@ describe('focused database hooks', () => {
     });
 
     test('skips recipes with invalid persons count', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -202,7 +202,7 @@ describe('focused database hooks', () => {
     });
 
     test('correctly scales recipe ingredient quantities', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -237,7 +237,7 @@ describe('focused database hooks', () => {
 
   describe('import memory methods', () => {
     test('getImportedSourceUrls returns empty set when no recipes imported', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -250,7 +250,7 @@ describe('focused database hooks', () => {
     });
 
     test('getImportedSourceUrls returns URLs of imported recipes for provider', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -272,7 +272,7 @@ describe('focused database hooks', () => {
     });
 
     test('getImportedSourceUrls filters by provider', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -307,7 +307,7 @@ describe('focused database hooks', () => {
     });
 
     test('getSeenUrls returns empty set when no URLs marked as seen', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -320,7 +320,7 @@ describe('focused database hooks', () => {
     });
 
     test('markUrlsAsSeen adds URLs to seen history', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -336,7 +336,7 @@ describe('focused database hooks', () => {
     });
 
     test('markUrlsAsSeen is provider-specific', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -355,7 +355,7 @@ describe('focused database hooks', () => {
     });
 
     test('removeFromSeenHistory removes URLs from seen history', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -376,7 +376,7 @@ describe('focused database hooks', () => {
     });
 
     test('removeFromSeenHistory only affects specified provider', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -397,7 +397,7 @@ describe('focused database hooks', () => {
 
   describe('Menu and Shopping List', () => {
     test('shopping is empty when menu is empty', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -407,7 +407,7 @@ describe('focused database hooks', () => {
     });
 
     test('shopping is computed from menu items', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -431,7 +431,7 @@ describe('focused database hooks', () => {
     });
 
     test('shopping excludes ingredients from cooked menu items', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -461,7 +461,7 @@ describe('focused database hooks', () => {
     });
 
     test('shopping aggregates same ingredients from different recipes', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -491,7 +491,7 @@ describe('focused database hooks', () => {
 
   describe('togglePurchased', () => {
     test('toggles purchased state for ingredient', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -519,7 +519,7 @@ describe('focused database hooks', () => {
     });
 
     test('clearPurchased resets every purchased ingredient', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -549,7 +549,7 @@ describe('focused database hooks', () => {
 
   describe('isRecipeInMenu', () => {
     test('returns false before a recipe is added and true afterwards', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -570,7 +570,7 @@ describe('focused database hooks', () => {
 
   describe('editRecipe image cleanup', () => {
     test('deletes old permanent image when image URI changes', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
@@ -583,7 +583,7 @@ describe('focused database hooks', () => {
     });
 
     test('does not delete old image when URI is unchanged', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
@@ -595,7 +595,7 @@ describe('focused database hooks', () => {
     });
 
     test('returns the edited recipe with updated image URI', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
@@ -608,7 +608,7 @@ describe('focused database hooks', () => {
     });
 
     test('does not delete old image when it is a temporary URI', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
@@ -626,7 +626,7 @@ describe('focused database hooks', () => {
     });
 
     test('deleteFile is called with the previous URI, not the new one', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
@@ -642,7 +642,7 @@ describe('focused database hooks', () => {
 
   describe('deleteRecipe image cleanup', () => {
     test('deletes image file when recipe has a permanent image', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
@@ -653,7 +653,7 @@ describe('focused database hooks', () => {
     });
 
     test('does not call deleteFile when image_Source is empty', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
@@ -664,7 +664,7 @@ describe('focused database hooks', () => {
     });
 
     test('does not call deleteFile when image_Source is a temporary URI', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
@@ -677,7 +677,7 @@ describe('focused database hooks', () => {
     });
 
     test('removes recipe from state after deletion', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
@@ -691,7 +691,7 @@ describe('focused database hooks', () => {
     });
 
     test('returns the database deletion result', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => expect(result.current.recipes.length).toBeGreaterThan(0));
 
@@ -704,7 +704,7 @@ describe('focused database hooks', () => {
 
   describe('clearMenu', () => {
     test('clears all menu items', async () => {
-      const { result } = renderHook(() => useAllHooks());
+      const { result } = await renderHook(() => useAllHooks());
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);

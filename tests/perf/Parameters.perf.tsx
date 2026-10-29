@@ -105,7 +105,7 @@ describe('Parameters Screen Performance', () => {
       const darkModeSwitch = screen.getByTestId(
         'Parameters::Section::Appearance::DarkMode::Switch'
       );
-      fireEvent(darkModeSwitch, 'valueChange', true);
+      await fireEvent(darkModeSwitch, 'valueChange', true);
     };
 
     await measureRenders(<ParametersWrapper />, { runs: 10, scenario });
@@ -116,7 +116,7 @@ describe('Parameters Screen Performance', () => {
       const seasonSwitch = screen.getByTestId(
         'Parameters::Section::RecipeDefaults::Season::Switch'
       );
-      fireEvent(seasonSwitch, 'valueChange', true);
+      await fireEvent(seasonSwitch, 'valueChange', true);
     };
 
     await measureRenders(<ParametersWrapper />, { runs: 10, scenario });

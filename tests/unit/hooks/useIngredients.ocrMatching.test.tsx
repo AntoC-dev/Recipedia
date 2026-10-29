@@ -50,48 +50,48 @@ describe('useIngredients OCR fuzzy matching for French ingredient names', () => 
       ['purée de tomates', 'Purée de tomates'],
       ['riz basmati bio', 'Riz basmati Bio'],
       ['épices cachemire', 'Épices Cachemire'],
-    ])('matches "%s" → "%s" via detailed exact', (query, expected) => {
-      const { result } = renderHook(() => useIngredients());
+    ])('matches "%s" → "%s" via detailed exact', async (query, expected) => {
+      const { result } = await renderHook(() => useIngredients());
       const detailed = result.current.findSimilarIngredientsDetailed(query);
       expect(detailed.exact?.name).toBe(expected);
     });
   });
 
   describe('OCR noise tolerance', () => {
-    test('matches name with trailing iOS OCR garbage', () => {
-      const { result } = renderHook(() => useIngredients());
+    test('matches name with trailing iOS OCR garbage', async () => {
+      const { result } = await renderHook(() => useIngredients());
       const matches = result.current.findSimilarIngredients('pommes de terre jaunes (g');
       expect(matches.map(i => i.name)).toContain('Pommes de terre jaunes');
     });
 
-    test('matches accented name when OCR dropped diacritics', () => {
-      const { result } = renderHook(() => useIngredients());
+    test('matches accented name when OCR dropped diacritics', async () => {
+      const { result } = await renderHook(() => useIngredients());
       const matches = result.current.findSimilarIngredients('puree de tomates');
       expect(matches.map(i => i.name)).toContain('Purée de tomates');
     });
 
-    test('matches accented name when OCR dropped diacritics on capital', () => {
-      const { result } = renderHook(() => useIngredients());
+    test('matches accented name when OCR dropped diacritics on capital', async () => {
+      const { result } = await renderHook(() => useIngredients());
       const matches = result.current.findSimilarIngredients('epices cachemire');
       expect(matches.map(i => i.name)).toContain('Épices Cachemire');
     });
 
-    test('matches single-token name with minor OCR typo', () => {
-      const { result } = renderHook(() => useIngredients());
+    test('matches single-token name with minor OCR typo', async () => {
+      const { result } = await renderHook(() => useIngredients());
       const matches = result.current.findSimilarIngredients('gomasio');
       expect(matches.map(i => i.name)).toContain('Gomasio');
     });
   });
 
   describe('discrimination', () => {
-    test('does not return unrelated ingredients for an unknown query', () => {
-      const { result } = renderHook(() => useIngredients());
+    test('does not return unrelated ingredients for an unknown query', async () => {
+      const { result } = await renderHook(() => useIngredients());
       const matches = result.current.findSimilarIngredients('xyz unrelated string');
       expect(matches).toEqual([]);
     });
 
-    test('returns Riz basmati Bio for partial query "basmati"', () => {
-      const { result } = renderHook(() => useIngredients());
+    test('returns Riz basmati Bio for partial query "basmati"', async () => {
+      const { result } = await renderHook(() => useIngredients());
       const matches = result.current.findSimilarIngredients('basmati');
       expect(matches.map(i => i.name)).toContain('Riz basmati Bio');
     });

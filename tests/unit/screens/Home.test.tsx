@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react-native';
+import { act, render, waitFor } from '@testing-library/react-native';
 import { Home, howManyItemInCarousel } from '@screens/Home';
 import React from 'react';
 import { testRecipes } from '@test-data/recipesDataset';
@@ -46,7 +46,7 @@ jest.mock('@utils/i18n', () => {
 const Stack = createNativeStackNavigator();
 
 async function renderHomeAndWaitForRecommendations() {
-  const result = render(
+  const result = await render(
     <SeasonFilterProvider>
       <NavigationContainer>
         <Stack.Navigator>
@@ -76,7 +76,7 @@ describe('Home Screen', () => {
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
   });
-  afterEach(async () => await database.closeAndReset());
+  afterEach(async () => database.closeAndReset());
 
   test('preloads the Search tab on mount', async () => {
     await renderHomeAndWaitForRecommendations();
@@ -168,7 +168,7 @@ describe('Home Screen', () => {
     expect(initialRandomReco.length).toBeGreaterThan(0);
     expect(initialRandomReco.length).toBeLessThanOrEqual(expectedRandomRecommendationLength);
 
-    rerender(
+    await rerender(
       <SeasonFilterProvider>
         <NavigationContainer>
           <Stack.Navigator>
@@ -203,7 +203,7 @@ describe('Home Screen', () => {
     await database.closeAndReset();
     await database.init();
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <SeasonFilterProvider>
         <NavigationContainer>
           <Stack.Navigator>
@@ -240,16 +240,15 @@ describe('Home Screen', () => {
   });
 
   test('pull-to-refresh regenerates recommendations', async () => {
-    const { UNSAFE_getByType, getByTestId } = await renderHomeAndWaitForRecommendations();
+    const { getByTestId } = await renderHomeAndWaitForRecommendations();
 
     const initialReco = JSON.parse(
       getByTestId('recommendations.randomSelection::CarouselProps').props.children
     );
     expect(initialReco.length).toBeGreaterThan(0);
 
-    const { FlatList } = require('react-native');
-    const flatList = UNSAFE_getByType(FlatList);
-    flatList.props.refreshControl.props.onRefresh();
+    const flatList = getByTestId('Home::RecommendationList');
+    await act(() => flatList.props.refreshControl.props.onRefresh());
 
     await waitFor(() => {
       const updatedReco = JSON.parse(
@@ -262,7 +261,7 @@ describe('Home Screen', () => {
   test('shows skeleton loading state before recommendations are ready', async () => {
     jest.useFakeTimers();
 
-    const { UNSAFE_getAllByType, queryByTestId } = render(
+    const { getAllByTestId, queryByTestId } = await render(
       <SeasonFilterProvider>
         <NavigationContainer>
           <Stack.Navigator>
@@ -272,9 +271,7 @@ describe('Home Screen', () => {
       </SeasonFilterProvider>
     );
 
-    const { Animated } = require('react-native');
-    const animatedViews = UNSAFE_getAllByType(Animated.View);
-    expect(animatedViews.length).toBeGreaterThanOrEqual(3);
+    expect(getAllByTestId('RecommendationSkeletonRow')).toHaveLength(3);
     expect(queryByTestId('recommendations.randomSelection::CarouselProps')).toBeNull();
 
     await waitFor(() => {
@@ -289,7 +286,7 @@ describe('Home Screen', () => {
     jest.useFakeTimers();
     const clearSpy = jest.spyOn(global, 'clearTimeout');
 
-    const { unmount } = render(
+    const { unmount } = await render(
       <SeasonFilterProvider>
         <NavigationContainer>
           <Stack.Navigator>
@@ -299,7 +296,7 @@ describe('Home Screen', () => {
       </SeasonFilterProvider>
     );
 
-    unmount();
+    await unmount();
 
     expect(clearSpy).toHaveBeenCalled();
 

@@ -20,9 +20,9 @@ function buildDefaults(preparation: RecipeFormInput['recipePreparation']): Recip
   };
 }
 
-function renderUseStepArray(preparation: RecipeFormInput['recipePreparation'] = []) {
+async function renderUseStepArray(preparation: RecipeFormInput['recipePreparation'] = []) {
   const formRef: { current: UseFormReturn<RecipeFormInput> | null } = { current: null };
-  const { result } = renderHook(() => {
+  const { result } = await renderHook(() => {
     const form = useForm<RecipeFormInput>({
       resolver: zodResolver(recipeFormSchema),
       mode: 'onTouched',
@@ -35,8 +35,8 @@ function renderUseStepArray(preparation: RecipeFormInput['recipePreparation'] = 
 }
 
 describe('useStepArray', () => {
-  test('length reflects the initial preparation array', () => {
-    const { result } = renderUseStepArray([
+  test('length reflects the initial preparation array', async () => {
+    const { result } = await renderUseStepArray([
       { title: 'A', description: 'first' },
       { title: 'B', description: 'second' },
     ]);
@@ -44,16 +44,16 @@ describe('useStepArray', () => {
     expect(result.current.fields).toHaveLength(2);
   });
 
-  test('length is zero when there are no initial steps', () => {
-    const { result } = renderUseStepArray([]);
+  test('length is zero when there are no initial steps', async () => {
+    const { result } = await renderUseStepArray([]);
     expect(result.current.length).toBe(0);
     expect(result.current.fields).toHaveLength(0);
   });
 
-  test('addStep appends a blank step to the form value', () => {
-    const { result, formRef } = renderUseStepArray([]);
+  test('addStep appends a blank step to the form value', async () => {
+    const { result, formRef } = await renderUseStepArray([]);
 
-    act(() => {
+    await act(() => {
       result.current.addStep();
     });
 
@@ -62,10 +62,10 @@ describe('useStepArray', () => {
     ]);
   });
 
-  test('addStep increments length and grows the fields list', () => {
-    const { result } = renderUseStepArray([{ title: 'A', description: 'first' }]);
+  test('addStep increments length and grows the fields list', async () => {
+    const { result } = await renderUseStepArray([{ title: 'A', description: 'first' }]);
 
-    act(() => {
+    await act(() => {
       result.current.addStep();
     });
 
@@ -73,10 +73,10 @@ describe('useStepArray', () => {
     expect(result.current.fields).toHaveLength(2);
   });
 
-  test('each appended step keeps existing rows untouched', () => {
-    const { result, formRef } = renderUseStepArray([{ title: 'Keep', description: 'me' }]);
+  test('each appended step keeps existing rows untouched', async () => {
+    const { result, formRef } = await renderUseStepArray([{ title: 'Keep', description: 'me' }]);
 
-    act(() => {
+    await act(() => {
       result.current.addStep();
     });
 

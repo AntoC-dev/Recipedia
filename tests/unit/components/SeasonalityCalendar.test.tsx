@@ -27,8 +27,8 @@ describe('SeasonalityCalendar', () => {
       onMonthsChange: mockOnMonthsChange,
     };
 
-    test('renders seasonality title', () => {
-      const { getByTestId } = render(<SeasonalityCalendar {...readOnlyProps} />);
+    test('renders seasonality title', async () => {
+      const { getByTestId } = await render(<SeasonalityCalendar {...readOnlyProps} />);
 
       expect(getByTestId(calendarTestId + '::SeasonalityText').props.children).toEqual([
         'seasonality',
@@ -36,8 +36,10 @@ describe('SeasonalityCalendar', () => {
       ]);
     });
 
-    test('renders chips for selected months only', () => {
-      const { getByTestId, queryByTestId } = render(<SeasonalityCalendar {...readOnlyProps} />);
+    test('renders chips for selected months only', async () => {
+      const { getByTestId, queryByTestId } = await render(
+        <SeasonalityCalendar {...readOnlyProps} />
+      );
 
       for (const month of selectedMonthProp) {
         expect(getByTestId(calendarTestId + '::' + month)).toBeTruthy();
@@ -50,8 +52,8 @@ describe('SeasonalityCalendar', () => {
       expect(queryByTestId(calendarTestId + '::AllYear')).toBeNull();
     });
 
-    test('renders all year label when all months selected', () => {
-      const { getByTestId, queryByTestId } = render(
+    test('renders all year label when all months selected', async () => {
+      const { getByTestId, queryByTestId } = await render(
         <SeasonalityCalendar {...readOnlyProps} selectedMonths={allYearProp} />
       );
 
@@ -59,8 +61,8 @@ describe('SeasonalityCalendar', () => {
       expect(queryByTestId(calendarTestId + '::1')).toBeNull();
     });
 
-    test('renders nothing for empty selectedMonths', () => {
-      const { queryByTestId } = render(
+    test('renders nothing for empty selectedMonths', async () => {
+      const { queryByTestId } = await render(
         <SeasonalityCalendar {...readOnlyProps} selectedMonths={[]} />
       );
 
@@ -68,16 +70,16 @@ describe('SeasonalityCalendar', () => {
       expect(queryByTestId(calendarTestId + '::1')).toBeNull();
     });
 
-    test('pressing a chip does not call onMonthsChange', () => {
-      const { getByTestId } = render(<SeasonalityCalendar {...readOnlyProps} />);
+    test('pressing a chip does not call onMonthsChange', async () => {
+      const { getByTestId } = await render(<SeasonalityCalendar {...readOnlyProps} />);
 
-      fireEvent.press(getByTestId(calendarTestId + '::' + selectedMonthProp[0]));
+      await fireEvent.press(getByTestId(calendarTestId + '::' + selectedMonthProp[0]));
 
       expect(mockOnMonthsChange).not.toHaveBeenCalled();
     });
 
-    test('renders single selected month', () => {
-      const { getByTestId, queryByTestId } = render(
+    test('renders single selected month', async () => {
+      const { getByTestId, queryByTestId } = await render(
         <SeasonalityCalendar {...readOnlyProps} selectedMonths={['7']} />
       );
 
@@ -86,8 +88,8 @@ describe('SeasonalityCalendar', () => {
       expect(queryByTestId(calendarTestId + '::AllYear')).toBeNull();
     });
 
-    test('does not render ToggleAllButton in read-only mode', () => {
-      const { queryByTestId } = render(<SeasonalityCalendar {...readOnlyProps} />);
+    test('does not render ToggleAllButton in read-only mode', async () => {
+      const { queryByTestId } = await render(<SeasonalityCalendar {...readOnlyProps} />);
 
       expect(queryByTestId(calendarTestId + '::ToggleAllButton')).toBeNull();
     });
@@ -101,22 +103,22 @@ describe('SeasonalityCalendar', () => {
       onMonthsChange: mockOnMonthsChange,
     };
 
-    test('renders SelectableAccordion with seasonality title', () => {
-      const { getByTestId } = render(<SeasonalityCalendar {...editProps} />);
+    test('renders SelectableAccordion with seasonality title', async () => {
+      const { getByTestId } = await render(<SeasonalityCalendar {...editProps} />);
 
       expect(getByTestId(calendarTestId + '::Title').props.children).toBe('seasonality');
     });
 
-    test('renders all 12 month items', () => {
-      const { getByTestId } = render(<SeasonalityCalendar {...editProps} />);
+    test('renders all 12 month items', async () => {
+      const { getByTestId } = await render(<SeasonalityCalendar {...editProps} />);
 
       for (let m = 1; m <= 12; m++) {
         expect(getByTestId(calendarTestId + '::' + m)).toBeTruthy();
       }
     });
 
-    test('renders month labels', () => {
-      const { getByTestId } = render(<SeasonalityCalendar {...editProps} />);
+    test('renders month labels', async () => {
+      const { getByTestId } = await render(<SeasonalityCalendar {...editProps} />);
 
       for (let m = 1; m <= 12; m++) {
         expect(getByTestId(calendarTestId + '::' + m + '::Children').props.children).toBe(
@@ -125,34 +127,34 @@ describe('SeasonalityCalendar', () => {
       }
     });
 
-    test('pressing selected month removes it', () => {
-      const { getByTestId } = render(<SeasonalityCalendar {...editProps} />);
+    test('pressing selected month removes it', async () => {
+      const { getByTestId } = await render(<SeasonalityCalendar {...editProps} />);
 
-      fireEvent.press(getByTestId(calendarTestId + '::4'));
+      await fireEvent.press(getByTestId(calendarTestId + '::4'));
 
       expect(mockOnMonthsChange).toHaveBeenCalledWith(['1']);
     });
 
-    test('pressing unselected month adds it', () => {
-      const { getByTestId } = render(<SeasonalityCalendar {...editProps} />);
+    test('pressing unselected month adds it', async () => {
+      const { getByTestId } = await render(<SeasonalityCalendar {...editProps} />);
 
-      fireEvent.press(getByTestId(calendarTestId + '::6'));
+      await fireEvent.press(getByTestId(calendarTestId + '::6'));
 
       expect(mockOnMonthsChange).toHaveBeenCalledWith(['1', '4', '6']);
     });
 
-    test('pressing month does not crash when onMonthsChange is undefined', () => {
-      const { getByTestId } = render(
+    test('pressing month does not crash when onMonthsChange is undefined', async () => {
+      const { getByTestId } = await render(
         <SeasonalityCalendar testID={testIDProp} selectedMonths={selectedMonthProp} />
       );
 
-      fireEvent.press(getByTestId(calendarTestId + '::1'));
+      await fireEvent.press(getByTestId(calendarTestId + '::1'));
 
       expect(mockOnMonthsChange).not.toHaveBeenCalled();
     });
 
-    test('defaults to edit mode when readOnly is omitted', () => {
-      const { getByTestId } = render(
+    test('defaults to edit mode when readOnly is omitted', async () => {
+      const { getByTestId } = await render(
         <SeasonalityCalendar
           testID={testIDProp}
           selectedMonths={selectedMonthProp}
@@ -163,44 +165,48 @@ describe('SeasonalityCalendar', () => {
       expect(getByTestId(calendarTestId + '::Title').props.children).toBe('seasonality');
     });
 
-    test('description shows selected months', () => {
-      const { getByTestId } = render(<SeasonalityCalendar {...editProps} />);
+    test('description shows selected months', async () => {
+      const { getByTestId } = await render(<SeasonalityCalendar {...editProps} />);
 
       expect(getByTestId(calendarTestId + '::Description').props.children).toBe('month_1, month_4');
     });
 
-    test('description shows all_year when all months selected', () => {
-      const { getByTestId } = render(
+    test('description shows all_year when all months selected', async () => {
+      const { getByTestId } = await render(
         <SeasonalityCalendar {...editProps} selectedMonths={allYearProp} />
       );
 
       expect(getByTestId(calendarTestId + '::Description').props.children).toBe('all_year');
     });
 
-    test('shows empty description when no months selected', () => {
-      const { getByTestId } = render(<SeasonalityCalendar {...editProps} selectedMonths={[]} />);
+    test('shows empty description when no months selected', async () => {
+      const { getByTestId } = await render(
+        <SeasonalityCalendar {...editProps} selectedMonths={[]} />
+      );
 
       expect(getByTestId(calendarTestId + '::Description').props.children).toBe('');
     });
 
-    test('renders ToggleAllButton when onMonthsChange is provided', () => {
-      const { getByTestId } = render(<SeasonalityCalendar {...editProps} />);
+    test('renders ToggleAllButton when onMonthsChange is provided', async () => {
+      const { getByTestId } = await render(<SeasonalityCalendar {...editProps} />);
 
       expect(getByTestId(calendarTestId + '::ToggleAllButton')).toBeTruthy();
     });
 
-    test('does not render ToggleAllButton when onMonthsChange is undefined', () => {
-      const { queryByTestId } = render(
+    test('does not render ToggleAllButton when onMonthsChange is undefined', async () => {
+      const { queryByTestId } = await render(
         <SeasonalityCalendar testID={testIDProp} selectedMonths={selectedMonthProp} />
       );
 
       expect(queryByTestId(calendarTestId + '::ToggleAllButton')).toBeNull();
     });
 
-    test('pressing ToggleAllButton with no months selected calls onMonthsChange with all 12 months', () => {
-      const { getByTestId } = render(<SeasonalityCalendar {...editProps} selectedMonths={[]} />);
+    test('pressing ToggleAllButton with no months selected calls onMonthsChange with all 12 months', async () => {
+      const { getByTestId } = await render(
+        <SeasonalityCalendar {...editProps} selectedMonths={[]} />
+      );
 
-      fireEvent.press(getByTestId(calendarTestId + '::ToggleAllButton'));
+      await fireEvent.press(getByTestId(calendarTestId + '::ToggleAllButton'));
 
       expect(mockOnMonthsChange).toHaveBeenCalledWith([
         '1',
@@ -218,20 +224,20 @@ describe('SeasonalityCalendar', () => {
       ]);
     });
 
-    test('pressing ToggleAllButton with all months selected calls onMonthsChange with empty array', () => {
-      const { getByTestId } = render(
+    test('pressing ToggleAllButton with all months selected calls onMonthsChange with empty array', async () => {
+      const { getByTestId } = await render(
         <SeasonalityCalendar {...editProps} selectedMonths={allYearProp} />
       );
 
-      fireEvent.press(getByTestId(calendarTestId + '::ToggleAllButton'));
+      await fireEvent.press(getByTestId(calendarTestId + '::ToggleAllButton'));
 
       expect(mockOnMonthsChange).toHaveBeenCalledWith([]);
     });
 
-    test('pressing ToggleAllButton with some months selected calls onMonthsChange with all 12 months', () => {
-      const { getByTestId } = render(<SeasonalityCalendar {...editProps} />);
+    test('pressing ToggleAllButton with some months selected calls onMonthsChange with all 12 months', async () => {
+      const { getByTestId } = await render(<SeasonalityCalendar {...editProps} />);
 
-      fireEvent.press(getByTestId(calendarTestId + '::ToggleAllButton'));
+      await fireEvent.press(getByTestId(calendarTestId + '::ToggleAllButton'));
 
       expect(mockOnMonthsChange).toHaveBeenCalledWith([
         '1',

@@ -47,92 +47,92 @@ describe('BulkImportDiscovery', () => {
     setMockRouteParams({ providerId: 'hellofresh' });
   });
 
-  test('renders app bar with title', () => {
-    const { getByTestId } = render(<BulkImportDiscovery />);
+  test('renders app bar with title', async () => {
+    const { getByTestId } = await render(<BulkImportDiscovery />);
 
     expect(getByTestId('BulkImportDiscovery::AppBar')).toBeTruthy();
   });
 
-  test('shows selection UI when showSelectionUI is true', () => {
-    const { getByTestId } = render(<BulkImportDiscovery />);
+  test('shows selection UI when showSelectionUI is true', async () => {
+    const { getByTestId } = await render(<BulkImportDiscovery />);
 
     expect(getByTestId('BulkImportDiscovery::RecipeCount')).toBeTruthy();
   });
 
-  test('shows recipe list when recipes exist', () => {
-    const { getByTestId } = render(<BulkImportDiscovery />);
+  test('shows recipe list when recipes exist', async () => {
+    const { getByTestId } = await render(<BulkImportDiscovery />);
 
     expect(getByTestId('BulkImportDiscovery::fresh-0')).toBeTruthy();
     expect(getByTestId('BulkImportDiscovery::fresh-1')).toBeTruthy();
   });
 
-  test('shows empty state when no recipes and selecting', () => {
+  test('shows empty state when no recipes and selecting', async () => {
     setMockDiscoveryState({ freshRecipes: [], seenRecipes: [] });
-    const { getByText } = render(<BulkImportDiscovery />);
+    const { getByText } = await render(<BulkImportDiscovery />);
 
     expect(getByText('bulkImport.selection.noRecipesFound')).toBeTruthy();
   });
 
-  test('shows skeleton loading when discovering with no recipes', () => {
+  test('shows skeleton loading when discovering with no recipes', async () => {
     setMockDiscoveryState({ phase: 'discovering', freshRecipes: [], seenRecipes: [] });
-    const { getByTestId } = render(<BulkImportDiscovery />);
+    const { getByTestId } = await render(<BulkImportDiscovery />);
 
     expect(getByTestId('BulkImportDiscovery::Skeleton::1')).toBeTruthy();
   });
 
-  test('shows select all row when recipes exist', () => {
-    const { getByTestId } = render(<BulkImportDiscovery />);
+  test('shows select all row when recipes exist', async () => {
+    const { getByTestId } = await render(<BulkImportDiscovery />);
 
     expect(getByTestId('BulkImportDiscovery::SelectAllCheckbox')).toBeTruthy();
   });
 
-  test('calls toggleSelectAll when select all pressed', () => {
-    const { getByTestId } = render(<BulkImportDiscovery />);
+  test('calls toggleSelectAll when select all pressed', async () => {
+    const { getByTestId } = await render(<BulkImportDiscovery />);
 
-    fireEvent.press(getByTestId('BulkImportDiscovery::SelectAllCheckbox'));
+    await fireEvent.press(getByTestId('BulkImportDiscovery::SelectAllCheckbox'));
 
     expect(mockToggleSelectAll).toHaveBeenCalledTimes(1);
   });
 
-  test('calls selectRecipe when unselected recipe card pressed', () => {
-    const { getByTestId } = render(<BulkImportDiscovery />);
+  test('calls selectRecipe when unselected recipe card pressed', async () => {
+    const { getByTestId } = await render(<BulkImportDiscovery />);
 
-    fireEvent.press(getByTestId('BulkImportDiscovery::fresh-0'));
+    await fireEvent.press(getByTestId('BulkImportDiscovery::fresh-0'));
 
     expect(mockSelectRecipe).toHaveBeenCalledWith('https://example.com/recipe-1');
   });
 
-  test('calls unselectRecipe when selected recipe card pressed', () => {
+  test('calls unselectRecipe when selected recipe card pressed', async () => {
     mockIsSelected.mockReturnValue(true);
-    const { getByTestId } = render(<BulkImportDiscovery />);
+    const { getByTestId } = await render(<BulkImportDiscovery />);
 
-    fireEvent.press(getByTestId('BulkImportDiscovery::fresh-0'));
+    await fireEvent.press(getByTestId('BulkImportDiscovery::fresh-0'));
 
     expect(mockUnselectRecipe).toHaveBeenCalledWith('https://example.com/recipe-1');
   });
 
-  test('shows discovery progress when discovering', () => {
+  test('shows discovery progress when discovering', async () => {
     setMockDiscoveryState({ isDiscovering: true, discoveryProgress: mockDiscoveryProgress });
-    const { getByText } = render(<BulkImportDiscovery />);
+    const { getByText } = await render(<BulkImportDiscovery />);
 
     expect(getByText('bulkImport.discovery.scanningCategories')).toBeTruthy();
   });
 
-  test('shows parsing progress when parsing', () => {
+  test('shows parsing progress when parsing', async () => {
     setMockDiscoveryState({
       phase: 'parsing',
       showSelectionUI: false,
       parsingProgress: mockParsingProgress,
     });
-    const { getByTestId } = render(<BulkImportDiscovery />);
+    const { getByTestId } = await render(<BulkImportDiscovery />);
 
     expect(getByTestId('BulkImportDiscovery::ParsingProgressBar')).toBeTruthy();
   });
 
-  test('aborts and goes back when cancel pressed', () => {
-    const { getByTestId } = render(<BulkImportDiscovery />);
+  test('aborts and goes back when cancel pressed', async () => {
+    const { getByTestId } = await render(<BulkImportDiscovery />);
 
-    fireEvent.press(getByTestId('BulkImportDiscovery::AppBar::BackButton'));
+    await fireEvent.press(getByTestId('BulkImportDiscovery::AppBar::BackButton'));
 
     expect(mockAbort).toHaveBeenCalledTimes(1);
     expect(mockGoBack).toHaveBeenCalledTimes(1);
@@ -143,9 +143,9 @@ describe('BulkImportDiscovery', () => {
     const convertedRecipes = [{ title: 'Recipe 1' }];
     mockParseSelectedRecipes.mockResolvedValue(convertedRecipes);
 
-    const { getByTestId } = render(<BulkImportDiscovery />);
+    const { getByTestId } = await render(<BulkImportDiscovery />);
 
-    fireEvent.press(getByTestId('BulkImportDiscovery::ContinueButton'));
+    await fireEvent.press(getByTestId('BulkImportDiscovery::ContinueButton'));
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith('BulkImportValidation', {
@@ -159,9 +159,9 @@ describe('BulkImportDiscovery', () => {
     setMockDiscoveryState({ selectedCount: 2 });
     mockParseSelectedRecipes.mockResolvedValue(null);
 
-    const { getByTestId } = render(<BulkImportDiscovery />);
+    const { getByTestId } = await render(<BulkImportDiscovery />);
 
-    fireEvent.press(getByTestId('BulkImportDiscovery::ContinueButton'));
+    await fireEvent.press(getByTestId('BulkImportDiscovery::ContinueButton'));
 
     await waitFor(() => {
       expect(mockParseSelectedRecipes).toHaveBeenCalled();
@@ -169,29 +169,29 @@ describe('BulkImportDiscovery', () => {
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
-  test('shows error message when error exists', () => {
+  test('shows error message when error exists', async () => {
     setMockDiscoveryState({ error: 'Network error' });
-    const { getByText } = render(<BulkImportDiscovery />);
+    const { getByText } = await render(<BulkImportDiscovery />);
 
     expect(getByText('Network error')).toBeTruthy();
   });
 
   describe('dismiss recipe', () => {
-    test('calls dismissRecipe when dismiss button pressed', () => {
-      const { getByTestId } = render(<BulkImportDiscovery />);
+    test('calls dismissRecipe when dismiss button pressed', async () => {
+      const { getByTestId } = await render(<BulkImportDiscovery />);
 
-      fireEvent.press(getByTestId('BulkImportDiscovery::fresh-0::DismissButton'));
+      await fireEvent.press(getByTestId('BulkImportDiscovery::fresh-0::DismissButton'));
 
       expect(mockDismissRecipe).toHaveBeenCalledWith(
         expect.objectContaining({ url: 'https://example.com/recipe-1' })
       );
     });
 
-    test('shows restore button and calls restoreRecipe for a dismissed recipe', () => {
+    test('shows restore button and calls restoreRecipe for a dismissed recipe', async () => {
       mockIsDismissed.mockReturnValue(true);
-      const { getByTestId } = render(<BulkImportDiscovery />);
+      const { getByTestId } = await render(<BulkImportDiscovery />);
 
-      fireEvent.press(getByTestId('BulkImportDiscovery::fresh-0::RestoreButton'));
+      await fireEvent.press(getByTestId('BulkImportDiscovery::fresh-0::RestoreButton'));
 
       expect(mockRestoreRecipe).toHaveBeenCalledWith(
         expect.objectContaining({ url: 'https://example.com/recipe-1' })
@@ -202,9 +202,9 @@ describe('BulkImportDiscovery', () => {
       setMockDiscoveryState({ selectedCount: 2 });
       mockParseSelectedRecipes.mockResolvedValue([{ title: 'Recipe 1' }]);
 
-      const { getByTestId } = render(<BulkImportDiscovery />);
+      const { getByTestId } = await render(<BulkImportDiscovery />);
 
-      fireEvent.press(getByTestId('BulkImportDiscovery::ContinueButton'));
+      await fireEvent.press(getByTestId('BulkImportDiscovery::ContinueButton'));
 
       await waitFor(() => {
         expect(mockCommitDismissals).toHaveBeenCalledTimes(1);
@@ -213,13 +213,13 @@ describe('BulkImportDiscovery', () => {
   });
 
   describe('section headers', () => {
-    test('shows fresh section header when fresh recipes exist', () => {
-      const { getByTestId } = render(<BulkImportDiscovery />);
+    test('shows fresh section header when fresh recipes exist', async () => {
+      const { getByTestId } = await render(<BulkImportDiscovery />);
 
       expect(getByTestId('BulkImportDiscovery::fresh-header')).toBeTruthy();
     });
 
-    test('shows seen section header when seen recipes exist', () => {
+    test('shows seen section header when seen recipes exist', async () => {
       setMockDiscoveryState({
         seenRecipes: [
           {
@@ -229,12 +229,12 @@ describe('BulkImportDiscovery', () => {
           },
         ],
       });
-      const { getByTestId } = render(<BulkImportDiscovery />);
+      const { getByTestId } = await render(<BulkImportDiscovery />);
 
       expect(getByTestId('BulkImportDiscovery::seen-header')).toBeTruthy();
     });
 
-    test('does not show fresh header when no fresh recipes', () => {
+    test('does not show fresh header when no fresh recipes', async () => {
       setMockDiscoveryState({
         freshRecipes: [],
         seenRecipes: [
@@ -245,18 +245,18 @@ describe('BulkImportDiscovery', () => {
           },
         ],
       });
-      const { queryByTestId } = render(<BulkImportDiscovery />);
+      const { queryByTestId } = await render(<BulkImportDiscovery />);
 
       expect(queryByTestId('BulkImportDiscovery::fresh-header')).toBeNull();
     });
 
-    test('does not show seen header when no seen recipes', () => {
-      const { queryByTestId } = render(<BulkImportDiscovery />);
+    test('does not show seen header when no seen recipes', async () => {
+      const { queryByTestId } = await render(<BulkImportDiscovery />);
 
       expect(queryByTestId('BulkImportDiscovery::seen-header')).toBeNull();
     });
 
-    test('shows both sections when both fresh and seen recipes exist', () => {
+    test('shows both sections when both fresh and seen recipes exist', async () => {
       setMockDiscoveryState({
         freshRecipes: mockFreshRecipes,
         seenRecipes: [
@@ -267,7 +267,7 @@ describe('BulkImportDiscovery', () => {
           },
         ],
       });
-      const { getByTestId } = render(<BulkImportDiscovery />);
+      const { getByTestId } = await render(<BulkImportDiscovery />);
 
       expect(getByTestId('BulkImportDiscovery::fresh-header')).toBeTruthy();
       expect(getByTestId('BulkImportDiscovery::seen-header')).toBeTruthy();

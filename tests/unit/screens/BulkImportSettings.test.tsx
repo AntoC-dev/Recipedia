@@ -13,44 +13,44 @@ describe('BulkImportSettings', () => {
     jest.clearAllMocks();
   });
 
-  test('renders app bar with title', () => {
-    const { getByTestId } = render(<BulkImportSettings />);
+  test('renders app bar with title', async () => {
+    const { getByTestId } = await render(<BulkImportSettings />);
 
     expect(getByTestId('BulkImportSettings::AppBar')).toBeTruthy();
   });
 
-  test('renders subheader', () => {
-    const { getByTestId } = render(<BulkImportSettings />);
+  test('renders subheader', async () => {
+    const { getByTestId } = await render(<BulkImportSettings />);
 
     expect(getByTestId('BulkImportSettings::Subheader')).toBeTruthy();
   });
 
-  test('renders provider list items', () => {
-    const { getByTestId } = render(<BulkImportSettings />);
+  test('renders provider list items', async () => {
+    const { getByTestId } = await render(<BulkImportSettings />);
 
     expect(getByTestId('BulkImportSettings::Provider::hellofresh')).toBeTruthy();
   });
 
-  test('navigates to discovery when provider pressed', () => {
-    const { getByTestId } = render(<BulkImportSettings />);
+  test('navigates to discovery when provider pressed', async () => {
+    const { getByTestId } = await render(<BulkImportSettings />);
 
-    fireEvent.press(getByTestId('BulkImportSettings::Provider::hellofresh'));
+    await fireEvent.press(getByTestId('BulkImportSettings::Provider::hellofresh'));
 
     expect(mockNavigate).toHaveBeenCalledWith('BulkImportDiscovery', {
       providerId: 'hellofresh',
     });
   });
 
-  test('navigates back when app bar back pressed', () => {
-    const { getByTestId } = render(<BulkImportSettings />);
+  test('navigates back when app bar back pressed', async () => {
+    const { getByTestId } = await render(<BulkImportSettings />);
 
-    fireEvent.press(getByTestId('BulkImportSettings::AppBar::BackButton'));
+    await fireEvent.press(getByTestId('BulkImportSettings::AppBar::BackButton'));
 
     expect(mockGoBack).toHaveBeenCalledTimes(1);
   });
 
-  test('displays provider names', () => {
-    const { getByTestId } = render(<BulkImportSettings />);
+  test('displays provider names', async () => {
+    const { getByTestId } = await render(<BulkImportSettings />);
 
     expect(getByTestId('BulkImportSettings::Provider::hellofresh::Title').props.children).toBe(
       'HelloFresh'

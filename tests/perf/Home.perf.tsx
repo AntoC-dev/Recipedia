@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
-import { fireEvent, screen, waitFor } from '@testing-library/react-native';
+import { act, screen } from '@testing-library/react-native';
 import { measureRenders } from 'reassure';
 import { Home } from '@screens/Home';
-import { RefreshControl } from 'react-native';
 import { ingredientType, recipeTableElement } from '@customTypes/DatabaseElementTypes';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { performanceRecipes } from '@assets/datasets/performance/recipes';
@@ -103,8 +102,8 @@ describe('Home Screen Performance', () => {
 
   test('re-render after pull-to-refresh', async () => {
     const scenario = async () => {
-      const refreshControl = await waitFor(() => screen.UNSAFE_getByType(RefreshControl));
-      fireEvent(refreshControl, 'refresh');
+      const refreshableList = await screen.findByTestId('Home::RecommendationList');
+      await act(() => refreshableList.props.refreshControl.props.onRefresh());
     };
 
     await measureRenders(<HomeWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });

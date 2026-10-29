@@ -55,7 +55,7 @@ describe('App', () => {
         callOrder.push('dbInit');
       });
 
-      render(<App />);
+      await render(<App />);
 
       await waitFor(() => {
         expect(mockInitFileSystem).toHaveBeenCalled();
@@ -64,7 +64,7 @@ describe('App', () => {
     });
 
     it('calls settings, firstLaunch, and darkMode during initialization', async () => {
-      render(<App />);
+      await render(<App />);
 
       await waitFor(() => {
         expect(mockInitSettings).toHaveBeenCalled();
@@ -74,7 +74,7 @@ describe('App', () => {
     });
 
     it('does not eagerly warm up the Python scraper at startup', async () => {
-      const { getByTestId } = render(<App />);
+      const { getByTestId } = await render(<App />);
 
       await waitFor(() => {
         expect(getByTestId('app-wrapper')).toBeTruthy();
@@ -85,7 +85,7 @@ describe('App', () => {
 
   describe('splash screen', () => {
     it('hides the splash screen once initialized even when no navigator has mounted', async () => {
-      render(<App />);
+      await render(<App />);
 
       await waitFor(() => {
         expect(mockHideAsync).toHaveBeenCalled();

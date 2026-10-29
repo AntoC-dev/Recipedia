@@ -12,8 +12,8 @@ jest.mock('@components/organisms/RecipeTags', () => ({
 }));
 
 describe('RecipeTagsField', () => {
-  test('passes tags array to RecipeTags', () => {
-    const { getByTestId } = renderWithForm(
+  test('passes tags array to RecipeTags', async () => {
+    const { getByTestId } = await renderWithForm(
       RecipeTagsField,
       form => ({
         form,
@@ -28,9 +28,9 @@ describe('RecipeTagsField', () => {
     expect(JSON.parse(getByTestId('RecipeTags::TagsList').props.children)).toEqual(['breakfast']);
   });
 
-  test('addTag callback is forwarded', () => {
+  test('addTag callback is forwarded', async () => {
     const addTag = jest.fn();
-    const { getByTestId } = renderWithForm(RecipeTagsField, f => ({
+    const { getByTestId } = await renderWithForm(RecipeTagsField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
       randomTags: [],
@@ -38,12 +38,12 @@ describe('RecipeTagsField', () => {
       removeTag: jest.fn(),
       openModalForField: jest.fn(),
     }));
-    fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
+    await fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
     expect(addTag).toHaveBeenCalledWith('mockTag');
   });
 
-  test('falls back to [] when form value is undefined', () => {
-    const { getByTestId, form } = renderWithForm(RecipeTagsField, (f: Form) => ({
+  test('falls back to [] when form value is undefined', async () => {
+    const { getByTestId, form } = await renderWithForm(RecipeTagsField, (f: Form) => ({
       form: f,
       stackMode: recipeStateType.edit,
       randomTags: [],
@@ -51,7 +51,7 @@ describe('RecipeTagsField', () => {
       removeTag: jest.fn(),
       openModalForField: jest.fn(),
     }));
-    act(() => {
+    await act(() => {
       form.setValue('recipeTags', undefined as never);
     });
     expect(JSON.parse(getByTestId('RecipeTags::TagsList').props.children)).toEqual([]);

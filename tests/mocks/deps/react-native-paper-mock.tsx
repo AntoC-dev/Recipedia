@@ -217,6 +217,21 @@ export const Chip: React.FC<any> = props => (
   <TouchableOpacity testID={props.testID} onPress={props.onPress} style={props.style}>
     <RNText testID={props.testID + '::Selected'}>{String(props.selected)}</RNText>
     <RNText testID={props.testID + '::Children'}>{props.children}</RNText>
+    {props.closeIcon && <RNText testID={props.testID + '::CloseIcon'}>{props.closeIcon}</RNText>}
+    {props.onClose && (
+      <Button testID={props.testID + '::OnClose'} onPress={props.onClose}>
+        Close
+      </Button>
+    )}
+    {props.icon && (
+      <View testID={props.testID + '::Icon'}>
+        {typeof props.icon === 'function' ? (
+          props.icon({ size: 24 })
+        ) : (
+          <RNText>{props.icon}</RNText>
+        )}
+      </View>
+    )}
   </TouchableOpacity>
 );
 
@@ -516,8 +531,8 @@ export const List = {
 };
 
 export const ActivityIndicator: React.FC<any> = props => (
-  <View testID={props.testID}>
-    <RNText testID={props.testID + '::Size'}>{props.size}</RNText>
+  <View testID={props.testID || 'activity-indicator'}>
+    <RNText testID={(props.testID || 'activity-indicator') + '::Size'}>{props.size}</RNText>
   </View>
 );
 
@@ -679,7 +694,7 @@ AppbarBackAction.displayName = 'Appbar.BackAction';
 Appbar.BackAction = AppbarBackAction;
 
 export const Surface: React.FC<any> = props => (
-  <View testID={props.testID} style={props.style}>
+  <View testID={props.testID || 'surface'} style={props.style}>
     {props.children}
   </View>
 );

@@ -14,36 +14,36 @@ describe('SelectAllRow', () => {
     jest.clearAllMocks();
   });
 
-  test('renders checkbox with testID', () => {
-    const { getByTestId } = render(<SelectAllRow {...defaultProps} />);
+  test('renders checkbox with testID', async () => {
+    const { getByTestId } = await render(<SelectAllRow {...defaultProps} />);
 
     expect(getByTestId('test-select-all::SelectAllCheckbox')).toBeTruthy();
   });
 
-  test('renders select all text', () => {
-    const { getByText } = render(<SelectAllRow {...defaultProps} />);
+  test('renders select all text', async () => {
+    const { getByText } = await render(<SelectAllRow {...defaultProps} />);
 
     expect(getByText('bulkImport.selection.selectAllExplanation')).toBeTruthy();
   });
 
-  test('shows unchecked status when nothing selected', () => {
-    const { getByTestId } = render(<SelectAllRow {...defaultProps} />);
+  test('shows unchecked status when nothing selected', async () => {
+    const { getByTestId } = await render(<SelectAllRow {...defaultProps} />);
 
     expect(getByTestId('test-select-all::SelectAllCheckbox::Status').props.children).toBe(
       'unchecked'
     );
   });
 
-  test('shows indeterminate status when some selected', () => {
-    const { getByTestId } = render(<SelectAllRow {...defaultProps} selectedCount={3} />);
+  test('shows indeterminate status when some selected', async () => {
+    const { getByTestId } = await render(<SelectAllRow {...defaultProps} selectedCount={3} />);
 
     expect(getByTestId('test-select-all::SelectAllCheckbox::Status').props.children).toBe(
       'indeterminate'
     );
   });
 
-  test('shows checked status when all selected', () => {
-    const { getByTestId } = render(
+  test('shows checked status when all selected', async () => {
+    const { getByTestId } = await render(
       <SelectAllRow {...defaultProps} allSelected={true} selectedCount={5} />
     );
 
@@ -52,20 +52,20 @@ describe('SelectAllRow', () => {
     );
   });
 
-  test('calls onToggle when checkbox pressed', () => {
+  test('calls onToggle when checkbox pressed', async () => {
     const onToggle = jest.fn();
-    const { getByTestId } = render(<SelectAllRow {...defaultProps} onToggle={onToggle} />);
+    const { getByTestId } = await render(<SelectAllRow {...defaultProps} onToggle={onToggle} />);
 
-    fireEvent.press(getByTestId('test-select-all::SelectAllCheckbox'));
+    await fireEvent.press(getByTestId('test-select-all::SelectAllCheckbox'));
 
     expect(onToggle).toHaveBeenCalledTimes(1);
   });
 
-  test('calls onToggle when text pressed', () => {
+  test('calls onToggle when text pressed', async () => {
     const onToggle = jest.fn();
-    const { getByText } = render(<SelectAllRow {...defaultProps} onToggle={onToggle} />);
+    const { getByText } = await render(<SelectAllRow {...defaultProps} onToggle={onToggle} />);
 
-    fireEvent.press(getByText('bulkImport.selection.selectAllExplanation'));
+    await fireEvent.press(getByText('bulkImport.selection.selectAllExplanation'));
 
     expect(onToggle).toHaveBeenCalledTimes(1);
   });

@@ -354,7 +354,7 @@ describe('RecipeScraper', () => {
 
   describe('usePythonReady hook', () => {
     it('returns true on web platform', async () => {
-      const { result } = renderHook(() => usePythonReady());
+      const { result } = await renderHook(() => usePythonReady());
 
       await waitFor(() => {
         expect(result.current).toBe(true);
@@ -362,9 +362,14 @@ describe('RecipeScraper', () => {
     });
 
     it('initially returns false then becomes true', async () => {
-      const { result } = renderHook(() => usePythonReady());
+      const renderedReadiness: boolean[] = [];
+      const { result } = await renderHook(() => {
+        const isReady = usePythonReady();
+        renderedReadiness.push(isReady);
+        return isReady;
+      });
 
-      expect(result.current).toBe(false);
+      expect(renderedReadiness[0]).toBe(false);
 
       await waitFor(() => {
         expect(result.current).toBe(true);
@@ -376,7 +381,7 @@ describe('RecipeScraper', () => {
         .spyOn(recipeScraper, 'whenReady')
         .mockRejectedValue(new Error('init failed'));
 
-      const { result } = renderHook(() => usePythonReady());
+      const { result } = await renderHook(() => usePythonReady());
 
       await waitFor(() => {
         expect(recipeScraper.whenReady).toHaveBeenCalled();
@@ -392,8 +397,8 @@ describe('RecipeScraper', () => {
         .spyOn(recipeScraper, 'whenReady')
         .mockReturnValue(new Promise<void>(resolve => (resolveReady = resolve)));
 
-      const { result, unmount } = renderHook(() => usePythonReady());
-      unmount();
+      const { result, unmount } = await renderHook(() => usePythonReady());
+      await unmount();
       await act(async () => {
         resolveReady();
         await Promise.resolve();
@@ -409,8 +414,8 @@ describe('RecipeScraper', () => {
         .spyOn(recipeScraper, 'whenReady')
         .mockReturnValue(new Promise<void>((_, reject) => (rejectReady = reject)));
 
-      const { result, unmount } = renderHook(() => usePythonReady());
-      unmount();
+      const { result, unmount } = await renderHook(() => usePythonReady());
+      await unmount();
       await act(async () => {
         rejectReady(new Error('late failure'));
         await Promise.resolve();

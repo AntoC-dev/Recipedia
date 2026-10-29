@@ -45,14 +45,14 @@ describe('useRecipes', () => {
     await database.closeAndReset();
   });
 
-  test('exposes the reactive recipes array and an undefined scaling progress', () => {
-    const { result } = renderHook(() => useRecipes());
+  test('exposes the reactive recipes array and an undefined scaling progress', async () => {
+    const { result } = await renderHook(() => useRecipes());
     expect(result.current.recipes).toEqual([]);
     expect(result.current.scalingProgress).toBeUndefined();
   });
 
   test('addRecipe inserts a recipe into the database', async () => {
-    const { result } = renderHook(() => useRecipes());
+    const { result } = await renderHook(() => useRecipes());
 
     await act(async () => {
       await result.current.addRecipe(makeRecipe({ title: 'Added' }));
@@ -64,7 +64,7 @@ describe('useRecipes', () => {
   });
 
   test('addMultipleRecipes inserts every recipe', async () => {
-    const { result } = renderHook(() => useRecipes());
+    const { result } = await renderHook(() => useRecipes());
 
     await act(async () => {
       await result.current.addMultipleRecipes([
@@ -82,7 +82,7 @@ describe('useRecipes', () => {
 
   test('deleteRecipe removes the recipe', async () => {
     await database.addRecipe(makeRecipe());
-    const { result } = renderHook(() => useRecipes());
+    const { result } = await renderHook(() => useRecipes());
 
     await act(async () => {
       await result.current.deleteRecipe(database.get_recipes()[0]!);
@@ -95,7 +95,7 @@ describe('useRecipes', () => {
 
   test('findSimilarRecipes returns recipes matching the given draft', async () => {
     await database.addRecipe(makeRecipe());
-    const { result } = renderHook(() => useRecipes());
+    const { result } = await renderHook(() => useRecipes());
 
     const similar = result.current.findSimilarRecipes(makeRecipe());
     expect(similar.map(r => r.title)).toContain('Pasta Primavera');
@@ -105,7 +105,7 @@ describe('useRecipes', () => {
     test('updates the recipe fields', async () => {
       await database.addRecipe(makeRecipe({ title: 'Before' }));
       const stored = database.get_recipes()[0]!;
-      const { result } = renderHook(() => useRecipes());
+      const { result } = await renderHook(() => useRecipes());
 
       await act(async () => {
         await result.current.editRecipe({ ...makeRecipe({ title: 'After' }), id: stored.id });
@@ -119,7 +119,7 @@ describe('useRecipes', () => {
     test('deletes the previous image when it changed and is not temporary', async () => {
       await database.addRecipe(makeRecipe({ image_Source: 'perm://old.jpg' }));
       const stored = database.get_recipes()[0]!;
-      const { result } = renderHook(() => useRecipes());
+      const { result } = await renderHook(() => useRecipes());
 
       await act(async () => {
         await result.current.editRecipe({
@@ -134,7 +134,7 @@ describe('useRecipes', () => {
     test('keeps the old image when the image is unchanged', async () => {
       await database.addRecipe(makeRecipe({ image_Source: 'perm://same.jpg' }));
       const stored = database.get_recipes()[0]!;
-      const { result } = renderHook(() => useRecipes());
+      const { result } = await renderHook(() => useRecipes());
 
       await act(async () => {
         await result.current.editRecipe({
@@ -147,7 +147,7 @@ describe('useRecipes', () => {
     });
 
     test('deletes no image when the edited recipe is absent from the current list', async () => {
-      const { result } = renderHook(() => useRecipes());
+      const { result } = await renderHook(() => useRecipes());
 
       await act(async () => {
         await result.current.editRecipe({
@@ -162,7 +162,7 @@ describe('useRecipes', () => {
     test('keeps the old image when the previous image is temporary', async () => {
       await database.addRecipe(makeRecipe({ image_Source: 'perm://old.jpg' }));
       const stored = database.get_recipes()[0]!;
-      const { result } = renderHook(() => useRecipes());
+      const { result } = await renderHook(() => useRecipes());
 
       isTemporaryImageUriMock.mockReturnValueOnce(true);
       await act(async () => {
@@ -179,7 +179,7 @@ describe('useRecipes', () => {
   describe('scaleAllRecipesForNewDefaultPersons', () => {
     test('rescales recipes whose serving count differs from the new default', async () => {
       await database.addRecipe(makeRecipe({ persons: 2 }));
-      const { result } = renderHook(() => useRecipes());
+      const { result } = await renderHook(() => useRecipes());
 
       await act(async () => {
         await result.current.scaleAllRecipesForNewDefaultPersons(4);
@@ -196,7 +196,7 @@ describe('useRecipes', () => {
         makeRecipe({ title: 'A', persons: 2 }),
         makeRecipe({ title: 'B', persons: 3 }),
       ]);
-      const { result } = renderHook(() => useRecipes());
+      const { result } = await renderHook(() => useRecipes());
 
       await act(async () => {
         await result.current.scaleAllRecipesForNewDefaultPersons(5);
@@ -210,7 +210,7 @@ describe('useRecipes', () => {
 
     test('does nothing when no recipe needs rescaling', async () => {
       await database.addRecipe(makeRecipe({ persons: 4 }));
-      const { result } = renderHook(() => useRecipes());
+      const { result } = await renderHook(() => useRecipes());
 
       const before = result.current.recipes[0];
       await act(async () => {
@@ -226,7 +226,7 @@ describe('useRecipes', () => {
       const spy = jest
         .spyOn(database, 'scaleAndUpdateRecipe')
         .mockRejectedValue(new Error('scale failed'));
-      const { result } = renderHook(() => useRecipes());
+      const { result } = await renderHook(() => useRecipes());
 
       await act(async () => {
         await result.current.scaleAllRecipesForNewDefaultPersons(6);

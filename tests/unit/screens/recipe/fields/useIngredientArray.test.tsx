@@ -109,27 +109,27 @@ beforeEach(() => {
 
 describe('useIngredientArray', () => {
   describe('initial state', () => {
-    test('rowCount reflects the number of initial ingredients', () => {
+    test('rowCount reflects the number of initial ingredients', async () => {
       const { wrapper } = createTestWrapper({ recipeIngredients: [flour, sugar] });
-      const { result } = renderHook(useTestHook, { wrapper });
+      const { result } = await renderHook(useTestHook, { wrapper });
 
       expect(result.current.rowCount).toBe(2);
     });
 
-    test('fieldArray.fields is empty when no initial ingredients', () => {
+    test('fieldArray.fields is empty when no initial ingredients', async () => {
       const { wrapper } = createTestWrapper({ recipeIngredients: [] });
-      const { result } = renderHook(useTestHook, { wrapper });
+      const { result } = await renderHook(useTestHook, { wrapper });
 
       expect(result.current.fieldArray.fields).toHaveLength(0);
     });
   });
 
   describe('handleAddIngredient', () => {
-    test('appends an empty row', () => {
+    test('appends an empty row', async () => {
       const { wrapper, formRef } = createTestWrapper({ recipeIngredients: [] });
-      const { result } = renderHook(useTestHook, { wrapper });
+      const { result } = await renderHook(useTestHook, { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.handleAddIngredient();
       });
 
@@ -137,11 +137,11 @@ describe('useIngredientArray', () => {
       expect(formRef.current!.getValues('recipeIngredients')![0]!.name).toBe('');
     });
 
-    test('increments rowCount by one', () => {
+    test('increments rowCount by one', async () => {
       const { wrapper } = createTestWrapper({ recipeIngredients: [flour] });
-      const { result } = renderHook(useTestHook, { wrapper });
+      const { result } = await renderHook(useTestHook, { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.handleAddIngredient();
       });
 
@@ -150,11 +150,11 @@ describe('useIngredientArray', () => {
   });
 
   describe('handleRemoveIngredient', () => {
-    test('removes the row at the given index', () => {
+    test('removes the row at the given index', async () => {
       const { wrapper, formRef } = createTestWrapper({ recipeIngredients: [flour, sugar] });
-      const { result } = renderHook(useTestHook, { wrapper });
+      const { result } = await renderHook(useTestHook, { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.handleRemoveIngredient(0);
       });
 
@@ -162,22 +162,22 @@ describe('useIngredientArray', () => {
       expect(formRef.current!.getValues('recipeIngredients')![0]!.name).toBe('Sugar');
     });
 
-    test('removing the last row leaves an empty array', () => {
+    test('removing the last row leaves an empty array', async () => {
       const { wrapper, formRef } = createTestWrapper({ recipeIngredients: [flour] });
-      const { result } = renderHook(useTestHook, { wrapper });
+      const { result } = await renderHook(useTestHook, { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.handleRemoveIngredient(0);
       });
 
       expect(formRef.current!.getValues('recipeIngredients')).toHaveLength(0);
     });
 
-    test('removes the row at the last index when multiple exist', () => {
+    test('removes the row at the last index when multiple exist', async () => {
       const { wrapper, formRef } = createTestWrapper({ recipeIngredients: [flour, sugar] });
-      const { result } = renderHook(useTestHook, { wrapper });
+      const { result } = await renderHook(useTestHook, { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.handleRemoveIngredient(1);
       });
 
@@ -187,11 +187,11 @@ describe('useIngredientArray', () => {
   });
 
   describe('system patches via IngredientArrayActionsContext do not mark rows dirty', () => {
-    test('append patch does not dirty the form', () => {
+    test('append patch does not dirty the form', async () => {
       const { wrapper } = createTestWrapper({ recipeIngredients: [] });
-      const { result } = renderHook(useTestHookWithDirtyState, { wrapper });
+      const { result } = await renderHook(useTestHookWithDirtyState, { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.actions.applyPatch({
           kind: 'append',
           row: { name: 'Carrot', quantity: '' } as never,
@@ -202,11 +202,11 @@ describe('useIngredientArray', () => {
       expect(result.current.dirtyFields.recipeIngredients).toBeUndefined();
     });
 
-    test('replace patch does not dirty the form', () => {
+    test('replace patch does not dirty the form', async () => {
       const { wrapper } = createTestWrapper({ recipeIngredients: [flour] });
-      const { result } = renderHook(useTestHookWithDirtyState, { wrapper });
+      const { result } = await renderHook(useTestHookWithDirtyState, { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.actions.applyPatch({
           kind: 'replace',
           index: 0,
@@ -217,22 +217,22 @@ describe('useIngredientArray', () => {
       expect(result.current.isDirty).toBe(false);
     });
 
-    test('remove patch does not dirty the form', () => {
+    test('remove patch does not dirty the form', async () => {
       const { wrapper } = createTestWrapper({ recipeIngredients: [flour, sugar] });
-      const { result } = renderHook(useTestHookWithDirtyState, { wrapper });
+      const { result } = await renderHook(useTestHookWithDirtyState, { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.actions.applyPatch({ kind: 'remove', index: 1 });
       });
 
       expect(result.current.isDirty).toBe(false);
     });
 
-    test('merge patch does not dirty the form', () => {
+    test('merge patch does not dirty the form', async () => {
       const { wrapper } = createTestWrapper({ recipeIngredients: [flour, sugar] });
-      const { result } = renderHook(useTestHookWithDirtyState, { wrapper });
+      const { result } = await renderHook(useTestHookWithDirtyState, { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.actions.applyPatch({
           kind: 'merge',
           intoIndex: 0,
@@ -246,12 +246,12 @@ describe('useIngredientArray', () => {
   });
 
   describe('applyEditPatch via IngredientArrayActionsContext', () => {
-    test('replace patch updates the row at the given index without touching sibling rows', () => {
+    test('replace patch updates the row at the given index without touching sibling rows', async () => {
       const { wrapper, formRef } = createTestWrapper({ recipeIngredients: [flour, sugar] });
-      const { result } = renderHook(useTestHookWithActions, { wrapper });
+      const { result } = await renderHook(useTestHookWithActions, { wrapper });
 
       const updatedRow = { ...flour, quantity: '500' };
-      act(() => {
+      await act(() => {
         result.current.actions.applyPatch({ kind: 'replace', index: 0, row: updatedRow as never });
       });
 
@@ -259,12 +259,12 @@ describe('useIngredientArray', () => {
       expect(formRef.current!.getValues('recipeIngredients')![1]!.name).toBe('Sugar');
     });
 
-    test('merge patch collapses two rows and decrements the count by one', () => {
+    test('merge patch collapses two rows and decrements the count by one', async () => {
       const { wrapper, formRef } = createTestWrapper({ recipeIngredients: [flour, sugar] });
-      const { result } = renderHook(useTestHookWithActions, { wrapper });
+      const { result } = await renderHook(useTestHookWithActions, { wrapper });
 
       const mergedRow = { ...flour, quantity: '300' };
-      act(() => {
+      await act(() => {
         result.current.actions.applyPatch({
           kind: 'merge',
           intoIndex: 0,
@@ -277,11 +277,11 @@ describe('useIngredientArray', () => {
       expect(formRef.current!.getValues('recipeIngredients')![0]!.quantity).toBe('300');
     });
 
-    test('remove patch removes exactly the specified row', () => {
+    test('remove patch removes exactly the specified row', async () => {
       const { wrapper, formRef } = createTestWrapper({ recipeIngredients: [flour, sugar] });
-      const { result } = renderHook(useTestHookWithActions, { wrapper });
+      const { result } = await renderHook(useTestHookWithActions, { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.actions.applyPatch({ kind: 'remove', index: 0 });
       });
 
@@ -289,12 +289,12 @@ describe('useIngredientArray', () => {
       expect(formRef.current!.getValues('recipeIngredients')![0]!.name).toBe('Sugar');
     });
 
-    test('append patch adds a new row at the end of the array', () => {
+    test('append patch adds a new row at the end of the array', async () => {
       const { wrapper, formRef } = createTestWrapper({ recipeIngredients: [flour] });
-      const { result } = renderHook(useTestHookWithActions, { wrapper });
+      const { result } = await renderHook(useTestHookWithActions, { wrapper });
 
       const newRow = { name: 'Butter', quantity: '50', unit: 'g' };
-      act(() => {
+      await act(() => {
         result.current.actions.applyPatch({ kind: 'append', row: newRow as never });
       });
 
@@ -304,45 +304,45 @@ describe('useIngredientArray', () => {
   });
 
   describe('availableIngredients', () => {
-    test('excludes ingredient names already present in the form', () => {
+    test('excludes ingredient names already present in the form', async () => {
       setMockIngredients([flour, sugar]);
       const { wrapper } = createTestWrapper({ recipeIngredients: [flour] });
-      const { result } = renderHook(useTestHook, { wrapper });
+      const { result } = await renderHook(useTestHook, { wrapper });
 
       expect(result.current.availableIngredients).not.toContain('Flour');
       expect(result.current.availableIngredients).toContain('Sugar');
     });
 
-    test('includes all DB ingredients when the form array is empty', () => {
+    test('includes all DB ingredients when the form array is empty', async () => {
       setMockIngredients([flour, sugar]);
       const { wrapper } = createTestWrapper({ recipeIngredients: [] });
-      const { result } = renderHook(useTestHook, { wrapper });
+      const { result } = await renderHook(useTestHook, { wrapper });
 
       expect(result.current.availableIngredients).toContain('Flour');
       expect(result.current.availableIngredients).toContain('Sugar');
     });
 
-    test('returns a sorted list', () => {
+    test('returns a sorted list', async () => {
       setMockIngredients([sugar, flour]);
       const { wrapper } = createTestWrapper({ recipeIngredients: [] });
-      const { result } = renderHook(useTestHook, { wrapper });
+      const { result } = await renderHook(useTestHook, { wrapper });
 
       const names = result.current.availableIngredients;
       expect(names).toEqual([...names].sort());
     });
 
-    test('returns empty list when every DB ingredient is already in the form', () => {
+    test('returns empty list when every DB ingredient is already in the form', async () => {
       setMockIngredients([flour, sugar]);
       const { wrapper } = createTestWrapper({ recipeIngredients: [flour, sugar] });
-      const { result } = renderHook(useTestHook, { wrapper });
+      const { result } = await renderHook(useTestHook, { wrapper });
 
       expect(result.current.availableIngredients).toHaveLength(0);
     });
 
-    test('returns empty list when the DB has no ingredients', () => {
+    test('returns empty list when the DB has no ingredients', async () => {
       setMockIngredients([]);
       const { wrapper } = createTestWrapper({ recipeIngredients: [] });
-      const { result } = renderHook(useTestHook, { wrapper });
+      const { result } = await renderHook(useTestHook, { wrapper });
 
       expect(result.current.availableIngredients).toHaveLength(0);
     });

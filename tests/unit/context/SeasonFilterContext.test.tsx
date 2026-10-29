@@ -30,7 +30,7 @@ describe('SeasonFilterContext', () => {
   };
 
   test('provides default filter value of true', async () => {
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <SeasonFilterProvider>
         <TestComponent />
       </SeasonFilterProvider>
@@ -44,7 +44,7 @@ describe('SeasonFilterContext', () => {
   test('loads filter value from settings', async () => {
     mockGetSeasonFilter.mockResolvedValue(false);
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <SeasonFilterProvider>
         <TestComponent />
       </SeasonFilterProvider>
@@ -58,7 +58,7 @@ describe('SeasonFilterContext', () => {
   test('toggles filter value when setSeasonFilter called', async () => {
     mockGetSeasonFilter.mockResolvedValue(true);
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <SeasonFilterProvider>
         <TestComponent />
       </SeasonFilterProvider>
@@ -68,7 +68,7 @@ describe('SeasonFilterContext', () => {
       expect(getByTestId('filter-value').props.children).toBe('true');
     });
 
-    fireEvent.press(getByTestId('toggle-button'));
+    await fireEvent.press(getByTestId('toggle-button'));
 
     await waitFor(() => {
       expect(getByTestId('filter-value').props.children).toBe('false');
@@ -76,10 +76,10 @@ describe('SeasonFilterContext', () => {
     expect(mockSetSeasonFilter).toHaveBeenCalledWith(false);
   });
 
-  test('throws error when used outside provider', () => {
+  test('throws error when used outside provider', async () => {
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    expect(() => render(<TestComponent />)).toThrow(
+    await expect(render(<TestComponent />)).rejects.toThrow(
       'useSeasonFilter must be used within SeasonFilterProvider'
     );
 
@@ -89,7 +89,7 @@ describe('SeasonFilterContext', () => {
   test('defaults to true when getSeasonFilter fails', async () => {
     mockGetSeasonFilter.mockRejectedValue(new Error('Storage error'));
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <SeasonFilterProvider>
         <TestComponent />
       </SeasonFilterProvider>

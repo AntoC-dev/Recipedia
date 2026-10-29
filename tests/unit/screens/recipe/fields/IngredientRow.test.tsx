@@ -57,42 +57,42 @@ function Harness({
 }
 
 describe('IngredientRowField focus counter', () => {
-  test('increments on focus and decrements on blur', () => {
+  test('increments on focus and decrements on blur', async () => {
     const countRef = { current: 0 };
-    const { getByTestId } = render(<Harness countRef={countRef} />);
+    const { getByTestId } = await render(<Harness countRef={countRef} />);
 
-    fireEvent.press(getByTestId(`${testID}::0::OnFocus`));
+    await fireEvent.press(getByTestId(`${testID}::0::OnFocus`));
     expect(countRef.current).toBe(1);
 
-    fireEvent.press(getByTestId(`${testID}::0::OnBlur`));
+    await fireEvent.press(getByTestId(`${testID}::0::OnBlur`));
     expect(countRef.current).toBe(0);
   });
 
-  test('decrements when a focused row unmounts without blurring', () => {
+  test('decrements when a focused row unmounts without blurring', async () => {
     const countRef = { current: 0 };
-    const { getByTestId, unmount } = render(<Harness countRef={countRef} />);
+    const { getByTestId, unmount } = await render(<Harness countRef={countRef} />);
 
-    fireEvent.press(getByTestId(`${testID}::0::OnFocus`));
+    await fireEvent.press(getByTestId(`${testID}::0::OnFocus`));
     expect(countRef.current).toBe(1);
 
-    unmount();
+    await unmount();
     expect(countRef.current).toBe(0);
   });
 
-  test('leaves the counter untouched when an unfocused row unmounts', () => {
+  test('leaves the counter untouched when an unfocused row unmounts', async () => {
     const countRef = { current: 2 };
-    const { unmount } = render(<Harness countRef={countRef} />);
+    const { unmount } = await render(<Harness countRef={countRef} />);
 
-    unmount();
+    await unmount();
     expect(countRef.current).toBe(2);
   });
 });
 
 describe('IngredientRowField commit resolution', () => {
-  test('routes an unchanged-name commit through editIngredients when the row is not DB-resolved', () => {
+  test('routes an unchanged-name commit through editIngredients when the row is not DB-resolved', async () => {
     const countRef = { current: 0 };
     const editIngredients = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <Harness
         countRef={countRef}
         row={{ name: 'Flour', quantity: '100', unit: 'g' }}
@@ -100,16 +100,16 @@ describe('IngredientRowField commit resolution', () => {
       />
     );
 
-    fireEvent.press(getByTestId(`${testID}::0::OnLiveNameChange`), 'Flour');
-    fireEvent.press(getByTestId(`${testID}::0::OnIngredientChange`), '100@@g--Flour');
+    await fireEvent(getByTestId(`${testID}::0::OnLiveNameChange`), 'press', 'Flour');
+    await fireEvent(getByTestId(`${testID}::0::OnIngredientChange`), 'press', '100@@g--Flour');
 
     expect(editIngredients).toHaveBeenCalledWith(0, '100@@g--Flour');
   });
 
-  test('does not route an unchanged-name commit through editIngredients when the row is DB-resolved', () => {
+  test('does not route an unchanged-name commit through editIngredients when the row is DB-resolved', async () => {
     const countRef = { current: 0 };
     const editIngredients = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <Harness
         countRef={countRef}
         row={{
@@ -123,8 +123,8 @@ describe('IngredientRowField commit resolution', () => {
       />
     );
 
-    fireEvent.press(getByTestId(`${testID}::0::OnLiveNameChange`), 'Flour');
-    fireEvent.press(getByTestId(`${testID}::0::OnIngredientChange`), '100@@g--Flour');
+    await fireEvent(getByTestId(`${testID}::0::OnLiveNameChange`), 'press', 'Flour');
+    await fireEvent(getByTestId(`${testID}::0::OnIngredientChange`), 'press', '100@@g--Flour');
 
     expect(editIngredients).not.toHaveBeenCalled();
   });

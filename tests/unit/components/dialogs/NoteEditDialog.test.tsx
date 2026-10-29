@@ -18,16 +18,16 @@ describe('NoteEditDialog', () => {
   });
 
   describe('dialog title', () => {
-    test('shows "Add Note" title when initialNote is empty', () => {
-      const { getByTestId } = render(<NoteEditDialog {...defaultProps} initialNote='' />);
+    test('shows "Add Note" title when initialNote is empty', async () => {
+      const { getByTestId } = await render(<NoteEditDialog {...defaultProps} initialNote='' />);
 
       expect(getByTestId('test::NoteDialog::Title').props.children).toBe(
         'recipe.noteDialog.addTitle'
       );
     });
 
-    test('shows "Edit Note" title when initialNote has content', () => {
-      const { getByTestId } = render(
+    test('shows "Edit Note" title when initialNote has content', async () => {
+      const { getByTestId } = await render(
         <NoteEditDialog {...defaultProps} initialNote='for the sauce' />
       );
 
@@ -36,8 +36,8 @@ describe('NoteEditDialog', () => {
       );
     });
 
-    test('shows "Add Note" when initialNote is whitespace only', () => {
-      const { getByTestId } = render(<NoteEditDialog {...defaultProps} initialNote='   ' />);
+    test('shows "Add Note" when initialNote is whitespace only', async () => {
+      const { getByTestId } = await render(<NoteEditDialog {...defaultProps} initialNote='   ' />);
 
       expect(getByTestId('test::NoteDialog::Title').props.children).toBe(
         'recipe.noteDialog.addTitle'
@@ -46,20 +46,22 @@ describe('NoteEditDialog', () => {
   });
 
   describe('rendering', () => {
-    test('renders dialog when isVisible is true', () => {
-      const { getByTestId } = render(<NoteEditDialog {...defaultProps} isVisible={true} />);
+    test('renders dialog when isVisible is true', async () => {
+      const { getByTestId } = await render(<NoteEditDialog {...defaultProps} isVisible={true} />);
 
       expect(getByTestId('test::NoteDialog::Title')).toBeTruthy();
     });
 
-    test('displays ingredient name in dialog', () => {
-      const { getByTestId } = render(<NoteEditDialog {...defaultProps} ingredientName='Butter' />);
+    test('displays ingredient name in dialog', async () => {
+      const { getByTestId } = await render(
+        <NoteEditDialog {...defaultProps} ingredientName='Butter' />
+      );
 
       expect(getByTestId('test::NoteDialog::IngredientName').props.children).toBe('Butter');
     });
 
-    test('displays initial note in input', () => {
-      const { getByTestId } = render(
+    test('displays initial note in input', async () => {
+      const { getByTestId } = await render(
         <NoteEditDialog {...defaultProps} initialNote='for the sauce' />
       );
 
@@ -68,8 +70,8 @@ describe('NoteEditDialog', () => {
       );
     });
 
-    test('displays placeholder text in input label', () => {
-      const { getByTestId } = render(
+    test('displays placeholder text in input label', async () => {
+      const { getByTestId } = await render(
         <NoteEditDialog {...defaultProps} placeholder='Custom placeholder' />
       );
 
@@ -80,63 +82,63 @@ describe('NoteEditDialog', () => {
   });
 
   describe('user interactions', () => {
-    test('calls onSave with trimmed note on save button press', () => {
+    test('calls onSave with trimmed note on save button press', async () => {
       const onSave = jest.fn();
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <NoteEditDialog {...defaultProps} onSave={onSave} initialNote='  for the sauce  ' />
       );
 
-      fireEvent.press(getByTestId('test::NoteDialog::SaveButton'));
+      await fireEvent.press(getByTestId('test::NoteDialog::SaveButton'));
 
       expect(onSave).toHaveBeenCalledWith('for the sauce');
     });
 
-    test('calls onClose on cancel button press', () => {
+    test('calls onClose on cancel button press', async () => {
       const onClose = jest.fn();
-      const { getByTestId } = render(<NoteEditDialog {...defaultProps} onClose={onClose} />);
+      const { getByTestId } = await render(<NoteEditDialog {...defaultProps} onClose={onClose} />);
 
-      fireEvent.press(getByTestId('test::NoteDialog::CancelButton'));
+      await fireEvent.press(getByTestId('test::NoteDialog::CancelButton'));
 
       expect(onClose).toHaveBeenCalledTimes(1);
     });
 
-    test('calls onClose after saving', () => {
+    test('calls onClose after saving', async () => {
       const onClose = jest.fn();
-      const { getByTestId } = render(<NoteEditDialog {...defaultProps} onClose={onClose} />);
+      const { getByTestId } = await render(<NoteEditDialog {...defaultProps} onClose={onClose} />);
 
-      fireEvent.press(getByTestId('test::NoteDialog::SaveButton'));
+      await fireEvent.press(getByTestId('test::NoteDialog::SaveButton'));
 
       expect(onClose).toHaveBeenCalledTimes(1);
     });
 
-    test('handles save with empty note', () => {
+    test('handles save with empty note', async () => {
       const onSave = jest.fn();
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <NoteEditDialog {...defaultProps} onSave={onSave} initialNote='' />
       );
 
-      fireEvent.press(getByTestId('test::NoteDialog::SaveButton'));
+      await fireEvent.press(getByTestId('test::NoteDialog::SaveButton'));
 
       expect(onSave).toHaveBeenCalledWith('');
     });
 
-    test('trims whitespace before saving', () => {
+    test('trims whitespace before saving', async () => {
       const onSave = jest.fn();
-      const { getByTestId } = render(<NoteEditDialog {...defaultProps} onSave={onSave} />);
+      const { getByTestId } = await render(<NoteEditDialog {...defaultProps} onSave={onSave} />);
 
-      fireEvent.changeText(
+      await fireEvent.changeText(
         getByTestId('test::NoteDialog::Input::CustomTextInput'),
         '  trimmed note  '
       );
-      fireEvent.press(getByTestId('test::NoteDialog::SaveButton'));
+      await fireEvent.press(getByTestId('test::NoteDialog::SaveButton'));
 
       expect(onSave).toHaveBeenCalledWith('trimmed note');
     });
 
-    test('updates note text on input change', () => {
-      const { getByTestId } = render(<NoteEditDialog {...defaultProps} />);
+    test('updates note text on input change', async () => {
+      const { getByTestId } = await render(<NoteEditDialog {...defaultProps} />);
 
-      fireEvent.changeText(
+      await fireEvent.changeText(
         getByTestId('test::NoteDialog::Input::CustomTextInput'),
         'new note value'
       );
@@ -149,11 +151,11 @@ describe('NoteEditDialog', () => {
 
   describe('state management', () => {
     test('resets note state when dialog becomes visible', async () => {
-      const { getByTestId, rerender } = render(
+      const { getByTestId, rerender } = await render(
         <NoteEditDialog {...defaultProps} isVisible={false} initialNote='initial' />
       );
 
-      rerender(<NoteEditDialog {...defaultProps} isVisible={true} initialNote='initial' />);
+      await rerender(<NoteEditDialog {...defaultProps} isVisible={true} initialNote='initial' />);
 
       await waitFor(() => {
         expect(getByTestId('test::NoteDialog::Input::CustomTextInput').props.value).toBe('initial');
@@ -161,14 +163,17 @@ describe('NoteEditDialog', () => {
     });
 
     test('resets to new initialNote when dialog reopens with different value', async () => {
-      const { getByTestId, rerender } = render(
+      const { getByTestId, rerender } = await render(
         <NoteEditDialog {...defaultProps} isVisible={true} initialNote='first' />
       );
 
-      fireEvent.changeText(getByTestId('test::NoteDialog::Input::CustomTextInput'), 'modified');
+      await fireEvent.changeText(
+        getByTestId('test::NoteDialog::Input::CustomTextInput'),
+        'modified'
+      );
 
-      rerender(<NoteEditDialog {...defaultProps} isVisible={false} initialNote='first' />);
-      rerender(<NoteEditDialog {...defaultProps} isVisible={true} initialNote='second' />);
+      await rerender(<NoteEditDialog {...defaultProps} isVisible={false} initialNote='first' />);
+      await rerender(<NoteEditDialog {...defaultProps} isVisible={true} initialNote='second' />);
 
       await waitFor(() => {
         expect(getByTestId('test::NoteDialog::Input::CustomTextInput').props.value).toBe('second');
@@ -177,46 +182,46 @@ describe('NoteEditDialog', () => {
   });
 
   describe('edge cases', () => {
-    test('handles very long note', () => {
+    test('handles very long note', async () => {
       const longNote = 'a'.repeat(500);
       const onSave = jest.fn();
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <NoteEditDialog {...defaultProps} onSave={onSave} initialNote={longNote} />
       );
 
-      fireEvent.press(getByTestId('test::NoteDialog::SaveButton'));
+      await fireEvent.press(getByTestId('test::NoteDialog::SaveButton'));
 
       expect(onSave).toHaveBeenCalledWith(longNote);
     });
 
-    test('handles note with special characters', () => {
+    test('handles note with special characters', async () => {
       const onSave = jest.fn();
-      const { getByTestId } = render(<NoteEditDialog {...defaultProps} onSave={onSave} />);
+      const { getByTestId } = await render(<NoteEditDialog {...defaultProps} onSave={onSave} />);
 
-      fireEvent.changeText(
+      await fireEvent.changeText(
         getByTestId('test::NoteDialog::Input::CustomTextInput'),
         'for the "special" sauce (organic)'
       );
-      fireEvent.press(getByTestId('test::NoteDialog::SaveButton'));
+      await fireEvent.press(getByTestId('test::NoteDialog::SaveButton'));
 
       expect(onSave).toHaveBeenCalledWith('for the "special" sauce (organic)');
     });
 
-    test('handles note with unicode characters', () => {
+    test('handles note with unicode characters', async () => {
       const onSave = jest.fn();
-      const { getByTestId } = render(<NoteEditDialog {...defaultProps} onSave={onSave} />);
+      const { getByTestId } = await render(<NoteEditDialog {...defaultProps} onSave={onSave} />);
 
-      fireEvent.changeText(
+      await fireEvent.changeText(
         getByTestId('test::NoteDialog::Input::CustomTextInput'),
         '🌶️ spicy à volonté'
       );
-      fireEvent.press(getByTestId('test::NoteDialog::SaveButton'));
+      await fireEvent.press(getByTestId('test::NoteDialog::SaveButton'));
 
       expect(onSave).toHaveBeenCalledWith('🌶️ spicy à volonté');
     });
 
-    test('handles empty ingredient name', () => {
-      const { getByTestId } = render(<NoteEditDialog {...defaultProps} ingredientName='' />);
+    test('handles empty ingredient name', async () => {
+      const { getByTestId } = await render(<NoteEditDialog {...defaultProps} ingredientName='' />);
 
       expect(getByTestId('test::NoteDialog::IngredientName').props.children).toBe('');
     });

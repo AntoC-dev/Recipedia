@@ -28,83 +28,83 @@ describe('useRandomTagSuggestions', () => {
     jest.restoreAllMocks();
   });
 
-  test('reads from DB on first call and exposes the resolved names', () => {
+  test('reads from DB on first call and exposes the resolved names', async () => {
     mockSearchRandomlyTags.mockReturnValueOnce([
       makeTag(1, 'Italian'),
       makeTag(2, 'Dessert'),
       makeTag(3, 'Quick'),
     ]);
 
-    const { result } = renderHook(() => useRandomTagSuggestions());
+    const { result } = await renderHook(() => useRandomTagSuggestions());
 
     expect(mockSearchRandomlyTags).toHaveBeenCalledTimes(1);
     expect(mockSearchRandomlyTags).toHaveBeenCalledWith(3);
     expect(result.current).toEqual(['Italian', 'Dessert', 'Quick']);
   });
 
-  test('reuses the cached names on the next call within the TTL window', () => {
+  test('reuses the cached names on the next call within the TTL window', async () => {
     mockSearchRandomlyTags.mockReturnValueOnce([makeTag(1, 'Italian'), makeTag(2, 'Dessert')]);
 
-    const first = renderHook(() => useRandomTagSuggestions());
+    const first = await renderHook(() => useRandomTagSuggestions());
     expect(first.result.current).toEqual(['Italian', 'Dessert']);
     expect(mockSearchRandomlyTags).toHaveBeenCalledTimes(1);
 
     (Date.now as jest.Mock).mockReturnValue(1_000_000 + RANDOM_TAG_SUGGESTIONS_TTL_MS - 1);
     mockSearchRandomlyTags.mockReturnValueOnce([makeTag(9, 'Different')]);
 
-    const second = renderHook(() => useRandomTagSuggestions());
+    const second = await renderHook(() => useRandomTagSuggestions());
     expect(second.result.current).toEqual(['Italian', 'Dessert']);
     expect(mockSearchRandomlyTags).toHaveBeenCalledTimes(1);
   });
 
-  test('refetches from DB after the TTL window elapses', () => {
+  test('refetches from DB after the TTL window elapses', async () => {
     mockSearchRandomlyTags.mockReturnValueOnce([makeTag(1, 'Italian'), makeTag(2, 'Dessert')]);
 
-    const first = renderHook(() => useRandomTagSuggestions());
+    const first = await renderHook(() => useRandomTagSuggestions());
     expect(first.result.current).toEqual(['Italian', 'Dessert']);
     expect(mockSearchRandomlyTags).toHaveBeenCalledTimes(1);
 
     (Date.now as jest.Mock).mockReturnValue(1_000_000 + RANDOM_TAG_SUGGESTIONS_TTL_MS + 1);
     mockSearchRandomlyTags.mockReturnValueOnce([makeTag(9, 'Fresh'), makeTag(10, 'Pick')]);
 
-    const second = renderHook(() => useRandomTagSuggestions());
+    const second = await renderHook(() => useRandomTagSuggestions());
     expect(second.result.current).toEqual(['Fresh', 'Pick']);
     expect(mockSearchRandomlyTags).toHaveBeenCalledTimes(2);
   });
 
-  test('refetches when elapsed time equals exactly the TTL boundary', () => {
+  test('refetches when elapsed time equals exactly the TTL boundary', async () => {
     mockSearchRandomlyTags.mockReturnValueOnce([makeTag(1, 'Italian')]);
 
-    renderHook(() => useRandomTagSuggestions());
+    await renderHook(() => useRandomTagSuggestions());
     expect(mockSearchRandomlyTags).toHaveBeenCalledTimes(1);
 
     (Date.now as jest.Mock).mockReturnValue(1_000_000 + RANDOM_TAG_SUGGESTIONS_TTL_MS);
     mockSearchRandomlyTags.mockReturnValueOnce([makeTag(9, 'Boundary')]);
 
-    const second = renderHook(() => useRandomTagSuggestions());
+    const second = await renderHook(() => useRandomTagSuggestions());
     expect(second.result.current).toEqual(['Boundary']);
     expect(mockSearchRandomlyTags).toHaveBeenCalledTimes(2);
   });
 
-  test('returns empty array when DB yields no tags', () => {
+  test('returns empty array when DB yields no tags', async () => {
     mockSearchRandomlyTags.mockReturnValueOnce([]);
 
-    const { result } = renderHook(() => useRandomTagSuggestions());
+    const { result } = await renderHook(() => useRandomTagSuggestions());
 
     expect(mockSearchRandomlyTags).toHaveBeenCalledTimes(1);
     expect(result.current).toEqual([]);
   });
 
-  test('caches an empty result and reuses it within the TTL', () => {
+  test('caches an empty result and reuses it within the TTL', async () => {
     mockSearchRandomlyTags.mockReturnValueOnce([]);
 
-    renderHook(() => useRandomTagSuggestions());
+    await renderHook(() => useRandomTagSuggestions());
     expect(mockSearchRandomlyTags).toHaveBeenCalledTimes(1);
 
     (Date.now as jest.Mock).mockReturnValue(1_000_000 + RANDOM_TAG_SUGGESTIONS_TTL_MS - 1);
     mockSearchRandomlyTags.mockReturnValueOnce([makeTag(1, 'ShouldNotAppear')]);
 
-    const second = renderHook(() => useRandomTagSuggestions());
+    const second = await renderHook(() => useRandomTagSuggestions());
     expect(second.result.current).toEqual([]);
     expect(mockSearchRandomlyTags).toHaveBeenCalledTimes(1);
   });

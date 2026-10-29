@@ -8,36 +8,38 @@ describe('ProviderLogo', () => {
     testID: 'test-logo',
   };
 
-  test('renders image when logoUrl is provided', () => {
-    const { getByTestId, queryByTestId } = render(<ProviderLogo {...defaultProps} />);
+  test('renders image when logoUrl is provided', async () => {
+    const { getByTestId, queryByTestId } = await render(<ProviderLogo {...defaultProps} />);
 
     expect(getByTestId('test-logo::Image')).toBeTruthy();
     expect(queryByTestId('test-logo::FallbackIcon')).toBeNull();
   });
 
-  test('renders fallback icon when logoUrl is empty', () => {
-    const { getByTestId, queryByTestId } = render(<ProviderLogo logoUrl='' testID='test-logo' />);
+  test('renders fallback icon when logoUrl is empty', async () => {
+    const { getByTestId, queryByTestId } = await render(
+      <ProviderLogo logoUrl='' testID='test-logo' />
+    );
 
     expect(getByTestId('test-logo::FallbackIcon')).toBeTruthy();
     expect(queryByTestId('test-logo::Image')).toBeNull();
   });
 
-  test('renders fallback icon on image error', () => {
-    const { getByTestId, queryByTestId } = render(<ProviderLogo {...defaultProps} />);
+  test('renders fallback icon on image error', async () => {
+    const { getByTestId, queryByTestId } = await render(<ProviderLogo {...defaultProps} />);
 
-    fireEvent(getByTestId('test-logo::Image'), 'error');
+    await fireEvent(getByTestId('test-logo::Image'), 'error');
 
     expect(getByTestId('test-logo::FallbackIcon')).toBeTruthy();
   });
 
-  test('renders container with testID', () => {
-    const { getByTestId } = render(<ProviderLogo {...defaultProps} />);
+  test('renders container with testID', async () => {
+    const { getByTestId } = await render(<ProviderLogo {...defaultProps} />);
 
     expect(getByTestId('test-logo')).toBeTruthy();
   });
 
-  test('applies custom size to image', () => {
-    const { getByTestId } = render(<ProviderLogo {...defaultProps} size={60} />);
+  test('applies custom size to image', async () => {
+    const { getByTestId } = await render(<ProviderLogo {...defaultProps} size={60} />);
 
     const image = getByTestId('test-logo::Image');
     expect(image.props.style).toMatchObject({ width: 60, height: 60 });

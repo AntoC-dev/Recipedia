@@ -44,8 +44,8 @@ const sampleIngredients: ingredientTableElement[] = [
 const TEST_ID = 'RecipeIngredients';
 
 describe('RecipeIngredients (read-only)', () => {
-  it('renders each row with quantity/unit + name + optional note', () => {
-    const { getByTestId, queryByTestId } = render(
+  it('renders each row with quantity/unit + name + optional note', async () => {
+    const { getByTestId, queryByTestId } = await render(
       <RecipeIngredients testID={TEST_ID} ingredients={sampleIngredients} />
     );
 
@@ -60,8 +60,8 @@ describe('RecipeIngredients (read-only)', () => {
     expect(queryByTestId(`${TEST_ID}::0::Note`)).toBeNull();
   });
 
-  it('renders nothing when the ingredient list is empty', () => {
-    const { queryByTestId } = render(<RecipeIngredients testID={TEST_ID} ingredients={[]} />);
+  it('renders nothing when the ingredient list is empty', async () => {
+    const { queryByTestId } = await render(<RecipeIngredients testID={TEST_ID} ingredients={[]} />);
     expect(queryByTestId(`${TEST_ID}::0::Row`)).toBeNull();
   });
 });
@@ -69,9 +69,9 @@ describe('RecipeIngredients (read-only)', () => {
 describe('IngredientsTable', () => {
   const columnTitles = { column1: 'Quantity', column2: 'Unit', column3: 'Name' };
 
-  it('renders prefix, column titles, children, and add button', () => {
+  it('renders prefix, column titles, children, and add button', async () => {
     const onAddIngredient = jest.fn();
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText } = await render(
       <IngredientsTable
         testID={TEST_ID}
         prefixText='Ingredients :'
@@ -89,12 +89,12 @@ describe('IngredientsTable', () => {
     );
     expect(getByTestId(`${TEST_ID}::Header::Quantity`)).toBeTruthy();
     expect(getByText('child-marker')).toBeTruthy();
-    fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
+    await fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
     expect(onAddIngredient).toHaveBeenCalledTimes(1);
   });
 
-  it('hides add button when hideAddButton is true', () => {
-    const { queryByTestId } = render(
+  it('hides add button when hideAddButton is true', async () => {
+    const { queryByTestId } = await render(
       <IngredientsTable
         testID={TEST_ID}
         addIngredientButtonLabel='New ingredient'
@@ -109,8 +109,8 @@ describe('IngredientsTable', () => {
     expect(queryByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`)).toBeNull();
   });
 
-  it('renders an error helper when error prop is set', () => {
-    const { getByTestId } = render(
+  it('renders an error helper when error prop is set', async () => {
+    const { getByTestId } = await render(
       <IngredientsTable
         testID={TEST_ID}
         addIngredientButtonLabel='New ingredient'
@@ -135,8 +135,8 @@ describe('IngredientRow', () => {
     season: [],
   };
 
-  it('renders quantity and name inputs from the ingredient prop', () => {
-    const { getByTestId } = render(
+  it('renders quantity and name inputs from the ingredient prop', async () => {
+    const { getByTestId } = await render(
       <IngredientRow
         testID={TEST_ID}
         index={0}
@@ -154,9 +154,9 @@ describe('IngredientRow', () => {
     ).toEqual('Flour');
   });
 
-  it('commits a quantity change as a formatted ingredient string on blur', () => {
+  it('commits a quantity change as a formatted ingredient string on blur', async () => {
     const onCommit = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <IngredientRow
         testID={TEST_ID}
         index={0}
@@ -169,16 +169,16 @@ describe('IngredientRow', () => {
     );
 
     const qty = getByTestId(`${TEST_ID}::0::QuantityInput`);
-    fireEvent.changeText(qty, '300');
-    fireEvent(qty, 'blur');
+    await fireEvent.changeText(qty, '300');
+    await fireEvent(qty, 'blur');
     expect(onCommit).toHaveBeenCalledTimes(1);
     expect(onCommit.mock.calls[0][0]).toContain('Flour');
     expect(onCommit.mock.calls[0][0]).toContain('300');
   });
 
-  it('commits a name change via TextInputWithDropDown.onValidate', () => {
+  it('commits a name change via TextInputWithDropDown.onValidate', async () => {
     const onCommit = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <IngredientRow
         testID={TEST_ID}
         index={0}
@@ -190,16 +190,18 @@ describe('IngredientRow', () => {
       />
     );
 
-    fireEvent.press(getByTestId(`${TEST_ID}::0::NameInput::TextInputWithDropdown::OnValidate`));
+    await fireEvent.press(
+      getByTestId(`${TEST_ID}::0::NameInput::TextInputWithDropdown::OnValidate`)
+    );
     expect(onCommit).toHaveBeenCalled();
     const lastCall = onCommit.mock.calls[onCommit.mock.calls.length - 1][0];
     expect(lastCall).toContain('Test string');
   });
 
-  it('triggers onRemove + onOpenNote when their buttons are pressed', () => {
+  it('triggers onRemove + onOpenNote when their buttons are pressed', async () => {
     const onRemove = jest.fn();
     const onOpenNote = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <IngredientRow
         testID={TEST_ID}
         index={2}
@@ -211,13 +213,13 @@ describe('IngredientRow', () => {
       />
     );
 
-    fireEvent.press(getByTestId(`${TEST_ID}::2::DeleteButton`));
+    await fireEvent.press(getByTestId(`${TEST_ID}::2::DeleteButton`));
     expect(onRemove).toHaveBeenCalledTimes(1);
-    fireEvent.press(getByTestId(`${TEST_ID}::2::NoteButton`));
+    await fireEvent.press(getByTestId(`${TEST_ID}::2::NoteButton`));
     expect(onOpenNote).toHaveBeenCalledTimes(1);
   });
 
-  function renderRow(overrides: Partial<React.ComponentProps<typeof IngredientRow>> = {}) {
+  async function renderRow(overrides: Partial<React.ComponentProps<typeof IngredientRow>> = {}) {
     return render(
       <IngredientRow
         testID={TEST_ID}
@@ -234,8 +236,8 @@ describe('IngredientRow', () => {
 
   const nameInputMockId = `${TEST_ID}::0::NameInput::TextInputWithDropdown`;
 
-  it('orders the row cells as name, quantity, unit, note then delete', () => {
-    const { getByTestId } = renderRow();
+  it('orders the row cells as name, quantity, unit, note then delete', async () => {
+    const { getByTestId } = await renderRow();
     const expectedOrder = [
       `${nameInputMockId}::Value`,
       `${TEST_ID}::0::QuantityInput`,
@@ -245,75 +247,75 @@ describe('IngredientRow', () => {
     ];
 
     const renderedOrder = getByTestId(`${TEST_ID}::0::Row`)
-      .findAll(node => typeof node.type === 'string' && expectedOrder.includes(node.props.testID))
+      .queryAll(node => expectedOrder.includes(node.props.testID))
       .map(node => node.props.testID);
 
     expect(renderedOrder).toEqual(expectedOrder);
   });
 
-  it('forwards available ingredients to the name input', () => {
-    const { getByTestId } = renderRow();
+  it('forwards available ingredients to the name input', async () => {
+    const { getByTestId } = await renderRow();
 
     expect(getByTestId(`${nameInputMockId}::ReferenceTextArray`).props.children).toEqual(
       JSON.stringify(['Sugar', 'Butter'])
     );
   });
 
-  it('renders no name dropdown until it opens', () => {
-    const { queryByTestId } = renderRow();
+  it('renders no name dropdown until it opens', async () => {
+    const { queryByTestId } = await renderRow();
 
     expect(queryByTestId(`${nameInputMockId}::Dropdown`)).toBeNull();
   });
 
-  it('renders the name dropdown under the whole row', () => {
-    const { getByTestId } = renderRow();
+  it('renders the name dropdown under the whole row', async () => {
+    const { getByTestId } = await renderRow();
 
-    fireEvent.press(getByTestId(`${nameInputMockId}::ShowDropdown`));
+    await fireEvent.press(getByTestId(`${nameInputMockId}::ShowDropdown`));
     expect(getByTestId(`${nameInputMockId}::Dropdown`)).toBeTruthy();
     expect(
       within(getByTestId(`${TEST_ID}::0::Row`)).queryByTestId(`${nameInputMockId}::Dropdown`)
     ).toBeNull();
   });
 
-  it('forwards a picked name to onSelectName then blurs', () => {
+  it('forwards a picked name to onSelectName then blurs', async () => {
     const onSelectName = jest.fn();
     const onBlur = jest.fn();
-    const { getByTestId } = renderRow({ onSelectName, onBlur });
+    const { getByTestId } = await renderRow({ onSelectName, onBlur });
 
-    fireEvent.press(getByTestId(`${nameInputMockId}::OnSelect`));
+    await fireEvent.press(getByTestId(`${nameInputMockId}::OnSelect`));
 
     expect(onSelectName).toHaveBeenCalledWith('Test string');
     expect(onBlur).toHaveBeenCalledTimes(1);
   });
 
-  it('forwards focus and live name changes from the name input', () => {
+  it('forwards focus and live name changes from the name input', async () => {
     const onFocus = jest.fn();
     const onLiveNameChange = jest.fn();
-    const { getByTestId } = renderRow({ onFocus, onLiveNameChange });
+    const { getByTestId } = await renderRow({ onFocus, onLiveNameChange });
 
-    fireEvent.press(getByTestId(`${nameInputMockId}::OnFocus`));
-    fireEvent.press(getByTestId(`${nameInputMockId}::OnChangeText`));
+    await fireEvent.press(getByTestId(`${nameInputMockId}::OnFocus`));
+    await fireEvent.press(getByTestId(`${nameInputMockId}::OnChangeText`));
 
     expect(onFocus).toHaveBeenCalledTimes(1);
     expect(onLiveNameChange).toHaveBeenCalledWith('Test string');
   });
 
-  it('only blurs when the name input validates or selects a blank name', () => {
+  it('only blurs when the name input validates or selects a blank name', async () => {
     const onCommit = jest.fn();
     const onSelectName = jest.fn();
     const onBlur = jest.fn();
-    const { getByTestId } = renderRow({ onCommit, onSelectName, onBlur });
+    const { getByTestId } = await renderRow({ onCommit, onSelectName, onBlur });
 
-    fireEvent.press(getByTestId(`${nameInputMockId}::OnValidateBlank`));
-    fireEvent.press(getByTestId(`${nameInputMockId}::OnSelectBlank`));
+    await fireEvent.press(getByTestId(`${nameInputMockId}::OnValidateBlank`));
+    await fireEvent.press(getByTestId(`${nameInputMockId}::OnSelectBlank`));
 
     expect(onCommit).not.toHaveBeenCalled();
     expect(onSelectName).not.toHaveBeenCalled();
     expect(onBlur).toHaveBeenCalledTimes(2);
   });
 
-  it('renders the rowError helper when rowError is set', () => {
-    const { getByTestId } = render(
+  it('renders the rowError helper when rowError is set', async () => {
+    const { getByTestId } = await render(
       <IngredientRow
         testID={TEST_ID}
         index={0}
@@ -330,10 +332,10 @@ describe('IngredientRow', () => {
 });
 
 describe('IngredientsAddEmpty', () => {
-  it('renders OCR + add buttons and forwards callbacks', () => {
+  it('renders OCR + add buttons and forwards callbacks', async () => {
     const openOcrModal = jest.fn();
     const onAddIngredient = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <IngredientsAddEmpty
         testID={TEST_ID}
         prefixText='Ingredients :'
@@ -350,18 +352,18 @@ describe('IngredientsAddEmpty', () => {
     expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Label`).props.children).toEqual(
       'Add manually'
     );
-    fireEvent.press(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::OnPressFunction`));
+    await fireEvent.press(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::OnPressFunction`));
     expect(openOcrModal).toHaveBeenCalledTimes(1);
-    fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
+    await fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
     expect(onAddIngredient).toHaveBeenCalledTimes(1);
   });
 });
 
 describe('IngredientsAddTail', () => {
-  it('renders scan-quantities + add buttons and forwards callbacks', () => {
+  it('renders scan-quantities + add buttons and forwards callbacks', async () => {
     const openOcrModal = jest.fn();
     const onAddIngredient = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <IngredientsAddTail
         testID={TEST_ID}
         scanQuantitiesButtonLabel='Scan quantities'
@@ -377,9 +379,11 @@ describe('IngredientsAddTail', () => {
     expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Label`).props.children).toEqual(
       'Add manually'
     );
-    fireEvent.press(getByTestId(`${TEST_ID}::OpenModalQuantities::RoundButton::OnPressFunction`));
+    await fireEvent.press(
+      getByTestId(`${TEST_ID}::OpenModalQuantities::RoundButton::OnPressFunction`)
+    );
     expect(openOcrModal).toHaveBeenCalledTimes(1);
-    fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
+    await fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
     expect(onAddIngredient).toHaveBeenCalledTimes(1);
   });
 });

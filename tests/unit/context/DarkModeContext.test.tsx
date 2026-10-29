@@ -4,18 +4,18 @@ import { View, Text, Pressable } from 'react-native';
 import { DarkModeContext } from '@context/DarkModeContext';
 
 describe('DarkModeContext', () => {
-  test('provides default values', () => {
+  test('provides default values', async () => {
     const TestComponent = () => {
       const { isDarkMode } = useContext(DarkModeContext);
       return <Text testID='dark-mode-value'>{String(isDarkMode)}</Text>;
     };
 
-    const { getByTestId } = render(<TestComponent />);
+    const { getByTestId } = await render(<TestComponent />);
 
     expect(getByTestId('dark-mode-value').props.children).toBe('false');
   });
 
-  test('provides toggleDarkMode function', () => {
+  test('provides toggleDarkMode function', async () => {
     const TestComponent = () => {
       const { toggleDarkMode } = useContext(DarkModeContext);
       return (
@@ -25,12 +25,12 @@ describe('DarkModeContext', () => {
       );
     };
 
-    const { getByTestId } = render(<TestComponent />);
+    const { getByTestId } = await render(<TestComponent />);
 
-    expect(() => fireEvent.press(getByTestId('toggle-button'))).not.toThrow();
+    await fireEvent.press(getByTestId('toggle-button'));
   });
 
-  test('custom provider overrides default values', () => {
+  test('custom provider overrides default values', async () => {
     const mockToggle = jest.fn();
     const TestComponent = () => {
       const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
@@ -44,7 +44,7 @@ describe('DarkModeContext', () => {
       );
     };
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <DarkModeContext.Provider value={{ isDarkMode: true, toggleDarkMode: mockToggle }}>
         <TestComponent />
       </DarkModeContext.Provider>
@@ -52,7 +52,7 @@ describe('DarkModeContext', () => {
 
     expect(getByTestId('dark-mode-value').props.children).toBe('true');
 
-    fireEvent.press(getByTestId('toggle-button'));
+    await fireEvent.press(getByTestId('toggle-button'));
     expect(mockToggle).toHaveBeenCalledTimes(1);
   });
 });

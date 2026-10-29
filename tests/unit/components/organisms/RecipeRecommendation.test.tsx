@@ -20,7 +20,7 @@ describe('RecipeRecommendation Component', () => {
     carouselProps: mockRecipes,
   };
 
-  const renderRecipeRecommendation = (
+  const renderRecipeRecommendation = async (
     propForComponent: RecipeRecommendationProps = defaultProps
   ) => {
     return render(<RecipeRecommendation {...propForComponent} />);
@@ -45,15 +45,15 @@ describe('RecipeRecommendation Component', () => {
     }
   };
 
-  test('renders with correct structure and default configuration', () => {
-    const { getByTestId } = renderRecipeRecommendation();
+  test('renders with correct structure and default configuration', async () => {
+    const { getByTestId } = await renderRecipeRecommendation();
 
     assertRecipeRecommendation(getByTestId);
 
     expect(getByTestId('test-recommendation::SubHeader').parent).toBeTruthy();
   });
 
-  test('displays custom title correctly', () => {
+  test('displays custom title correctly', async () => {
     const customTitles = [
       'Breakfast Favorites',
       'Dinner Specials',
@@ -63,26 +63,26 @@ describe('RecipeRecommendation Component', () => {
       'Popular This Week',
     ];
 
-    customTitles.forEach(title => {
+    for (const title of customTitles) {
       const props = { ...defaultProps, titleRecommendation: title };
-      const { getByTestId, unmount } = renderRecipeRecommendation(props);
+      const { getByTestId, unmount } = await renderRecipeRecommendation(props);
 
       assertRecipeRecommendation(getByTestId, props);
-      unmount();
-    });
+      await unmount();
+    }
   });
 
-  test('handles empty recipe array correctly', () => {
+  test('handles empty recipe array correctly', async () => {
     const props = { ...defaultProps, carouselProps: [] };
-    const { getByTestId } = renderRecipeRecommendation(props);
+    const { getByTestId } = await renderRecipeRecommendation(props);
 
     assertRecipeRecommendation(getByTestId, props);
   });
 
-  test('handles single recipe correctly', () => {
+  test('handles single recipe correctly', async () => {
     const singleRecipe = [testRecipes[0]!];
     const props = { ...defaultProps, carouselProps: singleRecipe };
-    const { getByTestId } = renderRecipeRecommendation(props);
+    const { getByTestId } = await renderRecipeRecommendation(props);
 
     assertRecipeRecommendation(getByTestId, props);
 
@@ -92,7 +92,7 @@ describe('RecipeRecommendation Component', () => {
     expect(cardData).toEqual(singleRecipe[0]);
   });
 
-  test('handles large recipe collections correctly', () => {
+  test('handles large recipe collections correctly', async () => {
     const largeRecipeCollection = Array.from({ length: 50 }, (_, index) => ({
       ...testRecipes[0]!,
       id: index + 1,
@@ -101,7 +101,7 @@ describe('RecipeRecommendation Component', () => {
     }));
 
     const props = { ...defaultProps, carouselProps: largeRecipeCollection };
-    const { getByTestId } = renderRecipeRecommendation(props);
+    const { getByTestId } = await renderRecipeRecommendation(props);
 
     assertRecipeRecommendation(getByTestId, props, true);
 
@@ -111,9 +111,9 @@ describe('RecipeRecommendation Component', () => {
     expect(firstCardData.title).toBe('Recipe 1');
   });
 
-  test('uses custom testId correctly throughout component', () => {
+  test('uses custom testId correctly throughout component', async () => {
     const props = { ...defaultProps, testId: 'custom-recipe-recommendation' };
-    const { getByTestId, queryByTestId } = renderRecipeRecommendation(props);
+    const { getByTestId, queryByTestId } = await renderRecipeRecommendation(props);
 
     assertRecipeRecommendation(getByTestId, props);
 
@@ -121,7 +121,7 @@ describe('RecipeRecommendation Component', () => {
     expect(queryByTestId('test-recommendation::Carousel')).toBeNull();
   });
 
-  test('preserves recipe data integrity through props', () => {
+  test('preserves recipe data integrity through props', async () => {
     const complexRecipe = {
       ...testRecipes[6]!,
       title: 'Complex Recipe with Special Characters: é, ñ, 中文',
@@ -129,13 +129,13 @@ describe('RecipeRecommendation Component', () => {
     };
 
     const props = { ...defaultProps, carouselProps: [complexRecipe] };
-    const { getByTestId } = renderRecipeRecommendation(props);
+    const { getByTestId } = await renderRecipeRecommendation(props);
 
     assertRecipeRecommendation(getByTestId, props);
   });
 
-  test('handles prop changes correctly', () => {
-    const { getByTestId, rerender } = renderRecipeRecommendation();
+  test('handles prop changes correctly', async () => {
+    const { getByTestId, rerender } = await renderRecipeRecommendation();
 
     assertRecipeRecommendation(getByTestId);
 
@@ -144,13 +144,13 @@ describe('RecipeRecommendation Component', () => {
       titleRecommendation: 'Updated Recommendations',
       carouselProps: [testRecipes[1]!],
     };
-    rerender(<RecipeRecommendation {...newProps} />);
+    await rerender(<RecipeRecommendation {...newProps} />);
 
     assertRecipeRecommendation(getByTestId, newProps);
   });
 
-  test('maintains component stability across multiple renders', () => {
-    const { getByTestId, rerender } = renderRecipeRecommendation();
+  test('maintains component stability across multiple renders', async () => {
+    const { getByTestId, rerender } = await renderRecipeRecommendation();
 
     const renderConfigs = [
       { title: 'Config 1', recipes: mockRecipes },
@@ -159,19 +159,19 @@ describe('RecipeRecommendation Component', () => {
       { title: 'Config 4', recipes: mockRecipes },
     ];
 
-    renderConfigs.forEach(config => {
+    for (const config of renderConfigs) {
       const props = {
         testId: 'test-recommendation',
         titleRecommendation: config.title,
         carouselProps: config.recipes,
       };
-      rerender(<RecipeRecommendation {...props} />);
+      await rerender(<RecipeRecommendation {...props} />);
 
       assertRecipeRecommendation(getByTestId, props);
-    });
+    }
   });
 
-  test('handles edge cases in title text', () => {
+  test('handles edge cases in title text', async () => {
     const edgeCaseTitles = [
       '',
       ' ',
@@ -183,13 +183,13 @@ describe('RecipeRecommendation Component', () => {
       'Title in différent langüages with áccénts',
     ];
 
-    edgeCaseTitles.forEach(title => {
+    for (const title of edgeCaseTitles) {
       const props = { ...defaultProps, titleRecommendation: title };
-      const { getByTestId, unmount } = renderRecipeRecommendation(props);
+      const { getByTestId, unmount } = await renderRecipeRecommendation(props);
 
       assertRecipeRecommendation(getByTestId, props);
 
-      unmount();
-    });
+      await unmount();
+    }
   });
 });

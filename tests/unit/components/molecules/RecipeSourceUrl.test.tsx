@@ -13,28 +13,28 @@ describe('RecipeSourceUrl', () => {
     jest.clearAllMocks();
   });
 
-  test('renders the source URL text', () => {
-    const { getByTestId } = render(<RecipeSourceUrl sourceUrl={testUrl} />);
+  test('renders the source URL text', async () => {
+    const { getByTestId } = await render(<RecipeSourceUrl sourceUrl={testUrl} />);
 
     expect(getByTestId(`${defaultTestID}::Text`).props.children).toBe(testUrl);
   });
 
-  test('renders the label', () => {
-    const { getByTestId } = render(<RecipeSourceUrl sourceUrl={testUrl} />);
+  test('renders the label', async () => {
+    const { getByTestId } = await render(<RecipeSourceUrl sourceUrl={testUrl} />);
 
     expect(getByTestId(`${defaultTestID}::Label`).props.children).toBe('sourceUrl.label');
   });
 
-  test('renders the copy button', () => {
-    const { getByTestId } = render(<RecipeSourceUrl sourceUrl={testUrl} />);
+  test('renders the copy button', async () => {
+    const { getByTestId } = await render(<RecipeSourceUrl sourceUrl={testUrl} />);
 
     expect(getByTestId(`${defaultTestID}::CopyButton`)).toBeTruthy();
   });
 
   test('copies URL to clipboard when copy button is pressed', async () => {
-    const { getByTestId } = render(<RecipeSourceUrl sourceUrl={testUrl} />);
+    const { getByTestId } = await render(<RecipeSourceUrl sourceUrl={testUrl} />);
 
-    fireEvent.press(getByTestId(`${defaultTestID}::CopyButton`));
+    await fireEvent.press(getByTestId(`${defaultTestID}::CopyButton`));
 
     await waitFor(() => {
       expect(Clipboard.setStringAsync).toHaveBeenCalledWith(testUrl);
@@ -43,27 +43,31 @@ describe('RecipeSourceUrl', () => {
 
   test('calls onCopied callback after copying', async () => {
     const mockOnCopied = jest.fn();
-    const { getByTestId } = render(<RecipeSourceUrl sourceUrl={testUrl} onCopied={mockOnCopied} />);
+    const { getByTestId } = await render(
+      <RecipeSourceUrl sourceUrl={testUrl} onCopied={mockOnCopied} />
+    );
 
-    fireEvent.press(getByTestId(`${defaultTestID}::CopyButton`));
+    await fireEvent.press(getByTestId(`${defaultTestID}::CopyButton`));
 
     await waitFor(() => {
       expect(mockOnCopied).toHaveBeenCalled();
     });
   });
 
-  test('uses custom testID when provided', () => {
+  test('uses custom testID when provided', async () => {
     const customTestID = 'Recipe::RecipeSourceUrl';
-    const { getByTestId } = render(<RecipeSourceUrl sourceUrl={testUrl} testID={customTestID} />);
+    const { getByTestId } = await render(
+      <RecipeSourceUrl sourceUrl={testUrl} testID={customTestID} />
+    );
 
     expect(getByTestId(`${customTestID}::Text`).props.children).toBe(testUrl);
     expect(getByTestId(`${customTestID}::CopyButton`)).toBeTruthy();
   });
 
   test('does not crash when onCopied is not provided', async () => {
-    const { getByTestId } = render(<RecipeSourceUrl sourceUrl={testUrl} />);
+    const { getByTestId } = await render(<RecipeSourceUrl sourceUrl={testUrl} />);
 
-    fireEvent.press(getByTestId(`${defaultTestID}::CopyButton`));
+    await fireEvent.press(getByTestId(`${defaultTestID}::CopyButton`));
 
     await waitFor(() => {
       expect(Clipboard.setStringAsync).toHaveBeenCalledWith(testUrl);

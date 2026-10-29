@@ -9,22 +9,22 @@ describe('TutorialStepNumber', () => {
     setMockCopilotState({ isActive: true, currentStep: { order: 3, name: 'test', text: 'test' } });
   });
 
-  test('renders step number from currentStep.order', () => {
-    const { getByText } = render(<TutorialStepNumber />);
+  test('renders step number from currentStep.order', async () => {
+    const { getByText } = await render(<TutorialStepNumber />);
 
     expect(getByText('3')).toBeTruthy();
   });
 
-  test('returns null when currentStep is null', () => {
+  test('returns null when currentStep is null', async () => {
     setMockCopilotState({ isActive: true, currentStep: null });
-    const { toJSON } = render(<TutorialStepNumber />);
+    const { toJSON } = await render(<TutorialStepNumber />);
 
     expect(toJSON()).toBeNull();
   });
 
-  test('renders different step numbers', () => {
+  test('renders different step numbers', async () => {
     setMockCopilotState({ isActive: true, currentStep: { order: 7, name: 'test', text: 'test' } });
-    const { getByText } = render(<TutorialStepNumber />);
+    const { getByText } = await render(<TutorialStepNumber />);
 
     expect(getByText('7')).toBeTruthy();
   });

@@ -41,13 +41,13 @@ describe('useShopping', () => {
     return database.get_recipes()[0]!;
   }
 
-  test('returns an empty shopping list when the menu is empty', () => {
-    const { result } = renderHook(() => useShopping());
+  test('returns an empty shopping list when the menu is empty', async () => {
+    const { result } = await renderHook(() => useShopping());
     expect(result.current.shopping).toEqual([]);
   });
 
   test('derives one aggregated item per ingredient of the menu recipes', async () => {
-    const { result } = renderHook(() => useShopping());
+    const { result } = await renderHook(() => useShopping());
 
     await act(async () => {
       await database.addRecipeToMenu(addedRecipe());
@@ -61,7 +61,7 @@ describe('useShopping', () => {
   });
 
   test('reflects purchased state on the derived item', async () => {
-    const { result } = renderHook(() => useShopping());
+    const { result } = await renderHook(() => useShopping());
 
     await act(async () => {
       await database.addRecipeToMenu(addedRecipe());
@@ -80,7 +80,7 @@ describe('useShopping', () => {
   });
 
   test('excludes ingredients of a recipe once it is marked cooked', async () => {
-    const { result } = renderHook(() => useShopping());
+    const { result } = await renderHook(() => useShopping());
 
     await act(async () => {
       await database.addRecipeToMenu(addedRecipe());

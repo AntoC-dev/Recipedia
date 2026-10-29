@@ -1,5 +1,6 @@
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import { expectKeyboardDismissesOnDrag } from '@test-helpers/expectKeyboardDismissesOnDrag';
+import { queryAllByHostType, SCROLL_VIEW_HOST_TYPE } from '@test-helpers/hostQueries';
 import { Search } from '@screens/Search';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
@@ -8,7 +9,7 @@ import { testRecipes } from '@test-data/recipesDataset';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import { Button, ScrollView } from 'react-native';
+import { Button } from 'react-native';
 import { SeasonFilterProvider, useSeasonFilter } from '@context/SeasonFilterContext';
 import { resetFiltersSelection } from '@mocks/components/organisms/FiltersSelection-mock';
 
@@ -58,7 +59,7 @@ describe('Search Screen', () => {
   );
 
   const renderSearchComponent = async () => {
-    const result = render(defaultComponent);
+    const result = await render(defaultComponent);
     await waitFor(() => {
       expect(result.getByTestId('SearchScreen')).toBeTruthy();
     });
@@ -68,7 +69,7 @@ describe('Search Screen', () => {
   // Helper function to wait for async operations and rerender if needed
   const waitAndRerender = async (rerender: any, getByTestId: any) => {
     await new Promise(resolve => setTimeout(resolve, 100));
-    rerender(defaultComponent);
+    await rerender(defaultComponent);
     await waitFor(() => {
       expect(getByTestId('SearchScreen')).toBeTruthy();
     });
@@ -152,7 +153,7 @@ describe('Search Screen', () => {
     });
 
     const { getByTestId } = await renderSearchComponent();
-    fireEvent.press(getByTestId('SearchScreen::ReportToggleTop'));
+    await fireEvent.press(getByTestId('SearchScreen::ReportToggleTop'));
 
     expect(goToNext).toHaveBeenCalled();
     expect(goToPrev).not.toHaveBeenCalled();
@@ -170,7 +171,7 @@ describe('Search Screen', () => {
     });
 
     const { getByTestId } = await renderSearchComponent();
-    fireEvent.press(getByTestId('SearchScreen::ReportToggleTop'));
+    await fireEvent.press(getByTestId('SearchScreen::ReportToggleTop'));
 
     expect(goToPrev).toHaveBeenCalled();
     expect(goToNext).not.toHaveBeenCalled();
@@ -188,7 +189,7 @@ describe('Search Screen', () => {
     });
 
     const { getByTestId } = await renderSearchComponent();
-    fireEvent.press(getByTestId('SearchScreen::ReportToggleTop'));
+    await fireEvent.press(getByTestId('SearchScreen::ReportToggleTop'));
 
     expect(goToNext).not.toHaveBeenCalled();
     expect(goToPrev).not.toHaveBeenCalled();
@@ -228,7 +229,7 @@ describe('Search Screen', () => {
     expect(getByTestId('SearchScreen::Filters').props.children).toEqual('[]');
     expect(getByTestId('SearchScreen::AddingFilterMode').props.children).toEqual('false');
 
-    fireEvent.press(getByTestId('SearchScreen::AddFilter'));
+    await fireEvent.press(getByTestId('SearchScreen::AddFilter'));
 
     // Assert state after first filter added
     expect(getByTestId('SearchScreen::Filters').props.children).toEqual('["filterTypes.inSeason"]');
@@ -238,7 +239,7 @@ describe('Search Screen', () => {
     expect(() => getByTestId('SearchScreen::FilterAccordion')).not.toThrow();
 
     // Test adding second filter
-    fireEvent.press(getByTestId('SearchScreen::AddFilter'));
+    await fireEvent.press(getByTestId('SearchScreen::AddFilter'));
 
     // Assert state after second filter added
     expect(getByTestId('SearchScreen::Filters').props.children).toEqual(
@@ -250,7 +251,7 @@ describe('Search Screen', () => {
     expect(() => getByTestId('SearchScreen::FilterAccordion')).toThrow();
 
     // Test adding third filter
-    fireEvent.press(getByTestId('SearchScreen::AddFilter'));
+    await fireEvent.press(getByTestId('SearchScreen::AddFilter'));
 
     // Assert final state after all filters added
     expect(getByTestId('SearchScreen::Filters').props.children).toEqual(
@@ -276,17 +277,17 @@ describe('Search Screen', () => {
     // Setup: Add three filters first
     expect(getByTestId('SearchScreen::Filters').props.children).toEqual('[]');
 
-    fireEvent.press(getByTestId('SearchScreen::AddFilter'));
+    await fireEvent.press(getByTestId('SearchScreen::AddFilter'));
     expect(getByTestId('SearchScreen::Filters').props.children).toEqual('["filterTypes.inSeason"]');
     expect(getByTestId('SearchScreen::AddingFilterMode').props.children).toEqual('true');
 
-    fireEvent.press(getByTestId('SearchScreen::AddFilter'));
+    await fireEvent.press(getByTestId('SearchScreen::AddFilter'));
     expect(getByTestId('SearchScreen::Filters').props.children).toEqual(
       '["filterTypes.inSeason","ingredientTypes.nutsAndSeeds"]'
     );
     expect(getByTestId('SearchScreen::AddingFilterMode').props.children).toEqual('false');
 
-    fireEvent.press(getByTestId('SearchScreen::AddFilter'));
+    await fireEvent.press(getByTestId('SearchScreen::AddFilter'));
     expect(getByTestId('SearchScreen::Filters').props.children).toEqual(
       '["filterTypes.inSeason","ingredientTypes.nutsAndSeeds","filterTypes.purchased"]'
     );
@@ -296,7 +297,7 @@ describe('Search Screen', () => {
     expect(() => getByTestId('SearchScreen::FilterAccordion')).not.toThrow();
 
     // Test removing first filter
-    fireEvent.press(getByTestId('SearchScreen::RemoveFilter'));
+    await fireEvent.press(getByTestId('SearchScreen::RemoveFilter'));
     expect(getByTestId('SearchScreen::Filters').props.children).toEqual(
       '["ingredientTypes.nutsAndSeeds","filterTypes.purchased"]'
     );
@@ -306,7 +307,7 @@ describe('Search Screen', () => {
     expect(getByTestId('SearchScreen::AddingFilterMode')).toBeTruthy();
 
     // Test removing second filter
-    fireEvent.press(getByTestId('SearchScreen::RemoveFilter'));
+    await fireEvent.press(getByTestId('SearchScreen::RemoveFilter'));
     expect(getByTestId('SearchScreen::Filters').props.children).toEqual(
       '["filterTypes.purchased"]'
     );
@@ -315,7 +316,7 @@ describe('Search Screen', () => {
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('');
 
     // Test removing final filter
-    fireEvent.press(getByTestId('SearchScreen::RemoveFilter'));
+    await fireEvent.press(getByTestId('SearchScreen::RemoveFilter'));
     expect(getByTestId('SearchScreen::Filters').props.children).toEqual('[]');
 
     // Assert component returns to initial filter state
@@ -347,7 +348,7 @@ describe('Search Screen', () => {
     expect(getByTestId('SearchScreen::Divider')).toBeTruthy();
 
     // Test toggling addingFilterMode to true
-    fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
+    await fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
 
     // Wait for state update to propagate
     const { getByTestId: updatedTestId } = await waitAndRerender(rerender, getByTestId);
@@ -364,7 +365,7 @@ describe('Search Screen', () => {
     expect(updatedTestId('SearchScreen::RemoveFilter')).toBeTruthy();
 
     // Test toggling addingFilterMode back to false
-    fireEvent.press(updatedTestId('SearchScreen::ToggleAddingFilterMode'));
+    await fireEvent.press(updatedTestId('SearchScreen::ToggleAddingFilterMode'));
     expect(updatedTestId('SearchScreen::AddingFilterMode').props.children).toEqual('false');
 
     // Assert FilterAccordion is hidden again
@@ -394,7 +395,7 @@ describe('Search Screen', () => {
     expect(() => getByTestId('SearchScreen::FilterAccordion')).toThrow();
 
     // Test clicking search bar (toggle to clicked state)
-    fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
+    await fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
     expect(getByTestId('SearchScreen::SearchBar::Clicked').props.children).toEqual('true');
 
     // Assert suggestion items render as list data when search bar is clicked
@@ -412,7 +413,7 @@ describe('Search Screen', () => {
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('');
 
     // Test clicking search bar again (toggle back to not clicked)
-    fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
+    await fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
     expect(getByTestId('SearchScreen::SearchBar::Clicked').props.children).toEqual('false');
 
     // Assert FiltersSelection components are now VISIBLE again (!searchBarClicked is true)
@@ -449,7 +450,7 @@ describe('Search Screen', () => {
     expect(getByTestId('SearchScreen::AddingFilterMode').props.children).toEqual('false');
 
     // Test progressive search phrase updates
-    fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
+    await fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('S');
 
     // Assert components remain present during search (suggestions still not visible during phrase editing)
@@ -457,13 +458,13 @@ describe('Search Screen', () => {
     expect(getByTestId('SearchScreen::Filters')).toBeTruthy();
     expect(getByTestId('SearchScreen::Divider')).toBeTruthy();
 
-    fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
+    await fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('Su');
 
     // Assert search phrase is being updated correctly
     // (Note: suggestions are not visible unless searchBar is clicked)
 
-    fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
+    await fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('Sus');
 
     // Assert filter functionality is still available
@@ -471,13 +472,13 @@ describe('Search Screen', () => {
     expect(getByTestId('SearchScreen::RemoveFilter')).toBeTruthy();
     expect(getByTestId('SearchScreen::ToggleAddingFilterMode')).toBeTruthy();
 
-    fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
+    await fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('Sush');
 
     // Assert clicked state remains unchanged during phrase updates
     expect(getByTestId('SearchScreen::SearchBar::Clicked').props.children).toEqual('false');
 
-    fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
+    await fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('Sushi');
 
     // Assert all core components are still present after full phrase entry
@@ -495,13 +496,13 @@ describe('Search Screen', () => {
     const { getByTestId } = await waitAndRerender(rerender, emptyGetByTestId);
     assertDatabasePopulatedState(getByTestId);
 
-    fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
+    await fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
 
     expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
       '{"filterTypes.inSeason":["filterTypes.inSeason"]}'
     );
 
-    fireEvent.press(getByTestId('SearchScreen::FilterAccordion::AddFilter'));
+    await fireEvent.press(getByTestId('SearchScreen::FilterAccordion::AddFilter'));
 
     expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
       '{"filterTypes.inSeason":["filterTypes.inSeason"],"filterTypes.tags":["New filter"]}'
@@ -513,10 +514,10 @@ describe('Search Screen', () => {
     assertInitialComponentState(emptyGetByTestId);
     const { getByTestId } = await waitAndRerender(rerender, emptyGetByTestId);
 
-    fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
+    await fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
     const suggestionTitle = getByTestId('SearchScreen::Suggestions::Item::0::Title').props.children;
 
-    fireEvent.press(getByTestId('SearchScreen::Suggestions::Item::0::Select'));
+    await fireEvent.press(getByTestId('SearchScreen::Suggestions::Item::0::Select'));
 
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual(
       suggestionTitle
@@ -530,16 +531,16 @@ describe('Search Screen', () => {
     assertInitialComponentState(emptyGetByTestId);
     const { getByTestId } = await waitAndRerender(rerender, emptyGetByTestId);
 
-    fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
+    await fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('S');
 
-    fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
+    await fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
 
     expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toContain(
       '"filterTypes.recipeTitleInclude":["S"]'
     );
 
-    fireEvent.press(getByTestId('SearchScreen::FilterAccordion::RemoveFilterByTitle'));
+    await fireEvent.press(getByTestId('SearchScreen::FilterAccordion::RemoveFilterByTitle'));
 
     expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).not.toContain(
       '"filterTypes.recipeTitleInclude"'
@@ -558,14 +559,14 @@ describe('Search Screen', () => {
       </SeasonFilterProvider>
     );
 
-    const { getByTestId, rerender } = render(componentWithToggler);
+    const { getByTestId, rerender } = await render(componentWithToggler);
     await waitFor(() => expect(getByTestId('SearchScreen')).toBeTruthy());
 
     await new Promise(resolve => setTimeout(resolve, 100));
-    rerender(componentWithToggler);
+    await rerender(componentWithToggler);
     await waitFor(() => expect(getByTestId('SearchScreen')).toBeTruthy());
 
-    fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
+    await fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
 
     await waitFor(() => {
       expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
@@ -573,35 +574,35 @@ describe('Search Screen', () => {
       );
     });
 
-    fireEvent.press(getByTestId('ToggleSeasonFilter'));
+    await fireEvent.press(getByTestId('ToggleSeasonFilter'));
     await waitFor(() => {
       expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
         '{}'
       );
     });
 
-    fireEvent.press(getByTestId('ToggleSeasonFilter'));
+    await fireEvent.press(getByTestId('ToggleSeasonFilter'));
     await waitFor(() => {
       expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
         '{"filterTypes.inSeason":["filterTypes.inSeason"]}'
       );
     });
 
-    fireEvent.press(getByTestId('ToggleSeasonFilter'));
+    await fireEvent.press(getByTestId('ToggleSeasonFilter'));
     await waitFor(() => {
       expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
         '{}'
       );
     });
 
-    fireEvent.press(getByTestId('SearchScreen::FilterAccordion::AddFilter'));
+    await fireEvent.press(getByTestId('SearchScreen::FilterAccordion::AddFilter'));
     await waitFor(() => {
       expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
         '{"filterTypes.tags":["New filter"]}'
       );
     });
 
-    fireEvent.press(getByTestId('ToggleSeasonFilter'));
+    await fireEvent.press(getByTestId('ToggleSeasonFilter'));
     await waitFor(() => {
       expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).toEqual(
         '{"filterTypes.tags":["New filter"]}'
@@ -610,13 +611,13 @@ describe('Search Screen', () => {
   });
 
   test('recipe list dismisses the keyboard on drag', async () => {
-    const { UNSAFE_getAllByType } = await renderSearchComponent();
-    expectKeyboardDismissesOnDrag(UNSAFE_getAllByType, ScrollView);
+    const { container } = await renderSearchComponent();
+    expectKeyboardDismissesOnDrag(container);
   });
 
   test('recipe list delivers a suggestion tap on the first press while the keyboard is open', async () => {
-    const { UNSAFE_getAllByType } = await renderSearchComponent();
-    const lists = UNSAFE_getAllByType(ScrollView);
+    const { container } = await renderSearchComponent();
+    const lists = queryAllByHostType(container, SCROLL_VIEW_HOST_TYPE);
     expect(lists.some(node => node.props.keyboardShouldPersistTaps === 'handled')).toBe(true);
   });
 
@@ -626,7 +627,7 @@ describe('Search Screen', () => {
 
     assertDatabasePopulatedState(getByTestId);
 
-    fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
+    await fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
 
     expect(getByTestId('SearchScreen::FilterAccordion')).toBeTruthy();
     expect(() => getByTestId('SearchScreen::RecipeCards::1')).toThrow();
@@ -637,12 +638,12 @@ describe('Search Screen', () => {
     const { getByTestId } = await waitAndRerender(rerender, emptyGetByTestId);
 
     for (let step = 0; step < 6; step++) {
-      fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
+      await fireEvent.press(getByTestId('SearchScreen::SearchBar::UpdateSearchPhrase'));
     }
 
     expect(getByTestId('SearchScreen::SearchBar::SearchPhrase').props.children).toEqual('');
 
-    fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
+    await fireEvent.press(getByTestId('SearchScreen::ToggleAddingFilterMode'));
     expect(getByTestId('SearchScreen::FilterAccordion::FiltersState').props.children).not.toContain(
       'recipeTitleInclude'
     );
@@ -664,17 +665,17 @@ describe('Search Screen', () => {
     };
 
     let handledWhileClosed = true;
-    act(() => {
+    await act(() => {
       handledWhileClosed = latestBackHandler()();
     });
     expect(handledWhileClosed).toBe(false);
     expect(dismissSpy).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
+    await fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
     expect(getByTestId('SearchScreen::Suggestions::Item::0')).toBeTruthy();
 
     let handledWhileOpen = false;
-    act(() => {
+    await act(() => {
       handledWhileOpen = latestBackHandler()();
     });
     expect(handledWhileOpen).toBe(true);
@@ -682,7 +683,7 @@ describe('Search Screen', () => {
     expect(() => getByTestId('SearchScreen::Suggestions::Item::0')).toThrow();
 
     let handledAfterExit = true;
-    act(() => {
+    await act(() => {
       handledAfterExit = latestBackHandler()();
     });
     expect(handledAfterExit).toBe(false);
@@ -714,11 +715,11 @@ describe('Search Screen - empty state', () => {
   });
 
   test('shows TextWhenEmpty when no recipes exist', async () => {
-    const { getByTestId, rerender } = render(emptyStateComponent);
+    const { getByTestId, rerender } = await render(emptyStateComponent);
     await waitFor(() => expect(getByTestId('SearchScreen')).toBeTruthy());
 
     await new Promise(resolve => setTimeout(resolve, 100));
-    rerender(emptyStateComponent);
+    await rerender(emptyStateComponent);
     await waitFor(() => expect(getByTestId('SearchScreen')).toBeTruthy());
 
     expect(getByTestId('SearchScreen::TextWhenEmpty')).toBeTruthy();
@@ -726,14 +727,14 @@ describe('Search Screen - empty state', () => {
   });
 
   test('shows the suggestions empty item when search is active with no matches', async () => {
-    const { getByTestId, rerender } = render(emptyStateComponent);
+    const { getByTestId, rerender } = await render(emptyStateComponent);
     await waitFor(() => expect(getByTestId('SearchScreen')).toBeTruthy());
 
     await new Promise(resolve => setTimeout(resolve, 100));
-    rerender(emptyStateComponent);
+    await rerender(emptyStateComponent);
     await waitFor(() => expect(getByTestId('SearchScreen')).toBeTruthy());
 
-    fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
+    await fireEvent.press(getByTestId('SearchScreen::SearchBar::ToggleClicked'));
 
     expect(getByTestId('SearchScreen::Suggestions::Empty')).toBeTruthy();
     expect(() => getByTestId('SearchScreen::Suggestions::Item::0')).toThrow();

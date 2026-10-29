@@ -46,7 +46,7 @@ function flourSugarValues(persons: number): RecipeFormInput {
 describe('useScalingOnPersonsChange', () => {
   test('scales ingredient quantities when persons doubles', async () => {
     const { Wrapper, getForm } = createWrapper(flourSugarValues(4));
-    renderHook(
+    await renderHook(
       () => {
         const ref = useRef<number>(0);
         return useScalingOnPersonsChange(getForm(), 4, ref);
@@ -58,7 +58,7 @@ describe('useScalingOnPersonsChange', () => {
       expect(getForm().getValues('recipePersons')).toBe(4);
     });
 
-    act(() => {
+    await act(() => {
       getForm().setValue('recipePersons', 8);
     });
 
@@ -83,7 +83,7 @@ describe('useScalingOnPersonsChange', () => {
       ] as RecipeFormInput['recipeIngredients'],
     };
     const { Wrapper, getForm } = createWrapper(values);
-    renderHook(
+    await renderHook(
       () => {
         const ref = useRef<number>(0);
         return useScalingOnPersonsChange(getForm(), 4, ref);
@@ -95,7 +95,7 @@ describe('useScalingOnPersonsChange', () => {
       expect(getForm().getValues('recipePersons')).toBe(4);
     });
 
-    act(() => {
+    await act(() => {
       getForm().setValue('recipePersons', 8);
     });
 
@@ -106,7 +106,7 @@ describe('useScalingOnPersonsChange', () => {
 
   test('skips scaling when transition involves sentinel defaultValueNumber', async () => {
     const { Wrapper, getForm } = createWrapper(flourSugarValues(defaultValueNumber));
-    renderHook(
+    await renderHook(
       () => {
         const ref = useRef<number>(0);
         return useScalingOnPersonsChange(getForm(), defaultValueNumber, ref);
@@ -114,7 +114,7 @@ describe('useScalingOnPersonsChange', () => {
       { wrapper: Wrapper }
     );
 
-    act(() => {
+    await act(() => {
       getForm().setValue('recipePersons', 8);
     });
 
@@ -127,7 +127,7 @@ describe('useScalingOnPersonsChange', () => {
   test('skips scaling while user is editing a row', async () => {
     const { Wrapper, getForm } = createWrapper(flourSugarValues(4));
     const focusRefHolder: { current: React.MutableRefObject<number> | null } = { current: null };
-    renderHook(
+    await renderHook(
       () => {
         const ref = useRef<number>(1);
         focusRefHolder.current = ref;
@@ -136,7 +136,7 @@ describe('useScalingOnPersonsChange', () => {
       { wrapper: Wrapper }
     );
 
-    act(() => {
+    await act(() => {
       getForm().setValue('recipePersons', 8);
     });
 
@@ -149,7 +149,7 @@ describe('useScalingOnPersonsChange', () => {
 
   test('passes shouldValidate:true so existing array errors clear after rescale', async () => {
     const { Wrapper, getForm } = createWrapper(flourSugarValues(4));
-    renderHook(
+    await renderHook(
       () => {
         const ref = useRef<number>(0);
         return useScalingOnPersonsChange(getForm(), 4, ref);
@@ -163,7 +163,7 @@ describe('useScalingOnPersonsChange', () => {
 
     const setValueSpy = jest.spyOn(getForm(), 'setValue');
 
-    act(() => {
+    await act(() => {
       getForm().setValue('recipePersons', 8);
     });
 

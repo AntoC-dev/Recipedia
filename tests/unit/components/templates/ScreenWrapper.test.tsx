@@ -24,8 +24,8 @@ describe('ScreenWrapper component', () => {
     jest.clearAllMocks();
   });
 
-  it('renders children correctly', () => {
-    const { getByText } = render(
+  it('renders children correctly', async () => {
+    const { getByText } = await render(
       <ScreenWrapper>
         <Text>Test Content</Text>
       </ScreenWrapper>
@@ -34,8 +34,8 @@ describe('ScreenWrapper component', () => {
     expect(getByText('Test Content')).toBeTruthy();
   });
 
-  it('applies default background color from theme', () => {
-    const { getByTestId } = render(
+  it('applies default background color from theme', async () => {
+    const { getByTestId } = await render(
       <ScreenWrapper testID='screen-wrapper'>
         <Text>Test</Text>
       </ScreenWrapper>
@@ -49,9 +49,9 @@ describe('ScreenWrapper component', () => {
     expect(flatStyle.backgroundColor).toBe(mockTheme.colors.background);
   });
 
-  it('applies custom background color when provided', () => {
+  it('applies custom background color when provided', async () => {
     const customColor = '#FF0000';
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ScreenWrapper testID='screen-wrapper' backgroundColor={customColor}>
         <Text>Test</Text>
       </ScreenWrapper>
@@ -65,8 +65,8 @@ describe('ScreenWrapper component', () => {
     expect(flatStyle.backgroundColor).toBe(customColor);
   });
 
-  it('applies default edges', () => {
-    const { getByTestId } = render(
+  it('applies default edges', async () => {
+    const { getByTestId } = await render(
       <ScreenWrapper testID='screen-wrapper'>
         <Text>Test</Text>
       </ScreenWrapper>
@@ -81,9 +81,9 @@ describe('ScreenWrapper component', () => {
     });
   });
 
-  it('applies custom edges when provided', () => {
+  it('applies custom edges when provided', async () => {
     const customEdges: any = ['top', 'left', 'right'];
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ScreenWrapper testID='screen-wrapper' edges={customEdges}>
         <Text>Test</Text>
       </ScreenWrapper>
@@ -98,8 +98,8 @@ describe('ScreenWrapper component', () => {
     });
   });
 
-  it('turns the bottom edge off when given the shared tab screen edges', () => {
-    const { getByTestId } = render(
+  it('turns the bottom edge off when given the shared tab screen edges', async () => {
+    const { getByTestId } = await render(
       <ScreenWrapper testID='screen-wrapper' edges={tabScreenEdges}>
         <Text>Test</Text>
       </ScreenWrapper>
@@ -114,8 +114,8 @@ describe('ScreenWrapper component', () => {
     });
   });
 
-  it('has flex: 1 by default', () => {
-    const { getByTestId } = render(
+  it('has flex: 1 by default', async () => {
+    const { getByTestId } = await render(
       <ScreenWrapper testID='screen-wrapper'>
         <Text>Test</Text>
       </ScreenWrapper>

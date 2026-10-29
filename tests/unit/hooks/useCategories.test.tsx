@@ -19,14 +19,14 @@ beforeEach(async () => {
 });
 
 describe('useShoppingCategories', () => {
-  test('returns all ingredient types', () => {
-    const { result } = renderHook(() => useShoppingCategories());
+  test('returns all ingredient types', async () => {
+    const { result } = await renderHook(() => useShoppingCategories());
     expect(result.current).toHaveLength(Object.values(ingredientType).length);
     expect(result.current).toEqual(expect.arrayContaining(Object.values(ingredientType)));
   });
 
-  test('sorts by English translated name in English', () => {
-    const { result } = renderHook(() => useShoppingCategories());
+  test('sorts by English translated name in English', async () => {
+    const { result } = await renderHook(() => useShoppingCategories());
     const categories = result.current;
     expect(categories.indexOf(ingredientType.baking)).toBeLessThan(
       categories.indexOf(ingredientType.bread)
@@ -37,7 +37,7 @@ describe('useShoppingCategories', () => {
   });
 
   test('re-sorts by French translated name when language changes', async () => {
-    const { result } = renderHook(() => useShoppingCategories());
+    const { result } = await renderHook(() => useShoppingCategories());
 
     expect(result.current.indexOf(ingredientType.sauce)).toBeLessThan(
       result.current.indexOf(ingredientType.seafood)
@@ -54,14 +54,14 @@ describe('useShoppingCategories', () => {
 });
 
 describe('useFiltersCategories', () => {
-  test('returns all list filter values', () => {
-    const { result } = renderHook(() => useFiltersCategories());
+  test('returns all list filter values', async () => {
+    const { result } = await renderHook(() => useFiltersCategories());
     expect(result.current).toHaveLength(Object.values(listFilter).length);
     expect(result.current).toEqual(expect.arrayContaining(Object.values(listFilter)));
   });
 
-  test('sorts by English translated name in English', () => {
-    const { result } = renderHook(() => useFiltersCategories());
+  test('sorts by English translated name in English', async () => {
+    const { result } = await renderHook(() => useFiltersCategories());
     const categories = result.current;
     expect(categories.indexOf(ingredientType.baking)).toBeLessThan(
       categories.indexOf(ingredientType.bread)
@@ -72,7 +72,7 @@ describe('useFiltersCategories', () => {
   });
 
   test('re-sorts by French translated name when language changes', async () => {
-    const { result } = renderHook(() => useFiltersCategories());
+    const { result } = await renderHook(() => useFiltersCategories());
 
     expect(result.current.indexOf(ingredientType.sauce)).toBeLessThan(
       result.current.indexOf(ingredientType.seafood)

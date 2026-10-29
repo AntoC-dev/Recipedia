@@ -139,7 +139,7 @@ describe('ValidationReviewList Performance', () => {
     const rawIngredients = generateUnknownIngredients(100);
     const scenario = async () => {
       const skip = screen.queryByTestId(`PerfTest::Tag::${rawTags[0]!.name}::SkipChip`);
-      if (skip) fireEvent.press(skip);
+      if (skip) await fireEvent.press(skip);
     };
     await measureRenders(
       <ValidationReviewListWrapper rawTags={rawTags} rawIngredients={rawIngredients} />,
@@ -151,9 +151,9 @@ describe('ValidationReviewList Performance', () => {
     const rawTags = generateUnknownTags(100);
     const scenario = async () => {
       const skip = screen.queryByTestId(`PerfTest::Tag::${rawTags[0]!.name}::SkipChip`);
-      if (skip) fireEvent.press(skip);
+      if (skip) await fireEvent.press(skip);
       const undo = screen.queryByTestId(`PerfTest::Tag::${rawTags[0]!.name}::UndoButton`);
-      if (undo) fireEvent.press(undo);
+      if (undo) await fireEvent.press(undo);
     };
     await measureRenders(<ValidationReviewListWrapper rawTags={rawTags} rawIngredients={[]} />, {
       runs: 10,
@@ -168,7 +168,7 @@ describe('ValidationReviewList Performance', () => {
       const useSuggested = screen.queryByTestId(
         `PerfTest::Tag::${rawTags[0]!.name}::UseSuggestedChip`
       );
-      if (useSuggested) fireEvent.press(useSuggested);
+      if (useSuggested) await fireEvent.press(useSuggested);
     };
     await measureRenders(<ValidationReviewListWrapper rawTags={rawTags} rawIngredients={[]} />, {
       runs: 10,
@@ -184,7 +184,7 @@ describe('ValidationReviewList Performance', () => {
       const useSuggested = screen.queryByTestId(
         `PerfTest::Ingredient::${target!.name}::UseSuggestedChip`
       );
-      if (useSuggested) fireEvent.press(useSuggested);
+      if (useSuggested) await fireEvent.press(useSuggested);
     };
     await measureRenders(
       <ValidationReviewListWrapper rawTags={[]} rawIngredients={rawIngredients} />,
@@ -197,7 +197,7 @@ describe('ValidationReviewList Performance', () => {
     const scenario = async () => {
       for (const tag of rawTags) {
         const skip = screen.queryByTestId(`PerfTest::Tag::${tag.name}::SkipChip`);
-        if (skip) fireEvent.press(skip);
+        if (skip) await fireEvent.press(skip);
       }
     };
     await measureRenders(<ValidationReviewListWrapper rawTags={rawTags} rawIngredients={[]} />, {

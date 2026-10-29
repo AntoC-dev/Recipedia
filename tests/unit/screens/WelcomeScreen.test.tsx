@@ -23,7 +23,7 @@ describe('WelcomeScreen Component', () => {
   const mockOnSkip = jest.fn();
   let database: RecipeDatabase;
 
-  const renderWelcomeScreen = () =>
+  const renderWelcomeScreen = async () =>
     render(<WelcomeScreen onStartTutorial={mockOnStartTutorial} onSkip={mockOnSkip} />);
 
   beforeEach(async () => {
@@ -37,7 +37,7 @@ describe('WelcomeScreen Component', () => {
   });
 
   test('renders branded header with app icon, title and subtitle', async () => {
-    const { getByTestId } = renderWelcomeScreen();
+    const { getByTestId } = await renderWelcomeScreen();
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen::AppIcon')).toBeTruthy();
@@ -49,7 +49,7 @@ describe('WelcomeScreen Component', () => {
   });
 
   test('renders features card with title and all feature items', async () => {
-    const { getByTestId } = renderWelcomeScreen();
+    const { getByTestId } = await renderWelcomeScreen();
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen::Card::Title')).toHaveTextContent('welcome.valueTitle');
@@ -82,7 +82,7 @@ describe('WelcomeScreen Component', () => {
   });
 
   test('renders action buttons with correct text', async () => {
-    const { getByTestId } = renderWelcomeScreen();
+    const { getByTestId } = await renderWelcomeScreen();
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen::StartTourButton')).toHaveTextContent('welcome.startTour');
@@ -96,21 +96,21 @@ describe('WelcomeScreen Component', () => {
     await database.addMultipleTags(testTags);
     await database.addMultipleRecipes(testRecipes);
 
-    const { getByTestId } = renderWelcomeScreen();
+    const { getByTestId } = await renderWelcomeScreen();
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen::StartTourButton')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
+    await fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
     expect(mockOnStartTutorial).toHaveBeenCalledTimes(1);
 
-    fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
+    await fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
     expect(mockOnSkip).toHaveBeenCalledTimes(1);
   });
 
   test('renders proper component structure with all required elements', async () => {
-    const { getByTestId } = renderWelcomeScreen();
+    const { getByTestId } = await renderWelcomeScreen();
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen::AppIcon')).toBeTruthy();
@@ -133,7 +133,7 @@ describe('WelcomeScreen Component', () => {
     const originalConstant = require('expo-constants').default;
     require('expo-constants').default = { expoConfig: null };
 
-    const { getByTestId } = renderWelcomeScreen();
+    const { getByTestId } = await renderWelcomeScreen();
 
     await waitFor(() => {
       expect(getByTestId('WelcomeScreen::Title')).toBeTruthy();
@@ -144,7 +144,7 @@ describe('WelcomeScreen Component', () => {
 
   describe('Dataset error handling', () => {
     test('does not show dataset error dialog when no error', async () => {
-      const { queryByTestId } = renderWelcomeScreen();
+      const { queryByTestId } = await renderWelcomeScreen();
 
       await waitFor(() => {
         expect(queryByTestId('WelcomeScreen::Title')).toBeTruthy();
@@ -157,7 +157,7 @@ describe('WelcomeScreen Component', () => {
       const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
       loadFirstLaunchDataset.mockRejectedValueOnce(new Error('Network error'));
 
-      const { getByTestId } = renderWelcomeScreen();
+      const { getByTestId } = await renderWelcomeScreen();
 
       await waitFor(() => {
         expect(getByTestId('WelcomeScreen::InitErrorDialog')).toBeTruthy();
@@ -170,7 +170,7 @@ describe('WelcomeScreen Component', () => {
       const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
       loadFirstLaunchDataset.mockRejectedValueOnce(new Error('Some DB error'));
 
-      const { getByText } = renderWelcomeScreen();
+      const { getByText } = await renderWelcomeScreen();
 
       await waitFor(() => {
         expect(getByText('welcome.datasetError.message')).toBeTruthy();
@@ -183,13 +183,13 @@ describe('WelcomeScreen Component', () => {
       const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
       loadFirstLaunchDataset.mockRejectedValueOnce(new Error('Test error'));
 
-      const { getByTestId, queryByTestId } = renderWelcomeScreen();
+      const { getByTestId, queryByTestId } = await renderWelcomeScreen();
 
       await waitFor(() => {
         expect(getByTestId('WelcomeScreen::InitErrorDialog::OK')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('WelcomeScreen::InitErrorDialog::OK'));
+      await fireEvent.press(getByTestId('WelcomeScreen::InitErrorDialog::OK'));
 
       await waitFor(() => {
         expect(queryByTestId('WelcomeScreen::InitErrorDialog')).toBeNull();
@@ -203,7 +203,7 @@ describe('WelcomeScreen Component', () => {
         'Error: Ingredients not found\n    at verifyIngredientsExist (RecipeDatabase.tsx:42)';
       loadFirstLaunchDataset.mockRejectedValueOnce(error);
 
-      const { queryByText, getByText } = renderWelcomeScreen();
+      const { queryByText, getByText } = await renderWelcomeScreen();
 
       await waitFor(() => {
         expect(getByText('welcome.datasetError.message')).toBeTruthy();
@@ -217,13 +217,13 @@ describe('WelcomeScreen Component', () => {
 
   describe('Loading state handling', () => {
     test('shows loading overlay when start tour clicked before data loads', async () => {
-      const { getByTestId } = renderWelcomeScreen();
+      const { getByTestId } = await renderWelcomeScreen();
 
       await waitFor(() => {
         expect(getByTestId('WelcomeScreen::StartTourButton')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
+      await fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
 
       expect(mockOnStartTutorial).not.toHaveBeenCalled();
       expect(getByTestId('WelcomeScreen::LoadingOverlay::Overlay')).toBeTruthy();
@@ -233,13 +233,13 @@ describe('WelcomeScreen Component', () => {
     });
 
     test('shows loading overlay when skip clicked before data loads', async () => {
-      const { getByTestId } = renderWelcomeScreen();
+      const { getByTestId } = await renderWelcomeScreen();
 
       await waitFor(() => {
         expect(getByTestId('WelcomeScreen::SkipButton')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
+      await fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
 
       expect(mockOnSkip).not.toHaveBeenCalled();
       expect(getByTestId('WelcomeScreen::LoadingOverlay::Overlay')).toBeTruthy();
@@ -249,13 +249,13 @@ describe('WelcomeScreen Component', () => {
     });
 
     test('calls onStartTutorial after data loads when pending tutorial action', async () => {
-      const { getByTestId } = renderWelcomeScreen();
+      const { getByTestId } = await renderWelcomeScreen();
 
       await waitFor(() => {
         expect(getByTestId('WelcomeScreen::StartTourButton')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
+      await fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
       expect(mockOnStartTutorial).not.toHaveBeenCalled();
 
       await database.addMultipleIngredients(testIngredients);
@@ -268,13 +268,13 @@ describe('WelcomeScreen Component', () => {
     });
 
     test('calls onSkip after data loads when pending skip action', async () => {
-      const { getByTestId } = renderWelcomeScreen();
+      const { getByTestId } = await renderWelcomeScreen();
 
       await waitFor(() => {
         expect(getByTestId('WelcomeScreen::SkipButton')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
+      await fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
       expect(mockOnSkip).not.toHaveBeenCalled();
 
       await database.addMultipleIngredients(testIngredients);
@@ -292,7 +292,7 @@ describe('WelcomeScreen Component', () => {
       const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
       jest.useFakeTimers();
 
-      renderWelcomeScreen();
+      await renderWelcomeScreen();
 
       expect(loadFirstLaunchDataset).not.toHaveBeenCalled();
 
@@ -308,8 +308,8 @@ describe('WelcomeScreen Component', () => {
       jest.useFakeTimers();
       const clearSpy = jest.spyOn(global, 'clearTimeout');
 
-      const { unmount } = renderWelcomeScreen();
-      unmount();
+      const { unmount } = await renderWelcomeScreen();
+      await unmount();
 
       expect(clearSpy).toHaveBeenCalled();
       jest.runAllTimers();
@@ -325,14 +325,14 @@ describe('WelcomeScreen Component', () => {
       const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
       loadFirstLaunchDataset.mockRejectedValueOnce(new Error('DB error'));
 
-      const { getByTestId } = renderWelcomeScreen();
+      const { getByTestId } = await renderWelcomeScreen();
 
       await waitFor(() => {
         expect(getByTestId('WelcomeScreen::InitErrorDialog')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('WelcomeScreen::InitErrorDialog::OK'));
-      fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
+      await fireEvent.press(getByTestId('WelcomeScreen::InitErrorDialog::OK'));
+      await fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
 
       expect(mockOnStartTutorial).toHaveBeenCalledTimes(1);
       expect(mockOnSkip).not.toHaveBeenCalled();
@@ -342,14 +342,14 @@ describe('WelcomeScreen Component', () => {
       const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
       loadFirstLaunchDataset.mockRejectedValueOnce(new Error('DB error'));
 
-      const { getByTestId } = renderWelcomeScreen();
+      const { getByTestId } = await renderWelcomeScreen();
 
       await waitFor(() => {
         expect(getByTestId('WelcomeScreen::InitErrorDialog')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('WelcomeScreen::InitErrorDialog::OK'));
-      fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
+      await fireEvent.press(getByTestId('WelcomeScreen::InitErrorDialog::OK'));
+      await fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
 
       expect(mockOnSkip).toHaveBeenCalledTimes(1);
     });
@@ -363,7 +363,7 @@ describe('WelcomeScreen Component', () => {
         })
       );
 
-      const { getByTestId } = renderWelcomeScreen();
+      const { getByTestId } = await renderWelcomeScreen();
 
       await waitFor(() => {
         expect(getByTestId('WelcomeScreen::StartTourButton')).toBeTruthy();
@@ -373,7 +373,7 @@ describe('WelcomeScreen Component', () => {
         expect(loadFirstLaunchDataset).toHaveBeenCalled();
       });
 
-      fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
+      await fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
       expect(mockOnStartTutorial).not.toHaveBeenCalled();
 
       rejectFn!(new Error('Late failure'));
@@ -389,14 +389,14 @@ describe('WelcomeScreen Component', () => {
       const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
       loadFirstLaunchDataset.mockRejectedValueOnce(new Error('DB error'));
 
-      const { getByTestId, queryByTestId } = renderWelcomeScreen();
+      const { getByTestId, queryByTestId } = await renderWelcomeScreen();
 
       await waitFor(() => {
         expect(getByTestId('WelcomeScreen::InitErrorDialog')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('WelcomeScreen::InitErrorDialog::OK'));
-      fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
+      await fireEvent.press(getByTestId('WelcomeScreen::InitErrorDialog::OK'));
+      await fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
 
       expect(queryByTestId('WelcomeScreen::LoadingOverlay::Overlay')).toBeNull();
     });

@@ -42,8 +42,8 @@ describe('SettingsItemList Component', () => {
       onDelete: mockOnDelete,
     };
 
-    test('renders', () => {
-      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('renders', async () => {
+      const { getByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
       for (const ingredient of defaultProps.items) {
         const prefix = `${defaultProps.testIdPrefix}::${ingredient.id}::SettingsItemCard`;
@@ -54,10 +54,10 @@ describe('SettingsItemList Component', () => {
       }
     });
 
-    test('calls onEditPress when edit button is pressed', () => {
-      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('calls onEditPress when edit button is pressed', async () => {
+      const { getByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(
           `${defaultProps.testIdPrefix}::${mockIngredients[0]!.id}::SettingsItemCard::OnEdit`
         )
@@ -66,10 +66,10 @@ describe('SettingsItemList Component', () => {
       expect(mockOnEdit).toHaveBeenCalledWith(defaultProps.items[0]);
     });
 
-    test('calls onDeletePress when delete button is pressed', () => {
-      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('calls onDeletePress when delete button is pressed', async () => {
+      const { getByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(
           `${defaultProps.testIdPrefix}::${mockIngredients[0]!.id}::SettingsItemCard::OnDelete`
         )
@@ -78,14 +78,14 @@ describe('SettingsItemList Component', () => {
       expect(mockOnDelete).toHaveBeenCalledWith(defaultProps.items[0]);
     });
 
-    test('renders the search bar', () => {
-      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('renders the search bar', async () => {
+      const { getByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
       expect(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`)).toBeTruthy();
     });
 
-    test('shows all items when search query is empty', () => {
-      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('shows all items when search query is empty', async () => {
+      const { getByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
       expect(
         getByTestId(
@@ -99,10 +99,10 @@ describe('SettingsItemList Component', () => {
       ).toBeTruthy();
     });
 
-    test('filters items by name (case-insensitive)', () => {
-      const { getByTestId, queryByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('filters items by name (case-insensitive)', async () => {
+      const { getByTestId, queryByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'ground');
+      await fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'ground');
 
       expect(
         getByTestId(
@@ -116,10 +116,10 @@ describe('SettingsItemList Component', () => {
       ).toBeNull();
     });
 
-    test('shows no items when no match', () => {
-      const { getByTestId, queryByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('shows no items when no match', async () => {
+      const { getByTestId, queryByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'xyz');
+      await fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'xyz');
 
       expect(
         queryByTestId(
@@ -128,11 +128,11 @@ describe('SettingsItemList Component', () => {
       ).toBeNull();
     });
 
-    test('clears filter when search is cleared', () => {
-      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('clears filter when search is cleared', async () => {
+      const { getByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'ground');
-      fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), '');
+      await fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'ground');
+      await fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), '');
 
       expect(
         getByTestId(
@@ -146,10 +146,10 @@ describe('SettingsItemList Component', () => {
       ).toBeTruthy();
     });
 
-    test('filters are applied per character', () => {
-      const { getByTestId, queryByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('filters are applied per character', async () => {
+      const { getByTestId, queryByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'tac');
+      await fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'tac');
 
       expect(
         getByTestId(
@@ -173,10 +173,10 @@ describe('SettingsItemList Component', () => {
       onDelete: mockOnDelete,
     };
 
-    test('defers the list but keeps the search bar while interactions pend', () => {
+    test('defers the list but keeps the search bar while interactions pend', async () => {
       setMockDeferredMountReady(false);
 
-      const { getByTestId, queryByTestId } = render(<SettingsItemList {...defaultProps} />);
+      const { getByTestId, queryByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
       expect(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`)).toBeTruthy();
       expect(
@@ -186,10 +186,10 @@ describe('SettingsItemList Component', () => {
       ).toBeNull();
     });
 
-    test('renders the list once interactions have settled', () => {
+    test('renders the list once interactions have settled', async () => {
       setMockDeferredMountReady(true);
 
-      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+      const { getByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
       expect(
         getByTestId(
@@ -208,8 +208,8 @@ describe('SettingsItemList Component', () => {
       onDelete: mockOnDelete,
     };
 
-    test('renders', () => {
-      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('renders', async () => {
+      const { getByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
       for (const tag of defaultProps.items) {
         const prefix = `${defaultProps.testIdPrefix}::${tag.id}::SettingsItemCard`;
@@ -220,34 +220,34 @@ describe('SettingsItemList Component', () => {
       }
     });
 
-    test('calls onEditPress when edit button is pressed', () => {
-      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('calls onEditPress when edit button is pressed', async () => {
+      const { getByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0]!.id}::SettingsItemCard::OnEdit`)
       );
 
       expect(mockOnEdit).toHaveBeenCalledWith(defaultProps.items[0]);
     });
 
-    test('calls onDeletePress when delete button is pressed', () => {
-      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('calls onDeletePress when delete button is pressed', async () => {
+      const { getByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0]!.id}::SettingsItemCard::OnDelete`)
       );
 
       expect(mockOnDelete).toHaveBeenCalledWith(defaultProps.items[0]);
     });
 
-    test('renders the search bar', () => {
-      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('renders the search bar', async () => {
+      const { getByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
       expect(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`)).toBeTruthy();
     });
 
-    test('shows all items when search query is empty', () => {
-      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('shows all items when search query is empty', async () => {
+      const { getByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
       expect(
         getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0]!.id}::SettingsItemCard::Item`)
@@ -260,10 +260,10 @@ describe('SettingsItemList Component', () => {
       ).toBeTruthy();
     });
 
-    test('filters items by name (case-insensitive)', () => {
-      const { getByTestId, queryByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('filters items by name (case-insensitive)', async () => {
+      const { getByTestId, queryByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'soup');
+      await fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'soup');
 
       expect(
         getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0]!.id}::SettingsItemCard::Item`)
@@ -274,21 +274,21 @@ describe('SettingsItemList Component', () => {
       ).toBeNull();
     });
 
-    test('shows no items when no match', () => {
-      const { getByTestId, queryByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('shows no items when no match', async () => {
+      const { getByTestId, queryByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'xyz');
+      await fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'xyz');
 
       expect(
         queryByTestId(`${defaultProps.testIdPrefix}::${mockTags[0]!.id}::SettingsItemCard::Item`)
       ).toBeNull();
     });
 
-    test('clears filter when search is cleared', () => {
-      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('clears filter when search is cleared', async () => {
+      const { getByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'soup');
-      fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), '');
+      await fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'soup');
+      await fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), '');
 
       expect(
         getByTestId(`${defaultProps.testIdPrefix}::${mockTags[0]!.id}::SettingsItemCard::Item`)
@@ -301,10 +301,10 @@ describe('SettingsItemList Component', () => {
       ).toBeTruthy();
     });
 
-    test('filters are applied per character', () => {
-      const { getByTestId } = render(<SettingsItemList {...defaultProps} />);
+    test('filters are applied per character', async () => {
+      const { getByTestId } = await render(<SettingsItemList {...defaultProps} />);
 
-      fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'ital');
+      await fireEvent.changeText(getByTestId(`${defaultProps.testIdPrefix}::SearchBar`), 'ital');
 
       expect(
         getByTestId(`${defaultProps.testIdPrefix}::${mockTags[1]!.id}::SettingsItemCard::Item`)

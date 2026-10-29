@@ -57,7 +57,7 @@ describe('MenuRecipeCard', () => {
 
   const testId = defaultProps.testId;
 
-  const renderMenuRecipeCard = (overrideProps = {}) => {
+  const renderMenuRecipeCard = async (overrideProps = {}) => {
     const props = { ...defaultProps, ...overrideProps };
 
     return render(
@@ -93,53 +93,53 @@ describe('MenuRecipeCard', () => {
   });
 
   describe('Basic Rendering', () => {
-    test('renders all elements with correct testIds', () => {
-      const { getByTestId } = renderMenuRecipeCard();
+    test('renders all elements with correct testIds', async () => {
+      const { getByTestId } = await renderMenuRecipeCard();
 
       assertBasicElements(getByTestId);
     });
 
-    test('renders recipe image with correct source', () => {
-      const { getByTestId } = renderMenuRecipeCard();
+    test('renders recipe image with correct source', async () => {
+      const { getByTestId } = await renderMenuRecipeCard();
 
       expect(getByTestId(`${testId}::Cover::Uri`).props.children).toBe(
         testMenuItemUncooked.imageSource
       );
     });
 
-    test('gives the thumbnail an explicit render size so expo-image can downsample', () => {
-      const { getByTestId } = renderMenuRecipeCard();
+    test('gives the thumbnail an explicit render size so expo-image can downsample', async () => {
+      const { getByTestId } = await renderMenuRecipeCard();
 
       expect(getByTestId(`${testId}::Cover::Size`).props.children).toBe(
         cardSizes.thumbnailSize.toString()
       );
     });
 
-    test('keeps the thumbnail corners rounded', () => {
-      const { getByTestId } = renderMenuRecipeCard();
+    test('keeps the thumbnail corners rounded', async () => {
+      const { getByTestId } = await renderMenuRecipeCard();
 
       expect(getByTestId(`${testId}::Cover::BorderRadius`).props.children).toBe(
         padding.small.toString()
       );
     });
 
-    test('fills the thumbnail with the surface variant colour while the image loads', () => {
-      const { getByTestId } = renderMenuRecipeCard();
+    test('fills the thumbnail with the surface variant colour while the image loads', async () => {
+      const { getByTestId } = await renderMenuRecipeCard();
 
       expect(getByTestId(`${testId}::Cover::BackgroundColor`).props.children).toBe(
         useTheme().colors.surfaceVariant
       );
     });
 
-    test('renders recipe title with correct number of lines', () => {
-      const { getByTestId } = renderMenuRecipeCard();
+    test('renders recipe title with correct number of lines', async () => {
+      const { getByTestId } = await renderMenuRecipeCard();
 
       expect(getByTestId(`${testId}::Title`).props.numberOfLines).toBe(2);
     });
 
-    test('renders with custom testId', () => {
+    test('renders with custom testId', async () => {
       const customTestId = 'custom-menu-card';
-      const { getByTestId } = renderMenuRecipeCard({ testId: customTestId });
+      const { getByTestId } = await renderMenuRecipeCard({ testId: customTestId });
 
       expect(getByTestId(customTestId)).toBeTruthy();
       expect(getByTestId(`${customTestId}::Checkbox`)).toBeTruthy();
@@ -148,22 +148,22 @@ describe('MenuRecipeCard', () => {
   });
 
   describe('Cooked State', () => {
-    test('displays unchecked checkbox when isCooked is false', () => {
-      const { getByTestId } = renderMenuRecipeCard();
+    test('displays unchecked checkbox when isCooked is false', async () => {
+      const { getByTestId } = await renderMenuRecipeCard();
 
       expect(getByTestId(`${testId}::Checkbox::Status`).props.children).toBe('unchecked');
     });
 
-    test('displays checked checkbox when isCooked is true', () => {
+    test('displays checked checkbox when isCooked is true', async () => {
       const cookedMenuItem: menuTableElement = { ...testMenuItemUncooked, isCooked: true };
-      const { getByTestId } = renderMenuRecipeCard({ menuItem: cookedMenuItem });
+      const { getByTestId } = await renderMenuRecipeCard({ menuItem: cookedMenuItem });
 
       expect(getByTestId(`${testId}::Checkbox::Status`).props.children).toBe('checked');
     });
 
-    test('applies strikethrough style to title when isCooked is true', () => {
+    test('applies strikethrough style to title when isCooked is true', async () => {
       const cookedMenuItem: menuTableElement = { ...testMenuItemUncooked, isCooked: true };
-      const { getByTestId } = renderMenuRecipeCard({ menuItem: cookedMenuItem });
+      const { getByTestId } = await renderMenuRecipeCard({ menuItem: cookedMenuItem });
 
       const titleStyle = getByTestId(`${testId}::Title`).props.style;
       const hasStrikethrough = titleStyle.some(
@@ -173,8 +173,8 @@ describe('MenuRecipeCard', () => {
       expect(hasStrikethrough).toBe(true);
     });
 
-    test('does not apply strikethrough style when isCooked is false', () => {
-      const { getByTestId } = renderMenuRecipeCard();
+    test('does not apply strikethrough style when isCooked is false', async () => {
+      const { getByTestId } = await renderMenuRecipeCard();
 
       const titleStyle = getByTestId(`${testId}::Title`).props.style;
       const hasStrikethrough = titleStyle.some(
@@ -186,67 +186,70 @@ describe('MenuRecipeCard', () => {
   });
 
   describe('Count Badge', () => {
-    test('hides badge when count is 1', () => {
-      const { queryByTestId } = renderMenuRecipeCard();
+    test('hides badge when count is 1', async () => {
+      const { queryByTestId } = await renderMenuRecipeCard();
 
       expect(queryByTestId(`${testId}::CountBadge`)).toBeNull();
     });
 
-    test('displays badge when count is greater than 1', () => {
+    test('displays badge when count is greater than 1', async () => {
       const multipleMenuItem: menuTableElement = { ...testMenuItemUncooked, count: 3 };
-      const { getByTestId } = renderMenuRecipeCard({ menuItem: multipleMenuItem });
+      const { getByTestId } = await renderMenuRecipeCard({ menuItem: multipleMenuItem });
 
       expect(getByTestId(`${testId}::CountBadge`)).toBeTruthy();
       expect(getByTestId(`${testId}::CountBadge`).props.children.props.children).toBe(3);
     });
 
-    test('displays correct count value in badge', () => {
+    test('displays correct count value in badge', async () => {
       const countValues = [2, 5, 10];
 
-      countValues.forEach(count => {
+      for (const count of countValues) {
         const menuItem: menuTableElement = { ...testMenuItemUncooked, count };
-        const { getByTestId } = renderMenuRecipeCard({ menuItem });
+        const { getByTestId } = await renderMenuRecipeCard({ menuItem });
 
         expect(getByTestId(`${testId}::CountBadge`).props.children.props.children).toBe(count);
-      });
+      }
     });
   });
 
   describe('User Interactions', () => {
-    test('calls onToggleCooked when checkbox is pressed', () => {
+    test('calls onToggleCooked when checkbox is pressed', async () => {
       const onToggleCooked = jest.fn();
-      const { getByTestId } = renderMenuRecipeCard({ onToggleCooked });
+      const { getByTestId } = await renderMenuRecipeCard({ onToggleCooked });
 
-      fireEvent.press(getByTestId(`${testId}::Checkbox`));
+      await fireEvent.press(getByTestId(`${testId}::Checkbox`));
 
       expect(onToggleCooked).toHaveBeenCalledTimes(1);
     });
 
-    test('calls onRemove when remove button is pressed', () => {
+    test('calls onRemove when remove button is pressed', async () => {
       const onRemove = jest.fn();
-      const { getByTestId } = renderMenuRecipeCard({ onRemove });
+      const { getByTestId } = await renderMenuRecipeCard({ onRemove });
 
-      fireEvent.press(getByTestId(`${testId}::RemoveButton`));
+      await fireEvent.press(getByTestId(`${testId}::RemoveButton`));
 
       expect(onRemove).toHaveBeenCalledTimes(1);
     });
 
-    test('calls onToggleCooked for cooked items when checkbox pressed', () => {
+    test('calls onToggleCooked for cooked items when checkbox pressed', async () => {
       const onToggleCooked = jest.fn();
       const cookedMenuItem: menuTableElement = { ...testMenuItemUncooked, isCooked: true };
-      const { getByTestId } = renderMenuRecipeCard({ menuItem: cookedMenuItem, onToggleCooked });
+      const { getByTestId } = await renderMenuRecipeCard({
+        menuItem: cookedMenuItem,
+        onToggleCooked,
+      });
 
-      fireEvent.press(getByTestId(`${testId}::Checkbox`));
+      await fireEvent.press(getByTestId(`${testId}::Checkbox`));
 
       expect(onToggleCooked).toHaveBeenCalledTimes(1);
     });
 
-    test('does not call callbacks when card is pressed', () => {
+    test('does not call callbacks when card is pressed', async () => {
       const onToggleCooked = jest.fn();
       const onRemove = jest.fn();
-      const { getByTestId } = renderMenuRecipeCard({ onToggleCooked, onRemove });
+      const { getByTestId } = await renderMenuRecipeCard({ onToggleCooked, onRemove });
 
-      fireEvent.press(getByTestId(testId));
+      await fireEvent.press(getByTestId(testId));
 
       expect(onToggleCooked).not.toHaveBeenCalled();
       expect(onRemove).not.toHaveBeenCalled();
@@ -255,13 +258,13 @@ describe('MenuRecipeCard', () => {
 
   describe('Navigation', () => {
     test('navigates to Recipe screen with readOnly mode when card pressed', async () => {
-      const { getByTestId } = renderMenuRecipeCard();
+      const { getByTestId } = await renderMenuRecipeCard();
 
       await waitFor(() => {
         expect(database.get_recipes().length).toBeGreaterThan(0);
       });
 
-      fireEvent.press(getByTestId(testId));
+      await fireEvent.press(getByTestId(testId));
 
       expect(mockNavigate).toHaveBeenCalledTimes(1);
       expect(mockNavigate).toHaveBeenCalledWith('RecipeView', {
@@ -272,28 +275,28 @@ describe('MenuRecipeCard', () => {
       });
     });
 
-    test('does not navigate when recipe not found in context', () => {
+    test('does not navigate when recipe not found in context', async () => {
       const nonExistentMenuItem: menuTableElement = {
         ...testMenuItemUncooked,
         recipeId: 9999,
         recipeTitle: 'Non-existent Recipe',
       };
-      const { getByTestId } = renderMenuRecipeCard({ menuItem: nonExistentMenuItem });
+      const { getByTestId } = await renderMenuRecipeCard({ menuItem: nonExistentMenuItem });
 
-      fireEvent.press(getByTestId(testId));
+      await fireEvent.press(getByTestId(testId));
 
       expect(mockNavigate).not.toHaveBeenCalled();
     });
 
     test('navigates with correct recipe data for cooked items', async () => {
       const cookedMenuItem: menuTableElement = { ...testMenuItemUncooked, isCooked: true };
-      const { getByTestId } = renderMenuRecipeCard({ menuItem: cookedMenuItem });
+      const { getByTestId } = await renderMenuRecipeCard({ menuItem: cookedMenuItem });
 
       await waitFor(() => {
         expect(database.get_recipes().length).toBeGreaterThan(0);
       });
 
-      fireEvent.press(getByTestId(testId));
+      await fireEvent.press(getByTestId(testId));
 
       expect(mockNavigate).toHaveBeenCalledTimes(1);
       expect(mockNavigate).toHaveBeenCalledWith('RecipeView', {
@@ -305,13 +308,13 @@ describe('MenuRecipeCard', () => {
 
     test('navigates with correct recipe data for multiple count items', async () => {
       const multipleMenuItem: menuTableElement = { ...testMenuItemUncooked, count: 3 };
-      const { getByTestId } = renderMenuRecipeCard({ menuItem: multipleMenuItem });
+      const { getByTestId } = await renderMenuRecipeCard({ menuItem: multipleMenuItem });
 
       await waitFor(() => {
         expect(database.get_recipes().length).toBeGreaterThan(0);
       });
 
-      fireEvent.press(getByTestId(testId));
+      await fireEvent.press(getByTestId(testId));
 
       expect(mockNavigate).toHaveBeenCalledTimes(1);
       expect(mockNavigate).toHaveBeenCalledWith('RecipeView', {
@@ -323,37 +326,37 @@ describe('MenuRecipeCard', () => {
   });
 
   describe('Edge Cases', () => {
-    test('handles empty imageSource gracefully', () => {
+    test('handles empty imageSource gracefully', async () => {
       const emptyImageMenuItem: menuTableElement = { ...testMenuItemUncooked, imageSource: '' };
-      const { getByTestId } = renderMenuRecipeCard({ menuItem: emptyImageMenuItem });
+      const { getByTestId } = await renderMenuRecipeCard({ menuItem: emptyImageMenuItem });
 
       assertBasicElements(getByTestId, emptyImageMenuItem);
       expect(getByTestId(`${testId}::Cover::Uri`).props.children).toBe('');
     });
 
-    test('handles long recipe title with ellipsis', () => {
+    test('handles long recipe title with ellipsis', async () => {
       const longTitleMenuItem: menuTableElement = {
         ...testMenuItemUncooked,
         recipeTitle:
           'Very Long Recipe Title That Should Be Truncated After Two Lines Of Text Display',
       };
-      const { getByTestId } = renderMenuRecipeCard({ menuItem: longTitleMenuItem });
+      const { getByTestId } = await renderMenuRecipeCard({ menuItem: longTitleMenuItem });
 
       expect(getByTestId(`${testId}::Title`).props.children).toBe(longTitleMenuItem.recipeTitle);
       expect(getByTestId(`${testId}::Title`).props.numberOfLines).toBe(2);
     });
 
-    test('handles special characters in recipe title', () => {
+    test('handles special characters in recipe title', async () => {
       const specialCharMenuItem: menuTableElement = {
         ...testMenuItemUncooked,
         recipeTitle: 'Café & Crème Brûlée with "Special" Ingredients',
       };
-      const { getByTestId } = renderMenuRecipeCard({ menuItem: specialCharMenuItem });
+      const { getByTestId } = await renderMenuRecipeCard({ menuItem: specialCharMenuItem });
 
       expect(getByTestId(`${testId}::Title`).props.children).toBe(specialCharMenuItem.recipeTitle);
     });
 
-    test('renders correctly with all edge case combinations', () => {
+    test('renders correctly with all edge case combinations', async () => {
       const edgeCaseMenuItem: menuTableElement = {
         id: 1,
         recipeId: 1,
@@ -362,7 +365,9 @@ describe('MenuRecipeCard', () => {
         isCooked: true,
         count: 10,
       };
-      const { getByTestId, queryByTestId } = renderMenuRecipeCard({ menuItem: edgeCaseMenuItem });
+      const { getByTestId, queryByTestId } = await renderMenuRecipeCard({
+        menuItem: edgeCaseMenuItem,
+      });
 
       expect(getByTestId(testId)).toBeTruthy();
       expect(getByTestId(`${testId}::Checkbox::Status`).props.children).toBe('checked');
@@ -372,13 +377,13 @@ describe('MenuRecipeCard', () => {
   });
 
   describe('Visual State Changes', () => {
-    test('changes visual state when toggling from uncooked to cooked', () => {
-      const { getByTestId, rerender } = renderMenuRecipeCard();
+    test('changes visual state when toggling from uncooked to cooked', async () => {
+      const { getByTestId, rerender } = await renderMenuRecipeCard();
 
       expect(getByTestId(`${testId}::Checkbox::Status`).props.children).toBe('unchecked');
 
       const cookedMenuItem: menuTableElement = { ...testMenuItemUncooked, isCooked: true };
-      rerender(
+      await rerender(
         <NavigationContainer>
           <Stack.Navigator>
             <Stack.Screen
@@ -392,13 +397,13 @@ describe('MenuRecipeCard', () => {
       expect(getByTestId(`${testId}::Checkbox::Status`).props.children).toBe('checked');
     });
 
-    test('shows and hides badge when count changes', () => {
-      const { getByTestId, queryByTestId, rerender } = renderMenuRecipeCard();
+    test('shows and hides badge when count changes', async () => {
+      const { getByTestId, queryByTestId, rerender } = await renderMenuRecipeCard();
 
       expect(queryByTestId(`${testId}::CountBadge`)).toBeNull();
 
       const multipleMenuItem: menuTableElement = { ...testMenuItemUncooked, count: 2 };
-      rerender(
+      await rerender(
         <NavigationContainer>
           <Stack.Navigator>
             <Stack.Screen

@@ -32,7 +32,7 @@ describe('ModalImageSelect Screen', () => {
     onImagesUpdated: jest.fn(),
   };
 
-  const renderModalImageSelect = (props: ModalImageSelectProps = defaultProps) => {
+  const renderModalImageSelect = async (props: ModalImageSelectProps = defaultProps) => {
     return render(<ModalImageSelect {...props} />);
   };
 
@@ -78,24 +78,24 @@ describe('ModalImageSelect Screen', () => {
     jest.clearAllMocks();
   });
 
-  test('renders with correct structure and content', () => {
+  test('renders with correct structure and content', async () => {
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
     assertModalImageSelect(getByTestId, props);
   });
 
-  test('handles existing image selection correctly', () => {
+  test('handles existing image selection correctly', async () => {
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
     expect(props.onSelectFunction).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('Modal::Item::0'));
+    await fireEvent.press(getByTestId('Modal::Item::0'));
     expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image1.jpg');
     expect(props.onSelectFunction).toHaveBeenCalledTimes(1);
 
-    fireEvent.press(getByTestId('Modal::Item::2'));
+    await fireEvent.press(getByTestId('Modal::Item::2'));
     expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image3.jpeg');
     expect(props.onSelectFunction).toHaveBeenCalledTimes(2);
   });
@@ -104,13 +104,13 @@ describe('ModalImageSelect Screen', () => {
     mockTakePhoto.mockResolvedValue('file:///new-photo.jpg');
 
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
     expect(mockTakePhoto).not.toHaveBeenCalled();
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
     expect(props.onSelectFunction).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
     await Promise.resolve();
 
     expect(mockTakePhoto).toHaveBeenCalledTimes(1);
@@ -124,13 +124,13 @@ describe('ModalImageSelect Screen', () => {
     mockPickImage.mockResolvedValue('file:///selected-image.png');
 
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
     expect(mockPickImage).not.toHaveBeenCalled();
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
     expect(props.onSelectFunction).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
     await Promise.resolve();
 
     expect(mockPickImage).toHaveBeenCalledTimes(1);
@@ -144,9 +144,9 @@ describe('ModalImageSelect Screen', () => {
     mockTakePhoto.mockResolvedValue('');
 
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
-    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
     await Promise.resolve();
 
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
@@ -154,44 +154,44 @@ describe('ModalImageSelect Screen', () => {
 
     mockPickImage.mockResolvedValue('');
 
-    fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
     await Promise.resolve();
 
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
     expect(props.onSelectFunction).not.toHaveBeenCalled();
   });
 
-  test('handles empty image array correctly', () => {
+  test('handles empty image array correctly', async () => {
     const props = { ...defaultProps, arrImg: [] };
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
     assertModalImageSelect(getByTestId, props);
   });
 
-  test('handles single image in array correctly', () => {
+  test('handles single image in array correctly', async () => {
     const props = { ...defaultProps, arrImg: ['file:///single-image.jpg'] };
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
     assertModalImageSelect(getByTestId, props);
 
-    fireEvent.press(getByTestId('Modal::Item::0'));
+    await fireEvent.press(getByTestId('Modal::Item::0'));
     expect(props.onSelectFunction).toHaveBeenCalledWith('file:///single-image.jpg');
   });
 
-  test('handles large image arrays correctly', () => {
+  test('handles large image arrays correctly', async () => {
     const largeImageArray = Array.from(
       { length: 20 },
       (_, index) => `file:///image${index + 1}.jpg`
     );
     const props = { ...defaultProps, arrImg: largeImageArray };
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
     assertModalImageSelect(getByTestId, props);
 
-    fireEvent.press(getByTestId('Modal::Item::10'));
+    await fireEvent.press(getByTestId('Modal::Item::10'));
     expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image11.jpg');
 
-    fireEvent.press(getByTestId('Modal::Item::19'));
+    await fireEvent.press(getByTestId('Modal::Item::19'));
     expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image20.jpg');
   });
 
@@ -199,9 +199,9 @@ describe('ModalImageSelect Screen', () => {
     mockTakePhoto.mockResolvedValue('');
 
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
-    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
     await Promise.resolve();
 
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
@@ -209,7 +209,7 @@ describe('ModalImageSelect Screen', () => {
 
     mockPickImage.mockResolvedValue('');
 
-    fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
     await Promise.resolve();
 
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
@@ -221,14 +221,14 @@ describe('ModalImageSelect Screen', () => {
     mockPickImage.mockResolvedValue('file:///rapid-gallery.jpg');
 
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
-    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
-    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
-    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
 
-    fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
-    fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
 
     await Promise.resolve();
 
@@ -238,9 +238,9 @@ describe('ModalImageSelect Screen', () => {
     expect(props.onSelectFunction).not.toHaveBeenCalled();
   });
 
-  test('preserves modal dismissal functionality', () => {
+  test('preserves modal dismissal functionality', async () => {
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
     const modalElement = getByTestId('ModalImageSelect::ExplanationText').parent?.parent;
     expect(modalElement).toBeTruthy();
@@ -248,7 +248,7 @@ describe('ModalImageSelect Screen', () => {
     expect(props.onDismissFunction).toBeDefined();
   });
 
-  test('handles edge cases in image URIs', () => {
+  test('handles edge cases in image URIs', async () => {
     const edgeCaseImages = [
       '',
       'file:///very-long-filename-that-might-cause-issues.jpg',
@@ -258,20 +258,20 @@ describe('ModalImageSelect Screen', () => {
       'file:///unicode-émoji🍰-image.png',
     ];
     const props = { ...defaultProps, arrImg: edgeCaseImages };
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
     assertModalImageSelect(getByTestId, props);
 
-    edgeCaseImages.forEach((imageUri, index) => {
+    for (const [index, imageUri] of edgeCaseImages.entries()) {
       jest.clearAllMocks();
-      fireEvent.press(getByTestId(`Modal::Item::${index}`));
+      await fireEvent.press(getByTestId(`Modal::Item::${index}`));
       expect(props.onSelectFunction).toHaveBeenCalledWith(imageUri);
-    });
+    }
   });
 
-  test('maintains accessibility and testing structure', () => {
+  test('maintains accessibility and testing structure', async () => {
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
     const requiredTestIds = [
       'ModalImageSelect::ExplanationText',
@@ -298,15 +298,15 @@ describe('ModalImageSelect Screen', () => {
     mockPickImage.mockResolvedValue('file:///gallery-success.png');
 
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
-    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
     await Promise.resolve();
 
     expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///camera-success.jpg');
     expect(props.onSelectFunction).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
     await Promise.resolve();
 
     expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///gallery-success.png');
@@ -319,13 +319,13 @@ describe('ModalImageSelect Screen', () => {
     mockPickImage.mockResolvedValue('file:///gallery-photo.jpg');
 
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
-    fireEvent.press(getByTestId('Modal::Item::0'));
-    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
-    fireEvent.press(getByTestId('Modal::Item::1'));
-    fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
-    fireEvent.press(getByTestId('Modal::Item::2'));
+    await fireEvent.press(getByTestId('Modal::Item::0'));
+    await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Item::1'));
+    await fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Item::2'));
 
     await Promise.resolve();
 
@@ -336,19 +336,19 @@ describe('ModalImageSelect Screen', () => {
     assertModalImageSelect(getByTestId, props);
   });
 
-  test('direct item press calls onSelectFunction but never onImagesUpdated', () => {
+  test('direct item press calls onSelectFunction but never onImagesUpdated', async () => {
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
-    fireEvent.press(getByTestId('Modal::Item::0'));
+    await fireEvent.press(getByTestId('Modal::Item::0'));
     expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image1.jpg');
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('Modal::Item::1'));
+    await fireEvent.press(getByTestId('Modal::Item::1'));
     expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image2.png');
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('Modal::Item::2'));
+    await fireEvent.press(getByTestId('Modal::Item::2'));
     expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image3.jpeg');
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
 
@@ -360,12 +360,12 @@ describe('ModalImageSelect Screen', () => {
     mockPickImage.mockResolvedValue('file:///picked.jpg');
 
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
-    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
     await Promise.resolve();
 
-    fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
     await Promise.resolve();
 
     expect(props.onImagesUpdated).toHaveBeenCalledTimes(2);
@@ -374,14 +374,14 @@ describe('ModalImageSelect Screen', () => {
     expect(props.onSelectFunction).not.toHaveBeenCalled();
   });
 
-  test('re-renders correctly when arrImg prop changes', () => {
-    const { getByTestId, rerender } = render(<ModalImageSelect {...defaultProps} />);
+  test('re-renders correctly when arrImg prop changes', async () => {
+    const { getByTestId, rerender } = await render(<ModalImageSelect {...defaultProps} />);
 
     expect(getByTestId('Modal::ItemCount').props.children).toBe('3');
     expect(getByTestId('Modal::Item::0::Uri').props.children).toBe('file:///image1.jpg');
 
     const updatedImages = ['file:///updated1.jpg', 'file:///updated2.png'];
-    rerender(<ModalImageSelect {...defaultProps} arrImg={updatedImages} />);
+    await rerender(<ModalImageSelect {...defaultProps} arrImg={updatedImages} />);
 
     expect(getByTestId('Modal::ItemCount').props.children).toBe('2');
     expect(getByTestId('Modal::Item::0::Uri').props.children).toBe('file:///updated1.jpg');
@@ -392,12 +392,12 @@ describe('ModalImageSelect Screen', () => {
     mockTakePhoto.mockResolvedValue('file:///mixed-camera.jpg');
 
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
-    fireEvent.press(getByTestId('Modal::Item::0'));
-    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Item::0'));
+    await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
     await Promise.resolve();
-    fireEvent.press(getByTestId('Modal::Item::2'));
+    await fireEvent.press(getByTestId('Modal::Item::2'));
 
     expect(props.onSelectFunction).toHaveBeenCalledTimes(2);
     expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image1.jpg');
@@ -406,21 +406,21 @@ describe('ModalImageSelect Screen', () => {
     expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///mixed-camera.jpg');
   });
 
-  test('duplicate URIs in array are all selectable independently', () => {
+  test('duplicate URIs in array are all selectable independently', async () => {
     const duplicateImages = ['file:///same.jpg', 'file:///same.jpg', 'file:///other.jpg'];
     const props = { ...defaultProps, arrImg: duplicateImages };
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
     expect(getByTestId('Modal::ItemCount').props.children).toBe('3');
 
-    fireEvent.press(getByTestId('Modal::Item::0'));
+    await fireEvent.press(getByTestId('Modal::Item::0'));
     expect(props.onSelectFunction).toHaveBeenCalledWith('file:///same.jpg');
 
-    fireEvent.press(getByTestId('Modal::Item::1'));
+    await fireEvent.press(getByTestId('Modal::Item::1'));
     expect(props.onSelectFunction).toHaveBeenCalledTimes(2);
     expect(props.onSelectFunction).toHaveBeenNthCalledWith(2, 'file:///same.jpg');
 
-    fireEvent.press(getByTestId('Modal::Item::2'));
+    await fireEvent.press(getByTestId('Modal::Item::2'));
     expect(props.onSelectFunction).toHaveBeenCalledWith('file:///other.jpg');
   });
 
@@ -429,9 +429,9 @@ describe('ModalImageSelect Screen', () => {
       mockTakePhoto.mockResolvedValue('file:///auto-photo.jpg');
 
       const props = { ...defaultProps, autoSelect: true };
-      const { getByTestId } = renderModalImageSelect(props);
+      const { getByTestId } = await renderModalImageSelect(props);
 
-      fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+      await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
       await Promise.resolve();
 
       expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///auto-photo.jpg');
@@ -442,9 +442,9 @@ describe('ModalImageSelect Screen', () => {
       mockPickImage.mockResolvedValue('file:///auto-gallery.jpg');
 
       const props = { ...defaultProps, autoSelect: true };
-      const { getByTestId } = renderModalImageSelect(props);
+      const { getByTestId } = await renderModalImageSelect(props);
 
-      fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+      await fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
       await Promise.resolve();
 
       expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///auto-gallery.jpg');
@@ -461,9 +461,9 @@ describe('ModalImageSelect Screen', () => {
         onImagesUpdated: jest.fn().mockImplementation(() => callOrder.push('onImagesUpdated')),
         onSelectFunction: jest.fn().mockImplementation(() => callOrder.push('onSelectFunction')),
       };
-      const { getByTestId } = renderModalImageSelect(props);
+      const { getByTestId } = await renderModalImageSelect(props);
 
-      fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+      await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
       await Promise.resolve();
 
       expect(callOrder).toEqual(['onImagesUpdated', 'onSelectFunction']);
@@ -473,9 +473,9 @@ describe('ModalImageSelect Screen', () => {
       mockTakePhoto.mockResolvedValue('file:///no-auto-photo.jpg');
 
       const props = { ...defaultProps, autoSelect: false };
-      const { getByTestId } = renderModalImageSelect(props);
+      const { getByTestId } = await renderModalImageSelect(props);
 
-      fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+      await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
       await Promise.resolve();
 
       expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///no-auto-photo.jpg');
@@ -485,20 +485,20 @@ describe('ModalImageSelect Screen', () => {
     test('autoSelect omitted (undefined) behaves same as false', async () => {
       mockTakePhoto.mockResolvedValue('file:///omitted-auto.jpg');
 
-      const { getByTestId } = renderModalImageSelect(defaultProps);
+      const { getByTestId } = await renderModalImageSelect(defaultProps);
 
-      fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+      await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
       await Promise.resolve();
 
       expect(defaultProps.onImagesUpdated).toHaveBeenCalledWith('file:///omitted-auto.jpg');
       expect(defaultProps.onSelectFunction).not.toHaveBeenCalled();
     });
 
-    test('item tap with autoSelect=true still calls only onSelectFunction not onImagesUpdated', () => {
+    test('item tap with autoSelect=true still calls only onSelectFunction not onImagesUpdated', async () => {
       const props = { ...defaultProps, autoSelect: true };
-      const { getByTestId } = renderModalImageSelect(props);
+      const { getByTestId } = await renderModalImageSelect(props);
 
-      fireEvent.press(getByTestId('Modal::Item::0'));
+      await fireEvent.press(getByTestId('Modal::Item::0'));
 
       expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image1.jpg');
       expect(props.onImagesUpdated).not.toHaveBeenCalled();
@@ -508,9 +508,9 @@ describe('ModalImageSelect Screen', () => {
       mockPickImage.mockResolvedValue('file:///exact-uri.png');
 
       const props = { ...defaultProps, autoSelect: true };
-      const { getByTestId } = renderModalImageSelect(props);
+      const { getByTestId } = await renderModalImageSelect(props);
 
-      fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+      await fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
       await Promise.resolve();
 
       expect(props.onSelectFunction).toHaveBeenCalledTimes(1);
@@ -521,9 +521,9 @@ describe('ModalImageSelect Screen', () => {
       mockTakePhoto.mockResolvedValue('');
 
       const props = { ...defaultProps, autoSelect: true };
-      const { getByTestId } = renderModalImageSelect(props);
+      const { getByTestId } = await renderModalImageSelect(props);
 
-      fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+      await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
       await Promise.resolve();
 
       expect(props.onImagesUpdated).not.toHaveBeenCalled();
@@ -534,9 +534,9 @@ describe('ModalImageSelect Screen', () => {
       mockPickImage.mockResolvedValue('');
 
       const props = { ...defaultProps, autoSelect: true };
-      const { getByTestId } = renderModalImageSelect(props);
+      const { getByTestId } = await renderModalImageSelect(props);
 
-      fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+      await fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
       await Promise.resolve();
 
       expect(props.onImagesUpdated).not.toHaveBeenCalled();
@@ -548,15 +548,15 @@ describe('ModalImageSelect Screen', () => {
     mockTakePhoto.mockResolvedValue('file:///new-from-camera.jpg');
 
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
-    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
     await Promise.resolve();
 
     expect(props.onImagesUpdated).toHaveBeenCalledWith('file:///new-from-camera.jpg');
     expect(props.onSelectFunction).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('Modal::Item::0'));
+    await fireEvent.press(getByTestId('Modal::Item::0'));
 
     expect(props.onSelectFunction).toHaveBeenCalledTimes(1);
     expect(props.onSelectFunction).toHaveBeenCalledWith('file:///image1.jpg');
@@ -567,9 +567,9 @@ describe('ModalImageSelect Screen', () => {
     mockPickImage.mockResolvedValue('');
 
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
-    fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Gallery::RoundButton::OnPressFunction'));
     await Promise.resolve();
 
     expect(props.onImagesUpdated).not.toHaveBeenCalled();
@@ -580,9 +580,9 @@ describe('ModalImageSelect Screen', () => {
     mockTakePhoto.mockResolvedValue('');
 
     const props = defaultProps;
-    const { getByTestId } = renderModalImageSelect(props);
+    const { getByTestId } = await renderModalImageSelect(props);
 
-    fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('Modal::Camera::RoundButton::OnPressFunction'));
     await Promise.resolve();
 
     expect(props.onImagesUpdated).not.toHaveBeenCalled();

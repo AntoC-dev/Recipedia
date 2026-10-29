@@ -14,43 +14,45 @@ describe('DiscoveryFooter', () => {
     jest.clearAllMocks();
   });
 
-  test('renders continue button', () => {
-    const { getByTestId } = render(<DiscoveryFooter {...defaultProps} />);
+  test('renders continue button', async () => {
+    const { getByTestId } = await render(<DiscoveryFooter {...defaultProps} />);
 
     expect(getByTestId('test-footer::ContinueButton')).toBeTruthy();
   });
 
-  test('calls onContinue when button pressed', () => {
+  test('calls onContinue when button pressed', async () => {
     const onContinue = jest.fn();
-    const { getByTestId } = render(<DiscoveryFooter {...defaultProps} onContinue={onContinue} />);
+    const { getByTestId } = await render(
+      <DiscoveryFooter {...defaultProps} onContinue={onContinue} />
+    );
 
-    fireEvent.press(getByTestId('test-footer::ContinueButton'));
+    await fireEvent.press(getByTestId('test-footer::ContinueButton'));
 
     expect(onContinue).toHaveBeenCalledTimes(1);
   });
 
-  test('disables button when selectedCount is 0', () => {
-    const { getByTestId } = render(<DiscoveryFooter {...defaultProps} selectedCount={0} />);
+  test('disables button when selectedCount is 0', async () => {
+    const { getByTestId } = await render(<DiscoveryFooter {...defaultProps} selectedCount={0} />);
 
     expect(getByTestId('test-footer::ContinueButton').props.accessibilityState.disabled).toBe(true);
   });
 
-  test('enables button when has selection', () => {
-    const { getByTestId } = render(<DiscoveryFooter {...defaultProps} />);
+  test('enables button when has selection', async () => {
+    const { getByTestId } = await render(<DiscoveryFooter {...defaultProps} />);
 
     expect(getByTestId('test-footer::ContinueButton').props.accessibilityState.disabled).toBe(
       false
     );
   });
 
-  test('does not show error when null', () => {
-    const { queryByText } = render(<DiscoveryFooter {...defaultProps} />);
+  test('does not show error when null', async () => {
+    const { queryByText } = await render(<DiscoveryFooter {...defaultProps} />);
 
     expect(queryByText(/error/i)).toBeNull();
   });
 
-  test('shows error message when provided', () => {
-    const { getByText } = render(
+  test('shows error message when provided', async () => {
+    const { getByText } = await render(
       <DiscoveryFooter {...defaultProps} error='Network error occurred' />
     );
 

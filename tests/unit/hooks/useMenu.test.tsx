@@ -41,13 +41,13 @@ describe('useMenu', () => {
     return database.get_recipes()[0]!;
   }
 
-  test('menu starts empty', () => {
-    const { result } = renderHook(() => useMenu());
+  test('menu starts empty', async () => {
+    const { result } = await renderHook(() => useMenu());
     expect(result.current.menu).toEqual([]);
   });
 
   test('addRecipeToMenu inserts a menu entry for the recipe', async () => {
-    const { result } = renderHook(() => useMenu());
+    const { result } = await renderHook(() => useMenu());
 
     await act(async () => {
       await result.current.addRecipeToMenu(addedRecipe());
@@ -60,7 +60,7 @@ describe('useMenu', () => {
   });
 
   test('isRecipeInMenu tracks presence before and after adding', async () => {
-    const { result } = renderHook(() => useMenu());
+    const { result } = await renderHook(() => useMenu());
     expect(result.current.isRecipeInMenu(addedRecipe().id)).toBe(false);
 
     await act(async () => {
@@ -74,7 +74,7 @@ describe('useMenu', () => {
   });
 
   test('toggleMenuItemCooked flips the cooked flag on the menu item', async () => {
-    const { result } = renderHook(() => useMenu());
+    const { result } = await renderHook(() => useMenu());
     await act(async () => {
       await result.current.addRecipeToMenu(addedRecipe());
     });
@@ -93,7 +93,7 @@ describe('useMenu', () => {
   });
 
   test('removeFromMenu deletes the menu entry', async () => {
-    const { result } = renderHook(() => useMenu());
+    const { result } = await renderHook(() => useMenu());
     await act(async () => {
       await result.current.addRecipeToMenu(addedRecipe());
     });
@@ -112,7 +112,7 @@ describe('useMenu', () => {
   });
 
   test('togglePurchased sets a false ingredient to purchased then back to unpurchased', async () => {
-    const { result } = renderHook(() => useMenu());
+    const { result } = await renderHook(() => useMenu());
     await act(async () => {
       await result.current.addRecipeToMenu(addedRecipe());
     });
@@ -136,7 +136,7 @@ describe('useMenu', () => {
   });
 
   test('clearPurchased resets every purchased flag', async () => {
-    const { result } = renderHook(() => useMenu());
+    const { result } = await renderHook(() => useMenu());
     await act(async () => {
       await result.current.addRecipeToMenu(addedRecipe());
       await result.current.togglePurchased('Tomato');
@@ -158,7 +158,7 @@ describe('useMenu', () => {
   });
 
   test('clearMenu empties the menu and clears purchased state', async () => {
-    const { result } = renderHook(() => useMenu());
+    const { result } = await renderHook(() => useMenu());
     await act(async () => {
       await result.current.addRecipeToMenu(addedRecipe());
       await result.current.togglePurchased('Tomato');

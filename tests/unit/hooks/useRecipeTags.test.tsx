@@ -71,7 +71,7 @@ describe('useRecipeTags', () => {
     test('rejects empty tag', async () => {
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -83,7 +83,7 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.addTag('');
       });
 
@@ -93,7 +93,7 @@ describe('useRecipeTags', () => {
     test('rejects whitespace-only tag', async () => {
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -105,7 +105,7 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.addTag('   ');
       });
 
@@ -115,7 +115,7 @@ describe('useRecipeTags', () => {
     test('skips duplicate tag (case-insensitive)', async () => {
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -127,7 +127,7 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.addTag('ITALIAN');
       });
 
@@ -137,7 +137,7 @@ describe('useRecipeTags', () => {
     test('adds exact match tag from database', async () => {
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -150,7 +150,7 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.addTag('Mexican');
       });
 
@@ -171,7 +171,7 @@ describe('useRecipeTags', () => {
 
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -184,7 +184,7 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.addTag('Itallian');
       });
 
@@ -199,7 +199,7 @@ describe('useRecipeTags', () => {
 
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -212,7 +212,7 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.addTag('CompletelyNewTag');
       });
 
@@ -226,7 +226,7 @@ describe('useRecipeTags', () => {
     test('removes tag by exact name', async () => {
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -238,7 +238,7 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.removeTag('Italian');
       });
 
@@ -249,7 +249,7 @@ describe('useRecipeTags', () => {
     test('does nothing for non-existing tag', async () => {
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -261,7 +261,7 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.removeTag('NonExistentTag');
       });
 
@@ -271,7 +271,7 @@ describe('useRecipeTags', () => {
     test('case-sensitive removal (does not remove different case)', async () => {
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -283,7 +283,7 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.removeTag('ITALIAN');
       });
 
@@ -293,7 +293,7 @@ describe('useRecipeTags', () => {
     test('removes all tags when called for each', async () => {
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -305,11 +305,11 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.removeTag('Italian');
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.removeTag('Dinner');
       });
 
@@ -319,7 +319,7 @@ describe('useRecipeTags', () => {
     test('removes multiple tags when removeTag is called in the same act', async () => {
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -331,7 +331,7 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.removeTag('Italian');
         result.current.tags.removeTag('Dinner');
       });
@@ -344,7 +344,7 @@ describe('useRecipeTags', () => {
     test('adds tag if not duplicate', async () => {
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -356,7 +356,7 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.addTagIfNotDuplicate({ id: 3, name: 'Mexican' });
       });
 
@@ -369,7 +369,7 @@ describe('useRecipeTags', () => {
     test('does not add duplicate (case-insensitive)', async () => {
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -381,7 +381,7 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.addTagIfNotDuplicate({ id: 1, name: 'ITALIAN' });
       });
 
@@ -392,7 +392,7 @@ describe('useRecipeTags', () => {
       const recipeWithEmptyTags: recipeTableElement = { ...recipeWithTags, tags: [] };
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithEmptyTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -404,13 +404,13 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(0);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.addTagIfNotDuplicate({ id: 1, name: 'Italian' });
       });
 
       expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
 
-      act(() => {
+      await act(() => {
         result.current.tags.addTagIfNotDuplicate({ id: 2, name: 'ITALIAN' });
       });
 
@@ -421,7 +421,7 @@ describe('useRecipeTags', () => {
       const recipeWithEmptyTags: recipeTableElement = { ...recipeWithTags, tags: [] };
       const wrapper = createTagsWrapper(createMockRecipeProp('edit', recipeWithEmptyTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           tags: useRecipeTags(),
           form: useRecipeForm(),
@@ -433,15 +433,15 @@ describe('useRecipeTags', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(0);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.addTagIfNotDuplicate({ id: 1, name: 'Italian' });
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.addTagIfNotDuplicate({ id: 2, name: 'Dinner' });
       });
 
-      act(() => {
+      await act(() => {
         result.current.tags.addTagIfNotDuplicate({ id: 3, name: 'Quick Meal' });
       });
 

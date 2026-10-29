@@ -21,8 +21,8 @@ describe('NutritionRow', () => {
     jest.clearAllMocks();
   });
 
-  test('renders in read-only mode with label, value and unit', () => {
-    const { getByTestId, queryByTestId } = render(
+  test('renders in read-only mode with label, value and unit', async () => {
+    const { getByTestId, queryByTestId } = await render(
       <NutritionRow
         label={defaultLabel}
         value={defaultValue}
@@ -36,10 +36,10 @@ describe('NutritionRow', () => {
     expect(getByTestId(defaultTestId + '::Value').props.children).toEqual(['250', ' ', 'kcal']);
   });
 
-  test('renders as sub-item with proper indentation', () => {
+  test('renders as sub-item with proper indentation', async () => {
     const subItemLabel = 'Saturated fat';
     const subItem = 8;
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = await render(
       <NutritionRow
         label={subItemLabel}
         value={subItem}
@@ -58,8 +58,8 @@ describe('NutritionRow', () => {
     ]);
   });
 
-  test('renders in editable mode with text input', () => {
-    const { getByTestId, queryByTestId } = render(
+  test('renders in editable mode with text input', async () => {
+    const { getByTestId, queryByTestId } = await render(
       <NutritionRow
         label={defaultLabel}
         value={defaultValue}
@@ -76,10 +76,10 @@ describe('NutritionRow', () => {
     expect(getByTestId(defaultTestId + '::NumericTextInput').props.value).toBe('250');
   });
 
-  test('calls onValueChange when text input changes', () => {
+  test('calls onValueChange when text input changes', async () => {
     const localMockOnValueChange = jest.fn();
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <NutritionRow
         label={defaultLabel}
         value={defaultValue}
@@ -92,15 +92,15 @@ describe('NutritionRow', () => {
     );
 
     const input = getByTestId(defaultTestId + '::NumericTextInput');
-    fireEvent.changeText(input, '300');
-    fireEvent(input, 'onBlur');
+    await fireEvent.changeText(input, '300');
+    await fireEvent(input, 'onBlur');
     expect(localMockOnValueChange).toHaveBeenCalledWith('energyKcal', 300);
   });
 
-  test('handles invalid input in editable mode', () => {
+  test('handles invalid input in editable mode', async () => {
     const localMockOnValueChange = jest.fn();
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <NutritionRow
         label={defaultLabel}
         value={defaultValue}
@@ -113,15 +113,15 @@ describe('NutritionRow', () => {
     );
 
     const input = getByTestId(defaultTestId + '::NumericTextInput');
-    fireEvent.changeText(input, 'invalid');
-    fireEvent(input, 'onBlur');
+    await fireEvent.changeText(input, 'invalid');
+    await fireEvent(input, 'onBlur');
 
     expect(localMockOnValueChange).toHaveBeenCalledWith('energyKcal', defaultValueNumber);
   });
 
-  test('formats decimal values correctly', () => {
+  test('formats decimal values correctly', async () => {
     const decimalValue = 2.5;
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = await render(
       <NutritionRow label='Fiber' value={decimalValue} unit='g' testId={defaultTestId} />
     );
 
@@ -130,36 +130,36 @@ describe('NutritionRow', () => {
     expect(getByTestId(defaultTestId + '::Value').props.children).toEqual(['2.5', ' ', 'g']);
   });
 
-  test('rounds values with more than two decimals', () => {
-    const { getByTestId } = render(
+  test('rounds values with more than two decimals', async () => {
+    const { getByTestId } = await render(
       <NutritionRow label='Salt' value={2.567} unit='g' testId={defaultTestId} />
     );
 
     expect(getByTestId(defaultTestId + '::Value').props.children).toEqual(['2.57', ' ', 'g']);
   });
 
-  test('renders a comma decimal in a comma-separator region', () => {
+  test('renders a comma decimal in a comma-separator region', async () => {
     useCommaDecimalRegion(Localization as unknown as { getLocales: jest.Mock });
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <NutritionRow label='Fiber' value={8.53} unit='g' testId={defaultTestId} />
     );
 
     expect(getByTestId(defaultTestId + '::Value').props.children).toEqual(['8,53', ' ', 'g']);
   });
 
-  test('renders a dot decimal in a dot-separator region', () => {
+  test('renders a dot decimal in a dot-separator region', async () => {
     useDotDecimalRegion(Localization as unknown as { getLocales: jest.Mock });
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <NutritionRow label='Fiber' value={8.53} unit='g' testId={defaultTestId} />
     );
 
     expect(getByTestId(defaultTestId + '::Value').props.children).toEqual(['8.53', ' ', 'g']);
   });
 
-  test('formats integer values without decimals', () => {
-    const { getByTestId, queryByTestId } = render(
+  test('formats integer values without decimals', async () => {
+    const { getByTestId, queryByTestId } = await render(
       <NutritionRow
         label={defaultLabel}
         value={defaultValue}
@@ -177,8 +177,8 @@ describe('NutritionRow', () => {
     ]);
   });
 
-  test('does not render text input when not editable even with field provided', () => {
-    const { getByTestId, queryByTestId } = render(
+  test('does not render text input when not editable even with field provided', async () => {
+    const { getByTestId, queryByTestId } = await render(
       <NutritionRow
         label={defaultLabel}
         value={defaultValue}
@@ -194,8 +194,8 @@ describe('NutritionRow', () => {
     expect(queryByTestId(defaultTestId + '::NumericTextInput')).toBeNull();
   });
 
-  test('does not render text input when editable but no field provided', () => {
-    const { getByTestId, queryByTestId } = render(
+  test('does not render text input when editable but no field provided', async () => {
+    const { getByTestId, queryByTestId } = await render(
       <NutritionRow
         label={defaultLabel}
         value={defaultValue}

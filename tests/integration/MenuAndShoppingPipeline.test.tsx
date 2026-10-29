@@ -59,7 +59,7 @@ const soupRecipe: RecipeDraft = {
   time: 30,
 };
 
-function renderMenuAndShopping() {
+async function renderMenuAndShopping() {
   return renderHook(() => ({
     menu: useMenu(),
     shopping: useShopping(),
@@ -80,8 +80,8 @@ describe('Menu and Shopping Pipeline', () => {
   });
 
   describe('addRecipeToMenu', () => {
-    test('shopping list is empty when menu is empty', () => {
-      const { result } = renderMenuAndShopping();
+    test('shopping list is empty when menu is empty', async () => {
+      const { result } = await renderMenuAndShopping();
 
       expect(result.current.shopping.shopping).toEqual([]);
     });
@@ -90,7 +90,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -110,7 +110,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -129,7 +129,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -147,7 +147,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -176,7 +176,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       expect(result.current.menu.isRecipeInMenu(addedRecipe!.id!)).toBe(false);
     });
@@ -185,7 +185,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -202,7 +202,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -231,7 +231,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -258,7 +258,7 @@ describe('Menu and Shopping Pipeline', () => {
       const pasta = recipes.find(r => r.title === 'Pasta Primavera')!;
       const salad = recipes.find(r => r.title === 'Garden Salad')!;
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(pasta);
@@ -290,7 +290,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -315,7 +315,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -348,7 +348,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0]!;
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe);
@@ -395,7 +395,7 @@ describe('Menu and Shopping Pipeline', () => {
       const pasta = recipes.find(r => r.title === 'Pasta Primavera')!;
       const salad = recipes.find(r => r.title === 'Garden Salad')!;
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(pasta);
@@ -440,7 +440,7 @@ describe('Menu and Shopping Pipeline', () => {
       const pasta = recipes.find(r => r.title === 'Pasta Primavera')!;
       const salad = recipes.find(r => r.title === 'Garden Salad')!;
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(pasta);
@@ -483,7 +483,7 @@ describe('Menu and Shopping Pipeline', () => {
       const pasta = recipes.find(r => r.title === 'Pasta Primavera')!;
       const salad = recipes.find(r => r.title === 'Garden Salad')!;
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(pasta);
@@ -517,7 +517,7 @@ describe('Menu and Shopping Pipeline', () => {
       const pasta = recipes.find(r => r.title === 'Pasta Primavera')!;
       const salad = recipes.find(r => r.title === 'Garden Salad')!;
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(pasta);
@@ -538,7 +538,7 @@ describe('Menu and Shopping Pipeline', () => {
       const pasta = recipes.find(r => r.title === 'Pasta Primavera')!;
       const salad = recipes.find(r => r.title === 'Garden Salad')!;
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(pasta);
@@ -559,7 +559,7 @@ describe('Menu and Shopping Pipeline', () => {
       const pasta = recipes.find(r => r.title === 'Pasta Primavera')!;
       const salad = recipes.find(r => r.title === 'Garden Salad')!;
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(pasta);
@@ -582,7 +582,7 @@ describe('Menu and Shopping Pipeline', () => {
       const salad = recipes.find(r => r.title === 'Garden Salad')!;
       const soup = recipes.find(r => r.title === 'Tomato Soup')!;
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(pasta);
@@ -604,7 +604,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -624,7 +624,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -647,7 +647,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -671,7 +671,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -704,7 +704,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -735,7 +735,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -769,7 +769,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);
@@ -800,7 +800,7 @@ describe('Menu and Shopping Pipeline', () => {
       const pasta = recipes.find(r => r.title === 'Pasta Primavera')!;
       const salad = recipes.find(r => r.title === 'Garden Salad')!;
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(pasta);
@@ -826,7 +826,7 @@ describe('Menu and Shopping Pipeline', () => {
       const pasta = recipes.find(r => r.title === 'Pasta Primavera')!;
       const salad = recipes.find(r => r.title === 'Garden Salad')!;
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(pasta);
@@ -850,7 +850,7 @@ describe('Menu and Shopping Pipeline', () => {
       await database.addRecipe(pastaRecipe);
       const addedRecipe = database.get_recipes()[0];
 
-      const { result } = renderMenuAndShopping();
+      const { result } = await renderMenuAndShopping();
 
       await act(async () => {
         await result.current.menu.addRecipeToMenu(addedRecipe!);

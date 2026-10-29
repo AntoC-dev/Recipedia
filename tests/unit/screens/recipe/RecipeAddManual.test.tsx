@@ -125,7 +125,7 @@ describe('RecipeAddManual', () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddManually);
 
       const newTitle = 'New Recipe Title';
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), newTitle);
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', newTitle);
 
       checkImage(mockRouteAddManually, getByTestId, '');
       checkTitle(mockRouteAddManually, getByTestId, queryByTestId, newTitle);
@@ -141,7 +141,7 @@ describe('RecipeAddManual', () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddManually);
 
       const newDescription = 'New Recipe Description';
-      fireEvent.press(getByTestId('RecipeDescription::SetTextToEdit'), newDescription);
+      await fireEvent(getByTestId('RecipeDescription::SetTextToEdit'), 'press', newDescription);
 
       checkImage(mockRouteAddManually, getByTestId, '');
       checkTitle(mockRouteAddManually, getByTestId, queryByTestId, '');
@@ -157,7 +157,7 @@ describe('RecipeAddManual', () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddManually);
 
       const newPerson = 23;
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), newPerson.toString());
+      await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', newPerson.toString());
 
       checkImage(mockRouteAddManually, getByTestId, '');
       checkTitle(mockRouteAddManually, getByTestId, queryByTestId, '');
@@ -173,7 +173,7 @@ describe('RecipeAddManual', () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddManually);
 
       const newTime = 71;
-      fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), newTime.toString());
+      await fireEvent(getByTestId('RecipeTime::SetTextToEdit'), 'press', newTime.toString());
 
       checkImage(mockRouteAddManually, getByTestId, '');
       checkTitle(mockRouteAddManually, getByTestId, queryByTestId, '');
@@ -195,12 +195,12 @@ describe('RecipeAddManual', () => {
       const newPersons = 23;
       const newTime = 71;
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), newTitle);
-      fireEvent.press(getByTestId('RecipeDescription::SetTextToEdit'), newDescription);
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), newPersons.toString());
-      fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), newTime.toString());
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', newTitle);
+      await fireEvent(getByTestId('RecipeDescription::SetTextToEdit'), 'press', newDescription);
+      await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', newPersons.toString());
+      await fireEvent(getByTestId('RecipeTime::SetTextToEdit'), 'press', newTime.toString());
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       checkImage(mockRouteAddManually, getByTestId, '');
       checkTitle(mockRouteAddManually, getByTestId, queryByTestId, newTitle);
@@ -217,7 +217,7 @@ describe('RecipeAddManual', () => {
     test('pressing the back button navigates back', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('Recipe::AppBar::BackButton'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::BackButton'));
 
       expect(mockNavigation.goBack).toHaveBeenCalled();
     });
@@ -225,46 +225,55 @@ describe('RecipeAddManual', () => {
     test('a successful save confirms addAnyway then navigates back', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(
+      await fireEvent(
         getByTestId('RecipeTitle::SetTextToEdit'),
+        'press',
         'Wholly Unique Manual Save Flow Recipe'
       );
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '4');
-      fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), '30');
+      await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', '4');
+      await fireEvent(getByTestId('RecipeTime::SetTextToEdit'), 'press', '30');
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
-      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await fireEvent.press(getByTestId('ModalImageSelect::Select'));
       await waitFor(() => {
         expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('/path/to/cropped/img');
       });
 
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
       await waitFor(() => expect(getByTestId('RecipeIngredients::0::Row')).toBeTruthy());
-      fireEvent.press(getByTestId('RecipeIngredients::0::OnIngredientChange'), '100@@g--Spaghetti');
+      await fireEvent(
+        getByTestId('RecipeIngredients::0::OnIngredientChange'),
+        'press',
+        '100@@g--Spaghetti'
+      );
       await waitFor(() => {
         expect(getByTestId('RecipeIngredients::0::NameInput::Value').props.children).toBe(
           'Spaghetti'
         );
       });
 
-      fireEvent.press(getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent.press(
+        getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction')
+      );
       await waitFor(() =>
         expect(getByTestId('RecipePreparation::EditableStep::0::Step')).toBeTruthy()
       );
-      fireEvent.changeText(
+      await fireEvent.changeText(
         getByTestId('RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'),
         'Cook pasta until al dente'
       );
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
       });
       expect(getByTestId('Recipe::Alert::Title').props.children).toBe('addAnyway');
 
-      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+      await fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
 
       await waitFor(() => {
         expect(mockNavigation.goBack).toHaveBeenCalled();
@@ -274,20 +283,20 @@ describe('RecipeAddManual', () => {
     test('a dirty add form asks to confirm before discarding', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Half Typed Recipe');
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Half Typed Recipe');
 
       await waitFor(() => {
         expect(isPreventRemoveArmed()).toBe(true);
       });
 
-      act(() => {
+      await act(() => {
         triggerPreventRemove({ type: 'GO_BACK' });
       });
 
       expect(getByTestId('RecipeUnsavedChanges::Alert::IsVisible').props.children).toBe(true);
       expect(mockDispatch).not.toHaveBeenCalled();
 
-      fireEvent.press(getByTestId('RecipeUnsavedChanges::Alert::OnConfirm'));
+      await fireEvent.press(getByTestId('RecipeUnsavedChanges::Alert::OnConfirm'));
 
       expect(mockDispatch).toHaveBeenCalledWith({ type: 'GO_BACK' });
     });
@@ -297,11 +306,11 @@ describe('RecipeAddManual', () => {
 
       await fillMinimalRecipe(getByTestId, 'Wholly Unique Guarded Save Recipe');
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
       });
-      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+      await fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
 
       await waitFor(() => {
         expect(mockNavigation.goBack).toHaveBeenCalled();
@@ -309,7 +318,7 @@ describe('RecipeAddManual', () => {
 
       expect(isPreventRemoveArmed()).toBe(true);
 
-      act(() => {
+      await act(() => {
         triggerPreventRemove({ type: 'GO_BACK' });
       });
 
@@ -322,12 +331,16 @@ describe('RecipeAddManual', () => {
     test('shows validation error when image is missing', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Test Recipe');
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '4');
-      fireEvent.press(getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Test Recipe');
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
+      await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', '4');
+      await fireEvent.press(
+        getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction')
+      );
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
@@ -343,12 +356,16 @@ describe('RecipeAddManual', () => {
     test('shows validation error when time is missing', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Test Recipe');
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '4');
-      fireEvent.press(getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Test Recipe');
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
+      await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', '4');
+      await fireEvent.press(
+        getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction')
+      );
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
@@ -364,7 +381,7 @@ describe('RecipeAddManual', () => {
     test('shows plural validation errors when multiple elements are missing', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
@@ -390,9 +407,9 @@ describe('RecipeAddManual', () => {
 
         expect(queryByTestId(`${field}::Error`)).toBeNull();
 
-        fireEvent.press(getByTestId(`${field}::SetTextToEdit`), validPreset);
-        fireEvent.press(getByTestId(`${field}::SetTextToEdit`), invalidPreset);
-        fireEvent.press(getByTestId(`${field}::OnBlur`));
+        await fireEvent(getByTestId(`${field}::SetTextToEdit`), 'press', validPreset);
+        await fireEvent(getByTestId(`${field}::SetTextToEdit`), 'press', invalidPreset);
+        await fireEvent.press(getByTestId(`${field}::OnBlur`));
 
         await waitFor(() => {
           expect(getByTestId(`${field}::Error`).props.children).toBe(expectedKey);
@@ -403,7 +420,7 @@ describe('RecipeAddManual', () => {
     test('focus + blur on an untouched empty field does not show an inline error', async () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeTitle::OnBlur'));
+      await fireEvent.press(getByTestId('RecipeTitle::OnBlur'));
 
       await waitFor(() => {
         expect(queryByTestId('RecipeTitle::Error')).toBeNull();
@@ -413,7 +430,7 @@ describe('RecipeAddManual', () => {
     test('blurring description does not produce an error since it is optional', async () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeDescription::OnBlur'));
+      await fireEvent.press(getByTestId('RecipeDescription::OnBlur'));
 
       await waitFor(() => {
         expect(queryByTestId('RecipeDescription::Error')).toBeNull();
@@ -425,14 +442,18 @@ describe('RecipeAddManual', () => {
     test('shows similar recipe warning when adding duplicate', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), testRecipes[0]!.title);
-      fireEvent.press(getByTestId('RecipeDescription::SetTextToEdit'), 'Test description');
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '4');
-      fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), '30');
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
-      fireEvent.press(getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', testRecipes[0]!.title);
+      await fireEvent(getByTestId('RecipeDescription::SetTextToEdit'), 'press', 'Test description');
+      await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', '4');
+      await fireEvent(getByTestId('RecipeTime::SetTextToEdit'), 'press', '30');
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
+      await fireEvent.press(
+        getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction')
+      );
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
@@ -444,14 +465,18 @@ describe('RecipeAddManual', () => {
 
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), existingTitle);
-      fireEvent.press(getByTestId('RecipeDescription::SetTextToEdit'), 'desc');
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '4');
-      fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), '30');
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
-      fireEvent.press(getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', existingTitle);
+      await fireEvent(getByTestId('RecipeDescription::SetTextToEdit'), 'press', 'desc');
+      await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', '4');
+      await fireEvent(getByTestId('RecipeTime::SetTextToEdit'), 'press', '30');
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
+      await fireEvent.press(
+        getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction')
+      );
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
@@ -469,7 +494,7 @@ describe('RecipeAddManual', () => {
 
       await fillMinimalRecipe(getByTestId, 'Similarity Lookup Failure Recipe');
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
@@ -486,7 +511,7 @@ describe('RecipeAddManual', () => {
 
       expect(queryByTestId('RecipeValidation::ValidationQueue::Mock')).toBeNull();
 
-      fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
+      await fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
       await waitFor(() => {
         expect(getByTestId('RecipeValidation::ValidationQueue::Mock')).toBeTruthy();
@@ -502,7 +527,9 @@ describe('RecipeAddManual', () => {
 
       expect(queryByTestId('RecipeValidation::ValidationQueue::Mock')).toBeNull();
 
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
 
       await waitFor(() => {
         expect(getByTestId('RecipeIngredients::0::Row')).toBeTruthy();
@@ -514,13 +541,13 @@ describe('RecipeAddManual', () => {
     test('hides ValidationQueue when onComplete is called', async () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
+      await fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
       await waitFor(() => {
         expect(getByTestId('RecipeValidation::ValidationQueue::Mock')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onComplete'));
+      await fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onComplete'));
 
       await waitFor(() => {
         expect(queryByTestId('RecipeValidation::ValidationQueue::Mock')).toBeNull();
@@ -534,13 +561,13 @@ describe('RecipeAddManual', () => {
       const initialTags = JSON.parse(initialTagsJson);
       const initialCount = initialTags.length;
 
-      fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
+      await fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
       await waitFor(() => {
         expect(getByTestId('RecipeValidation::ValidationQueue::Mock')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onValidated'));
+      await fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onValidated'));
 
       await waitFor(() => {
         const finalTagsJson = getByTestId('RecipeTags::TagsList').props.children;
@@ -552,7 +579,9 @@ describe('RecipeAddManual', () => {
     test('adds empty ingredient row when add button is pressed', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
 
       await waitFor(() => {
         expect(getByTestId('RecipeIngredients::0::Row')).toBeTruthy();
@@ -566,7 +595,7 @@ describe('RecipeAddManual', () => {
     test('ValidationQueue processes items sequentially', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
+      await fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
       await waitFor(() => {
         expect(getByTestId('RecipeValidation::ValidationQueue::Mock')).toBeTruthy();
@@ -582,7 +611,7 @@ describe('RecipeAddManual', () => {
     test('ValidationQueue passes correct testId', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
+      await fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
       await waitFor(() => {
         expect(getByTestId('RecipeValidation::ValidationQueue::Mock')).toBeTruthy();
@@ -597,7 +626,7 @@ describe('RecipeAddManual', () => {
       const initialTagsJson = getByTestId('RecipeTags::TagsList').props.children;
       const initialCount = JSON.parse(initialTagsJson).length;
 
-      fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
+      await fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
       await waitFor(() => {
         const finalTags = JSON.parse(getByTestId('RecipeTags::TagsList').props.children);
@@ -613,13 +642,13 @@ describe('RecipeAddManual', () => {
       const initialTags = JSON.parse(getByTestId('RecipeTags::TagsList').props.children);
       expect(initialTags.length).toBe(0);
 
-      fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
+      await fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
       await waitFor(() => {
         expect(getByTestId('RecipeValidation::ValidationQueue::Mock')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onValidated'));
+      await fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onValidated'));
 
       await waitFor(() => {
         const tagsAfterFirst = JSON.parse(getByTestId('RecipeTags::TagsList').props.children);
@@ -627,13 +656,13 @@ describe('RecipeAddManual', () => {
         expect(tagsAfterFirst.length).toBe(1);
       });
 
-      fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
+      await fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
       await waitFor(() => {
         expect(getByTestId('RecipeValidation::ValidationQueue::Mock')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onValidated'));
+      await fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onValidated'));
 
       await waitFor(() => {
         const finalTags = JSON.parse(getByTestId('RecipeTags::TagsList').props.children);
@@ -645,7 +674,9 @@ describe('RecipeAddManual', () => {
     test('ValidationQueue callback preserves previously auto-added exact match ingredients', async () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
 
       await waitFor(() => {
         expect(getByTestId('RecipeIngredients::0::Row')).toBeTruthy();
@@ -654,7 +685,9 @@ describe('RecipeAddManual', () => {
       expect(getByTestId('RecipeIngredients::0::NameInput::Value').props.children).toBe('');
       expect(queryByTestId('RecipeIngredients::1::Row')).toBeNull();
 
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
 
       await waitFor(() => {
         expect(getByTestId('RecipeIngredients::1::Row')).toBeTruthy();
@@ -671,13 +704,13 @@ describe('RecipeAddManual', () => {
       const initialTags = JSON.parse(getByTestId('RecipeTags::TagsList').props.children);
       expect(initialTags).toHaveLength(0);
 
-      fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
+      await fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
       await waitFor(() => {
         expect(getByTestId('RecipeValidation::ValidationQueue::Mock')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onValidated'));
+      await fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onValidated'));
 
       await waitFor(() => {
         const tags = JSON.parse(getByTestId('RecipeTags::TagsList').props.children);
@@ -685,13 +718,13 @@ describe('RecipeAddManual', () => {
         expect(tags[0]).toBe('mockTag');
       });
 
-      fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
+      await fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
       await waitFor(() => {
         expect(getByTestId('RecipeValidation::ValidationQueue::Mock')).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onValidated'));
+      await fireEvent.press(getByTestId('RecipeValidation::ValidationQueue::Mock::onValidated'));
 
       await waitFor(() => {
         const finalTags = JSON.parse(getByTestId('RecipeTags::TagsList').props.children);
@@ -712,7 +745,9 @@ describe('RecipeAddManual', () => {
 
       expect(queryByTestId('RecipeIngredients::0::Row')).toBeNull();
 
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
 
       await waitFor(() => {
         expect(getByTestId('RecipeIngredients::0::Row')).toBeTruthy();
@@ -731,7 +766,7 @@ describe('RecipeAddManual', () => {
 
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
 
       expect(ImagePicker.pickImage).not.toHaveBeenCalled();
     });
@@ -740,14 +775,14 @@ describe('RecipeAddManual', () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddManually);
 
       expect(queryByTestId('ModalImageSelect')).toBeNull();
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
     });
 
     test('modal has autoSelect=false in addManually mode', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
 
       await waitFor(() => {
         expect(getByTestId('ModalImageSelect::AutoSelect').props.children).toBe('false');
@@ -757,10 +792,10 @@ describe('RecipeAddManual', () => {
     test('dismissing modal closes it without updating the image', async () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
 
-      fireEvent.press(getByTestId('ModalImageSelect::Dismiss'));
+      await fireEvent.press(getByTestId('ModalImageSelect::Dismiss'));
 
       await waitFor(() => expect(queryByTestId('ModalImageSelect')).toBeNull());
       expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('');
@@ -769,10 +804,10 @@ describe('RecipeAddManual', () => {
     test('selecting image for image target updates RecipeImage via cropImage result', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
 
-      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await fireEvent.press(getByTestId('ModalImageSelect::Select'));
 
       await waitFor(() => {
         expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('/path/to/cropped/img');
@@ -784,11 +819,11 @@ describe('RecipeAddManual', () => {
     test('Validate saves in-progress numeric text without explicit blur', async () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Manual Live-Numeric');
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '6');
-      fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), '55');
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Manual Live-Numeric');
+      await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', '6');
+      await fireEvent(getByTestId('RecipeTime::SetTextToEdit'), 'press', '55');
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       checkPersons(mockRouteAddManually, getByTestId, queryByTestId, 6);
       checkTime(mockRouteAddManually, getByTestId, queryByTestId, 55);
@@ -797,13 +832,16 @@ describe('RecipeAddManual', () => {
     test('Validate saves in-progress dropdown (ingredient name) text without explicit blur', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
-      fireEvent.press(
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
+      await fireEvent(
         getByTestId('RecipeIngredients::0::OnLiveNameChange'),
+        'press',
         'Live-Manual-Ingredient'
       );
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       expect(getByTestId('RecipeIngredients::0::NameInput::Value').props.children).toBe(
         'Live-Manual-Ingredient'

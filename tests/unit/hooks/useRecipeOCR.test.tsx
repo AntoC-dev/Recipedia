@@ -142,7 +142,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => useTestRecipeOCR(), { wrapper });
+      const { result } = await renderHook(() => useTestRecipeOCR(), { wrapper });
 
       expect(result.current.isProcessingOcrExtraction).toBe(false);
 
@@ -158,7 +158,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -180,7 +180,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -200,7 +200,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -220,7 +220,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -242,7 +242,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -267,7 +267,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -293,7 +293,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -317,7 +317,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -352,7 +352,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -376,7 +376,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
 
-      const { result } = renderHook(() => useTestRecipeOCR(), { wrapper });
+      const { result } = await renderHook(() => useTestRecipeOCR(), { wrapper });
 
       await act(async () => {
         await result.current.fillOneField('test-image.jpg', recipeColumnsNames.title);
@@ -406,7 +406,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeWithExistingTags));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -435,7 +435,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => useTestRecipeOCR(), { wrapper });
+      const { result } = await renderHook(() => useTestRecipeOCR(), { wrapper });
 
       await act(async () => {
         await result.current.fillOneField('image.jpg', recipeColumnsNames.title);
@@ -452,7 +452,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -487,7 +487,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           dialogs: useRecipeDialogs(),
@@ -523,7 +523,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -561,7 +561,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -579,7 +579,7 @@ describe('useRecipeOCR', () => {
       const queuedItems = (queue as IngredientValidationProps).items;
       expect(queuedItems.map(i => i.name)).toEqual(['carotte', 'citronnelle', 'cébette']);
 
-      act(() => {
+      await act(() => {
         for (const item of queuedItems) {
           (queue as IngredientValidationProps).onValidated(item, {
             id: 200 + queuedItems.indexOf(item),
@@ -623,7 +623,7 @@ describe('useRecipeOCR', () => {
         );
         mockExtractFieldFromImage.mockResolvedValue(payload);
         const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm(), dialogs: useRecipeDialogs() }),
           { wrapper }
         );
@@ -642,7 +642,7 @@ describe('useRecipeOCR', () => {
       test('names scan replaces the placeholder in place instead of appending', async () => {
         const { result, queue } = await renderScan();
 
-        act(() => {
+        await act(() => {
           queue.onValidated(queuedItem(queue, 'Pois chiches'), poisChiche);
         });
 
@@ -654,7 +654,7 @@ describe('useRecipeOCR', () => {
       test('names scan removes the placeholder when dismissed', async () => {
         const { result, queue } = await renderScan();
 
-        act(() => {
+        await act(() => {
           queue.onDismissed!(queuedItem(queue, 'Pois chiches'));
         });
 
@@ -665,7 +665,7 @@ describe('useRecipeOCR', () => {
       test('names scan merges into an existing row already holding the validated name', async () => {
         const { result, queue } = await renderScan();
 
-        act(() => {
+        await act(() => {
           queue.onValidated(queuedItem(queue, 'citronnelle'), {
             ...poisChiche,
             id: 98,
@@ -680,7 +680,7 @@ describe('useRecipeOCR', () => {
       test('names scan appends the validated ingredient when its placeholder is gone', async () => {
         const { result, queue } = await renderScan();
 
-        act(() => {
+        await act(() => {
           result.current.form.form.setValue(
             'recipeIngredients',
             result.current.form.form
@@ -688,7 +688,7 @@ describe('useRecipeOCR', () => {
               .filter(i => i.name !== 'Pois chiches')
           );
         });
-        act(() => {
+        await act(() => {
           queue.onValidated(queuedItem(queue, 'Pois chiches'), poisChiche);
         });
 
@@ -716,7 +716,7 @@ describe('useRecipeOCR', () => {
           ],
         });
 
-        act(() => {
+        await act(() => {
           const original = queuedItem(queue, 'Pois chiches');
           queue.onValidated(original, mergeIngredient(original, poisChiche));
         });
@@ -759,9 +759,12 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await act(async () => {
         await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredients);
@@ -789,9 +792,12 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await act(async () => {
         await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredients);
@@ -813,9 +819,12 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await act(async () => {
         await result.current.ocr.fillOneField('image.jpg', 'ingredientNames');
@@ -835,9 +844,12 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
 
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await waitFor(() => {
         expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
@@ -857,7 +869,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -877,7 +889,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -901,7 +913,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
 
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({
           ocr: useTestRecipeOCR(),
           form: useRecipeForm(),
@@ -930,7 +942,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => useTestRecipeOCR(), { wrapper });
+      const { result } = await renderHook(() => useTestRecipeOCR(), { wrapper });
 
       await act(async () => {
         await result.current.fillOneField('image.jpg', 'ingredientNames');
@@ -952,9 +964,12 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await act(async () => {
         await result.current.ocr.fillOneField('image.jpg', 'ingredientNames');
@@ -970,7 +985,7 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => useTestRecipeOCR(), { wrapper });
+      const { result } = await renderHook(() => useTestRecipeOCR(), { wrapper });
 
       await act(async () => {
         await expect(
@@ -986,9 +1001,12 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await act(async () => {
         result.current.form.form.setValue('recipePersons', 4);
@@ -1006,9 +1024,12 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       const triggerSpy = jest.spyOn(result.current.form.form, 'trigger');
 
@@ -1025,9 +1046,12 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await act(async () => {
         result.current.form.form.setValue('recipeTime', 30);
@@ -1045,9 +1069,12 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await act(async () => {
         await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.persons);
@@ -1061,9 +1088,12 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await act(async () => {
         await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.title);
@@ -1089,9 +1119,12 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await act(async () => {
         await result.current.ocr.fillOneField('image.jpg', 'ingredientNames');
@@ -1110,9 +1143,12 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
 
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await waitFor(() => {
         expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
@@ -1137,9 +1173,12 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await act(async () => {
         await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.ingredients);
@@ -1163,9 +1202,12 @@ describe('useRecipeOCR', () => {
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
 
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await act(async () => {
         await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.title);
@@ -1196,7 +1238,7 @@ describe('useRecipeOCR', () => {
 
         const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ocr: useTestRecipeOCR(),
             form: useRecipeForm(),
@@ -1225,7 +1267,7 @@ describe('useRecipeOCR', () => {
 
         const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ocr: useTestRecipeOCR(),
             form: useRecipeForm(),
@@ -1251,7 +1293,7 @@ describe('useRecipeOCR', () => {
       mockExtractFieldFromImage.mockResolvedValue({ recipeTitle: 'Extracted Title' });
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
-      const { result } = renderHook(() => useTestRecipeOCR(), { wrapper });
+      const { result } = await renderHook(() => useTestRecipeOCR(), { wrapper });
 
       let status;
       await act(async () => {
@@ -1265,7 +1307,7 @@ describe('useRecipeOCR', () => {
       mockExtractFieldFromImage.mockResolvedValue({});
 
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
-      const { result } = renderHook(() => useTestRecipeOCR(), { wrapper });
+      const { result } = await renderHook(() => useTestRecipeOCR(), { wrapper });
 
       let status;
       await act(async () => {
@@ -1279,9 +1321,12 @@ describe('useRecipeOCR', () => {
       mockExtractFieldFromImage.mockResolvedValue({ ingredientQuantities: [] });
 
       const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await waitFor(() => {
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
@@ -1299,9 +1344,12 @@ describe('useRecipeOCR', () => {
       mockExtractFieldFromImage.mockResolvedValue({ ingredientQuantities: ['100', '200'] });
 
       const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await waitFor(() => {
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
@@ -1319,9 +1367,12 @@ describe('useRecipeOCR', () => {
       mockExtractFieldFromImage.mockResolvedValue({ ingredientQuantities: ['350'] });
 
       const wrapper = createOcrWrapper(createMockRecipeProp('edit', recipeForOcr));
-      const { result } = renderHook(() => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }), {
-        wrapper,
-      });
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        {
+          wrapper,
+        }
+      );
 
       await waitFor(() => {
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);

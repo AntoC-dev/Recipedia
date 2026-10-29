@@ -20,16 +20,16 @@ describe('SkippedRecipesList', () => {
     jest.clearAllMocks();
   });
 
-  test('renders nothing when list is empty', () => {
-    const { queryByTestId } = render(
+  test('renders nothing when list is empty', async () => {
+    const { queryByTestId } = await render(
       <SkippedRecipesList skippedRecipes={[]} testID='SkippedList' />
     );
 
     expect(queryByTestId('SkippedList::Item::0')).toBeNull();
   });
 
-  test('renders a list item for each skipped recipe', () => {
-    const { getByTestId } = render(
+  test('renders a list item for each skipped recipe', async () => {
+    const { getByTestId } = await render(
       <SkippedRecipesList skippedRecipes={[recipe1, recipe2]} testID='SkippedList' />
     );
 
@@ -37,8 +37,8 @@ describe('SkippedRecipesList', () => {
     expect(getByTestId('SkippedList::Item::1')).toBeTruthy();
   });
 
-  test('renders copy button for each recipe', () => {
-    const { getByTestId } = render(
+  test('renders copy button for each recipe', async () => {
+    const { getByTestId } = await render(
       <SkippedRecipesList skippedRecipes={[recipe1, recipe2]} testID='SkippedList' />
     );
 
@@ -47,11 +47,11 @@ describe('SkippedRecipesList', () => {
   });
 
   test('copies the correct URL when copy button is pressed', async () => {
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <SkippedRecipesList skippedRecipes={[recipe1, recipe2]} testID='SkippedList' />
     );
 
-    fireEvent.press(getByTestId('SkippedList::Item::0::CopyButton'));
+    await fireEvent.press(getByTestId('SkippedList::Item::0::CopyButton'));
 
     await waitFor(() => {
       expect(Clipboard.setStringAsync).toHaveBeenCalledWith(recipe1.sourceUrl);
@@ -59,11 +59,11 @@ describe('SkippedRecipesList', () => {
   });
 
   test('copies the URL of the second recipe when its copy button is pressed', async () => {
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <SkippedRecipesList skippedRecipes={[recipe1, recipe2]} testID='SkippedList' />
     );
 
-    fireEvent.press(getByTestId('SkippedList::Item::1::CopyButton'));
+    await fireEvent.press(getByTestId('SkippedList::Item::1::CopyButton'));
 
     await waitFor(() => {
       expect(Clipboard.setStringAsync).toHaveBeenCalledWith(recipe2.sourceUrl);
@@ -71,19 +71,19 @@ describe('SkippedRecipesList', () => {
   });
 
   test('shows snackbar after copying', async () => {
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <SkippedRecipesList skippedRecipes={[recipe1]} testID='SkippedList' />
     );
 
-    fireEvent.press(getByTestId('SkippedList::Item::0::CopyButton'));
+    await fireEvent.press(getByTestId('SkippedList::Item::0::CopyButton'));
 
     await waitFor(() => {
       expect(getByTestId('SkippedList::Snackbar')).toBeTruthy();
     });
   });
 
-  test('renders ListHeaderComponent when provided', () => {
-    const { getByTestId } = render(
+  test('renders ListHeaderComponent when provided', async () => {
+    const { getByTestId } = await render(
       <SkippedRecipesList
         skippedRecipes={[recipe1]}
         testID='SkippedList'
@@ -94,8 +94,8 @@ describe('SkippedRecipesList', () => {
     expect(getByTestId('custom-header')).toBeTruthy();
   });
 
-  test('renders the FlatList container with testID', () => {
-    const { getByTestId } = render(
+  test('renders the FlatList container with testID', async () => {
+    const { getByTestId } = await render(
       <SkippedRecipesList skippedRecipes={[recipe1]} testID='SkippedList' />
     );
 

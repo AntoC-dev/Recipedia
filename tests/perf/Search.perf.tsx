@@ -65,7 +65,7 @@ describe('Search Screen Performance', () => {
   test('re-render after search text change', async () => {
     const scenario = async () => {
       const searchBar = screen.getByTestId('SearchScreen::SearchBar');
-      fireEvent.changeText(searchBar, 'pasta');
+      await fireEvent.changeText(searchBar, 'pasta');
     };
 
     await measureRenders(<SearchWrapper />, { runs: 10, scenario });
@@ -74,8 +74,8 @@ describe('Search Screen Performance', () => {
   test('re-render after clearing search', async () => {
     const scenario = async () => {
       const searchBar = screen.getByTestId('SearchScreen::SearchBar');
-      fireEvent.changeText(searchBar, 'chicken');
-      fireEvent.changeText(searchBar, '');
+      await fireEvent.changeText(searchBar, 'chicken');
+      await fireEvent.changeText(searchBar, '');
     };
 
     await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
@@ -118,7 +118,7 @@ describe('Search Screen Performance', () => {
   test('re-render after opening filter mode via UI', async () => {
     const scenario = async () => {
       const filterToggle = screen.getByTestId('SearchScreen::FiltersToggleButtons');
-      fireEvent.press(filterToggle);
+      await fireEvent.press(filterToggle);
     };
 
     await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
@@ -127,13 +127,13 @@ describe('Search Screen Performance', () => {
   test('re-render after selecting filter via UI', async () => {
     const scenario = async () => {
       const filterToggle = screen.getByTestId('SearchScreen::FiltersToggleButtons');
-      fireEvent.press(filterToggle);
+      await fireEvent.press(filterToggle);
       const firstAccordion = screen.getByTestId('SearchScreen::FilterAccordion::Accordion::0');
-      fireEvent.press(firstAccordion);
+      await fireEvent.press(firstAccordion);
       const firstItem = screen.getByTestId(
         'SearchScreen::FilterAccordion::Accordion::0::Item::0::CheckBox'
       );
-      fireEvent.press(firstItem);
+      await fireEvent.press(firstItem);
     };
 
     await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
@@ -142,14 +142,14 @@ describe('Search Screen Performance', () => {
   test('re-render after removing filter via UI', async () => {
     const scenario = async () => {
       const filterToggle = screen.getByTestId('SearchScreen::FiltersToggleButtons');
-      fireEvent.press(filterToggle);
+      await fireEvent.press(filterToggle);
       const firstAccordion = screen.getByTestId('SearchScreen::FilterAccordion::Accordion::0');
-      fireEvent.press(firstAccordion);
+      await fireEvent.press(firstAccordion);
       const firstItem = screen.getByTestId(
         'SearchScreen::FilterAccordion::Accordion::0::Item::0::CheckBox'
       );
-      fireEvent.press(firstItem);
-      fireEvent.press(firstItem);
+      await fireEvent.press(firstItem);
+      await fireEvent.press(firstItem);
     };
 
     await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
@@ -158,15 +158,15 @@ describe('Search Screen Performance', () => {
   test('re-render with combined search and filter', async () => {
     const scenario = async () => {
       const searchBar = screen.getByTestId('SearchScreen::SearchBar');
-      fireEvent.changeText(searchBar, 'test');
+      await fireEvent.changeText(searchBar, 'test');
       const filterToggle = screen.getByTestId('SearchScreen::FiltersToggleButtons');
-      fireEvent.press(filterToggle);
+      await fireEvent.press(filterToggle);
       const firstAccordion = screen.getByTestId('SearchScreen::FilterAccordion::Accordion::0');
-      fireEvent.press(firstAccordion);
+      await fireEvent.press(firstAccordion);
       const firstItem = screen.getByTestId(
         'SearchScreen::FilterAccordion::Accordion::0::Item::0::CheckBox'
       );
-      fireEvent.press(firstItem);
+      await fireEvent.press(firstItem);
     };
 
     await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
@@ -175,9 +175,9 @@ describe('Search Screen Performance', () => {
   test('re-render with long fuzzy search query', async () => {
     const scenario = async () => {
       const searchBar = screen.getByTestId('SearchScreen::SearchBar');
-      fireEvent.changeText(searchBar, 'chick');
-      fireEvent.changeText(searchBar, 'chicken wi');
-      fireEvent.changeText(searchBar, 'chicken with vege');
+      await fireEvent.changeText(searchBar, 'chick');
+      await fireEvent.changeText(searchBar, 'chicken wi');
+      await fireEvent.changeText(searchBar, 'chicken with vege');
     };
 
     await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
@@ -186,21 +186,21 @@ describe('Search Screen Performance', () => {
   test('re-render with multiple filters from different categories', async () => {
     const scenario = async () => {
       const filterToggle = screen.getByTestId('SearchScreen::FiltersToggleButtons');
-      fireEvent.press(filterToggle);
+      await fireEvent.press(filterToggle);
 
       const firstAccordion = screen.getByTestId('SearchScreen::FilterAccordion::Accordion::0');
-      fireEvent.press(firstAccordion);
+      await fireEvent.press(firstAccordion);
       const firstItem = screen.getByTestId(
         'SearchScreen::FilterAccordion::Accordion::0::Item::0::CheckBox'
       );
-      fireEvent.press(firstItem);
+      await fireEvent.press(firstItem);
 
       const secondAccordion = screen.getByTestId('SearchScreen::FilterAccordion::Accordion::1');
-      fireEvent.press(secondAccordion);
+      await fireEvent.press(secondAccordion);
       const secondItem = screen.getByTestId(
         'SearchScreen::FilterAccordion::Accordion::1::Item::0::CheckBox'
       );
-      fireEvent.press(secondItem);
+      await fireEvent.press(secondItem);
     };
 
     await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
@@ -209,11 +209,11 @@ describe('Search Screen Performance', () => {
   test('re-render after rapid search text changes', async () => {
     const scenario = async () => {
       const searchBar = screen.getByTestId('SearchScreen::SearchBar');
-      fireEvent.changeText(searchBar, 'a');
-      fireEvent.changeText(searchBar, 'ab');
-      fireEvent.changeText(searchBar, 'abc');
-      fireEvent.changeText(searchBar, 'abcd');
-      fireEvent.changeText(searchBar, 'abcde');
+      await fireEvent.changeText(searchBar, 'a');
+      await fireEvent.changeText(searchBar, 'ab');
+      await fireEvent.changeText(searchBar, 'abc');
+      await fireEvent.changeText(searchBar, 'abcd');
+      await fireEvent.changeText(searchBar, 'abcde');
     };
 
     await measureRenders(<SearchWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
@@ -261,7 +261,7 @@ describe('Search Screen Performance - Large Dataset', () => {
   test('re-render after search text change with 1000 recipes', async () => {
     const scenario = async () => {
       const searchBar = screen.getByTestId('SearchScreen::SearchBar');
-      fireEvent.changeText(searchBar, 'large');
+      await fireEvent.changeText(searchBar, 'large');
     };
 
     await measureRenders(<SearchWrapper />, { runs: 5, ...HEAVY_WARMUP, scenario });

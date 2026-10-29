@@ -33,8 +33,8 @@ describe('ErrorBoundary', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  test('renders children when no error thrown', () => {
-    const { getByTestId, queryByTestId } = render(
+  test('renders children when no error thrown', async () => {
+    const { getByTestId, queryByTestId } = await render(
       <ErrorBoundary>
         <Boom crash={false} />
       </ErrorBoundary>
@@ -44,8 +44,8 @@ describe('ErrorBoundary', () => {
     expect(queryByTestId('ErrorFallback')).toBeNull();
   });
 
-  test('renders fallback when a child throws during render', () => {
-    const { getByTestId, queryByTestId } = render(
+  test('renders fallback when a child throws during render', async () => {
+    const { getByTestId, queryByTestId } = await render(
       <ErrorBoundary>
         <Boom crash={true} />
       </ErrorBoundary>
@@ -55,8 +55,8 @@ describe('ErrorBoundary', () => {
     expect(queryByTestId('SafeChild')).toBeNull();
   });
 
-  test('hides the splash screen when a child throws', () => {
-    render(
+  test('hides the splash screen when a child throws', async () => {
+    await render(
       <ErrorBoundary>
         <Boom crash={true} />
       </ErrorBoundary>
@@ -68,7 +68,7 @@ describe('ErrorBoundary', () => {
   test('swallows a splash-hide rejection without surfacing it', async () => {
     mockHideAsync.mockRejectedValueOnce(new Error('splash already hidden'));
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ErrorBoundary>
         <Boom crash={true} />
       </ErrorBoundary>
@@ -78,8 +78,8 @@ describe('ErrorBoundary', () => {
     expect(getByTestId('ErrorFallback::Title')).toBeTruthy();
   });
 
-  test('does not hide the splash screen while children render normally', () => {
-    render(
+  test('does not hide the splash screen while children render normally', async () => {
+    await render(
       <ErrorBoundary>
         <Boom crash={false} />
       </ErrorBoundary>
@@ -88,8 +88,8 @@ describe('ErrorBoundary', () => {
     expect(mockHideAsync).not.toHaveBeenCalled();
   });
 
-  test('forwards testID to fallback', () => {
-    const { getByTestId } = render(
+  test('forwards testID to fallback', async () => {
+    const { getByTestId } = await render(
       <ErrorBoundary testID='RootBoundary'>
         <Boom crash={true} />
       </ErrorBoundary>
@@ -98,8 +98,8 @@ describe('ErrorBoundary', () => {
     expect(getByTestId('RootBoundary')).toBeTruthy();
   });
 
-  test('renders a report action and the recoverable message on first crash', () => {
-    const { getByTestId } = render(
+  test('renders a report action and the recoverable message on first crash', async () => {
+    const { getByTestId } = await render(
       <ErrorBoundary>
         <Boom crash={true} />
       </ErrorBoundary>
@@ -110,15 +110,13 @@ describe('ErrorBoundary', () => {
   });
 
   test('reports the caught error and component stack when the report action is pressed', async () => {
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ErrorBoundary>
         <Boom crash={true} />
       </ErrorBoundary>
     );
 
-    await act(async () => {
-      fireEvent.press(getByTestId('ErrorFallback::Report'));
-    });
+    await fireEvent.press(getByTestId('ErrorFallback::Report'));
 
     const [reportedError, componentStack] = mockReportCrash.mock.calls[0];
     expect(reportedError).toBeInstanceOf(Error);
@@ -135,7 +133,7 @@ describe('ErrorBoundary', () => {
       }
       return <Text testID='SafeChild'>safe</Text>;
     };
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = await render(
       <ErrorBoundary>
         <FlakyBoom />
       </ErrorBoundary>
@@ -144,24 +142,20 @@ describe('ErrorBoundary', () => {
     expect(getByTestId('ErrorFallback::Report')).toBeTruthy();
 
     crashNext = false;
-    await act(async () => {
-      fireEvent.press(getByTestId('ErrorFallback::Report'));
-    });
+    await fireEvent.press(getByTestId('ErrorFallback::Report'));
 
     expect(getByTestId('SafeChild')).toBeTruthy();
     expect(queryByTestId('ErrorFallback')).toBeNull();
   });
 
   test('shows a persistent message with no action when the retry crashes again', async () => {
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = await render(
       <ErrorBoundary>
         <Boom crash={true} />
       </ErrorBoundary>
     );
 
-    await act(async () => {
-      fireEvent.press(getByTestId('ErrorFallback::Report'));
-    });
+    await fireEvent.press(getByTestId('ErrorFallback::Report'));
 
     expect(queryByTestId('ErrorFallback::Report')).toBeNull();
     expect(getByTestId('ErrorFallback::Message')).toHaveTextContent(
@@ -169,15 +163,15 @@ describe('ErrorBoundary', () => {
     );
   });
 
-  test('stores a null component stack when React provides none', () => {
+  test('stores a null component stack when React provides none', async () => {
     const ref = React.createRef<ErrorBoundary>();
-    render(
+    await render(
       <ErrorBoundary ref={ref}>
         <Boom crash={false} />
       </ErrorBoundary>
     );
 
-    act(() => {
+    await act(() => {
       ref.current?.componentDidCatch(new Error('boom'), { componentStack: null });
     });
 
@@ -186,7 +180,7 @@ describe('ErrorBoundary', () => {
 
   test('reports a fallback error when no error is stored in state', async () => {
     const ref = React.createRef<ErrorBoundary>();
-    render(
+    await render(
       <ErrorBoundary ref={ref}>
         <Boom crash={false} />
       </ErrorBoundary>
@@ -201,14 +195,16 @@ describe('ErrorBoundary', () => {
   });
 
   describe('errorBoundaryLayout', () => {
-    test('renders the screen untouched when it does not throw', () => {
-      const { getByTestId } = render(errorBoundaryLayout({ children: <Boom crash={false} /> }));
+    test('renders the screen untouched when it does not throw', async () => {
+      const { getByTestId } = await render(
+        errorBoundaryLayout({ children: <Boom crash={false} /> })
+      );
 
       expect(getByTestId('SafeChild')).toBeTruthy();
     });
 
-    test('contains a screen render error in the fallback', () => {
-      const { getByTestId, queryByTestId } = render(
+    test('contains a screen render error in the fallback', async () => {
+      const { getByTestId, queryByTestId } = await render(
         errorBoundaryLayout({ children: <Boom crash={true} /> })
       );
 
@@ -217,11 +213,11 @@ describe('ErrorBoundary', () => {
     });
 
     test('reports the screen error when the report action is pressed', async () => {
-      const { getByTestId } = render(errorBoundaryLayout({ children: <Boom crash={true} /> }));
+      const { getByTestId } = await render(
+        errorBoundaryLayout({ children: <Boom crash={true} /> })
+      );
 
-      await act(async () => {
-        fireEvent.press(getByTestId('ErrorFallback::Report'));
-      });
+      await fireEvent.press(getByTestId('ErrorFallback::Report'));
 
       const [reportedError] = mockReportCrash.mock.calls[0];
       expect(reportedError).toBeInstanceOf(Error);

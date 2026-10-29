@@ -168,14 +168,18 @@ describe('useDiscoveryWorkflow', () => {
   describe('initialization', () => {
     it('starts in discovering phase with provider', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const renderedStates: { phase: string; isDiscovering: boolean }[] = [];
+      await renderHook(() => {
+        const workflow = useDiscoveryWorkflow(provider, 'mock');
+        renderedStates.push({ phase: workflow.phase, isDiscovering: workflow.isDiscovering });
+        return workflow;
+      });
 
-      expect(result.current.phase).toBe('discovering');
-      expect(result.current.isDiscovering).toBe(true);
+      expect(renderedStates[0]).toEqual({ phase: 'discovering', isDiscovering: true });
     });
 
     it('sets error and selecting phase when provider is undefined', async () => {
-      const { result } = renderHook(() => useDiscoveryWorkflow(undefined, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(undefined, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -186,7 +190,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('transitions to selecting phase after discovery completes', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -195,7 +199,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('populates recipes after discovery', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -208,13 +212,13 @@ describe('useDiscoveryWorkflow', () => {
   describe('selection', () => {
     it('selectRecipe adds URL to selection', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
       });
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe('https://example.com/recipe-1');
       });
 
@@ -224,17 +228,17 @@ describe('useDiscoveryWorkflow', () => {
 
     it('unselectRecipe removes URL from selection', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
       });
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe('https://example.com/recipe-1');
       });
 
-      act(() => {
+      await act(() => {
         result.current.unselectRecipe('https://example.com/recipe-1');
       });
 
@@ -244,13 +248,13 @@ describe('useDiscoveryWorkflow', () => {
 
     it('toggleSelectAll selects all when none selected', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      act(() => {
+      await act(() => {
         result.current.toggleSelectAll();
       });
 
@@ -260,17 +264,17 @@ describe('useDiscoveryWorkflow', () => {
 
     it('toggleSelectAll deselects all when all selected', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      act(() => {
+      await act(() => {
         result.current.toggleSelectAll();
       });
 
-      act(() => {
+      await act(() => {
         result.current.toggleSelectAll();
       });
 
@@ -280,7 +284,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('isSelected returns correct state', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -288,7 +292,7 @@ describe('useDiscoveryWorkflow', () => {
 
       expect(result.current.isSelected('https://example.com/recipe-1')).toBe(false);
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe('https://example.com/recipe-1');
       });
 
@@ -299,7 +303,7 @@ describe('useDiscoveryWorkflow', () => {
   describe('parseSelectedRecipes', () => {
     it('returns null when no recipes selected', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -316,13 +320,13 @@ describe('useDiscoveryWorkflow', () => {
 
     it('returns converted recipes after successful parsing', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe('https://example.com/recipe-1');
       });
 
@@ -340,13 +344,13 @@ describe('useDiscoveryWorkflow', () => {
 
     it('updates parsingProgress during parsing', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe('https://example.com/recipe-1');
       });
 
@@ -362,9 +366,9 @@ describe('useDiscoveryWorkflow', () => {
   describe('abort', () => {
     it('aborts cleanup on unmount', async () => {
       const provider = createMockProvider();
-      const { unmount } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { unmount } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
-      unmount();
+      await unmount();
     });
 
     it('aborts an in-progress parsing operation on unmount', async () => {
@@ -386,18 +390,18 @@ describe('useDiscoveryWorkflow', () => {
       });
 
       const provider = createMockProvider();
-      const { result, unmount } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result, unmount } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe(result.current.recipes[0]!.url);
       });
 
-      act(() => {
+      await act(() => {
         void result.current.parseSelectedRecipes();
       });
 
@@ -406,7 +410,7 @@ describe('useDiscoveryWorkflow', () => {
         expect(parsingSignal).toBeDefined();
       });
 
-      unmount();
+      await unmount();
 
       expect(parsingSignal!.aborted).toBe(true);
     });
@@ -418,7 +422,7 @@ describe('useDiscoveryWorkflow', () => {
         discoveryError: new Error('Discovery failed'),
       });
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -431,7 +435,7 @@ describe('useDiscoveryWorkflow', () => {
   describe('recipesWithImages', () => {
     it('merges image map with recipes', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipesWithImages.length).toBeGreaterThan(0);
@@ -444,14 +448,14 @@ describe('useDiscoveryWorkflow', () => {
   describe('showSelectionUI', () => {
     it('is true during discovering phase', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       expect(result.current.showSelectionUI).toBe(true);
     });
 
     it('is true during selecting phase', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -462,13 +466,13 @@ describe('useDiscoveryWorkflow', () => {
 
     it('is false during parsing phase', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe('https://example.com/recipe-1');
       });
 
@@ -487,7 +491,7 @@ describe('useDiscoveryWorkflow', () => {
       const imageMap = new Map<string, string>();
       imageMap.set('https://example.com/recipe-1', 'https://cdn.example.com/new-image.jpg');
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock', imageMap));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock', imageMap));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -552,14 +556,14 @@ describe('useDiscoveryWorkflow', () => {
         canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.isDiscovering).toBe(true);
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe('https://example.com/recipe-1');
       });
 
@@ -647,20 +651,20 @@ describe('useDiscoveryWorkflow', () => {
         canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.isDiscovering).toBe(true);
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe('https://example.com/recipe-1');
       });
 
       let parsePromise!: Promise<ConvertedImportRecipe[] | null>;
 
-      act(() => {
+      await act(() => {
         result.current.abort();
         parsePromise = result.current.parseSelectedRecipes();
       });
@@ -669,7 +673,7 @@ describe('useDiscoveryWorkflow', () => {
         resumeDiscovery();
       });
 
-      act(() => {
+      await act(() => {
         result.current.abort();
       });
 
@@ -718,13 +722,13 @@ describe('useDiscoveryWorkflow', () => {
         canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(abortSignal).not.toBeNull();
       });
 
-      act(() => {
+      await act(() => {
         result.current.abort();
       });
 
@@ -786,19 +790,19 @@ describe('useDiscoveryWorkflow', () => {
         canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe('https://example.com/recipe-1');
       });
 
       let parsePromise!: Promise<ConvertedImportRecipe[] | null>;
-      act(() => {
+      await act(() => {
         parsePromise = result.current.parseSelectedRecipes();
       });
 
@@ -806,7 +810,7 @@ describe('useDiscoveryWorkflow', () => {
         expect(result.current.phase).toBe('parsing');
       });
 
-      act(() => {
+      await act(() => {
         result.current.abort();
       });
 
@@ -835,7 +839,7 @@ describe('useDiscoveryWorkflow', () => {
         canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -848,7 +852,7 @@ describe('useDiscoveryWorkflow', () => {
   describe('markUrlsAsSeen', () => {
     it('persists URLs to database as seen', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
@@ -901,13 +905,13 @@ describe('useDiscoveryWorkflow', () => {
         canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
       });
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe('https://example.com/recipe-1');
       });
 
@@ -926,13 +930,13 @@ describe('useDiscoveryWorkflow', () => {
       setupDefaultParsingMock({ parsingError: new Error('Parsing failed') });
 
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe('https://example.com/recipe-1');
       });
 
@@ -976,13 +980,13 @@ describe('useDiscoveryWorkflow', () => {
         canHandleUrl: jest.fn().mockReturnValue(false),
       };
 
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
       });
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe('https://example.com/recipe-1');
       });
 
@@ -998,7 +1002,7 @@ describe('useDiscoveryWorkflow', () => {
     });
 
     it('returns null when provider is undefined during parsing', async () => {
-      const { result } = renderHook(() => useDiscoveryWorkflow(undefined, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(undefined, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -1015,13 +1019,13 @@ describe('useDiscoveryWorkflow', () => {
 
     it('correctly converts parsed recipe fields', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes.length).toBeGreaterThan(0);
       });
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe('https://example.com/recipe-1');
       });
 
@@ -1047,7 +1051,7 @@ describe('useDiscoveryWorkflow', () => {
   describe('fresh and seen recipe separation', () => {
     it('returns empty arrays when no recipes', async () => {
       const provider = createMockProvider({ recipes: [] });
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -1059,7 +1063,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('allSelected is false when no visible recipes', async () => {
       const provider = createMockProvider({ recipes: [] });
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.phase).toBe('selecting');
@@ -1072,14 +1076,14 @@ describe('useDiscoveryWorkflow', () => {
   describe('dismiss recipe', () => {
     it('dismissRecipe keeps the recipe visible and flags it', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes).toHaveLength(2);
       });
 
       const target = result.current.recipes[0]!;
-      act(() => {
+      await act(() => {
         result.current.dismissRecipe(target);
       });
 
@@ -1089,13 +1093,13 @@ describe('useDiscoveryWorkflow', () => {
 
     it('dismissRecipe does not persist until committed', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.dismissRecipe(result.current.recipes[0]!);
       });
 
@@ -1104,18 +1108,18 @@ describe('useDiscoveryWorkflow', () => {
 
     it('dismissRecipe clears the recipe from the selection', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.selectRecipe('https://example.com/recipe-1');
       });
       expect(result.current.selectedCount).toBe(1);
 
-      act(() => {
+      await act(() => {
         result.current.dismissRecipe(result.current.recipes[0]!);
       });
 
@@ -1124,19 +1128,19 @@ describe('useDiscoveryWorkflow', () => {
 
     it('restoreRecipe clears the pending dismissal flag', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes).toHaveLength(2);
       });
 
       const target = result.current.recipes[0]!;
-      act(() => {
+      await act(() => {
         result.current.dismissRecipe(target);
       });
       expect(result.current.isDismissed(target.url)).toBe(true);
 
-      act(() => {
+      await act(() => {
         result.current.restoreRecipe(target);
       });
 
@@ -1145,13 +1149,13 @@ describe('useDiscoveryWorkflow', () => {
 
     it('commitDismissals persists every pending dismissal', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.dismissRecipe(result.current.recipes[0]!);
       });
 
@@ -1164,7 +1168,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('commitDismissals persists the imageUrl of the recipe passed to dismissRecipe', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes).toHaveLength(2);
@@ -1174,7 +1178,7 @@ describe('useDiscoveryWorkflow', () => {
         ...result.current.recipes[0]!,
         imageUrl: 'https://example.com/lazily-loaded.jpg',
       };
-      act(() => {
+      await act(() => {
         result.current.dismissRecipe(enrichedRecipe);
       });
 
@@ -1189,7 +1193,7 @@ describe('useDiscoveryWorkflow', () => {
 
     it('commitDismissals is a no-op when nothing is pending', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes).toHaveLength(2);
@@ -1204,17 +1208,17 @@ describe('useDiscoveryWorkflow', () => {
 
     it('toggleSelectAll ignores pending-dismissed recipes', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.dismissRecipe(result.current.recipes[0]!);
       });
 
-      act(() => {
+      await act(() => {
         result.current.toggleSelectAll();
       });
 
@@ -1225,17 +1229,17 @@ describe('useDiscoveryWorkflow', () => {
 
     it('allSelected is true when every selectable recipe is selected and one is dismissed', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.dismissRecipe(result.current.recipes[0]!);
       });
 
-      act(() => {
+      await act(() => {
         result.current.toggleSelectAll();
       });
 
@@ -1244,18 +1248,18 @@ describe('useDiscoveryWorkflow', () => {
 
     it('toggleSelectAll selects nothing and allSelected stays false when every recipe is dismissed', async () => {
       const provider = createMockProvider();
-      const { result } = renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
 
       await waitFor(() => {
         expect(result.current.recipes).toHaveLength(2);
       });
 
-      act(() => {
+      await act(() => {
         result.current.dismissRecipe(result.current.recipes[0]!);
         result.current.dismissRecipe(result.current.recipes[1]!);
       });
 
-      act(() => {
+      await act(() => {
         result.current.toggleSelectAll();
       });
 

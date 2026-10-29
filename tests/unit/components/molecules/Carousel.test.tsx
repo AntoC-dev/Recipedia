@@ -13,7 +13,7 @@ describe('Carousel Component', () => {
   const emptyRecipes: recipeTableElement[] = [];
   const singleRecipe: recipeTableElement[] = [testRecipes[0]!];
 
-  const renderCarousel = (overrideProps = {}) => {
+  const renderCarousel = async (overrideProps = {}) => {
     const defaultProps: CarouselItemProps = {
       items: sampleRecipes,
       testID: 'test-carousel',
@@ -51,15 +51,15 @@ describe('Carousel Component', () => {
     expect(() => getByTestId(`test-carousel::Card::${expectedCount}`)).toThrow();
   };
 
-  test('renders with correct recipe data and proper testIDs', () => {
-    const { getByTestId } = renderCarousel();
+  test('renders with correct recipe data and proper testIDs', async () => {
+    const { getByTestId } = await renderCarousel();
 
     expect(getByTestId('test-carousel')).toBeTruthy();
     assertRecipeCardRendering(getByTestId, sampleRecipes.length, sampleRecipes);
   });
 
-  test('handles empty recipe array gracefully', () => {
-    const { getByTestId, queryByTestId } = renderCarousel({ items: emptyRecipes });
+  test('handles empty recipe array gracefully', async () => {
+    const { getByTestId, queryByTestId } = await renderCarousel({ items: emptyRecipes });
 
     expect(getByTestId('test-carousel')).toBeTruthy();
     expect(queryByTestId('test-carousel::Card::0')).toBeNull();
@@ -67,14 +67,14 @@ describe('Carousel Component', () => {
     expect(queryByTestId('test-carousel::Card::2')).toBeNull();
   });
 
-  test('handles single recipe item correctly', () => {
-    const { getByTestId } = renderCarousel({ items: singleRecipe });
+  test('handles single recipe item correctly', async () => {
+    const { getByTestId } = await renderCarousel({ items: singleRecipe });
 
     assertRecipeCardRendering(getByTestId, 1, singleRecipe);
   });
 
-  test('uses different testID correctly for multiple instances', () => {
-    const { getByTestId } = renderCarousel({ testID: 'custom-carousel-id' });
+  test('uses different testID correctly for multiple instances', async () => {
+    const { getByTestId } = await renderCarousel({ testID: 'custom-carousel-id' });
 
     // Assert recipe cards use custom testID
     expect(getByTestId('custom-carousel-id::Card::0')).toBeTruthy();
@@ -92,13 +92,13 @@ describe('Carousel Component', () => {
     expect(getByTestId('custom-carousel-id::Card::0::Size').props.children).toEqual('small');
   });
 
-  test('maintains performance with large recipe arrays', () => {
-    const { getByTestId } = renderCarousel({ items: testRecipes });
+  test('maintains performance with large recipe arrays', async () => {
+    const { getByTestId } = await renderCarousel({ items: testRecipes });
 
     assertRecipeCardRendering(getByTestId, testRecipes.length, testRecipes);
   });
 
-  test('handles recipe data variations correctly', () => {
+  test('handles recipe data variations correctly', async () => {
     // Create recipes with different data characteristics
     const variedRecipes = [
       { ...testRecipes[0]!, title: 'Recipe with Special Characters: café & créme' },
@@ -109,28 +109,28 @@ describe('Carousel Component', () => {
       },
     ];
 
-    const { getByTestId } = renderCarousel({ items: variedRecipes });
+    const { getByTestId } = await renderCarousel({ items: variedRecipes });
 
     assertRecipeCardRendering(getByTestId, 3, variedRecipes);
   });
 
-  test('maintains testID consistency across re-renders', () => {
-    const { getByTestId, rerender } = renderCarousel();
+  test('maintains testID consistency across re-renders', async () => {
+    const { getByTestId, rerender } = await renderCarousel();
 
     assertRecipeCardRendering(getByTestId, sampleRecipes.length, sampleRecipes);
 
-    rerender(<Carousel items={singleRecipe} testID='test-carousel' />);
+    await rerender(<Carousel items={singleRecipe} testID='test-carousel' />);
 
     expect(getByTestId('test-carousel::Card::0')).toBeTruthy();
     expect(() => getByTestId('test-carousel::Card::1')).toThrow();
     expect(() => getByTestId('test-carousel::Card::2')).toThrow();
 
-    rerender(<Carousel items={sampleRecipes} testID='test-carousel' />);
+    await rerender(<Carousel items={sampleRecipes} testID='test-carousel' />);
 
     assertRecipeCardRendering(getByTestId, sampleRecipes.length, sampleRecipes);
   });
 
-  test('handles edge cases with minimal recipe data', () => {
+  test('handles edge cases with minimal recipe data', async () => {
     const minimalRecipes: recipeTableElement[] = [
       {
         id: 999,
@@ -146,33 +146,33 @@ describe('Carousel Component', () => {
       },
     ];
 
-    const { getByTestId } = renderCarousel({ items: minimalRecipes });
+    const { getByTestId } = await renderCarousel({ items: minimalRecipes });
 
     assertRecipeCardRendering(getByTestId, 1, minimalRecipes);
   });
 
-  test('generates unique keys for recipes with same title but different ids', () => {
+  test('generates unique keys for recipes with same title but different ids', async () => {
     const duplicateTitleRecipes: recipeTableElement[] = [
       { ...testRecipes[0]!, id: 1, title: 'Duplicate Title' },
       { ...testRecipes[1]!, id: 2, title: 'Duplicate Title' },
       { ...testRecipes[2]!, id: 3, title: 'Duplicate Title' },
     ];
 
-    expect(() => renderCarousel({ items: duplicateTitleRecipes })).not.toThrow();
+    await renderCarousel({ items: duplicateTitleRecipes });
 
-    const { getByTestId } = renderCarousel({ items: duplicateTitleRecipes });
+    const { getByTestId } = await renderCarousel({ items: duplicateTitleRecipes });
     assertRecipeCardRendering(getByTestId, 3, duplicateTitleRecipes);
   });
 
-  test('generates unique keys for recipes without id using title and index', () => {
+  test('generates unique keys for recipes without id using title and index', async () => {
     const noIdRecipes: recipeTableElement[] = [
       { ...testRecipes[0]!, id: undefined as any, title: 'Same Title' },
       { ...testRecipes[1]!, id: undefined as any, title: 'Same Title' },
     ];
 
-    expect(() => renderCarousel({ items: noIdRecipes })).not.toThrow();
+    await renderCarousel({ items: noIdRecipes });
 
-    const { getByTestId } = renderCarousel({ items: noIdRecipes });
+    const { getByTestId } = await renderCarousel({ items: noIdRecipes });
     assertRecipeCardRendering(getByTestId, 2, noIdRecipes);
   });
 });

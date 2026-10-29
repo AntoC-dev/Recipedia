@@ -26,7 +26,7 @@ describe('RecipeCard Component', () => {
     tags: testTags,
   };
 
-  const renderRecipeCard = (overrideProps = {}) => {
+  const renderRecipeCard = async (overrideProps = {}) => {
     const defaultProps: RecipeCardProps = {
       testId: 'test-recipe-card',
       size: 'small' as const,
@@ -76,20 +76,20 @@ describe('RecipeCard Component', () => {
     jest.clearAllMocks();
   });
 
-  test('renders small size card correctly with basic recipe data', () => {
-    const { getByTestId, queryByTestId } = renderRecipeCard();
+  test('renders small size card correctly with basic recipe data', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeCard();
 
     assertRecipeDataDisplay(getByTestId, queryByTestId, 'small');
   });
 
-  test('renders medium size card correctly with full recipe details', () => {
-    const { getByTestId, queryByTestId } = renderRecipeCard({ size: 'medium' });
+  test('renders medium size card correctly with full recipe details', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeCard({ size: 'medium' });
 
     assertRecipeDataDisplay(getByTestId, queryByTestId, 'medium');
   });
 
-  test('exposes each card field as its own accessible element', () => {
-    const { getByTestId } = renderRecipeCard({ size: 'medium' });
+  test('exposes each card field as its own accessible element', async () => {
+    const { getByTestId } = await renderRecipeCard({ size: 'medium' });
 
     const card = getByTestId(`test-recipe-card::${sampleRecipe.title}`);
     expect(card.props.accessible).toBe(false);
@@ -101,12 +101,12 @@ describe('RecipeCard Component', () => {
     expect(getByTestId('test-recipe-card::Persons').props.accessible).toBe(true);
   });
 
-  test('navigates to Recipe screen when card is pressed', () => {
-    const { getByTestId, queryByTestId } = renderRecipeCard();
+  test('navigates to Recipe screen when card is pressed', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeCard();
 
     expect(mockNavigate).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId(`test-recipe-card::${sampleRecipe.title}`));
+    await fireEvent.press(getByTestId(`test-recipe-card::${sampleRecipe.title}`));
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith('RecipeView', {
@@ -116,22 +116,22 @@ describe('RecipeCard Component', () => {
     assertRecipeDataDisplay(getByTestId, queryByTestId, 'small');
   });
 
-  test('displays recipe image correctly with fallback handling', () => {
-    const { getByTestId, queryByTestId } = renderRecipeCard({
+  test('displays recipe image correctly with fallback handling', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeCard({
       recipe: recipeWithoutImage,
     });
 
     assertRecipeDataDisplay(getByTestId, queryByTestId, 'small', recipeWithoutImage);
   });
 
-  test('handles recipe title variations correctly', () => {
+  test('handles recipe title variations correctly', async () => {
     {
       const longTitleRecipe = {
         ...sampleRecipe,
         title: 'Very Long Recipe Title That Should Be Truncated After Two Lines Of Text Display',
       };
 
-      const { getByTestId, queryByTestId } = renderRecipeCard({
+      const { getByTestId, queryByTestId } = await renderRecipeCard({
         recipe: longTitleRecipe,
       });
 
@@ -139,7 +139,7 @@ describe('RecipeCard Component', () => {
     }
     {
       const emptyTitleRecipe = { ...sampleRecipe, title: '' };
-      const { getByTestId, queryByTestId } = renderRecipeCard({
+      const { getByTestId, queryByTestId } = await renderRecipeCard({
         recipe: emptyTitleRecipe,
       });
       assertRecipeDataDisplay(getByTestId, queryByTestId, 'small', emptyTitleRecipe);
@@ -149,16 +149,16 @@ describe('RecipeCard Component', () => {
         ...sampleRecipe,
         title: 'Recipe with Special Characters: café & créme',
       };
-      const { getByTestId, queryByTestId } = renderRecipeCard({
+      const { getByTestId, queryByTestId } = await renderRecipeCard({
         recipe: specialTitleRecipe,
       });
       assertRecipeDataDisplay(getByTestId, queryByTestId, 'small', specialTitleRecipe);
     }
   });
 
-  test('displays tags correctly in medium size cards', () => {
+  test('displays tags correctly in medium size cards', async () => {
     {
-      const { getByTestId, queryByTestId } = renderRecipeCard({
+      const { getByTestId, queryByTestId } = await renderRecipeCard({
         size: 'medium',
         recipe: recipeWithManyTags,
       });
@@ -168,7 +168,7 @@ describe('RecipeCard Component', () => {
 
     {
       const singleTagRecipe = { ...sampleRecipe, tags: [{ id: 1, name: 'Italian' }] };
-      const { getByTestId, queryByTestId } = renderRecipeCard({
+      const { getByTestId, queryByTestId } = await renderRecipeCard({
         size: 'medium',
         recipe: singleTagRecipe,
       });
@@ -177,7 +177,7 @@ describe('RecipeCard Component', () => {
     }
     {
       const noTagsRecipe = { ...sampleRecipe, tags: [] };
-      const { getByTestId, queryByTestId } = renderRecipeCard({
+      const { getByTestId, queryByTestId } = await renderRecipeCard({
         size: 'medium',
         recipe: noTagsRecipe,
       });
@@ -186,9 +186,9 @@ describe('RecipeCard Component', () => {
     }
   });
 
-  test('displays preparation time and serving count in medium cards', () => {
+  test('displays preparation time and serving count in medium cards', async () => {
     const customRecipe = { ...sampleRecipe, time: 45, persons: 6 };
-    const { getByTestId, queryByTestId } = renderRecipeCard({
+    const { getByTestId, queryByTestId } = await renderRecipeCard({
       size: 'medium',
       recipe: customRecipe,
     });
@@ -196,14 +196,14 @@ describe('RecipeCard Component', () => {
     assertRecipeDataDisplay(getByTestId, queryByTestId, 'medium', customRecipe);
   });
 
-  test('uses different testId correctly for multiple instances', () => {
+  test('uses different testId correctly for multiple instances', async () => {
     const customTestId = 'custom-recipe-card';
-    const { getByTestId, queryByTestId } = renderRecipeCard({ testId: customTestId });
+    const { getByTestId, queryByTestId } = await renderRecipeCard({ testId: customTestId });
 
     assertRecipeDataDisplay(getByTestId, queryByTestId, 'small', sampleRecipe, customTestId);
   });
 
-  test('handles recipe data edge cases correctly', () => {
+  test('handles recipe data edge cases correctly', async () => {
     const minimalRecipe: recipeTableElement = {
       id: 999,
       title: 'Minimal Recipe',
@@ -217,14 +217,14 @@ describe('RecipeCard Component', () => {
       time: 0,
     };
     {
-      const { getByTestId, queryByTestId } = renderRecipeCard({
+      const { getByTestId, queryByTestId } = await renderRecipeCard({
         recipe: minimalRecipe,
       });
 
       assertRecipeDataDisplay(getByTestId, queryByTestId, 'small', minimalRecipe);
     }
     {
-      const { getByTestId, queryByTestId } = renderRecipeCard({
+      const { getByTestId, queryByTestId } = await renderRecipeCard({
         recipe: minimalRecipe,
         size: 'medium',
       });
@@ -237,10 +237,10 @@ describe('RecipeCard Component', () => {
 
   test.each(['small', 'medium'] as const)(
     'reserves a fixed two-line title block so %s cards keep a uniform height',
-    size => {
+    async size => {
       const lineHeight = titleLineHeightBySize[size];
-      const shortTitle = renderRecipeCard({ size, recipe: { ...sampleRecipe, title: 'A' } });
-      const longTitle = renderRecipeCard({
+      const shortTitle = await renderRecipeCard({ size, recipe: { ...sampleRecipe, title: 'A' } });
+      const longTitle = await renderRecipeCard({
         size,
         recipe: {
           ...sampleRecipe,
@@ -262,8 +262,8 @@ describe('RecipeCard Component', () => {
 
   test.each(['small', 'medium'] as const)(
     'does not stretch the %s card via flex so its border wraps the whole content',
-    size => {
-      const { getByTestId } = renderRecipeCard({ size });
+    async size => {
+      const { getByTestId } = await renderRecipeCard({ size });
       const cardStyle = StyleSheet.flatten(
         getByTestId(`test-recipe-card::${sampleRecipe.title}`).props.style
       );
@@ -271,14 +271,14 @@ describe('RecipeCard Component', () => {
     }
   );
 
-  test('handles size prop changes correctly', () => {
-    const { getByTestId, queryByTestId, rerender } = renderRecipeCard({
+  test('handles size prop changes correctly', async () => {
+    const { getByTestId, queryByTestId, rerender } = await renderRecipeCard({
       size: 'small',
     });
 
     assertRecipeDataDisplay(getByTestId, queryByTestId, 'small');
 
-    rerender(
+    await rerender(
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen

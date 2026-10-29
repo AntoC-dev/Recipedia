@@ -24,103 +24,107 @@ describe('ImportSuccessMessage', () => {
     jest.clearAllMocks();
   });
 
-  test('displays import complete title', () => {
-    const { getByText } = render(<ImportSuccessMessage {...defaultProps} />);
+  test('displays import complete title', async () => {
+    const { getByText } = await render(<ImportSuccessMessage {...defaultProps} />);
 
     expect(getByText('bulkImport.validation.importComplete')).toBeTruthy();
   });
 
-  test('displays imported count message in plural', () => {
-    const { getByText } = render(<ImportSuccessMessage {...defaultProps} />);
+  test('displays imported count message in plural', async () => {
+    const { getByText } = await render(<ImportSuccessMessage {...defaultProps} />);
 
     expect(getByText('bulkImport.validation.recipesImportedPlural')).toBeTruthy();
   });
 
-  test('displays imported count message in singular when count is 1', () => {
-    const { getByText } = render(<ImportSuccessMessage {...defaultProps} importedCount={1} />);
+  test('displays imported count message in singular when count is 1', async () => {
+    const { getByText } = await render(
+      <ImportSuccessMessage {...defaultProps} importedCount={1} />
+    );
 
     expect(getByText('bulkImport.validation.recipesImported')).toBeTruthy();
   });
 
-  test('renders finish button with testID', () => {
-    const { getByTestId } = render(<ImportSuccessMessage {...defaultProps} />);
+  test('renders finish button with testID', async () => {
+    const { getByTestId } = await render(<ImportSuccessMessage {...defaultProps} />);
 
     expect(getByTestId('test-success::FinishButton')).toBeTruthy();
   });
 
-  test('calls onFinish when button pressed', () => {
+  test('calls onFinish when button pressed', async () => {
     const onFinish = jest.fn();
-    const { getByTestId } = render(<ImportSuccessMessage {...defaultProps} onFinish={onFinish} />);
+    const { getByTestId } = await render(
+      <ImportSuccessMessage {...defaultProps} onFinish={onFinish} />
+    );
 
-    fireEvent.press(getByTestId('test-success::FinishButton'));
+    await fireEvent.press(getByTestId('test-success::FinishButton'));
 
     expect(onFinish).toHaveBeenCalledTimes(1);
   });
 
-  test('displays finish button label', () => {
-    const { getByText } = render(<ImportSuccessMessage {...defaultProps} />);
+  test('displays finish button label', async () => {
+    const { getByText } = await render(<ImportSuccessMessage {...defaultProps} />);
 
     expect(getByText('bulkImport.validation.finish')).toBeTruthy();
   });
 
-  test('does not show skipped section when skippedRecipes is undefined', () => {
-    const { queryByTestId } = render(<ImportSuccessMessage {...defaultProps} />);
+  test('does not show skipped section when skippedRecipes is undefined', async () => {
+    const { queryByTestId } = await render(<ImportSuccessMessage {...defaultProps} />);
 
     expect(queryByTestId('test-success::SkippedHeader')).toBeNull();
   });
 
-  test('does not show skipped section when skippedRecipes is empty', () => {
-    const { queryByTestId } = render(
+  test('does not show skipped section when skippedRecipes is empty', async () => {
+    const { queryByTestId } = await render(
       <ImportSuccessMessage {...defaultProps} skippedRecipes={[]} />
     );
 
     expect(queryByTestId('test-success::SkippedHeader')).toBeNull();
   });
 
-  test('shows skipped header in singular when one recipe is skipped', () => {
-    const { getByText } = render(
+  test('shows skipped header in singular when one recipe is skipped', async () => {
+    const { getByText } = await render(
       <ImportSuccessMessage {...defaultProps} skippedRecipes={[skippedRecipe]} />
     );
 
     expect(getByText('bulkImport.validation.skippedSectionTitle')).toBeTruthy();
   });
 
-  test('shows skipped header in plural when multiple recipes are skipped', () => {
+  test('shows skipped header in plural when multiple recipes are skipped', async () => {
     const secondSkipped = { title: 'Poulet rôti', sourceUrl: 'https://example.com/poulet' };
-    const { getByText } = render(
+    const { getByText } = await render(
       <ImportSuccessMessage {...defaultProps} skippedRecipes={[skippedRecipe, secondSkipped]} />
     );
 
     expect(getByText('bulkImport.validation.skippedSectionTitlePlural')).toBeTruthy();
   });
 
-  test('shows SkippedRecipesList when skippedRecipes is non-empty', () => {
-    const { getByTestId } = render(
+  test('shows SkippedRecipesList when skippedRecipes is non-empty', async () => {
+    const { getByTestId } = await render(
       <ImportSuccessMessage {...defaultProps} skippedRecipes={[skippedRecipe]} />
     );
 
     expect(getByTestId('test-success::SkippedList')).toBeTruthy();
   });
 
-  test('passes skipped recipes to SkippedRecipesList', () => {
-    const { getByTestId } = render(
+  test('passes skipped recipes to SkippedRecipesList', async () => {
+    const { getByTestId } = await render(
       <ImportSuccessMessage {...defaultProps} skippedRecipes={[skippedRecipe]} />
     );
 
     expect(getByTestId('test-success::SkippedList::Item::0')).toBeTruthy();
   });
 
-  test('renders finish button in skipped layout', () => {
-    const { getByTestId } = render(
+  test('renders finish button in skipped layout', async () => {
+    const { getByTestId } = await render(
       <ImportSuccessMessage {...defaultProps} skippedRecipes={[skippedRecipe]} />
     );
 
     expect(getByTestId('test-success::FinishButton')).toBeTruthy();
   });
 
-  test('calls onFinish when finish button pressed in skipped layout', () => {
+  test('calls onFinish when finish button pressed in skipped layout', async () => {
     const onFinish = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ImportSuccessMessage
         {...defaultProps}
         onFinish={onFinish}
@@ -128,7 +132,7 @@ describe('ImportSuccessMessage', () => {
       />
     );
 
-    fireEvent.press(getByTestId('test-success::FinishButton'));
+    await fireEvent.press(getByTestId('test-success::FinishButton'));
 
     expect(onFinish).toHaveBeenCalledTimes(1);
   });

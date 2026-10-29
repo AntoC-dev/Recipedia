@@ -14,32 +14,32 @@ describe('SearchSuggestionItem Component', () => {
     onSelect,
   };
 
-  const renderItem = (props: SearchSuggestionItemProps = defaultProps) =>
+  const renderItem = async (props: SearchSuggestionItemProps = defaultProps) =>
     render(<SearchSuggestionItem {...props} />);
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test('renders the suggestion title', () => {
-    const { getByTestId } = renderItem();
+  test('renders the suggestion title', async () => {
+    const { getByTestId } = await renderItem();
 
     expect(getByTestId('Suggestion::Item::0')).toBeTruthy();
     expect(getByTestId('Suggestion::Item::0::Title').props.children).toBe('Lentil Curry');
   });
 
-  test('calls onSelect when pressed', () => {
-    const { getByTestId } = renderItem();
+  test('calls onSelect when pressed', async () => {
+    const { getByTestId } = await renderItem();
 
     expect(onSelect).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('Suggestion::Item::0'));
+    await fireEvent.press(getByTestId('Suggestion::Item::0'));
 
     expect(onSelect).toHaveBeenCalledTimes(1);
   });
 
-  test('renders an empty title without crashing', () => {
-    const { getByTestId } = renderItem({ ...defaultProps, title: '' });
+  test('renders an empty title without crashing', async () => {
+    const { getByTestId } = await renderItem({ ...defaultProps, title: '' });
 
     expect(getByTestId('Suggestion::Item::0::Title').props.children).toBe('');
   });

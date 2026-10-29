@@ -31,7 +31,7 @@ const { mockUseSafeCopilot } = require('@mocks/hooks/useSafeCopilot-mock');
 const Stack = createNativeStackNavigator();
 
 describe('Parameters Screen', () => {
-  const renderParameters = () => {
+  const renderParameters = async () => {
     return render(
       <NavigationContainer>
         <Stack.Navigator>
@@ -109,7 +109,7 @@ describe('Parameters Screen', () => {
   });
 
   test('renders all parameter sections with correct structure', async () => {
-    const { getByTestId, getAllByTestId } = renderParameters();
+    const { getByTestId, getAllByTestId } = await renderParameters();
 
     await waitFor(() => {
       assertParameters(getByTestId, getAllByTestId);
@@ -117,7 +117,7 @@ describe('Parameters Screen', () => {
   });
 
   test('handles dark mode toggle correctly', async () => {
-    const { getByTestId } = renderParameters();
+    const { getByTestId } = await renderParameters();
 
     await waitFor(() => {
       expect(
@@ -127,13 +127,13 @@ describe('Parameters Screen', () => {
 
     expect(mockToggleDarkMode).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('Parameters::Section::Appearance::DarkMode::Switch'));
+    await fireEvent.press(getByTestId('Parameters::Section::Appearance::DarkMode::Switch'));
 
     expect(mockToggleDarkMode).toHaveBeenCalledTimes(1);
   });
 
   test('handles season filter toggle correctly', async () => {
-    const { getByTestId } = renderParameters();
+    const { getByTestId } = await renderParameters();
 
     await waitFor(() => {
       expect(
@@ -143,14 +143,14 @@ describe('Parameters Screen', () => {
 
     expect(mockSetSeasonFilter).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('Parameters::Section::RecipeDefaults::Season::Switch'));
+    await fireEvent.press(getByTestId('Parameters::Section::RecipeDefaults::Season::Switch'));
 
     expect(mockSetSeasonFilter).toHaveBeenCalledTimes(1);
     expect(mockSetSeasonFilter).toHaveBeenCalledWith(false);
   });
 
   test('navigates to language settings when language item is pressed', async () => {
-    const { getByTestId } = renderParameters();
+    const { getByTestId } = await renderParameters();
 
     await waitFor(() => {
       expect(
@@ -160,14 +160,14 @@ describe('Parameters Screen', () => {
 
     expect(mockNavigate).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('Parameters::Section::Appearance::Language::Item'));
+    await fireEvent.press(getByTestId('Parameters::Section::Appearance::Language::Item'));
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith('LanguageSettings');
   });
 
   test('navigates to default persons settings when pressed', async () => {
-    const { getByTestId } = renderParameters();
+    const { getByTestId } = await renderParameters();
 
     await waitFor(() => {
       expect(
@@ -177,14 +177,14 @@ describe('Parameters Screen', () => {
 
     expect(mockNavigate).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('Parameters::Section::RecipeDefaults::Persons::Item'));
+    await fireEvent.press(getByTestId('Parameters::Section::RecipeDefaults::Persons::Item'));
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith('DefaultPersonsSettings');
   });
 
   test('navigates to ingredients management when pressed', async () => {
-    const { getByTestId } = renderParameters();
+    const { getByTestId } = await renderParameters();
 
     await waitFor(() => {
       expect(
@@ -192,14 +192,14 @@ describe('Parameters Screen', () => {
       ).toBe('ingredients');
     });
 
-    fireEvent.press(getByTestId('Parameters::Section::Data::Ingredients::Item'));
+    await fireEvent.press(getByTestId('Parameters::Section::Data::Ingredients::Item'));
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith('IngredientsSettings');
   });
 
   test('navigates to tags management when pressed', async () => {
-    const { getByTestId } = renderParameters();
+    const { getByTestId } = await renderParameters();
 
     await waitFor(() => {
       expect(getByTestId('Parameters::Section::Data::Tags::Item::Title').props.children).toBe(
@@ -207,40 +207,40 @@ describe('Parameters Screen', () => {
       );
     });
 
-    fireEvent.press(getByTestId('Parameters::Section::Data::Tags::Item'));
+    await fireEvent.press(getByTestId('Parameters::Section::Data::Tags::Item'));
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith('TagsSettings');
   });
 
   test('navigates to bulk import provider selection when pressed', async () => {
-    const { getByTestId } = renderParameters();
+    const { getByTestId } = await renderParameters();
 
     await waitFor(() => {
       expect(getByTestId('Parameters::Section::Import::FromWebsite::Item')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('Parameters::Section::Import::FromWebsite::Item'));
+    await fireEvent.press(getByTestId('Parameters::Section::Import::FromWebsite::Item'));
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith('BulkImportSettings');
   });
 
   test('navigates to dismissed recipes management when pressed', async () => {
-    const { getByTestId } = renderParameters();
+    const { getByTestId } = await renderParameters();
 
     await waitFor(() => {
       expect(getByTestId('Parameters::Section::Import::DismissedRecipes::Item')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('Parameters::Section::Import::DismissedRecipes::Item'));
+    await fireEvent.press(getByTestId('Parameters::Section::Import::DismissedRecipes::Item'));
 
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith('DismissedRecipesSettings');
   });
 
   test('displays default persons from context', async () => {
-    const { getByTestId } = renderParameters();
+    const { getByTestId } = await renderParameters();
 
     await waitFor(() => {
       expect(
@@ -251,15 +251,15 @@ describe('Parameters Screen', () => {
   });
 
   test('maintains switch states correctly across interactions', async () => {
-    const { getByTestId, getAllByTestId } = renderParameters();
+    const { getByTestId, getAllByTestId } = await renderParameters();
 
     await waitFor(() => {
       assertParameters(getByTestId, getAllByTestId);
     });
 
-    fireEvent.press(getByTestId('Parameters::Section::Appearance::DarkMode::Switch'));
-    fireEvent.press(getByTestId('Parameters::Section::RecipeDefaults::Season::Switch'));
-    fireEvent.press(getByTestId('Parameters::Section::Appearance::DarkMode::Switch'));
+    await fireEvent.press(getByTestId('Parameters::Section::Appearance::DarkMode::Switch'));
+    await fireEvent.press(getByTestId('Parameters::Section::RecipeDefaults::Season::Switch'));
+    await fireEvent.press(getByTestId('Parameters::Section::Appearance::DarkMode::Switch'));
 
     expect(mockToggleDarkMode).toHaveBeenCalledTimes(2);
     expect(mockSetSeasonFilter).toHaveBeenCalledTimes(1);
@@ -267,15 +267,15 @@ describe('Parameters Screen', () => {
   });
 
   test('handles rapid successive navigation correctly', async () => {
-    const { getByTestId, getAllByTestId } = renderParameters();
+    const { getByTestId, getAllByTestId } = await renderParameters();
 
     await waitFor(() => {
       assertParameters(getByTestId, getAllByTestId);
     });
 
-    fireEvent.press(getByTestId('Parameters::Section::Appearance::Language::Item'));
-    fireEvent.press(getByTestId('Parameters::Section::RecipeDefaults::Persons::Item'));
-    fireEvent.press(getByTestId('Parameters::Section::Data::Ingredients::Item'));
+    await fireEvent.press(getByTestId('Parameters::Section::Appearance::Language::Item'));
+    await fireEvent.press(getByTestId('Parameters::Section::RecipeDefaults::Persons::Item'));
+    await fireEvent.press(getByTestId('Parameters::Section::Data::Ingredients::Item'));
 
     expect(mockNavigate).toHaveBeenCalledTimes(3);
     expect(mockNavigate).toHaveBeenNthCalledWith(1, 'LanguageSettings');
@@ -284,30 +284,30 @@ describe('Parameters Screen', () => {
   });
 
   test('maintains accessibility and structure during interactions', async () => {
-    const { getByTestId, getAllByTestId } = renderParameters();
+    const { getByTestId, getAllByTestId } = await renderParameters();
 
     await waitFor(() => {
       assertParameters(getByTestId, getAllByTestId);
     });
 
-    fireEvent.press(getByTestId('Parameters::Section::Appearance::DarkMode::Switch'));
-    fireEvent.press(getByTestId('Parameters::Section::RecipeDefaults::Season::Switch'));
+    await fireEvent.press(getByTestId('Parameters::Section::Appearance::DarkMode::Switch'));
+    await fireEvent.press(getByTestId('Parameters::Section::RecipeDefaults::Season::Switch'));
 
     assertParameters(getByTestId, getAllByTestId);
 
-    fireEvent.press(getByTestId('Parameters::Section::Appearance::Language::Item'));
+    await fireEvent.press(getByTestId('Parameters::Section::Appearance::Language::Item'));
   });
 
   test('integrates with all required contexts and utilities', async () => {
-    const { getByTestId, getAllByTestId } = renderParameters();
+    const { getByTestId, getAllByTestId } = await renderParameters();
 
     await waitFor(() => {
       assertParameters(getByTestId, getAllByTestId);
     });
 
-    fireEvent.press(getByTestId('Parameters::Section::Appearance::DarkMode::Switch'));
-    fireEvent.press(getByTestId('Parameters::Section::RecipeDefaults::Season::Switch'));
-    fireEvent.press(getByTestId('Parameters::Section::Appearance::Language::Item'));
+    await fireEvent.press(getByTestId('Parameters::Section::Appearance::DarkMode::Switch'));
+    await fireEvent.press(getByTestId('Parameters::Section::RecipeDefaults::Season::Switch'));
+    await fireEvent.press(getByTestId('Parameters::Section::Appearance::Language::Item'));
 
     expect(mockToggleDarkMode).toHaveBeenCalled();
     expect(mockSetSeasonFilter).toHaveBeenCalled();
@@ -330,7 +330,7 @@ describe('Parameters Screen', () => {
         isActive: true,
       });
 
-      const { getByTestId } = renderParameters();
+      const { getByTestId } = await renderParameters();
 
       await waitFor(() => {
         expect(getByTestId('CopilotStep::Parameters')).toBeTruthy();
@@ -342,7 +342,7 @@ describe('Parameters Screen', () => {
     });
 
     test('renders without tutorial wrapper when copilot is not available', async () => {
-      const { queryByTestId, getByTestId } = renderParameters();
+      const { queryByTestId, getByTestId } = await renderParameters();
 
       await waitFor(() => {
         expect(queryByTestId('CopilotStep::Parameters')).toBeNull();
@@ -364,7 +364,7 @@ describe('Parameters Screen', () => {
         isActive: true,
       });
 
-      const { getByTestId } = renderParameters();
+      const { getByTestId } = await renderParameters();
 
       await waitFor(() => {
         expect(getByTestId('CopilotStep::Parameters')).toBeTruthy();
@@ -390,7 +390,7 @@ describe('Parameters Screen', () => {
         isActive: true,
       });
 
-      const { getByTestId } = renderParameters();
+      const { getByTestId } = await renderParameters();
 
       await waitFor(() => {
         expect(getByTestId('CopilotStep::Parameters')).toBeTruthy();
@@ -411,7 +411,7 @@ describe('Parameters Screen', () => {
         isActive: true,
       });
 
-      renderParameters();
+      await renderParameters();
 
       expect(mockEvents.on).not.toHaveBeenCalled();
     });
@@ -427,7 +427,7 @@ describe('Parameters Screen', () => {
         isActive: true,
       });
 
-      const { getByTestId } = renderParameters();
+      const { getByTestId } = await renderParameters();
 
       await waitFor(() => {
         expect(getByTestId('Parameters::Tutorial')).toBeTruthy();
