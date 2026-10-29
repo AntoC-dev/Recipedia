@@ -26,22 +26,9 @@ appId: "com.recipedia"
           timeout: 30000
           label: "Wait for Photos library"
 
-- extendedWaitUntil:
-    visible:
-      id: "PXGGridLayout-Info"
-    timeout: 60000
-    optional: true
-    label: "Let the library grid populate before checking for photos"
-
 - runFlow:
-    when:
-      visible:
-        id: "PXGGridLayout-Info"
-    commands:
-      - runFlow:
-          file: "cleanupPhotos.yaml"
-          label: "Delete all photos from library"
-    label: "Clean up photos if any exist"
+    file: "cleanupPhotos.yaml"
+    label: "Delete all photos from library"
 
 - stopApp:
     appId: "com.apple.mobileslideshow"
