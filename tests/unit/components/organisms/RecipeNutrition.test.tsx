@@ -1,10 +1,17 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent } from '@testing-library/react-native';
+import {
+  IMAGE_MODAL_TARGET_TEST_ID,
+  renderWithRecipeDialogs,
+} from '@mocks/context/RecipeDialogsHarness';
 import { RecipeNutrition } from '@components/organisms/RecipeNutrition';
-import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
+import { nutritionTableElement, recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import { defaultValueNumber } from '@utils/Constants';
 
+jest.mock('@components/atomic/RoundButton', () => ({
+  RoundButton: require('@mocks/components/atomic/RoundButton-mock').roundButtonMock,
+}));
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('@components/molecules/NutritionTable', () =>
   require('@mocks/components/molecules/NutritionTable-mock')
@@ -39,7 +46,7 @@ describe('RecipeNutrition', () => {
 
   describe('Read-only mode', () => {
     test('renders nutrition table with basic structure', () => {
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.readOnly}
@@ -58,7 +65,7 @@ describe('RecipeNutrition', () => {
     });
 
     test('does not render when no nutrition data provided', () => {
-      const { queryByTestId } = render(
+      const { queryByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.readOnly}
@@ -76,7 +83,7 @@ describe('RecipeNutrition', () => {
         portionWeight: 150,
       };
 
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={nutritionWithPortion}
           mode={recipeStateType.readOnly}
@@ -99,7 +106,7 @@ describe('RecipeNutrition', () => {
         salt: 0.123,
       };
 
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={nutritionWithDecimals}
           mode={recipeStateType.readOnly}
@@ -118,7 +125,7 @@ describe('RecipeNutrition', () => {
 
   describe('Add manual mode', () => {
     test('shows empty state when no nutrition data', () => {
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.addManual}
@@ -131,12 +138,11 @@ describe('RecipeNutrition', () => {
       expect(getByTestId(nutritionEmptyStateTestId + '::ParentTestId').props.children).toBe(
         defaultTestId + '::RecipeNutrition'
       );
-      expect(getByTestId(nutritionEmptyStateTestId + '::Mode').props.children).toBe('add');
       expect(getByTestId(nutritionEmptyStateTestId + '::OnAddNutrition')).toBeTruthy();
     });
 
     test('calls onNutritionChange when adding nutrition', () => {
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.addManual}
@@ -163,20 +169,14 @@ describe('RecipeNutrition', () => {
   });
 
   describe('Add OCR mode', () => {
-    const mockOpenModal = jest.fn();
-
-    beforeEach(() => {
-      mockOpenModal.mockClear();
-    });
-
     test('shows empty state with OCR button when no nutrition data', () => {
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.addOCR}
           onNutritionChange={mockOnChange}
-          openModal={mockOpenModal}
           parentTestId={defaultTestId}
+          withScan
         />
       );
 
@@ -184,35 +184,36 @@ describe('RecipeNutrition', () => {
       expect(getByTestId(nutritionEmptyStateTestId + '::ParentTestId').props.children).toBe(
         defaultTestId + '::RecipeNutrition'
       );
-      expect(getByTestId(nutritionEmptyStateTestId + '::Mode').props.children).toBe('ocr');
       expect(getByTestId(nutritionEmptyStateTestId + '::OnOCRNutrition')).toBeTruthy();
     });
 
-    test('calls openModal when OCR button is pressed', () => {
-      const { getByTestId } = render(
+    test('opens the OCR modal for nutrition when OCR button is pressed', () => {
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.addOCR}
           onNutritionChange={mockOnChange}
-          openModal={mockOpenModal}
           parentTestId={defaultTestId}
+          withScan
         />
       );
 
       fireEvent.press(getByTestId(nutritionEmptyStateTestId + '::OnOCRNutrition'));
 
-      expect(mockOpenModal).toHaveBeenCalled();
+      expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(
+        recipeColumnsNames.nutrition
+      );
       expect(mockOnChange).not.toHaveBeenCalled();
     });
 
     test('shows nutrition table when nutrition data is available', () => {
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.addOCR}
           onNutritionChange={mockOnChange}
-          openModal={mockOpenModal}
           parentTestId={defaultTestId}
+          withScan
         />
       );
 
@@ -223,9 +224,60 @@ describe('RecipeNutrition', () => {
     });
   });
 
+  describe('Add OCR mode scan button', () => {
+    const scanButtonTestId = defaultTestId + '::RecipeNutrition::OpenModal';
+    test('renders scan button under the table and opens the OCR modal on press', () => {
+      const { getByTestId } = renderWithRecipeDialogs(
+        <RecipeNutrition
+          nutrition={mockNutrition}
+          mode={recipeStateType.addOCR}
+          onNutritionChange={mockOnChange}
+          parentTestId={defaultTestId}
+          withScan
+        />
+      );
+
+      expect(getByTestId(scanButtonTestId + '::RoundButton::Icon').props.children).toBe(
+        'line-scan'
+      );
+      expect(getByTestId(scanButtonTestId + '::RoundButton::Label').props.children).toBe(
+        'recipe.roundButton.scan'
+      );
+
+      fireEvent.press(getByTestId(scanButtonTestId + '::RoundButton::OnPressFunction'));
+
+      expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(
+        recipeColumnsNames.nutrition
+      );
+    });
+
+    test.each([recipeStateType.edit, recipeStateType.addManual, recipeStateType.readOnly])(
+      'does not render scan button in %s mode',
+      mode => {
+        const { queryByTestId } = renderWithRecipeDialogs(
+          <RecipeNutrition nutrition={mockNutrition} mode={mode} parentTestId={defaultTestId} />
+        );
+
+        expect(queryByTestId(scanButtonTestId + '::RoundButton::OnPressFunction')).toBeNull();
+      }
+    );
+
+    test('does not render scan button in addOCR mode without withScan', () => {
+      const { queryByTestId } = renderWithRecipeDialogs(
+        <RecipeNutrition
+          nutrition={mockNutrition}
+          mode={recipeStateType.addOCR}
+          parentTestId={defaultTestId}
+        />
+      );
+
+      expect(queryByTestId(scanButtonTestId + '::RoundButton::OnPressFunction')).toBeNull();
+    });
+  });
+
   describe('Edit mode', () => {
     test('renders editable table with remove button', () => {
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.edit}
@@ -244,7 +296,7 @@ describe('RecipeNutrition', () => {
     });
 
     test('calls onNutritionChange when nutrition values change', () => {
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.edit}
@@ -262,7 +314,7 @@ describe('RecipeNutrition', () => {
     });
 
     test('calls onNutritionChange when removing nutrition', () => {
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.edit}
@@ -277,7 +329,7 @@ describe('RecipeNutrition', () => {
     });
 
     test('handles nutrition changes with partial updates', () => {
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.edit}
@@ -298,7 +350,7 @@ describe('RecipeNutrition', () => {
   describe('Component props and behavior', () => {
     test('renders with custom testID structure', () => {
       const customTestId = 'CustomNutritionTest';
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.readOnly}
@@ -316,10 +368,8 @@ describe('RecipeNutrition', () => {
 
     test('handles mode transitions correctly', () => {
       const mockOnChange = jest.fn();
-      const mockOpenModal = jest.fn();
-
       // Test addManual mode with no data shows empty state
-      const { rerender, queryByTestId } = render(
+      const { rerender, queryByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.addManual}
@@ -337,14 +387,14 @@ describe('RecipeNutrition', () => {
           nutrition={undefined}
           mode={recipeStateType.addOCR}
           onNutritionChange={mockOnChange}
-          openModal={mockOpenModal}
           parentTestId={defaultTestId}
+          withScan
         />
       );
 
       expect(queryByTestId(nutritionEmptyStateTestId)).toBeTruthy();
       expect(queryByTestId(nutritionTableTestId)).toBeNull();
-      expect(queryByTestId(nutritionEmptyStateTestId + '::Mode')?.props.children).toBe('ocr');
+      expect(queryByTestId(nutritionEmptyStateTestId + '::OnOCRNutrition')).toBeTruthy();
 
       // Test readOnly mode with data shows table
       rerender(
@@ -379,7 +429,7 @@ describe('RecipeNutrition', () => {
         portionWeight: 150,
       };
 
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={nutritionWith150gPortion}
           mode={recipeStateType.readOnly}
@@ -398,7 +448,7 @@ describe('RecipeNutrition', () => {
 
   describe('Error display', () => {
     test('renders error helper below table when error prop provided', () => {
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.edit}
@@ -413,7 +463,7 @@ describe('RecipeNutrition', () => {
     });
 
     test('renders error helper below empty state when nutrition missing in edit mode', () => {
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.addManual}
@@ -428,7 +478,7 @@ describe('RecipeNutrition', () => {
     });
 
     test('omits error helper when error prop is absent', () => {
-      const { queryByTestId } = render(
+      const { queryByTestId } = renderWithRecipeDialogs(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.edit}

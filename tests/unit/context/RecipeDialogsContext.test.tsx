@@ -1,5 +1,6 @@
 import React from 'react';
 import { act, renderHook } from '@testing-library/react-native';
+import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
 
 function createDialogsWrapper() {
@@ -288,6 +289,51 @@ describe('RecipeDialogsContext', () => {
 
       expect(result.current.snackbar.visible).toBe(false);
       expect(result.current.snackbar.message).toBe('No data found');
+    });
+  });
+
+  describe('image modal', () => {
+    test('has no target initially', () => {
+      const wrapper = createDialogsWrapper();
+      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+
+      expect(result.current.imageModalTarget).toBeNull();
+    });
+
+    test('openImageModal sets the target field', () => {
+      const wrapper = createDialogsWrapper();
+      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+
+      act(() => {
+        result.current.openImageModal(recipeColumnsNames.title);
+      });
+
+      expect(result.current.imageModalTarget).toBe(recipeColumnsNames.title);
+    });
+
+    test('openImageModal accepts ingredient scan targets', () => {
+      const wrapper = createDialogsWrapper();
+      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+
+      act(() => {
+        result.current.openImageModal('ingredientQuantities');
+      });
+
+      expect(result.current.imageModalTarget).toBe('ingredientQuantities');
+    });
+
+    test('closeImageModal clears the target', () => {
+      const wrapper = createDialogsWrapper();
+      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+
+      act(() => {
+        result.current.openImageModal(recipeColumnsNames.image);
+      });
+      act(() => {
+        result.current.closeImageModal();
+      });
+
+      expect(result.current.imageModalTarget).toBeNull();
     });
   });
 

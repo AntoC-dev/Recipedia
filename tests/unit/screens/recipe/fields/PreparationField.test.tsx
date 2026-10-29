@@ -4,7 +4,7 @@ import { act, fireEvent, waitFor } from '@testing-library/react-native';
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import { RecipePreparationField } from '@screens/recipe/fields/PreparationField';
 
-import { renderWithForm, t } from './fieldsTestHarness';
+import { IMAGE_MODAL_TARGET_TEST_ID, renderWithForm, t } from './fieldsTestHarness';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('@components/organisms/RecipePreparation', () => {
@@ -12,7 +12,6 @@ jest.mock('@components/organisms/RecipePreparation', () => {
   return {
     RecipePreparation: mocks.recipePreparationMock,
     PreparationSection: mocks.preparationSectionMock,
-    PreparationEmptyAdd: mocks.preparationEmptyAddMock,
     EditableStep: mocks.editableStepMock,
   };
 });
@@ -25,7 +24,6 @@ describe('RecipePreparationField', () => {
       form => ({
         form,
         stackMode: recipeStateType.readOnly,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipePreparation: steps }
@@ -39,7 +37,6 @@ describe('RecipePreparationField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipePreparation: [{ title: 'Step 1', description: 'Mix' }] }
@@ -50,37 +47,66 @@ describe('RecipePreparationField', () => {
   });
 
   test('addOCR mode + empty steps renders empty-add block with OCR + manual buttons', () => {
-    const openModal = jest.fn();
     const { getByTestId } = renderWithForm(
       RecipePreparationField,
       f => ({
         form: f,
         stackMode: recipeStateType.addOCR,
-        openModalForField: openModal,
         t,
       }),
       { recipePreparation: [] }
     );
     fireEvent.press(getByTestId('RecipePreparation::OpenModal::RoundButton::OnPressFunction'));
-    expect(openModal).toHaveBeenCalledWith('PREPARATION');
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID).props.children).toBe('PREPARATION');
+    expect(getByTestId('RecipePreparation::IsEmpty').props.children).toBe('true');
   });
 
-  test('addOCR mode + non-empty steps renders the editable section with rows', () => {
-    const { queryByTestId, getByTestId } = renderWithForm(
+  test('addOCR mode + non-empty steps keeps the scan button and opens the preparation modal', () => {
+    const { getByTestId } = renderWithForm(
       RecipePreparationField,
       f => ({
         form: f,
         stackMode: recipeStateType.addOCR,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipePreparation: [{ title: 'Step 1', description: 'Mix' }] }
     );
-    expect(queryByTestId('RecipePreparation::OpenModal::RoundButton::OnPressFunction')).toBeNull();
+    fireEvent.press(getByTestId('RecipePreparation::OpenModal::RoundButton::OnPressFunction'));
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID).props.children).toBe('PREPARATION');
+    expect(getByTestId('RecipePreparation::IsEmpty').props.children).toBe('false');
     expect(
       getByTestId('RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput')
     ).toBeTruthy();
   });
+
+  test.each([recipeStateType.edit, recipeStateType.addManual])(
+    '%s mode + empty steps keeps the new-step plus button and no scan button',
+    stackMode => {
+      const { getByTestId, queryByTestId } = renderWithForm(
+        RecipePreparationField,
+        f => ({ form: f, stackMode, t }),
+        { recipePreparation: [] }
+      );
+      expect(getByTestId('RecipePreparation::IsEmpty').props.children).toBe('true');
+      expect(
+        queryByTestId('RecipePreparation::OpenModal::RoundButton::OnPressFunction')
+      ).toBeNull();
+    }
+  );
+
+  test.each([recipeStateType.edit, recipeStateType.addManual])(
+    '%s mode + non-empty steps does not render the scan button',
+    stackMode => {
+      const { queryByTestId } = renderWithForm(
+        RecipePreparationField,
+        f => ({ form: f, stackMode, t }),
+        { recipePreparation: [{ title: 'Step 1', description: 'Mix' }] }
+      );
+      expect(
+        queryByTestId('RecipePreparation::OpenModal::RoundButton::OnPressFunction')
+      ).toBeNull();
+    }
+  );
 
   describe('step reordering', () => {
     test('no reorder affordance is rendered in the editable step row', () => {
@@ -89,7 +115,6 @@ describe('RecipePreparationField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         {
@@ -112,7 +137,6 @@ describe('RecipePreparationField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       {
@@ -140,7 +164,6 @@ describe('RecipePreparationField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         {
@@ -167,7 +190,6 @@ describe('RecipePreparationField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipePreparation: [{ title: 'Step 1', description: 'Mix' }] }
@@ -187,7 +209,6 @@ describe('RecipePreparationField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipePreparation: [{ title: 'Step 1', description: 'Mix' }] }
@@ -209,7 +230,6 @@ describe('RecipePreparationField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipePreparation: [{ title: 'Step 1', description: '' }] }
@@ -223,7 +243,6 @@ describe('RecipePreparationField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipePreparation: [{ title: 'Step 1', description: 'Mix' }] }
@@ -247,7 +266,6 @@ describe('RecipePreparationField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipePreparation: [{ title: 'Step 1', description: 'Mix' }] }

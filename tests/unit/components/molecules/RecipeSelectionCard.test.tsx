@@ -92,9 +92,7 @@ describe('RecipeSelectionCard', () => {
 
   test('places seen indicator testID on the badge container, not the paper Icon', () => {
     const seenRecipe: DiscoveredRecipe = { ...mockRecipe, memoryStatus: 'seen' };
-    const { queryByTestId } = render(
-      <RecipeSelectionCard {...defaultProps} recipe={seenRecipe} />
-    );
+    const { queryByTestId } = render(<RecipeSelectionCard {...defaultProps} recipe={seenRecipe} />);
 
     expect(queryByTestId('test-card::SeenIndicator::Source')).toBeNull();
   });

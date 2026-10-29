@@ -63,7 +63,6 @@ export function checkImage(
   getByTestId: GetByIdType,
   newValueExpected?: string
 ) {
-  expect(getByTestId('RecipeImage::OpenModal').props.children).toBeTruthy();
   switch (prop.mode) {
     case 'readOnly':
       expect(getByTestId('RecipeImage::ImgUri').props.children).toEqual(
@@ -332,7 +331,7 @@ export function checkPersons(
         expect(getByTestId('RecipePersons::SuffixText').props.children).toEqual('personSuffixEdit');
         expect(getByTestId('RecipePersons::TextEditable').props.children).toEqual(newValueExpected);
         expect(getByTestId('RecipePersons::SetTextToEdit').props.children).toBeTruthy();
-        expect(queryByTestId('RecipePersons::OpenModal')).toBeNull();
+        expect(getByTestId('RecipePersons::OpenModal').props.children).toBeTruthy();
       }
       break;
   }
@@ -502,12 +501,14 @@ export function checkNutrition(
       break;
     case 'addManually':
       expect(getByTestId(nutritionEmptyStateTestId)).toBeTruthy();
-      expect(getByTestId(nutritionEmptyStateTestId + '::Mode').props.children).toEqual('add');
+      expect(getByTestId(nutritionEmptyStateTestId + '::OnAddNutrition')).toBeTruthy();
+      expect(queryByTestId(nutritionEmptyStateTestId + '::OnOCRNutrition')).toBeNull();
       expect(queryByTestId(nutritionTableTestId)).toBeNull();
       break;
     case 'addFromPic':
       expect(getByTestId(nutritionEmptyStateTestId)).toBeTruthy();
-      expect(getByTestId(nutritionEmptyStateTestId + '::Mode').props.children).toEqual('ocr');
+      expect(getByTestId(nutritionEmptyStateTestId + '::OnOCRNutrition')).toBeTruthy();
+      expect(queryByTestId(nutritionEmptyStateTestId + '::OnAddNutrition')).toBeNull();
       expect(queryByTestId(nutritionTableTestId)).toBeNull();
       break;
   }

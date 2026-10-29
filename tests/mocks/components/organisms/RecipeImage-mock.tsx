@@ -1,7 +1,8 @@
 import React from 'react';
-import { Button, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { RecipeImageProps } from '@components/organisms/RecipeImage';
 import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
+import { MockScanButton } from './_recipeFieldMockHelpers';
 
 export function recipeImageMock(recipeImageProp: RecipeImageProps) {
   const imageTestID = 'RecipeImage';
@@ -15,13 +16,9 @@ export function recipeImageMock(recipeImageProp: RecipeImageProps) {
       <Text testID={imageTestID + '::OverlayButtonLabelKey'}>
         {recipeImageProp.overlayButton?.labelKey}
       </Text>
-      <Button
-        testID={imageTestID + '::OpenModal'}
-        onPress={() => {
-          recipeImageProp.openModal(recipeColumnsNames.image);
-        }}
-        title='Open Modal'
-      />
+      {recipeImageProp.overlayButton ? (
+        <MockScanButton testID={imageTestID + '::OpenModal'} field={recipeColumnsNames.image} />
+      ) : null}
     </View>
   );
 }

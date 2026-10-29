@@ -5,7 +5,7 @@ import { recipeStateType } from '@customTypes/ScreenTypes';
 import { defaultValueNumber } from '@utils/Constants';
 import { RecipePersonsField, RecipeTimeField } from '@screens/recipe/fields/QuantityFields';
 
-import { Form, renderWithForm, t } from './fieldsTestHarness';
+import { Form, IMAGE_MODAL_TARGET_TEST_ID, renderWithForm, t } from './fieldsTestHarness';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('@components/organisms/RecipeNumber', () => ({
@@ -19,7 +19,6 @@ describe('RecipePersonsField', () => {
       form => ({
         form,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipePersons: 4 }
@@ -33,7 +32,6 @@ describe('RecipePersonsField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipePersons: 4 }
@@ -53,7 +51,6 @@ describe('RecipePersonsField', () => {
     const { getByTestId, form } = renderWithForm(RecipePersonsField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
-      openModalForField: jest.fn(),
       t,
     }));
     fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '6');
@@ -64,7 +61,6 @@ describe('RecipePersonsField', () => {
     const { getByTestId, form } = renderWithForm(RecipePersonsField, (f: Form) => ({
       form: f,
       stackMode: recipeStateType.edit,
-      openModalForField: jest.fn(),
       t,
     }));
     act(() => {
@@ -81,7 +77,6 @@ describe('RecipeTimeField', () => {
       form => ({
         form,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeTime: 30 }
@@ -95,7 +90,6 @@ describe('RecipeTimeField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeTime: 30 }
@@ -113,12 +107,36 @@ describe('RecipeTimeField', () => {
     const { getByTestId, form } = renderWithForm(RecipeTimeField, (f: Form) => ({
       form: f,
       stackMode: recipeStateType.edit,
-      openModalForField: jest.fn(),
       t,
     }));
     act(() => {
       form.setValue('recipeTime', undefined as never);
     });
     expect(getByTestId('RecipeTime::TextEditable').props.children).toBe(defaultValueNumber);
+  });
+});
+
+describe('QuantityFields scan wiring', () => {
+  test.each([
+    [RecipePersonsField, 'RecipePersons', 'PERSONS'],
+    [RecipeTimeField, 'RecipeTime', 'TIME'],
+  ])('%o opens the image modal for its field in addOCR mode', (Field, testID, expectedTarget) => {
+    const { getByTestId } = renderWithForm(Field, (f: Form) => ({
+      form: f,
+      stackMode: recipeStateType.addOCR,
+      t,
+    }));
+    fireEvent.press(getByTestId(testID + '::OpenModal'));
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID).props.children).toBe(expectedTarget);
+  });
+
+  test.each([RecipePersonsField, RecipeTimeField])('renders no scan button in edit mode', Field => {
+    const { queryByTestId } = renderWithForm(Field, (f: Form) => ({
+      form: f,
+      stackMode: recipeStateType.edit,
+      t,
+    }));
+    expect(queryByTestId('RecipePersons::OpenModal')).toBeNull();
+    expect(queryByTestId('RecipeTime::OpenModal')).toBeNull();
   });
 });

@@ -166,19 +166,12 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
         keyboardShouldPersistTaps={'handled'}
         nestedScrollEnabled={true}
       >
-        <RecipeImage
-          {...buildRecipeImageProps({
-            stackMode,
-            recipeImage: recipe.image_Source,
-            openModalForField: noop,
-          })}
-        />
+        <RecipeImage {...buildRecipeImageProps({ stackMode, recipeImage: recipe.image_Source })} />
         <RecipeText
           {...buildRecipeTitleProps({
             stackMode,
             recipeTitle: recipe.title,
             setRecipeTitle: noop,
-            openModalForField: noop,
             t,
           })}
         />
@@ -187,7 +180,6 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
             stackMode,
             recipeDescription: recipe.description,
             setRecipeDescription: noop,
-            openModalForField: noop,
             t,
           })}
         />
@@ -198,7 +190,6 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
             randomTags: [],
             addTag: noop,
             removeTag: noop,
-            openModalForField: noop,
           })}
         />
         <RecipeNumber
@@ -206,7 +197,6 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
             stackMode,
             recipePersons: recipe.persons,
             setRecipePersons: noop,
-            openModalForField: noop,
             t,
           })}
         />
@@ -216,7 +206,6 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
             stackMode,
             recipeTime: recipe.time,
             setRecipeTime: noop,
-            openModalForField: noop,
             t,
           })}
         />
@@ -226,7 +215,6 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
             stackMode,
             recipeNutrition: recipe.nutrition,
             setRecipeNutrition: noop,
-            openModalForField: noop,
             parentTestId: RECIPE_TEST_ID,
           })}
         />

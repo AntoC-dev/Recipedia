@@ -1,11 +1,15 @@
-import { fireEvent, render, within } from '@testing-library/react-native';
+import { fireEvent, within } from '@testing-library/react-native';
+import {
+  IMAGE_MODAL_TARGET_TEST_ID,
+  renderWithRecipeDialogs,
+} from '@mocks/context/RecipeDialogsHarness';
 import React from 'react';
 import { ingredientTableElement, ingredientType } from '@customTypes/DatabaseElementTypes';
 import {
   RecipeIngredients,
   IngredientRow,
   IngredientsAddEmpty,
-  IngredientsAddTail,
+  IngredientsOcrButtons,
   IngredientsTable,
 } from '@components/organisms/RecipeIngredients';
 
@@ -45,7 +49,7 @@ const TEST_ID = 'RecipeIngredients';
 
 describe('RecipeIngredients (read-only)', () => {
   it('renders each row with quantity/unit + name + optional note', () => {
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = renderWithRecipeDialogs(
       <RecipeIngredients testID={TEST_ID} ingredients={sampleIngredients} />
     );
 
@@ -61,7 +65,9 @@ describe('RecipeIngredients (read-only)', () => {
   });
 
   it('renders nothing when the ingredient list is empty', () => {
-    const { queryByTestId } = render(<RecipeIngredients testID={TEST_ID} ingredients={[]} />);
+    const { queryByTestId } = renderWithRecipeDialogs(
+      <RecipeIngredients testID={TEST_ID} ingredients={[]} />
+    );
     expect(queryByTestId(`${TEST_ID}::0::Row`)).toBeNull();
   });
 });
@@ -71,12 +77,13 @@ describe('IngredientsTable', () => {
 
   it('renders prefix, column titles, children, and add button', () => {
     const onAddIngredient = jest.fn();
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText } = renderWithRecipeDialogs(
       <IngredientsTable
         testID={TEST_ID}
         prefixText='Ingredients :'
         columnTitles={columnTitles}
         addIngredientButtonLabel='New ingredient'
+        addManuallyButtonLabel='Add manually'
         onAddIngredient={onAddIngredient}
       >
         {childMarker()}
@@ -93,27 +100,40 @@ describe('IngredientsTable', () => {
     expect(onAddIngredient).toHaveBeenCalledTimes(1);
   });
 
-  it('hides add button when hideAddButton is true', () => {
-    const { queryByTestId } = render(
+  it('renders the scan buttons instead of the add button when withScan is set', () => {
+    const onAddIngredient = jest.fn();
+    const { getByTestId } = renderWithRecipeDialogs(
       <IngredientsTable
         testID={TEST_ID}
         addIngredientButtonLabel='New ingredient'
+        addManuallyButtonLabel='Add manually'
         prefixText='Ingredients :'
         columnTitles={columnTitles}
-        hideAddButton
-        onAddIngredient={jest.fn()}
+        withScan
+        onAddIngredient={onAddIngredient}
       >
         {null}
       </IngredientsTable>
     );
-    expect(queryByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`)).toBeNull();
+
+    expect(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::Label`)).toBeTruthy();
+    expect(getByTestId(`${TEST_ID}::OpenModalQuantities::RoundButton::Label`)).toBeTruthy();
+    expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Label`).props.children).toEqual(
+      'Add manually'
+    );
+    expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Icon`).props.children).toEqual(
+      'pencil'
+    );
+    fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
+    expect(onAddIngredient).toHaveBeenCalledTimes(1);
   });
 
   it('renders an error helper when error prop is set', () => {
-    const { getByTestId } = render(
+    const { getByTestId } = renderWithRecipeDialogs(
       <IngredientsTable
         testID={TEST_ID}
         addIngredientButtonLabel='New ingredient'
+        addManuallyButtonLabel='Add manually'
         prefixText='Ingredients :'
         columnTitles={columnTitles}
         error='boom'
@@ -136,7 +156,7 @@ describe('IngredientRow', () => {
   };
 
   it('renders quantity and name inputs from the ingredient prop', () => {
-    const { getByTestId } = render(
+    const { getByTestId } = renderWithRecipeDialogs(
       <IngredientRow
         testID={TEST_ID}
         index={0}
@@ -156,7 +176,7 @@ describe('IngredientRow', () => {
 
   it('commits a quantity change as a formatted ingredient string on blur', () => {
     const onCommit = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = renderWithRecipeDialogs(
       <IngredientRow
         testID={TEST_ID}
         index={0}
@@ -178,7 +198,7 @@ describe('IngredientRow', () => {
 
   it('commits a name change via TextInputWithDropDown.onValidate', () => {
     const onCommit = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = renderWithRecipeDialogs(
       <IngredientRow
         testID={TEST_ID}
         index={0}
@@ -199,7 +219,7 @@ describe('IngredientRow', () => {
   it('triggers onRemove + onOpenNote when their buttons are pressed', () => {
     const onRemove = jest.fn();
     const onOpenNote = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = renderWithRecipeDialogs(
       <IngredientRow
         testID={TEST_ID}
         index={2}
@@ -218,7 +238,7 @@ describe('IngredientRow', () => {
   });
 
   function renderRow(overrides: Partial<React.ComponentProps<typeof IngredientRow>> = {}) {
-    return render(
+    return renderWithRecipeDialogs(
       <IngredientRow
         testID={TEST_ID}
         index={0}
@@ -313,7 +333,7 @@ describe('IngredientRow', () => {
   });
 
   it('renders the rowError helper when rowError is set', () => {
-    const { getByTestId } = render(
+    const { getByTestId } = renderWithRecipeDialogs(
       <IngredientRow
         testID={TEST_ID}
         index={0}
@@ -330,57 +350,104 @@ describe('IngredientRow', () => {
 });
 
 describe('IngredientsAddEmpty', () => {
-  it('renders OCR + add buttons and forwards callbacks', () => {
-    const openOcrModal = jest.fn();
+  it('renders OCR + add buttons and opens the matching image modal targets', () => {
     const onAddIngredient = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = renderWithRecipeDialogs(
       <IngredientsAddEmpty
         testID={TEST_ID}
         prefixText='Ingredients :'
-        scanNamesButtonLabel='Scan names'
         addManuallyButtonLabel='Add manually'
-        openOcrModal={openOcrModal}
         onAddIngredient={onAddIngredient}
       />
     );
 
     expect(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::Label`).props.children).toEqual(
-      'Scan names'
+      'recipe.roundButton.scanNames'
     );
     expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Label`).props.children).toEqual(
       'Add manually'
     );
     fireEvent.press(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::OnPressFunction`));
-    expect(openOcrModal).toHaveBeenCalledTimes(1);
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent('ingredientNames');
     fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
     expect(onAddIngredient).toHaveBeenCalledTimes(1);
   });
-});
 
-describe('IngredientsAddTail', () => {
-  it('renders scan-quantities + add buttons and forwards callbacks', () => {
-    const openOcrModal = jest.fn();
-    const onAddIngredient = jest.fn();
-    const { getByTestId } = render(
-      <IngredientsAddTail
+  it('renders the prefix text and no quantities button', () => {
+    const { getByTestId, queryByTestId } = renderWithRecipeDialogs(
+      <IngredientsAddEmpty
         testID={TEST_ID}
-        scanQuantitiesButtonLabel='Scan quantities'
+        prefixText='Ingredients :'
         addManuallyButtonLabel='Add manually'
-        openOcrModal={openOcrModal}
-        onAddIngredient={onAddIngredient}
+        onAddIngredient={jest.fn()}
       />
     );
 
+    expect(getByTestId(`${TEST_ID}::PrefixText`).props.children).toEqual('Ingredients :');
+    expect(queryByTestId(`${TEST_ID}::OpenModalQuantities::RoundButton::Label`)).toBeNull();
+    expect(queryByTestId(`${TEST_ID}::Error`)).toBeNull();
+  });
+
+  it('renders the error when provided', () => {
+    const { getByTestId } = renderWithRecipeDialogs(
+      <IngredientsAddEmpty
+        testID={TEST_ID}
+        prefixText='Ingredients :'
+        addManuallyButtonLabel='Add manually'
+        onAddIngredient={jest.fn()}
+        error='Needs ingredients'
+      />
+    );
+
+    expect(getByTestId(`${TEST_ID}::Error`).props.children).toEqual('Needs ingredients');
+  });
+});
+
+describe('IngredientsOcrButtons', () => {
+  it('renders scan-names, scan-quantities and add buttons and forwards callbacks', () => {
+    const onAddIngredient = jest.fn();
+    const { getByTestId } = renderWithRecipeDialogs(
+      <IngredientsOcrButtons
+        testID={TEST_ID}
+        addManuallyButtonLabel='Add manually'
+        onAddIngredient={onAddIngredient}
+        withQuantities
+      />
+    );
+
+    expect(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::Label`).props.children).toEqual(
+      'recipe.roundButton.scanNames'
+    );
+    expect(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::Icon`).props.children).toEqual(
+      'line-scan'
+    );
     expect(
       getByTestId(`${TEST_ID}::OpenModalQuantities::RoundButton::Label`).props.children
-    ).toEqual('Scan quantities');
+    ).toEqual('recipe.roundButton.scanQuantities');
     expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Label`).props.children).toEqual(
       'Add manually'
     );
+
+    fireEvent.press(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::OnPressFunction`));
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent('ingredientNames');
     fireEvent.press(getByTestId(`${TEST_ID}::OpenModalQuantities::RoundButton::OnPressFunction`));
-    expect(openOcrModal).toHaveBeenCalledTimes(1);
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent('ingredientQuantities');
     fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
     expect(onAddIngredient).toHaveBeenCalledTimes(1);
+  });
+
+  it('omits the quantities button without withQuantities', () => {
+    const { queryByTestId, getByTestId } = renderWithRecipeDialogs(
+      <IngredientsOcrButtons
+        testID={TEST_ID}
+        addManuallyButtonLabel='Add manually'
+        onAddIngredient={jest.fn()}
+      />
+    );
+
+    expect(queryByTestId(`${TEST_ID}::OpenModalQuantities::RoundButton::Label`)).toBeNull();
+    expect(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::Label`)).toBeTruthy();
+    expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Label`)).toBeTruthy();
   });
 });
 

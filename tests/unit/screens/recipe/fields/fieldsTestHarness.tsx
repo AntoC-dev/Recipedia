@@ -5,7 +5,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { recipeFormSchema, RecipeFormInput } from '@schemas/recipeFormSchema';
 import { defaultValueNumber } from '@utils/Constants';
-import { RecipeDialogsProvider } from '@context/RecipeDialogsContext';
+import { RecipeDialogsHarness } from '@mocks/context/RecipeDialogsHarness';
+
+export { IMAGE_MODAL_TARGET_TEST_ID } from '@mocks/context/RecipeDialogsHarness';
 
 export type Form = UseFormReturn<RecipeFormInput>;
 
@@ -44,9 +46,9 @@ export function renderWithForm<P extends { form: Form }>(
     const built = buildProps(form);
     return (
       <FormProvider {...form}>
-        <RecipeDialogsProvider>
+        <RecipeDialogsHarness>
           <Component {...built} />
-        </RecipeDialogsProvider>
+        </RecipeDialogsHarness>
       </FormProvider>
     );
   }

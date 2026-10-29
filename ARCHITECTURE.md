@@ -148,7 +148,7 @@ Form field state itself is held by `react-hook-form` (`FormProvider` in `src/scr
 
 | Context | Hook | Responsibility |
 |---|---|---|
-| `RecipeDialogsContext` | `useRecipeDialogs()` | Dialog open/close state (validation, similarity, queue) scoped to the recipe form |
+| `RecipeDialogsContext` | `useRecipeDialogs()` | Dialog open/close state (validation, similarity, queue, image-select modal target) scoped to the recipe form; `ScanButton` opens the image modal through it |
 | `IngredientFocusContext` | `useIngredientFocusRef()` | Ref counter of currently-focused ingredient inputs; lets `useScalingOnPersonsChange` defer scaling while a row is being edited |
 | `IngredientArrayActionsContext` | `useIngredientArrayActions()` | Shares the field-array `applyPatch` callback so feature hooks (`useRecipeOCR`, `useRecipeScraperValidation`) mutate `recipeIngredients` through the same patch shape that preserves sibling row identity |
 

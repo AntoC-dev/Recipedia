@@ -7,6 +7,10 @@
  * - Similarity dialog: Shows when adding items with similar names
  * - Validation queue: Manages items requiring user validation
  *
+ * It also holds the image-select modal target (`imageModalTarget`) and its
+ * opener (`openImageModal`), so any field can open the modal without a callback
+ * being threaded through props.
+ *
  * @module context/RecipeDialogsContext
  */
 
@@ -14,6 +18,7 @@ import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { SimilarityDialogProps } from '@components/dialogs/SimilarityDialog';
 import { IngredientValidationProps, TagValidationProps } from '@components/dialogs/ValidationQueue';
 import { getMissingFieldsErrorContent } from '@utils/RecipeFormHelpers';
+import type { OcrModalTarget } from '@utils/OCR';
 
 /**
  * Configuration properties for the validation dialog.
@@ -88,6 +93,13 @@ export interface RecipeDialogsContextType {
   snackbar: SnackbarState;
   showSnackbar: (message: string) => void;
   hideSnackbar: () => void;
+
+  /** Field the image-select modal currently targets, or `null` when it is closed */
+  imageModalTarget: OcrModalTarget | null;
+  /** Opens the image-select modal targeting the given field */
+  openImageModal: (field: OcrModalTarget) => void;
+  /** Closes the image-select modal and clears its target */
+  closeImageModal: () => void;
 }
 
 const RecipeDialogsContext = createContext<RecipeDialogsContextType | undefined>(undefined);
@@ -110,6 +122,7 @@ export function RecipeDialogsProvider({ children }: { children: ReactNode }) {
     TagValidationProps | IngredientValidationProps | null
   >(null);
   const [snackbar, setSnackbar] = useState<SnackbarState>(defaultSnackbarState);
+  const [imageModalTarget, setImageModalTarget] = useState<OcrModalTarget | null>(null);
 
   const showValidationDialog = (props: ValidationDialogProps) => {
     setValidationDialogProp(props);
@@ -155,6 +168,14 @@ export function RecipeDialogsProvider({ children }: { children: ReactNode }) {
     setSnackbar(prev => ({ ...prev, visible: false }));
   };
 
+  const openImageModal = (field: OcrModalTarget) => {
+    setImageModalTarget(field);
+  };
+
+  const closeImageModal = () => {
+    setImageModalTarget(null);
+  };
+
   return (
     <RecipeDialogsContext.Provider
       value={{
@@ -175,6 +196,10 @@ export function RecipeDialogsProvider({ children }: { children: ReactNode }) {
         snackbar,
         showSnackbar,
         hideSnackbar,
+
+        imageModalTarget,
+        openImageModal,
+        closeImageModal,
       }}
     >
       {children}
