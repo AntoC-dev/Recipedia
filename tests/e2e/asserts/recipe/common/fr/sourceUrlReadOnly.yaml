@@ -1,8 +1,6 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeSourceUrl::Text"
@@ -10,8 +8,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to source URL section"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Recipe::RecipeSourceUrl::Label"

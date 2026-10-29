@@ -20,8 +20,6 @@ appId: "com.recipedia"
           centerElement: true
           label: "Scroll down to load more recipes"
 
-      - waitForAnimationToEnd
-
       - tapOn:
           id: "BulkImportDiscovery::(fresh|seen)-${output.currentIndex}"
 

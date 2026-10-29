@@ -53,8 +53,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to title input"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/titleNoError.yaml"
     label: "Assert - No title inline error visible before user interacts"
@@ -114,8 +112,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to description input"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/descriptionNoError.yaml"
     label: "Assert - No description inline error visible before user interacts"
@@ -145,8 +141,6 @@ tags:
     speed: 10
     centerElement: true
     label: "Action - Scroll to persons input"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/personsNoError.yaml"
@@ -194,8 +188,6 @@ tags:
     speed: 10
     centerElement: true
     label: "Action - Scroll to time input"
-
-- waitForAnimationToEnd
 
 - runFlow:
     file: "../../asserts/recipe/inlineErrors/en/timeNoError.yaml"

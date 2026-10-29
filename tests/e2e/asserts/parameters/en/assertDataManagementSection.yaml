@@ -1,8 +1,6 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Data::SubHeader"
@@ -10,8 +8,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Data Management section"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::Data::SubHeader"
@@ -21,8 +17,6 @@ appId: "com.recipedia"
     text: "Data Management"
     label: "Data Management section header text is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Data::Ingredients::Item"
@@ -31,14 +25,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Ingredients section"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "Parameters::Section::Data::Ingredients::Item"
     text: "Ingredients, Edit ingredients and their seasonality"
     label: "Ingredients item"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -47,8 +37,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to Tags section"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::Data::Tags::Item"

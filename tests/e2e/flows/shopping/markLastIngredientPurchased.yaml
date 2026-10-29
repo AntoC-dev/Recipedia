@@ -4,8 +4,6 @@ appId: "com.recipedia"
 # barrier here: buying the last item clears the working list, which opens the
 # purchased block by itself and keeps the row on screen. The all-done state only
 # renders once the re-bucketing landed, so it is the barrier instead.
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
@@ -13,8 +11,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to ${INGREDIENT_NAME} item"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"

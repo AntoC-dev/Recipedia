@@ -37,8 +37,6 @@ appId: "com.recipedia"
     speed: 95
     label: "Scroll back to SearchBar"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "SearchScreen::FiltersToggleButtons"
     label: "Open filter page"
@@ -71,8 +69,6 @@ appId: "com.recipedia"
       id: "SearchScreen::FilterAccordion::Accordion::2::Item::.*"
     timeout: 5000
     label: "Wait for tag options"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::2::Item::.*"
@@ -107,8 +103,6 @@ appId: "com.recipedia"
     timeout: 5000
     label: "Wait for ingredient options"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::3::Item::0"
     label: "Select first ingredient filter"
@@ -121,8 +115,6 @@ appId: "com.recipedia"
     direction: UP
     speed: 40
     label: "Scroll to search bar"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FiltersToggleButtons"

@@ -18,8 +18,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to find Pesto Pasta"
 
-- waitForAnimationToEnd
-
 - tapOn:
     text: "Pesto Pasta"
     label: "Action - Open Pesto Pasta recipe"

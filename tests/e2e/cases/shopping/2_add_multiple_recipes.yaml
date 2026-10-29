@@ -17,8 +17,6 @@ tags:
     centerElement: true
     label: "Scroll to recipe card"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "SearchScreen::RecipeCards::1::.*"
     label: "Action - Open Spaghetti Bolognese recipe"
@@ -54,8 +52,6 @@ tags:
     speed: 20
     centerElement: true
     label: "Action - Scroll to Caesar Salad recipe"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::4::.*"
@@ -98,8 +94,6 @@ tags:
     speed: 20
     centerElement: true
     label: "Action - Scroll to Margherita Pizza recipe"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::5::.*"

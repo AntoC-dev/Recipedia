@@ -57,8 +57,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to Data Management section"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "Parameters::Section::Data::Ingredients::Item"
     label: "Action - Open Ingredients settings"
@@ -142,8 +140,6 @@ tags:
     speed: 40
     centerElement: true
     label: "Action - Scroll to the Dismissed recipes item"
-
-- waitForAnimationToEnd
 
 - tapOn:
     id: "Parameters::Section::Import::DismissedRecipes::Item"

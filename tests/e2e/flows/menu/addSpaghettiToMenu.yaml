@@ -15,8 +15,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Spaghetti Bolognese recipe"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "SearchScreen::RecipeCards::1::Spaghetti Bolognese"
     label: "Open Spaghetti Bolognese recipe"

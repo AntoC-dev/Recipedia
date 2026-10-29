@@ -1,7 +1,5 @@
 appId: "com.recipedia"
 ---
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Data::SubHeader"
@@ -9,8 +7,6 @@ appId: "com.recipedia"
     speed: 60
     centerElement: true
     label: "Scroll to Data Management section"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::Data::SubHeader"
@@ -20,8 +16,6 @@ appId: "com.recipedia"
     text: "Gestion des données"
     label: "Data Management section header shows French text"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Data::Ingredients::Item"
@@ -29,8 +23,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to Ingredients section"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::Data::Ingredients::Item"
@@ -41,8 +33,6 @@ appId: "com.recipedia"
     file: "./assertIngredientDialogIsTranslated.yaml"
     label: "Verification - Verify ingredient type dropdown translated to French"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Parameters::Section::Data::Tags::Item"
@@ -50,8 +40,6 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Scroll to Tags section"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Parameters::Section::Data::Tags::Item"

@@ -105,8 +105,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to RecipeTitle::CustomTextInput"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../../../focusField.yaml"
     env:

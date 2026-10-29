@@ -28,8 +28,6 @@ appId: "com.recipedia"
           centerElement: true
           label: "Scroll to ingredient quantities OCR button"
 
-      - waitForAnimationToEnd
-
       - tapOn:
           id: "RecipeIngredients::OpenModalQuantities::RoundButton"
           label: "Tap on ingredient quantities OCR button"

@@ -83,8 +83,6 @@ appId: "com.recipedia"
     text: "Lentil Curry"
     label: "Lentil Curry title is visible"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../flows/search/scrollRecipeListToTop.yaml"
     env:

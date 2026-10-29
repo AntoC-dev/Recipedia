@@ -28,8 +28,6 @@ tags:
     direction: UP
     label: "Scroll up to reset the screen"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../flows/parameters/language/switchToFrench.yaml"
     label: "Setup - Switch to French language"

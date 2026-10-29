@@ -16,6 +16,8 @@ adb shell settings put global hide_error_dialogs 1
 adb shell settings put global window_animation_scale 0
 adb shell settings put global transition_animation_scale 0
 adb shell settings put global animator_duration_scale 0
+# The setting only blocks new dialogs: a launcher ANR raised during boot stays on screen until its process dies.
+adb shell am force-stop com.google.android.apps.nexuslauncher
 
 adb logcat -c
 

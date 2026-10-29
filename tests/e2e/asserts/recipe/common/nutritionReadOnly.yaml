@@ -1,8 +1,6 @@
 appId: "com.recipedia"
 ---
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
@@ -10,8 +8,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to nutrition section"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::Title"
@@ -26,8 +22,6 @@ appId: "com.recipedia"
     text: "per portion"
     label: "Per portion text is displayed"
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::Value"
@@ -35,8 +29,6 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll so that enegy parts are displayed"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::Value"
@@ -49,8 +41,6 @@ appId: "com.recipedia"
     label: "Energy kJ value is displayed"
 
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Text"
@@ -59,14 +49,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to fat text"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Value"
     text: "${FAT} g"
     label: "Fat value is displayed"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -76,14 +62,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to saturated fat text"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::Value"
     text: "${SATURATED_FAT} g"
     label: "Saturated fat value is displayed"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -93,14 +75,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to carbohydrates text"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::Value"
     text: "${CARBOHYDRATES} g"
     label: "Carbohydrates value is displayed"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -110,14 +88,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to sugars text"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::Value"
     text: "${SUGARS} g"
     label: "Sugars value is displayed"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -125,8 +99,6 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 40
     label: "Scroll to fiber text"
-
-- waitForAnimationToEnd
 
 - assertVisible:
     id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::Value"

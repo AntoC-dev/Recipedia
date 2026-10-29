@@ -22,8 +22,6 @@ appId: "com.recipedia"
     timeout: 120000
     label: "Scroll up to top of Tags Settings screen"
 
-- waitForAnimationToEnd
-
 - runFlow:
     file: "../../../asserts/parameters/tags/en/assertTagsSettingsScreen.yaml"
     label: "Verify returned to Tags Settings screen"

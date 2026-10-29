@@ -26,8 +26,6 @@ tags:
     centerElement: true
     label: "Action - Scroll to Classic Pancakes recipe"
 
-- waitForAnimationToEnd
-
 - tapOn:
     id: "SearchScreen::RecipeCards::3::.*"
     label: "Action - Open Classic Pancakes recipe"

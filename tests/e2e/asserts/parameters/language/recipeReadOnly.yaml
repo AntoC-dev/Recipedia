@@ -2,8 +2,6 @@ appId: "com.recipedia"
 ---
 # TODO a lot is missing here
 
-- waitForAnimationToEnd
-
 - scrollUntilVisible:
     element:
       id: "RecipePersons::Text"
@@ -12,14 +10,10 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to the persons text"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipePersons::Text"
     text: "Ingrédients (4 personnes)"
     label: "Persons text is displayed in French"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:
@@ -29,8 +23,6 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to the time text"
 
-- waitForAnimationToEnd
-
 - assertVisible:
     id: "RecipeTime::Text"
     text: "Préparation (20 min)"
@@ -39,8 +31,6 @@ appId: "com.recipedia"
     id: "Recipe::BottomActionButton-text"
     text: "Ajouter au menu"
     label: "Read only validate button is displayed in French"
-
-- waitForAnimationToEnd
 
 - scrollUntilVisible:
     element:

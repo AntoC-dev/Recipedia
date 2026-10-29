@@ -1,23 +1,16 @@
 appId: "com.recipedia"
 ---
 - runFlow:
-    file: "handleAnr.yaml"
-    label: "Handle ANR in case a previous test triggered it"
-
-- runFlow:
     file: "launchFreshApp.yaml"
     label: "Setup - Launch app with fresh state"
 
+# Optional first: it absorbs a driver error while a slow simulator is still starting the app
 - extendedWaitUntil:
     visible:
       id: "WelcomeScreen::SkipButton"
     timeout: 60000
     optional: true
     label: "Wait for welcome to be visible"
-
-- runFlow:
-    file: "handleAnr.yaml"
-    label: "Handle ANR during initialization"
 
 # clearState triggers onboarding on every launch — skip it
 - extendedWaitUntil:
@@ -26,20 +19,9 @@ appId: "com.recipedia"
     timeout: 500000
     label: "Wait for Welcome screen to be visible"
 
-- runFlow:
-    file: "handleAnr.yaml"
-    label: "Handle ANR during initialization"
-
-- runFlow:
-    file: "dismissInitError.yaml"
-    label: "Dismiss init error dialog if Pyodide init failed"
-
-- runFlow:
-    file: "handleAnr.yaml"
-    label: "Handle ANR before skipping onboarding"
-
 - tapOn:
     id: "WelcomeScreen::SkipButton"
+    waitToSettleTimeoutMs: 0
     label: "Skip onboarding"
 
 - extendedWaitUntil:
@@ -48,29 +30,11 @@ appId: "com.recipedia"
     timeout: 30000
     label: "Wait for data to load"
 
-- runFlow:
-    when:
-      platform: Android
-    commands:
-      - runFlow:
-          file: "sleep.yaml"
-          env:
-            DURATION_MS: 3000
-          label: "Wait 3s before ANR check"
-
-- runFlow:
-    file: "handleAnr.yaml"
-    label: "Handle ANR after data load"
-
 - extendedWaitUntil:
     visible:
       id: "Home::RecipeRecommendation::random::Carousel::Card::0::Cover"
     timeout: 120000
     label: "Wait for app to be ready"
-
-- runFlow:
-    file: "handleAnr.yaml"
-    label: "Handle ANR after home render"
 
 # FAB IDs use regex pattern because React Native Paper adds "-container-outer-layer" suffix on iOS
 - extendedWaitUntil:
@@ -78,19 +42,3 @@ appId: "com.recipedia"
       id: "ExpandButton.*"
     timeout: 5000
     label: "Wait for FAB to be visible"
-
-- waitForAnimationToEnd:
-    timeout: 3000
-    label: "Wait for FAB mount animation to complete"
-
-- runFlow:
-    file: "handleAnr.yaml"
-    label: "Handle ANR after loading"
-
-- runFlow:
-    file: "warmupScreens.yaml"
-    label: "Warmup screens to exhaust ANR issues"
-
-- runFlow:
-    file: "warmupKeyboard.yaml"
-    label: "Warmup keyboard on iOS to prevent cold keyboard input drops"
