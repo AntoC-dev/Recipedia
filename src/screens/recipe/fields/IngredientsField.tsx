@@ -21,10 +21,8 @@ import { useController, useFormState, UseFormReturn } from 'react-hook-form';
 
 import { ingredientTableElement } from '@customTypes/DatabaseElementTypes';
 import { recipeStateType } from '@customTypes/ScreenTypes';
-import { OcrModalTarget } from '@utils/OCR';
 import {
   IngredientsAddEmpty,
-  IngredientsAddTail,
   IngredientsTable,
   RecipeIngredients,
 } from '@components/organisms/RecipeIngredients';
@@ -44,7 +42,6 @@ type T = (key: string) => string;
 export interface IngredientsFieldProps {
   form: Form;
   stackMode: recipeStateType;
-  openModalForField: (field: OcrModalTarget) => void;
   t: T;
 }
 
@@ -59,12 +56,7 @@ function ReadOnlyIngredientsField({ form, testID }: { form: Form; testID: string
  * Editable renderer: mounts the field-array hook, derives per-row error gating
  * from `dirtyFields` / `isSubmitted`, and renders the addOCR scan affordances.
  */
-function EditableIngredientsField({
-  form,
-  stackMode,
-  openModalForField,
-  t,
-}: IngredientsFieldProps) {
+function EditableIngredientsField({ form, stackMode, t }: IngredientsFieldProps) {
   const testID = RECIPE_INGREDIENTS_TEST_ID;
   const editingIngredientCountRef = useIngredientFocusRef();
   const [noteDialogIndex, setNoteDialogIndex] = useState<number | null>(null);
@@ -119,9 +111,7 @@ function EditableIngredientsField({
       <IngredientsAddEmpty
         testID={testID}
         prefixText={prefixText}
-        scanNamesButtonLabel={t('recipe.roundButton.scanNames')}
         addManuallyButtonLabel={t('recipe.roundButton.addManually')}
-        openOcrModal={() => openModalForField('ingredientNames')}
         onAddIngredient={handleAddIngredient}
         error={rootErrorMessage}
       />
@@ -152,7 +142,6 @@ function EditableIngredientsField({
   };
 
   const tableChildren = fieldArray.fields.map((field, index) => renderRow(field.id, index));
-  const isAddOCR = stackMode === recipeStateType.addOCR;
 
   return (
     <React.Fragment>
@@ -164,22 +153,14 @@ function EditableIngredientsField({
           column2: t('unit'),
           column3: t('ingredientName'),
         }}
-        hideAddButton={isAddOCR}
+        withScan={stackMode === recipeStateType.addOCR}
         addIngredientButtonLabel={t('recipe.roundButton.newIngredient')}
+        addManuallyButtonLabel={t('recipe.roundButton.addManually')}
         onAddIngredient={handleAddIngredient}
         error={rootErrorMessage}
       >
         {tableChildren}
       </IngredientsTable>
-      {isAddOCR && (
-        <IngredientsAddTail
-          testID={testID}
-          scanQuantitiesButtonLabel={t('recipe.roundButton.scanQuantities')}
-          addManuallyButtonLabel={t('recipe.roundButton.addManually')}
-          openOcrModal={() => openModalForField('ingredientQuantities')}
-          onAddIngredient={handleAddIngredient}
-        />
-      )}
       <NoteEditDialog
         testId={testID}
         isVisible={noteDialogIndex !== null}

@@ -7,14 +7,15 @@
  * Instead it provides:
  *
  * - `RecipeIngredients` (default): read-only render of an ingredient array.
- * - `IngredientsTable`: the prefix-text wrapper + DataTable header frame,
- *   wraps the caller's mapped rows and renders the "add row" round button.
+ * - `IngredientsTable`: prefix-text + DataTable frame around the mapped rows, with
+ *   an add-row button or, with `withScan`, the OCR button row.
  * - `IngredientRow`: a single editable row with blur-commit quantity + name
  *   inputs, note dialog trigger, and delete button.
- * - `IngredientsAddEmpty`: the empty-state OCR-names + manual-add button
- *   block rendered in `addOCR` mode before any ingredient exists.
- * - `IngredientsAddTail`: the OCR-quantities + manual-add tail row rendered
- *   in `addOCR` mode once at least one ingredient exists.
+ * - `IngredientsOcrButtons`: the shared `addOCR` button row (scan names,
+ *   optional scan quantities, add manually).
+ * - `IngredientsAddEmpty`: the empty-state block rendered in `addOCR` mode
+ *   before any ingredient exists: prefix label + `IngredientsOcrButtons`
+ *   without the quantities button.
  *
  * @module components/organisms/RecipeIngredients
  */
@@ -24,6 +25,7 @@ import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import { DataTable, HelperText, IconButton, Text, useTheme } from 'react-native-paper';
 import { FormIngredientElement, ingredientTableElement } from '@customTypes/DatabaseElementTypes';
 import { RoundButton } from '@components/atomic/RoundButton';
+import { ScanButton } from '@components/molecules/ScanButton';
 import { Icons, iconsSize } from '@assets/Icons';
 import { NumericTextInput } from '@components/atomic/NumericTextInput';
 import { TextInputWithDropDown } from '@components/molecules/TextInputWithDropDown';
@@ -99,10 +101,12 @@ export interface IngredientsTableProps {
   prefixText: string;
   columnTitles: IngredientsTableColumnTitles;
   children: React.ReactNode;
-  /** When false the add-row round button is rendered below the table. */
-  hideAddButton?: boolean;
+  /** Replaces the add-row button with the OCR scan buttons (OCR mode). */
+  withScan?: boolean;
   /** Caption rendered under the add-ingredient round button. */
   addIngredientButtonLabel: string;
+  /** Caption of the manual add button shown next to the scan buttons. */
+  addManuallyButtonLabel: string;
   onAddIngredient?: () => void;
   /** Optional error rendered below the table (e.g. empty-array message). */
   error?: string;
@@ -113,8 +117,9 @@ export function IngredientsTable({
   prefixText,
   columnTitles,
   children,
-  hideAddButton,
+  withScan,
   addIngredientButtonLabel,
+  addManuallyButtonLabel,
   onAddIngredient,
   error,
 }: IngredientsTableProps) {
@@ -170,7 +175,15 @@ export function IngredientsTable({
         {children}
       </DataTable>
 
-      {!hideAddButton && onAddIngredient && (
+      {withScan && onAddIngredient ? (
+        <IngredientsOcrButtons
+          testID={testID}
+          addManuallyButtonLabel={addManuallyButtonLabel}
+          onAddIngredient={onAddIngredient}
+          withQuantities
+        />
+      ) : null}
+      {!withScan && onAddIngredient ? (
         <RoundButton
           testID={`${testID}::AddButton`}
           icon={Icons.plusIcon}
@@ -178,7 +191,7 @@ export function IngredientsTable({
           label={addIngredientButtonLabel}
           style={cellStyles.addButton}
         />
-      )}
+      ) : null}
 
       {error ? (
         <HelperText testID={`${testID}::Error`} type='error' visible={true}>
@@ -368,15 +381,57 @@ export function IngredientRow({
 }
 
 /**
- * Empty-state add block for `addOCR` mode: lets the user either OCR-scan
- * ingredient names or start adding ingredients manually.
+ * OCR button row for `addOCR` mode: scan ingredient names, optionally scan
+ * quantities for existing names, and add a manual row. The names scan button is
+ * always rendered; the quantities one requires `withQuantities`.
+ */
+export interface IngredientsOcrButtonsProps {
+  testID: string;
+  addManuallyButtonLabel: string;
+  onAddIngredient: () => void;
+  /** Renders the scan-quantities button next to the scan-names one */
+  withQuantities?: boolean;
+}
+
+export function IngredientsOcrButtons({
+  testID,
+  addManuallyButtonLabel,
+  onAddIngredient,
+  withQuantities,
+}: IngredientsOcrButtonsProps) {
+  return (
+    <View style={recipeButtonStyles.roundButtonsContainer}>
+      <ScanButton
+        testID={`${testID}::OpenModalNames`}
+        field='ingredientNames'
+        style={recipeButtonStyles.roundButton}
+      />
+      {withQuantities ? (
+        <ScanButton
+          testID={`${testID}::OpenModalQuantities`}
+          field='ingredientQuantities'
+          style={recipeButtonStyles.roundButton}
+        />
+      ) : null}
+      <RoundButton
+        testID={`${testID}::AddButton`}
+        style={recipeButtonStyles.roundButton}
+        icon={Icons.pencilIcon}
+        onPressFunction={onAddIngredient}
+        label={addManuallyButtonLabel}
+      />
+    </View>
+  );
+}
+
+/**
+ * Empty-state add block for `addOCR` mode: prefix label, the shared OCR button
+ * row (names scan + manual add) and an optional error.
  */
 export interface IngredientsAddEmptyProps {
   testID: string;
   prefixText: string;
-  scanNamesButtonLabel: string;
   addManuallyButtonLabel: string;
-  openOcrModal: () => void;
   onAddIngredient: () => void;
   error?: string;
 }
@@ -384,9 +439,7 @@ export interface IngredientsAddEmptyProps {
 export function IngredientsAddEmpty({
   testID,
   prefixText,
-  scanNamesButtonLabel,
   addManuallyButtonLabel,
-  openOcrModal,
   onAddIngredient,
   error,
 }: IngredientsAddEmptyProps) {
@@ -395,66 +448,16 @@ export function IngredientsAddEmpty({
       <Text testID={`${testID}::PrefixText`} variant='headlineSmall' style={cellStyles.prefixText}>
         {prefixText}
       </Text>
-      <View style={recipeButtonStyles.roundButtonsContainer}>
-        <RoundButton
-          testID={`${testID}::OpenModalNames`}
-          style={recipeButtonStyles.roundButton}
-          icon={Icons.scanImageIcon}
-          onPressFunction={openOcrModal}
-          label={scanNamesButtonLabel}
-        />
-        <RoundButton
-          testID={`${testID}::AddButton`}
-          style={recipeButtonStyles.roundButton}
-          icon={Icons.pencilIcon}
-          onPressFunction={onAddIngredient}
-          label={addManuallyButtonLabel}
-        />
-      </View>
+      <IngredientsOcrButtons
+        testID={testID}
+        addManuallyButtonLabel={addManuallyButtonLabel}
+        onAddIngredient={onAddIngredient}
+      />
       {error ? (
         <HelperText testID={`${testID}::Error`} type='error' visible={true}>
           {error}
         </HelperText>
       ) : null}
-    </View>
-  );
-}
-
-/**
- * Tail row for `addOCR` mode when at least one ingredient exists: lets the
- * user OCR-scan quantities for existing names or add another manual row.
- */
-export interface IngredientsAddTailProps {
-  testID: string;
-  scanQuantitiesButtonLabel: string;
-  addManuallyButtonLabel: string;
-  openOcrModal: () => void;
-  onAddIngredient: () => void;
-}
-
-export function IngredientsAddTail({
-  testID,
-  scanQuantitiesButtonLabel,
-  addManuallyButtonLabel,
-  openOcrModal,
-  onAddIngredient,
-}: IngredientsAddTailProps) {
-  return (
-    <View style={recipeButtonStyles.roundButtonsContainer}>
-      <RoundButton
-        testID={`${testID}::OpenModalQuantities`}
-        style={recipeButtonStyles.roundButton}
-        icon={Icons.scanImageIcon}
-        onPressFunction={openOcrModal}
-        label={scanQuantitiesButtonLabel}
-      />
-      <RoundButton
-        testID={`${testID}::AddButton`}
-        style={recipeButtonStyles.roundButton}
-        icon={Icons.pencilIcon}
-        onPressFunction={onAddIngredient}
-        label={addManuallyButtonLabel}
-      />
     </View>
   );
 }

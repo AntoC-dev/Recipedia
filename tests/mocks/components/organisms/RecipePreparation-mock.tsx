@@ -2,10 +2,11 @@ import { Button, Text, TextInput, View } from 'react-native';
 import React from 'react';
 import {
   EditableStepProps,
-  PreparationEmptyAddProps,
   PreparationSectionProps,
   RecipePreparationProps,
 } from '@components/organisms/RecipePreparation';
+import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
+import { MockScanButton } from './_recipeFieldMockHelpers';
 
 const testID = 'RecipePreparation';
 
@@ -31,41 +32,32 @@ export function preparationSectionMock({
   prefixText,
   children,
   onAddStep,
+  isEmpty,
+  withScan,
 }: PreparationSectionProps) {
   return (
     <View testID={testID}>
       <Text testID={`${testID}::PrefixText`}>{prefixText}</Text>
       {children}
+      <Text testID={`${testID}::WithScan`}>{String(!!withScan)}</Text>
+      {withScan ? (
+        <>
+          <MockScanButton
+            testID={`${testID}::OpenModal::RoundButton::OnPressFunction`}
+            field={recipeColumnsNames.preparation}
+          />
+          <Text testID={`${testID}::OpenModal::RoundButton::Icon`}>line-scan</Text>
+        </>
+      ) : null}
       <Button
         testID={`${testID}::AddButton::RoundButton::OnPressFunction`}
         onPress={onAddStep}
         title='Add Step'
       />
-      <Text testID={`${testID}::AddButton::RoundButton::Icon`}>plus</Text>
-    </View>
-  );
-}
-
-export function preparationEmptyAddMock({
-  prefixText,
-  openModal,
-  onAddStep,
-}: PreparationEmptyAddProps) {
-  return (
-    <View testID={testID}>
-      <Text testID={`${testID}::PrefixText`}>{prefixText}</Text>
-      <Button
-        testID={`${testID}::OpenModal::RoundButton::OnPressFunction`}
-        onPress={openModal}
-        title='Open Modal'
-      />
-      <Text testID={`${testID}::OpenModal::RoundButton::Icon`}>line-scan</Text>
-      <Button
-        testID={`${testID}::AddButton::RoundButton::OnPressFunction`}
-        onPress={onAddStep}
-        title='Add Step'
-      />
-      <Text testID={`${testID}::AddButton::RoundButton::Icon`}>pencil</Text>
+      <Text testID={`${testID}::AddButton::RoundButton::Icon`}>
+        {withScan && isEmpty ? 'pencil' : 'plus'}
+      </Text>
+      <Text testID={`${testID}::IsEmpty`}>{String(!!isEmpty)}</Text>
     </View>
   );
 }

@@ -24,7 +24,7 @@ export const RECIPE_INGREDIENTS_TEST_ID = `${RECIPE_TEST_ID}Ingredients`;
  * Shared no-op callback for read-only recipe rendering.
  *
  * `RecipeView` reuses the same `build*Props` helpers as the editable routes.
- * Those helpers type their setter / `openModal` callbacks as required (the
+ * Those helpers type their setter callbacks as required (the
  * editable modes need them), but every helper returns on the read-only branch
  * before invoking any of them. Passing this single shared no-op satisfies the
  * required-callback contract without allocating a fresh closure per field on

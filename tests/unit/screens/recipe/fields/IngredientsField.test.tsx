@@ -13,7 +13,7 @@ import {
   setMockIngredients,
 } from '@mocks/hooks/useIngredients-mock';
 
-import { renderWithForm, t } from './fieldsTestHarness';
+import { IMAGE_MODAL_TARGET_TEST_ID, renderWithForm, t } from './fieldsTestHarness';
 
 type Form = UseFormReturn<RecipeFormInput>;
 
@@ -28,7 +28,7 @@ jest.mock('@components/organisms/RecipeIngredients', () => {
     IngredientsTable: mocks.ingredientsTableMock,
     IngredientRow: mocks.ingredientRowMock,
     IngredientsAddEmpty: mocks.ingredientsAddEmptyMock,
-    IngredientsAddTail: mocks.ingredientsAddTailMock,
+    IngredientsOcrButtons: mocks.ingredientsOcrButtonsMock,
   };
 });
 
@@ -53,7 +53,6 @@ describe('RecipeIngredientsField', () => {
       form => ({
         form,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeIngredients: ingredients }
@@ -67,7 +66,6 @@ describe('RecipeIngredientsField', () => {
     const { getByTestId, form } = await renderWithForm(RecipeIngredientsField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
-      openModalForField: jest.fn(),
       t,
     }));
     await fireEvent.press(
@@ -80,7 +78,6 @@ describe('RecipeIngredientsField', () => {
     const { getByTestId } = await renderWithForm(RecipeIngredientsField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
-      openModalForField: jest.fn(),
       t,
     }));
     expect(getByTestId('RecipeIngredients::AddButton::RoundButton::Label').props.children).toBe(
@@ -104,7 +101,6 @@ describe('RecipeIngredientsField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeIngredients: ingredients }
@@ -135,7 +131,6 @@ describe('RecipeIngredientsField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeIngredients: ingredients }
@@ -157,7 +152,6 @@ describe('RecipeIngredientsField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeIngredients: ingredients }
@@ -177,7 +171,6 @@ describe('RecipeIngredientsField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeIngredients: [{ name: '', quantity: '' }] }
@@ -196,7 +189,6 @@ describe('RecipeIngredientsField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeIngredients: ingredients }
@@ -218,7 +210,6 @@ describe('RecipeIngredientsField', () => {
           form: f,
           stackMode: recipeStateType.edit,
           editIngredients: jest.fn(),
-          openModalForField: jest.fn(),
           t,
         };
       },
@@ -255,7 +246,6 @@ describe('RecipeIngredientsField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipeIngredients: [{ name: '', quantity: '100' }] }
@@ -281,7 +271,6 @@ describe('RecipeIngredientsField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipeIngredients: [{ name: '', quantity: '' }] }
@@ -309,7 +298,6 @@ describe('RecipeIngredientsField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipeIngredients: [{ name: '', quantity: '100' }] }
@@ -344,7 +332,6 @@ describe('RecipeIngredientsField', () => {
           form: f,
           stackMode: recipeStateType.edit,
           editIngredients: jest.fn(),
-          openModalForField: jest.fn(),
           t,
         };
       },
@@ -378,7 +365,6 @@ describe('RecipeIngredientsField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipeIngredients: ingredients }
@@ -404,7 +390,6 @@ describe('RecipeIngredientsField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipeIngredients: ingredients }
@@ -441,7 +426,6 @@ describe('RecipeIngredientsField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipeIngredients: ingredients }
@@ -476,7 +460,6 @@ describe('RecipeIngredientsField', () => {
           stackMode: recipeStateType.edit,
           editIngredients: jest.fn(),
           removeIngredient,
-          openModalForField: jest.fn(),
           t,
         };
       },
@@ -505,7 +488,6 @@ describe('RecipeIngredientsField', () => {
         form => ({
           form,
           stackMode: recipeStateType.readOnly,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipeIngredients: ingredients }
@@ -524,7 +506,6 @@ describe('RecipeIngredientsField', () => {
         form => ({
           form,
           stackMode: recipeStateType.readOnly,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipeIngredients: undefined }
@@ -535,28 +516,26 @@ describe('RecipeIngredientsField', () => {
 
   describe('addOCR mode', () => {
     test('empty array renders the empty-state block and opens the names OCR modal', async () => {
-      const openModalForField = jest.fn();
       const { getByTestId } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
           stackMode: recipeStateType.addOCR,
-          openModalForField,
           t,
         }),
         { recipeIngredients: [] }
       );
       expect(getByTestId('RecipeIngredients::PrefixText').props.children).toBe('ingredients: ');
       expect(
-        getByTestId('RecipeIngredients::OpenModalNames::RoundButton::Label').props.children
-      ).toBe('recipe.roundButton.scanNames');
+        getByTestId('RecipeIngredients::OpenModalNames::RoundButton::Icon').props.children
+      ).toBe('line-scan');
       expect(getByTestId('RecipeIngredients::AddButton::RoundButton::Label').props.children).toBe(
         'recipe.roundButton.addManually'
       );
       await fireEvent.press(
         getByTestId('RecipeIngredients::OpenModalNames::RoundButton::OnPressFunction')
       );
-      expect(openModalForField).toHaveBeenCalledWith('ingredientNames');
+      expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID).props.children).toBe('ingredientNames');
     });
 
     test('empty array manual-add button appends a row through the field array', async () => {
@@ -565,7 +544,6 @@ describe('RecipeIngredientsField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.addOCR,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipeIngredients: [] }
@@ -577,7 +555,6 @@ describe('RecipeIngredientsField', () => {
     });
 
     test('non-empty array hides the empty-state block and renders the add-tail OCR block', async () => {
-      const openModalForField = jest.fn();
       const ingredients = [
         {
           id: 1,
@@ -588,29 +565,32 @@ describe('RecipeIngredientsField', () => {
           season: [],
         },
       ];
-      const { getByTestId, queryByTestId, form } = await renderWithForm(
+      const { getByTestId, form } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
           stackMode: recipeStateType.addOCR,
-          openModalForField,
           t,
         }),
         { recipeIngredients: ingredients }
       );
       expect(
-        queryByTestId('RecipeIngredients::OpenModalNames::RoundButton::OnPressFunction')
-      ).toBeNull();
+        getByTestId('RecipeIngredients::OpenModalNames::RoundButton::Icon').props.children
+      ).toBe('line-scan');
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::OpenModalNames::RoundButton::OnPressFunction')
+      );
+      expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID).props.children).toBe('ingredientNames');
       expect(
-        getByTestId('RecipeIngredients::OpenModalQuantities::RoundButton::Label').props.children
-      ).toBe('recipe.roundButton.scanQuantities');
+        getByTestId('RecipeIngredients::OpenModalQuantities::RoundButton::Icon').props.children
+      ).toBe('line-scan');
       expect(getByTestId('RecipeIngredients::AddButton::RoundButton::Label').props.children).toBe(
         'recipe.roundButton.addManually'
       );
       await fireEvent.press(
         getByTestId('RecipeIngredients::OpenModalQuantities::RoundButton::OnPressFunction')
       );
-      expect(openModalForField).toHaveBeenCalledWith('ingredientQuantities');
+      expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID).props.children).toBe('ingredientQuantities');
       await fireEvent.press(
         getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
       );
@@ -634,7 +614,6 @@ describe('RecipeIngredientsField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipeIngredients: [flourRow] }
@@ -654,7 +633,6 @@ describe('RecipeIngredientsField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipeIngredients: [flourRow] }
@@ -677,7 +655,6 @@ describe('RecipeIngredientsField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipeIngredients: [{ quantity: '50' }] }
@@ -694,7 +671,6 @@ describe('RecipeIngredientsField', () => {
         f => ({
           form: f,
           stackMode: recipeStateType.edit,
-          openModalForField: jest.fn(),
           t,
         }),
         { recipeIngredients: [flourRow] }

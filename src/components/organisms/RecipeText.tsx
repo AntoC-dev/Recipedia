@@ -9,6 +9,7 @@
  * - Three text style variants: headline, title, paragraph
  * - Dual interaction modes: inline editing and modal addition
  * - OCR integration for adding content via image scanning
+ * - Renders a Scan button (`scanField`) when `withScan` is set
  * - Discriminated union props for type-safe editing configurations
  * - Responsive styling based on edit mode and text style
  * - Material Design typography integration
@@ -38,7 +39,9 @@
  *   rootText={{style: 'title', value: 'Instructions'}}
  *   addOrEditProps={{
  *     editType: 'add',
- *     openModal: () => openOCRScanner()
+ *     testID: 'recipe-instructions',
+ *     scanField: recipeColumnsNames.preparation,
+ *     withScan: true
  *   }}
  *   testID="recipe-instructions"
  * />
@@ -47,13 +50,12 @@
 
 import { View } from 'react-native';
 import React from 'react';
-import { RoundButton } from '@components/atomic/RoundButton';
-import { Icons } from '@assets/Icons';
+import { ScanButton } from '@components/molecules/ScanButton';
+import type { OcrModalTarget } from '@utils/OCR';
 import { HelperText, Text } from 'react-native-paper';
 import { recipeTextStyles } from '@styles/recipeComponents';
 import { VariantProp } from 'react-native-paper/lib/typescript/components/Typography/types';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
-import { useI18n } from '@utils/i18n';
 
 /** Text configuration with style and content */
 export type TextProp = {
@@ -66,8 +68,6 @@ export type TextProp = {
 /** Props for add mode with modal functionality */
 export type RecipeTextAddProps = {
   editType: 'add';
-  /** Function to open the OCR scanning modal */
-  openModal: () => void;
 };
 
 /** Props for inline editing mode */
@@ -86,6 +86,10 @@ export type RecipeTextEditProps = {
 export type RecipeTextAddOrEditProps = {
   /** Unique identifier for testing and accessibility */
   testID: string;
+  /** Field the Scan button targets */
+  scanField: OcrModalTarget;
+  /** Renders the Scan button targeting `scanField` (OCR mode) */
+  withScan?: boolean;
 } & (RecipeTextAddProps | RecipeTextEditProps);
 
 /**
@@ -158,7 +162,6 @@ export function RecipeText({ rootText, testID, addOrEditProps, error, onBlur }: 
 function RecipeTextEditablePart(
   addOrEditProps: RecipeTextAddOrEditProps & { onBlur?: () => void }
 ) {
-  const { t } = useI18n();
   return (
     <View>
       {addOrEditProps.editType === 'editable' ? (
@@ -177,14 +180,13 @@ function RecipeTextEditablePart(
           onEndEditing={newText => addOrEditProps.setTextToEdit(newText)}
           onBlur={addOrEditProps.onBlur}
         />
-      ) : (
-        <RoundButton
+      ) : null}
+      {addOrEditProps.withScan ? (
+        <ScanButton
           testID={addOrEditProps.testID + '::OpenModal'}
-          icon={Icons.scanImageIcon}
-          onPressFunction={addOrEditProps.openModal}
-          label={t('recipe.roundButton.scan')}
+          field={addOrEditProps.scanField}
         />
-      )}
+      ) : null}
     </View>
   );
 }

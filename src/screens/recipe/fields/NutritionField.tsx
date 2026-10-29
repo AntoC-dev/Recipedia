@@ -30,7 +30,6 @@ import { useController, useFormState, UseFormReturn, useWatch } from 'react-hook
 
 import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
 import { recipeStateType } from '@customTypes/ScreenTypes';
-import { OcrModalTarget } from '@utils/OCR';
 import { RecipeNutrition } from '@components/organisms/RecipeNutrition';
 import { buildRecipeNutritionProps } from '@utils/RecipeFormHelpers';
 import { firstErrorMessage, isNestedDirty } from '@utils/recipeFormErrors';
@@ -42,18 +41,11 @@ type T = (key: string) => string;
 export interface NutritionFieldProps {
   form: Form;
   stackMode: recipeStateType;
-  openModalForField: (field: OcrModalTarget) => void;
   parentTestId: string;
   t: T;
 }
 
-export function RecipeNutritionField({
-  form,
-  stackMode,
-  openModalForField,
-  parentTestId,
-  t,
-}: NutritionFieldProps) {
+export function RecipeNutritionField({ form, stackMode, parentTestId, t }: NutritionFieldProps) {
   const value = useWatch({ control: form.control, name: 'recipeNutrition' }) as
     nutritionTableElement | undefined;
   // Registered field: `fieldState.error` is the reactive, compiler-safe error
@@ -79,7 +71,6 @@ export function RecipeNutritionField({
         stackMode,
         recipeNutrition: value,
         setRecipeNutrition,
-        openModalForField,
         parentTestId,
       })}
       error={errorMessage}

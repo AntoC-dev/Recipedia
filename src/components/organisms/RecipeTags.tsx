@@ -26,22 +26,10 @@
  * // Editable tags with manual addition
  * <RecipeTags
  *   type="addOrEdit"
- *   editType="edit"
  *   tagsList={currentTags}
  *   randomTags="Try: breakfast, comfort food, spicy"
  *   addNewTag={(tag) => setTags([...tags, tag])}
  *   removeTag={(tag) => setTags(tags.filter(t => t !== tag))}
- * />
- *
- * // Tags with OCR scanning capability
- * <RecipeTags
- *   type="addOrEdit"
- *   editType="add"
- *   tagsList={recipeTags}
- *   randomTags="Suggested: dessert, chocolate"
- *   addNewTag={handleTagAdd}
- *   removeTag={handleTagRemove}
- *   openModal={() => openOCRScanner()}
  * />
  * ```
  */
@@ -49,6 +37,8 @@
 import { View } from 'react-native';
 import React, { useState } from 'react';
 import { RoundButton } from '@components/atomic/RoundButton';
+import { ScanButton } from '@components/molecules/ScanButton';
+import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 import { Icons } from '@assets/Icons';
 import { HorizontalList } from '@components/molecules/HorizontalList';
 import { TextInputWithDropDown } from '@components/molecules/TextInputWithDropDown';
@@ -57,22 +47,18 @@ import { recipeButtonStyles, recipeTagsStyles } from '@styles/recipeComponents';
 import { Text, useTheme } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
 
-/** Props for edit mode without OCR */
-export type RecipeTagsEditProps = { editType: 'edit' };
-
-/** Props for add mode with OCR functionality */
-export type RecipeTagsAddProps = { editType: 'add'; openModal: () => void };
-
-/** Props for add/edit modes with discriminated union */
+/** Props for add/edit modes; the Scan button renders only when `withScan` is set */
 export type RecipeTagsAddOrEditProps = {
   type: 'addOrEdit';
+  /** Renders the Scan button targeting the tags field (OCR mode) */
+  withScan?: boolean;
   /** Random tag suggestions to display to user */
   randomTags: string;
   /** Callback fired when a new tag is added */
   addNewTag: (newTag: string) => void;
   /** Callback fired when a tag is removed */
   removeTag: (tag: string) => void;
-} & (RecipeTagsEditProps | RecipeTagsAddProps);
+};
 
 /** Props for read-only mode */
 export type RecipeTagsReadOnlyProps = { type: 'readOnly' };
@@ -155,15 +141,12 @@ export function RecipeTags(tagsProps: RecipeTagProps) {
             ))}
 
             <View style={recipeButtonStyles.roundButtonsContainer}>
-              {tagsProps.editType === 'add' ? (
-                <View style={recipeButtonStyles.roundButton}>
-                  <RoundButton
-                    testID={tagsTestID + '::OpenModal'}
-                    icon={Icons.scanImageIcon}
-                    onPressFunction={tagsProps.openModal}
-                    label={t('recipe.roundButton.scan')}
-                  />
-                </View>
+              {tagsProps.withScan ? (
+                <ScanButton
+                  testID={tagsTestID + '::OpenModal'}
+                  field={recipeColumnsNames.tags}
+                  style={recipeButtonStyles.roundButton}
+                />
               ) : null}
               <View style={recipeButtonStyles.roundButton}>
                 <RoundButton

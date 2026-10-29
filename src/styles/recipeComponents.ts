@@ -112,7 +112,6 @@ export const recipeTextRenderStyles = StyleSheet.create({
   secondColumn: { flex: 2, textAlign: 'center', width: '100%' },
   thirdColumn: { flex: 3, flexWrap: 'wrap', textAlign: 'center', width: '100%' },
   columnContentStyle: recipeMargins.mediumVerticalMargin,
-  roundButtonPadding: { ...recipeMargins.mediumVerticalMargin },
 });
 
 /**

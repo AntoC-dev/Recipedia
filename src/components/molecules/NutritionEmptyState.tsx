@@ -5,22 +5,25 @@ import { useI18n } from '@utils/i18n';
 import { recipeTextStyles } from '@styles/recipeComponents';
 import { Icons } from '@assets/Icons';
 import { RoundButton } from '@components/atomic/RoundButton';
+import { ScanButton } from '@components/molecules/ScanButton';
+import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 
 export type NutritionEmptyStateProps = {
+  /** Called by the "add manually" button, shown when `withScan` is not set */
   onButtonPressed: () => void;
-  mode: 'add' | 'ocr';
+  /** Renders the OCR scan button instead of the "add manually" button */
+  withScan?: boolean;
   parentTestId?: string;
 };
 
 export function NutritionEmptyState({
   onButtonPressed,
-  mode,
+  withScan,
   parentTestId,
 }: NutritionEmptyStateProps) {
   const { t } = useI18n();
 
   const testId = parentTestId + '::NutritionEmptyState';
-  const isOCRMode = mode === 'ocr';
 
   return (
     <View style={recipeTextStyles.containerSection}>
@@ -31,13 +34,21 @@ export function NutritionEmptyState({
       >
         {t('recipe.nutrition.titleSimple')}
       </Text>
-      <RoundButton
-        testID={testId + (isOCRMode ? '::OCRButton' : '::AddButton')}
-        icon={isOCRMode ? Icons.scanImageIcon : Icons.plusIcon}
-        onPressFunction={onButtonPressed}
-        label={t(isOCRMode ? 'recipe.roundButton.scan' : 'recipe.roundButton.addManually')}
-        style={recipeTextStyles.button}
-      />
+      {withScan ? (
+        <ScanButton
+          testID={testId + '::OCRButton'}
+          field={recipeColumnsNames.nutrition}
+          style={recipeTextStyles.button}
+        />
+      ) : (
+        <RoundButton
+          testID={testId + '::AddButton'}
+          icon={Icons.plusIcon}
+          onPressFunction={onButtonPressed}
+          label={t('recipe.roundButton.addManually')}
+          style={recipeTextStyles.button}
+        />
+      )}
     </View>
   );
 }

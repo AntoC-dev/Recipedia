@@ -2,13 +2,14 @@ import React from 'react';
 import { act, fireEvent } from '@testing-library/react-native';
 
 import { recipeStateType } from '@customTypes/ScreenTypes';
+import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 import {
   RecipeDescriptionField,
   RecipeImageField,
   RecipeTitleField,
 } from '@screens/recipe/fields/IdentityFields';
 
-import { Form, renderWithForm, t } from './fieldsTestHarness';
+import { IMAGE_MODAL_TARGET_TEST_ID, Form, renderWithForm, t } from './fieldsTestHarness';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('@components/organisms/RecipeImage', () => ({
@@ -25,7 +26,6 @@ describe('RecipeImageField', () => {
       form => ({
         form,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
       }),
       { recipeImage: 'file:///a.jpg' }
     );
@@ -36,7 +36,6 @@ describe('RecipeImageField', () => {
     const { getByTestId } = await renderWithForm(RecipeImageField, form => ({
       form,
       stackMode: recipeStateType.addOCR,
-      openModalForField: jest.fn(),
     }));
     expect(getByTestId('RecipeImage::OverlayButtonLabelKey').props.children).toBe(
       'recipe.roundButton.scan'
@@ -47,7 +46,6 @@ describe('RecipeImageField', () => {
     const { getByTestId, form } = await renderWithForm(RecipeImageField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
-      openModalForField: jest.fn(),
     }));
     await act(() => {
       form.setValue('recipeImage', undefined as unknown as string);
@@ -55,15 +53,14 @@ describe('RecipeImageField', () => {
     expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('');
   });
 
-  test('forwards openModalForField to underlying RecipeImage', async () => {
-    const openModal = jest.fn();
+  test('opens the image modal for the image field from the dialogs context', async () => {
     const { getByTestId } = await renderWithForm(RecipeImageField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
-      openModalForField: openModal,
     }));
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID).props.children).toBe('none');
     await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
-    expect(openModal).toHaveBeenCalled();
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID).props.children).toBe(recipeColumnsNames.image);
   });
 });
 
@@ -74,7 +71,6 @@ describe('RecipeTitleField', () => {
       form => ({
         form,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeTitle: 'Pancakes' }
@@ -86,7 +82,6 @@ describe('RecipeTitleField', () => {
     const { getByTestId, form } = await renderWithForm(RecipeTitleField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
-      openModalForField: jest.fn(),
       t,
     }));
     await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'New Title');
@@ -99,7 +94,6 @@ describe('RecipeTitleField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeTitle: 'Pancakes' }
@@ -114,7 +108,6 @@ describe('RecipeTitleField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeTitle: 'Pancakes' }
@@ -132,14 +125,17 @@ describe('RecipeTitleField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.addOCR,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeTitle: 'Scanned Title' }
     );
-    await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', '');
-    expect(queryByTestId('RecipeTitle::OpenModal')).toBeNull();
-    await fireEvent.press(getByTestId('RecipeTitle::OnBlur'));
+    await act(async () => {
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', '');
+    });
+    expect(getByTestId('RecipeTitle::TextEditable')).toBeTruthy();
+    await act(async () => {
+      await fireEvent.press(getByTestId('RecipeTitle::OnBlur'));
+    });
     expect(getByTestId('RecipeTitle::Error').props.children).toBe(
       'alerts.inlineErrors.titleRecipe'
     );
@@ -151,7 +147,6 @@ describe('RecipeTitleField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeTitle: 'Pancakes' }
@@ -171,7 +166,6 @@ describe('RecipeTitleField', () => {
       f => ({
         form: f,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeTitle: 'Pancakes' }
@@ -191,7 +185,6 @@ describe('RecipeTitleField', () => {
     const { queryByTestId } = await renderWithForm(RecipeTitleField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
-      openModalForField: jest.fn(),
       t,
     }));
     expect(queryByTestId('RecipeTitle::Error')).toBeNull();
@@ -201,23 +194,20 @@ describe('RecipeTitleField', () => {
     const { getByTestId, queryByTestId } = await renderWithForm(RecipeTitleField, form => ({
       form,
       stackMode: recipeStateType.addOCR,
-      openModalForField: jest.fn(),
       t,
     }));
     expect(getByTestId('RecipeTitle::OpenModal')).toBeTruthy();
     expect(queryByTestId('RecipeTitle::TextEditable')).toBeNull();
   });
 
-  test('opens the OCR modal when the add button is pressed in addOCR mode', async () => {
-    const openModalForField = jest.fn();
+  test('opens the OCR modal for the title when the scan button is pressed in addOCR mode', async () => {
     const { getByTestId } = await renderWithForm(RecipeTitleField, form => ({
       form,
       stackMode: recipeStateType.addOCR,
-      openModalForField,
       t,
     }));
     await fireEvent.press(getByTestId('RecipeTitle::OpenModal'));
-    expect(openModalForField).toHaveBeenCalled();
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID).props.children).toBe(recipeColumnsNames.title);
   });
 
   test('shows no editable input in readOnly mode', async () => {
@@ -226,7 +216,6 @@ describe('RecipeTitleField', () => {
       form => ({
         form,
         stackMode: recipeStateType.readOnly,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeTitle: 'Pancakes' }
@@ -238,7 +227,6 @@ describe('RecipeTitleField', () => {
     const { getByTestId, form } = await renderWithForm(RecipeTitleField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
-      openModalForField: jest.fn(),
       t,
     }));
     await act(() => {
@@ -255,7 +243,6 @@ describe('RecipeDescriptionField', () => {
       form => ({
         form,
         stackMode: recipeStateType.edit,
-        openModalForField: jest.fn(),
         t,
       }),
       { recipeDescription: 'Fluffy' }
@@ -267,7 +254,6 @@ describe('RecipeDescriptionField', () => {
     const { getByTestId, queryByTestId } = await renderWithForm(RecipeDescriptionField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
-      openModalForField: jest.fn(),
       t,
     }));
     await fireEvent.press(getByTestId('RecipeDescription::OnBlur'));
@@ -278,7 +264,6 @@ describe('RecipeDescriptionField', () => {
     const { getByTestId, form } = await renderWithForm(RecipeDescriptionField, (f: Form) => ({
       form: f,
       stackMode: recipeStateType.edit,
-      openModalForField: jest.fn(),
       t,
     }));
     await act(() => {

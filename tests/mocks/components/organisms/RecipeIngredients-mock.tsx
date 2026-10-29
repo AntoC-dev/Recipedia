@@ -3,11 +3,11 @@ import React from 'react';
 import {
   IngredientRowProps,
   IngredientsAddEmptyProps,
-  IngredientsAddTailProps,
+  IngredientsOcrButtonsProps,
   IngredientsTableProps,
   RecipeIngredientsProps,
 } from '@components/organisms/RecipeIngredients';
-import { ErrorEcho } from './_recipeFieldMockHelpers';
+import { ErrorEcho, MockScanButton } from './_recipeFieldMockHelpers';
 
 function formatNumericQuantity(quantity: string | number | undefined): string {
   if (quantity === undefined || quantity === '') return '';
@@ -42,8 +42,9 @@ export function ingredientsTableMock({
   prefixText,
   columnTitles,
   children,
-  hideAddButton,
+  withScan,
   addIngredientButtonLabel,
+  addManuallyButtonLabel,
   onAddIngredient,
   error,
 }: IngredientsTableProps) {
@@ -54,7 +55,15 @@ export function ingredientsTableMock({
       <Text testID={`${testID}::ColumnTitle1`}>{columnTitles.column1}</Text>
       <Text testID={`${testID}::ColumnTitle2`}>{columnTitles.column2}</Text>
       {children}
-      {!hideAddButton && onAddIngredient ? (
+      {withScan && onAddIngredient
+        ? ingredientsOcrButtonsMock({
+            testID,
+            addManuallyButtonLabel,
+            onAddIngredient,
+            withQuantities: true,
+          })
+        : null}
+      {!withScan && onAddIngredient ? (
         <>
           <Button
             testID={`${testID}::AddButton::RoundButton::OnPressFunction`}
@@ -144,22 +153,18 @@ export function ingredientRowMock({
 export function ingredientsAddEmptyMock({
   testID,
   prefixText,
-  scanNamesButtonLabel,
   addManuallyButtonLabel,
-  openOcrModal,
   onAddIngredient,
   error,
 }: IngredientsAddEmptyProps) {
   return (
     <View testID={testID}>
       <Text testID={`${testID}::PrefixText`}>{prefixText}</Text>
-      <Button
+      <MockScanButton
         testID={`${testID}::OpenModalNames::RoundButton::OnPressFunction`}
-        onPress={openOcrModal}
-        title='Open Modal Names'
+        field='ingredientNames'
       />
       <Text testID={`${testID}::OpenModalNames::RoundButton::Icon`}>line-scan</Text>
-      <Text testID={`${testID}::OpenModalNames::RoundButton::Label`}>{scanNamesButtonLabel}</Text>
       <Button
         testID={`${testID}::AddButton::RoundButton::OnPressFunction`}
         onPress={onAddIngredient}
@@ -172,24 +177,29 @@ export function ingredientsAddEmptyMock({
   );
 }
 
-export function ingredientsAddTailMock({
+export function ingredientsOcrButtonsMock({
   testID,
-  scanQuantitiesButtonLabel,
   addManuallyButtonLabel,
-  openOcrModal,
   onAddIngredient,
-}: IngredientsAddTailProps) {
+  withQuantities,
+}: IngredientsOcrButtonsProps) {
   return (
-    <View testID={`${testID}::AddTail`}>
-      <Button
-        testID={`${testID}::OpenModalQuantities::RoundButton::OnPressFunction`}
-        onPress={openOcrModal}
-        title='Open Modal Quantities'
+    <View testID={`${testID}::OcrButtons`}>
+      <Text testID={`${testID}::WithQuantities`}>{String(!!withQuantities)}</Text>
+      <MockScanButton
+        testID={`${testID}::OpenModalNames::RoundButton::OnPressFunction`}
+        field='ingredientNames'
       />
-      <Text testID={`${testID}::OpenModalQuantities::RoundButton::Icon`}>line-scan</Text>
-      <Text testID={`${testID}::OpenModalQuantities::RoundButton::Label`}>
-        {scanQuantitiesButtonLabel}
-      </Text>
+      <Text testID={`${testID}::OpenModalNames::RoundButton::Icon`}>line-scan</Text>
+      {withQuantities ? (
+        <>
+          <MockScanButton
+            testID={`${testID}::OpenModalQuantities::RoundButton::OnPressFunction`}
+            field='ingredientQuantities'
+          />
+          <Text testID={`${testID}::OpenModalQuantities::RoundButton::Icon`}>line-scan</Text>
+        </>
+      ) : null}
       <Button
         testID={`${testID}::AddButton::RoundButton::OnPressFunction`}
         onPress={onAddIngredient}

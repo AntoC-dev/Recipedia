@@ -10,13 +10,8 @@
  *   array.
  * - `EditableStep`: a single editable row with blur-commit title +
  *   description inputs. Used by the per-row field wrapper.
- * - `PreparationEmptyAdd`: the empty-state OCR + manual-add button block
- *   rendered when the user opens the screen in `addOCR` mode without any
- *   preparation steps yet.
- * - `PreparationSection`: the prefix-text wrapper used to frame the editable
- *   list and the "add step" round button. Exposed so the field wrapper can
- *   wrap its mapped `useFieldArray` rows without reaching back into the
- *   organism's internals.
+ * - `PreparationSection`: prefix-text frame around the editable rows, with the
+ *   add button and, with `withScan`, the OCR scan button.
  *
  * @module components/organisms/RecipePreparation
  */
@@ -24,9 +19,10 @@
 import React from 'react';
 import { View } from 'react-native';
 import { HelperText, Text } from 'react-native-paper';
-import { preparationStepElement } from '@customTypes/DatabaseElementTypes';
+import { preparationStepElement, recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 import { recipeButtonStyles, recipeTextRenderStyles } from '@styles/recipeComponents';
 import { RoundButton } from '@components/atomic/RoundButton';
+import { ScanButton } from '@components/molecules/ScanButton';
 import { Icons } from '@assets/Icons';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
 import { useI18n } from '@utils/i18n';
@@ -41,21 +37,16 @@ export interface RecipePreparationProps {
 }
 
 /**
- * Props for the editable section frame (prefix text + add-step round button).
+ * Props for the editable section frame (prefix text + add round button).
  */
 export interface PreparationSectionProps {
   prefixText: string;
   children: React.ReactNode;
   onAddStep: () => void;
-}
-
-/**
- * Props for the empty-state add block (OCR scan + manual-add buttons).
- */
-export interface PreparationEmptyAddProps {
-  prefixText: string;
-  openModal: () => void;
-  onAddStep: () => void;
+  /** Whether the step list is empty; with `withScan`, the add button becomes "add manually". */
+  isEmpty?: boolean;
+  /** Renders the OCR scan button for the preparation field (OCR mode) */
+  withScan?: boolean;
 }
 
 /**
@@ -109,9 +100,16 @@ export function RecipePreparation({ steps }: RecipePreparationProps) {
 
 /**
  * Section frame for editable preparation: the prefix label, the caller's
- * mapped rows, then the round "add step" button.
+ * mapped rows, then the round add button. `withScan` (OCR mode) adds a scan
+ * button beside it; with `isEmpty`, the add button becomes "add manually".
  */
-export function PreparationSection({ prefixText, children, onAddStep }: PreparationSectionProps) {
+export function PreparationSection({
+  prefixText,
+  children,
+  onAddStep,
+  isEmpty,
+  withScan,
+}: PreparationSectionProps) {
   const { t } = useI18n();
   return (
     <View style={recipeTextRenderStyles.containerSection}>
@@ -123,50 +121,22 @@ export function PreparationSection({ prefixText, children, onAddStep }: Preparat
         {prefixText}
       </Text>
       {children}
-      <RoundButton
-        testID={`${TEST_ID}::AddButton`}
-        icon={Icons.plusIcon}
-        onPressFunction={onAddStep}
-        label={t('recipe.roundButton.newStep')}
-        style={recipeTextRenderStyles.roundButtonPadding}
-      />
-    </View>
-  );
-}
-
-/**
- * Empty-state add block for `addOCR` mode: lets the user either OCR-scan a
- * recipe image for preparation steps or start adding steps manually.
- */
-export function PreparationEmptyAdd({
-  prefixText,
-  openModal,
-  onAddStep,
-}: PreparationEmptyAddProps) {
-  const { t } = useI18n();
-  return (
-    <View style={recipeTextRenderStyles.containerSection}>
-      <Text
-        testID={`${TEST_ID}::PrefixText`}
-        variant={'headlineSmall'}
-        style={recipeTextRenderStyles.containerElement}
-      >
-        {prefixText}
-      </Text>
       <View style={recipeButtonStyles.roundButtonsContainer}>
-        <RoundButton
-          testID={`${TEST_ID}::OpenModal`}
-          style={recipeButtonStyles.roundButton}
-          icon={Icons.scanImageIcon}
-          onPressFunction={openModal}
-          label={t('recipe.roundButton.scan')}
-        />
+        {withScan ? (
+          <ScanButton
+            testID={`${TEST_ID}::OpenModal`}
+            field={recipeColumnsNames.preparation}
+            style={recipeButtonStyles.roundButton}
+          />
+        ) : null}
         <RoundButton
           testID={`${TEST_ID}::AddButton`}
-          style={recipeButtonStyles.roundButton}
-          icon={Icons.pencilIcon}
+          icon={withScan && isEmpty ? Icons.pencilIcon : Icons.plusIcon}
           onPressFunction={onAddStep}
-          label={t('recipe.roundButton.addManually')}
+          label={t(
+            withScan && isEmpty ? 'recipe.roundButton.addManually' : 'recipe.roundButton.newStep'
+          )}
+          style={recipeButtonStyles.roundButton}
         />
       </View>
     </View>
