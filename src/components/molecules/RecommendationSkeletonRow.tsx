@@ -26,7 +26,7 @@ export function RecommendationSkeletonRow() {
   const opacity = usePulseOpacity();
 
   return (
-    <Animated.View style={{ opacity }}>
+    <Animated.View testID='RecommendationSkeletonRow' style={{ opacity }}>
       <View style={[styles.titlePlaceholder, { backgroundColor: colors.surfaceVariant }]} />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} scrollEnabled={false}>
         {[0, 1, 2].map(i => (

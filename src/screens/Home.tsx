@@ -169,6 +169,7 @@ export function Home() {
         <RecommendationsSkeleton />
       ) : (
         <FlatList
+          testID={homeId + '::RecommendationList'}
           decelerationRate={scrollDecelerationRate}
           data={recommendations}
           renderItem={({ item }) => (
