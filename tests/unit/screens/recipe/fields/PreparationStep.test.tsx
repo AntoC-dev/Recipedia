@@ -1,4 +1,4 @@
-import { act, fireEvent, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { PreparationStepField } from '@screens/recipe/fields/PreparationStep';
 
@@ -21,24 +21,24 @@ function renderStep(preparation: { title: string; description: string }[]) {
 }
 
 describe('PreparationStepField', () => {
-  test('renders the title and description from the bound form value', () => {
-    const { getByTestId } = renderStep([{ title: 'Boil water', description: 'Until steaming' }]);
+  test('renders the title and description from the bound form value', async () => {
+    const { getByTestId } = await renderStep([
+      { title: 'Boil water', description: 'Until steaming' },
+    ]);
     expect(getByTestId(titleInputId).props.value).toBe('Boil water');
     expect(getByTestId(descInputId).props.value).toBe('Until steaming');
   });
 
-  test('falls back to empty strings when the bound step has no title or description', () => {
-    const { getByTestId } = renderStep([{} as { title: string; description: string }]);
+  test('falls back to empty strings when the bound step has no title or description', async () => {
+    const { getByTestId } = await renderStep([{} as { title: string; description: string }]);
     expect(getByTestId(titleInputId).props.value).toBe('');
     expect(getByTestId(descInputId).props.value).toBe('');
   });
 
-  test('typing a title commits live to the form value', () => {
-    const { getByTestId, form } = renderStep([{ title: 'Old', description: 'desc' }]);
+  test('typing a title commits live to the form value', async () => {
+    const { getByTestId, form } = await renderStep([{ title: 'Old', description: 'desc' }]);
 
-    act(() => {
-      fireEvent.changeText(getByTestId(titleInputId), 'New title');
-    });
+    await fireEvent.changeText(getByTestId(titleInputId), 'New title');
 
     expect(form.getValues('recipePreparation')![0]).toEqual({
       title: 'New title',
@@ -46,39 +46,33 @@ describe('PreparationStepField', () => {
     });
   });
 
-  test('typing a description commits live to the form value', () => {
-    const { getByTestId, form } = renderStep([{ title: 'Step', description: 'Old' }]);
+  test('typing a description commits live to the form value', async () => {
+    const { getByTestId, form } = await renderStep([{ title: 'Step', description: 'Old' }]);
 
-    act(() => {
-      fireEvent.changeText(getByTestId(descInputId), 'New description');
-    });
+    await fireEvent.changeText(getByTestId(descInputId), 'New description');
 
     expect(form.getValues('recipePreparation')![0]!.description).toBe('New description');
   });
 
-  test('committing the title via blur writes the value to the form', () => {
-    const { getByTestId, form } = renderStep([{ title: 'Step', description: 'desc' }]);
+  test('committing the title via blur writes the value to the form', async () => {
+    const { getByTestId, form } = await renderStep([{ title: 'Step', description: 'desc' }]);
 
-    act(() => {
-      fireEvent(getByTestId(titleInputId), 'endEditing', {
-        nativeEvent: { text: 'Committed title' },
-      });
+    await fireEvent(getByTestId(titleInputId), 'endEditing', {
+      nativeEvent: { text: 'Committed title' },
     });
 
     expect(form.getValues('recipePreparation')![0]!.title).toBe('Committed title');
   });
 
-  test('no inline description error surfaces before the step is touched', () => {
-    const { queryByTestId } = renderStep([{ title: 'Step', description: '' }]);
+  test('no inline description error surfaces before the step is touched', async () => {
+    const { queryByTestId } = await renderStep([{ title: 'Step', description: '' }]);
     expect(queryByTestId(descErrorId)).toBeNull();
   });
 
   test('committing an empty description via blur surfaces the inline error', async () => {
-    const { getByTestId } = renderStep([{ title: 'Step', description: 'Filled' }]);
+    const { getByTestId } = await renderStep([{ title: 'Step', description: 'Filled' }]);
 
-    await act(async () => {
-      fireEvent(getByTestId(descInputId), 'endEditing', { nativeEvent: { text: '' } });
-    });
+    await fireEvent(getByTestId(descInputId), 'endEditing', { nativeEvent: { text: '' } });
 
     await waitFor(() => {
       expect(getByTestId(descErrorId).props.children).toBeTruthy();
@@ -86,17 +80,17 @@ describe('PreparationStepField', () => {
   });
 
   test('typing a non-empty description after an error clears it', async () => {
-    const { getByTestId, queryByTestId } = renderStep([{ title: 'Step', description: 'Filled' }]);
+    const { getByTestId, queryByTestId } = await renderStep([
+      { title: 'Step', description: 'Filled' },
+    ]);
 
-    await act(async () => {
-      fireEvent(getByTestId(descInputId), 'endEditing', { nativeEvent: { text: '' } });
-    });
+    await fireEvent(getByTestId(descInputId), 'endEditing', { nativeEvent: { text: '' } });
     await waitFor(() => {
       expect(getByTestId(descErrorId).props.children).toBeTruthy();
     });
 
-    await act(async () => {
-      fireEvent(getByTestId(descInputId), 'endEditing', { nativeEvent: { text: 'Now filled' } });
+    await fireEvent(getByTestId(descInputId), 'endEditing', {
+      nativeEvent: { text: 'Now filled' },
     });
     await waitFor(() => {
       expect(queryByTestId(descErrorId)).toBeNull();

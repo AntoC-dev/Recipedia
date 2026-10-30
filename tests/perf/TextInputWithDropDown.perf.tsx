@@ -45,15 +45,11 @@ async function flushListFrames() {
 }
 
 async function focusInput(inputId: string) {
-  await act(async () => {
-    fireEvent(screen.getByTestId(`${inputId}::CustomTextInput`), 'focus');
-  });
+  await fireEvent(screen.getByTestId(`${inputId}::CustomTextInput`), 'focus');
 }
 
 async function typeInInput(inputId: string, text: string) {
-  await act(async () => {
-    fireEvent.changeText(screen.getByTestId(`${inputId}::CustomTextInput`), text);
-  });
+  await fireEvent.changeText(screen.getByTestId(`${inputId}::CustomTextInput`), text);
 }
 
 describe('TextInputWithDropDown Performance', () => {

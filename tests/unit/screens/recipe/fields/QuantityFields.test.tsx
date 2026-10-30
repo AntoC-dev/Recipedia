@@ -13,8 +13,8 @@ jest.mock('@components/organisms/RecipeNumber', () => ({
 }));
 
 describe('RecipePersonsField', () => {
-  test('renders persons from form value', () => {
-    const { getByTestId } = renderWithForm(
+  test('renders persons from form value', async () => {
+    const { getByTestId } = await renderWithForm(
       RecipePersonsField,
       form => ({
         form,
@@ -28,7 +28,7 @@ describe('RecipePersonsField', () => {
   });
 
   test('shows inline error after user blurs persons set to sentinel', async () => {
-    const { getByTestId } = renderWithForm(
+    const { getByTestId } = await renderWithForm(
       RecipePersonsField,
       f => ({
         form: f,
@@ -38,36 +38,32 @@ describe('RecipePersonsField', () => {
       }),
       { recipePersons: 4 }
     );
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), defaultValueNumber);
-    });
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipePersons::OnBlur'));
-    });
+    await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', defaultValueNumber);
+    await fireEvent.press(getByTestId('RecipePersons::OnBlur'));
     expect(getByTestId('RecipePersons::Error').props.children).toBe(
       'alerts.inlineErrors.titlePersons'
     );
   });
 
-  test('setter writes value to form', () => {
-    const { getByTestId, form } = renderWithForm(RecipePersonsField, f => ({
+  test('setter writes value to form', async () => {
+    const { getByTestId, form } = await renderWithForm(RecipePersonsField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
       openModalForField: jest.fn(),
       t,
     }));
-    fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '6');
+    await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', '6');
     expect(form.getValues('recipePersons')).toBe(6);
   });
 
-  test('falls back to sentinel when form value is undefined', () => {
-    const { getByTestId, form } = renderWithForm(RecipePersonsField, (f: Form) => ({
+  test('falls back to sentinel when form value is undefined', async () => {
+    const { getByTestId, form } = await renderWithForm(RecipePersonsField, (f: Form) => ({
       form: f,
       stackMode: recipeStateType.edit,
       openModalForField: jest.fn(),
       t,
     }));
-    act(() => {
+    await act(() => {
       form.setValue('recipePersons', undefined as never);
     });
     expect(getByTestId('RecipePersons::TextEditable').props.children).toBe(defaultValueNumber);
@@ -75,8 +71,8 @@ describe('RecipePersonsField', () => {
 });
 
 describe('RecipeTimeField', () => {
-  test('renders time from form value', () => {
-    const { getByTestId } = renderWithForm(
+  test('renders time from form value', async () => {
+    const { getByTestId } = await renderWithForm(
       RecipeTimeField,
       form => ({
         form,
@@ -90,7 +86,7 @@ describe('RecipeTimeField', () => {
   });
 
   test('shows inline error after user blurs time set to sentinel', async () => {
-    const { getByTestId } = renderWithForm(
+    const { getByTestId } = await renderWithForm(
       RecipeTimeField,
       f => ({
         form: f,
@@ -100,23 +96,19 @@ describe('RecipeTimeField', () => {
       }),
       { recipeTime: 30 }
     );
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), defaultValueNumber);
-    });
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipeTime::OnBlur'));
-    });
+    await fireEvent(getByTestId('RecipeTime::SetTextToEdit'), 'press', defaultValueNumber);
+    await fireEvent.press(getByTestId('RecipeTime::OnBlur'));
     expect(getByTestId('RecipeTime::Error').props.children).toBe('alerts.inlineErrors.titleTime');
   });
 
-  test('falls back to sentinel when form value is undefined', () => {
-    const { getByTestId, form } = renderWithForm(RecipeTimeField, (f: Form) => ({
+  test('falls back to sentinel when form value is undefined', async () => {
+    const { getByTestId, form } = await renderWithForm(RecipeTimeField, (f: Form) => ({
       form: f,
       stackMode: recipeStateType.edit,
       openModalForField: jest.fn(),
       t,
     }));
-    act(() => {
+    await act(() => {
       form.setValue('recipeTime', undefined as never);
     });
     expect(getByTestId('RecipeTime::TextEditable').props.children).toBe(defaultValueNumber);

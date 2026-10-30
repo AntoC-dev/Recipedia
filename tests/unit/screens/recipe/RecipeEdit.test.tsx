@@ -118,13 +118,13 @@ describe('RecipeEdit', () => {
     test('shows the discard dialog when leaving a dirty form', async () => {
       const { getByTestId } = await renderRoute(mockRouteEdit);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Dirty Title');
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Dirty Title');
 
       await waitFor(() => {
         expect(isPreventRemoveArmed()).toBe(true);
       });
 
-      act(() => {
+      await act(() => {
         triggerPreventRemove(backAction);
       });
 
@@ -138,15 +138,15 @@ describe('RecipeEdit', () => {
     test('keeps the user on the form when the discard is cancelled', async () => {
       const { getByTestId } = await renderRoute(mockRouteEdit);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Dirty Title');
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Dirty Title');
       await waitFor(() => {
         expect(isPreventRemoveArmed()).toBe(true);
       });
-      act(() => {
+      await act(() => {
         triggerPreventRemove(backAction);
       });
 
-      fireEvent.press(getByTestId(`${discardAlertId}::OnCancel`));
+      await fireEvent.press(getByTestId(`${discardAlertId}::OnCancel`));
 
       expect(getByTestId(`${discardAlertId}::IsVisible`).props.children).toBe(false);
       expect(mockDispatch).not.toHaveBeenCalled();
@@ -155,15 +155,15 @@ describe('RecipeEdit', () => {
     test('replays the intercepted action when the discard is confirmed', async () => {
       const { getByTestId } = await renderRoute(mockRouteEdit);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Dirty Title');
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Dirty Title');
       await waitFor(() => {
         expect(isPreventRemoveArmed()).toBe(true);
       });
-      act(() => {
+      await act(() => {
         triggerPreventRemove(backAction);
       });
 
-      fireEvent.press(getByTestId(`${discardAlertId}::OnConfirm`));
+      await fireEvent.press(getByTestId(`${discardAlertId}::OnConfirm`));
 
       expect(getByTestId(`${discardAlertId}::IsVisible`).props.children).toBe(false);
       expect(mockDispatch).toHaveBeenCalledWith(backAction);
@@ -172,8 +172,8 @@ describe('RecipeEdit', () => {
     test('does not block the navigation performed by a successful save', async () => {
       const { getByTestId } = await renderRoute(mockRouteEdit);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Saved Title');
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Saved Title');
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(mockNavigation.dispatch).toHaveBeenCalled();
@@ -181,7 +181,7 @@ describe('RecipeEdit', () => {
 
       expect(isPreventRemoveArmed()).toBe(false);
 
-      act(() => {
+      await act(() => {
         triggerPreventRemove(backAction);
       });
 
@@ -209,7 +209,7 @@ describe('RecipeEdit', () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteEdit);
 
       const newTitle = 'New Recipe Title';
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), newTitle);
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', newTitle);
       const newEditProp: EditRecipeProp = { ...mockRouteEdit };
       newEditProp.recipe.title = newTitle;
 
@@ -227,7 +227,7 @@ describe('RecipeEdit', () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteEdit);
 
       const newDescription = 'New Recipe Description';
-      fireEvent.press(getByTestId('RecipeDescription::SetTextToEdit'), newDescription);
+      await fireEvent(getByTestId('RecipeDescription::SetTextToEdit'), 'press', newDescription);
       const newEditProp: EditRecipeProp = { ...mockRouteEdit };
       newEditProp.recipe.description = newDescription;
 
@@ -244,7 +244,7 @@ describe('RecipeEdit', () => {
     test('removes recipeTag and reflects in RecipeTags only', async () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteEdit);
 
-      fireEvent.press(getByTestId('RecipeTags::RemoveTag'));
+      await fireEvent.press(getByTestId('RecipeTags::RemoveTag'));
       const newEditProp: EditRecipeProp = {
         mode: mockRouteEdit.mode,
         recipe: {
@@ -268,7 +268,7 @@ describe('RecipeEdit', () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteEdit);
 
       const newPerson = '23';
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), newPerson);
+      await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', newPerson);
       const newEditProp: EditRecipeProp = { ...mockRouteEdit };
       newEditProp.recipe.persons = Number(newPerson);
 
@@ -320,7 +320,7 @@ describe('RecipeEdit', () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteEdit);
 
       const newTime = '71';
-      fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), newTime);
+      await fireEvent(getByTestId('RecipeTime::SetTextToEdit'), 'press', newTime);
       const newEditProp: EditRecipeProp = { ...mockRouteEdit };
       newEditProp.recipe.time = Number(newTime);
 
@@ -349,7 +349,7 @@ describe('RecipeEdit', () => {
       const descriptionInput = getByTestId(
         'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
       );
-      fireEvent(descriptionInput, 'endEditing', {
+      await fireEvent(descriptionInput, 'endEditing', {
         nativeEvent: { text: newEditProp.recipe.preparation[0]!.description },
       });
 
@@ -402,19 +402,24 @@ describe('RecipeEdit', () => {
       const updatePreparationWith = '.New part of a paragraph';
       newPropEdit.recipe.preparation[0]!.description += updatePreparationWith;
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), newPropEdit.recipe.title);
-      fireEvent.press(
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', newPropEdit.recipe.title);
+      await fireEvent(
         getByTestId('RecipeDescription::SetTextToEdit'),
+        'press',
         newPropEdit.recipe.description
       );
-      fireEvent.press(getByTestId('RecipeTags::RemoveTag'));
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), newPropEdit.recipe.persons);
-      fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), newPropEdit.recipe.time);
+      await fireEvent.press(getByTestId('RecipeTags::RemoveTag'));
+      await fireEvent(
+        getByTestId('RecipePersons::SetTextToEdit'),
+        'press',
+        newPropEdit.recipe.persons
+      );
+      await fireEvent(getByTestId('RecipeTime::SetTextToEdit'), 'press', newPropEdit.recipe.time);
 
       const descriptionInput = getByTestId(
         'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
       );
-      fireEvent(descriptionInput, 'endEditing', {
+      await fireEvent(descriptionInput, 'endEditing', {
         nativeEvent: { text: newPropEdit.recipe.preparation[0]!.description },
       });
 
@@ -422,7 +427,7 @@ describe('RecipeEdit', () => {
         checkPreparation(newPropEdit, getByTestId, queryByTestId);
       });
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(mockNavigation.dispatch).toHaveBeenCalled();
@@ -434,8 +439,8 @@ describe('RecipeEdit', () => {
     test('save rewrites the stack so the stale original RecipeView is dropped', async () => {
       const { getByTestId } = await renderRoute(mockRouteEdit);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Stack Rewrite Title');
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Stack Rewrite Title');
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(mockNavigation.dispatch).toHaveBeenCalled();
@@ -453,10 +458,14 @@ describe('RecipeEdit', () => {
 
       const { getByTestId } = await renderRoute(editRoute);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Live-Commit Title');
-      fireEvent.press(getByTestId('RecipeDescription::SetTextToEdit'), 'Live-Commit Description');
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Live-Commit Title');
+      await fireEvent(
+        getByTestId('RecipeDescription::SetTextToEdit'),
+        'press',
+        'Live-Commit Description'
+      );
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(editRecipeSpy).toHaveBeenCalled();
@@ -476,10 +485,10 @@ describe('RecipeEdit', () => {
 
       const { getByTestId } = await renderRoute(editRoute);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Modified Title');
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '8');
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Modified Title');
+      await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', '8');
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(editRecipeSpy).toHaveBeenCalled();
@@ -501,10 +510,10 @@ describe('RecipeEdit', () => {
 
       const { getByTestId } = await renderRoute(editRoute);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Modified Title');
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '8');
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Modified Title');
+      await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', '8');
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(mockNavigation.dispatch).toHaveBeenCalled();
@@ -520,10 +529,10 @@ describe('RecipeEdit', () => {
 
       const { getByTestId } = await renderRoute(editRoute);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Another Title');
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '4');
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Another Title');
+      await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', '4');
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(mockNavigation.dispatch).toHaveBeenCalled();
@@ -540,7 +549,7 @@ describe('RecipeEdit', () => {
 
       const { getByTestId } = await renderRoute(completeRoute);
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(false);
     });
@@ -551,7 +560,7 @@ describe('RecipeEdit', () => {
 
       const { getByTestId } = await renderRoute(route);
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(mockNavigation.dispatch).toHaveBeenCalled();
@@ -570,8 +579,12 @@ describe('RecipeEdit', () => {
       const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
       const { getByTestId } = await renderRoute(route);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Modified Title For Ordering');
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent(
+        getByTestId('RecipeTitle::SetTextToEdit'),
+        'press',
+        'Modified Title For Ordering'
+      );
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(editRecipeSpy).toHaveBeenCalled();
@@ -593,8 +606,8 @@ describe('RecipeEdit', () => {
       const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
       const { getByTestId } = await renderRoute(route);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Failing Save Title');
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Failing Save Title');
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
@@ -604,7 +617,7 @@ describe('RecipeEdit', () => {
       expect(getByTestId('Recipe::Alert::Content').props.children).toContain('DB write failed');
       expect(mockNavigation.dispatch).not.toHaveBeenCalled();
 
-      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+      await fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
       expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(false);
 
       editRecipeSpy.mockRestore();
@@ -618,8 +631,8 @@ describe('RecipeEdit', () => {
       const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
       const { getByTestId } = await renderRoute(route);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Non Error Save Title');
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Non Error Save Title');
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
@@ -655,7 +668,7 @@ describe('RecipeEdit', () => {
 
       const { getByTestId } = await renderRoute(mockRecipeWithNutrition);
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
@@ -676,7 +689,7 @@ describe('RecipeEdit', () => {
 
       const { getByTestId } = await renderRoute(route);
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
@@ -711,7 +724,7 @@ describe('RecipeEdit', () => {
 
       const { getByTestId } = await renderRoute(route);
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
@@ -735,7 +748,7 @@ describe('RecipeEdit', () => {
 
       expect(initialCount).toBeGreaterThan(0);
 
-      fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
+      await fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
       await waitFor(
         () => {
@@ -760,7 +773,7 @@ describe('RecipeEdit', () => {
 
       expect(initialTags).toEqual(['Dessert']);
 
-      fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
+      await fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
       await waitFor(
         () => {
@@ -780,7 +793,9 @@ describe('RecipeEdit', () => {
 
       expect(getByTestId('RecipeIngredients::0::Row')).toBeTruthy();
 
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
 
       await waitFor(() => {
         expect(getByTestId(`RecipeIngredients::${initialCount}::Row`)).toBeTruthy();
@@ -798,7 +813,9 @@ describe('RecipeEdit', () => {
 
       expect(getByTestId('RecipeIngredients::0::Row')).toBeTruthy();
 
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
 
       await waitFor(() => {
         expect(getByTestId(`RecipeIngredients::${initialCount}::Row`)).toBeTruthy();
@@ -895,7 +912,7 @@ describe('RecipeEdit', () => {
       const initialTags = JSON.parse(initialTagsJson);
       expect(initialTags).toEqual(['mockTag']);
 
-      fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
+      await fireEvent.press(getByTestId('RecipeTags::AddNewTag'));
 
       await waitFor(
         () => {
@@ -914,10 +931,10 @@ describe('RecipeEdit', () => {
     test('cancel button restores original values and goes back', async () => {
       const { getByTestId } = await renderRoute(mockRouteEdit);
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Mutated Title');
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Mutated Title');
       expect(getByTestId('RecipeTitle::TextEditable').props.children).toBe('Mutated Title');
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Cancel'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Cancel'));
 
       expect(mockNavigation.goBack).toHaveBeenCalled();
     });
@@ -930,7 +947,7 @@ describe('RecipeEdit', () => {
       const titleInput = getByTestId(
         'RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput'
       );
-      fireEvent(titleInput, 'endEditing', { nativeEvent: { text: 'New First Title' } });
+      await fireEvent(titleInput, 'endEditing', { nativeEvent: { text: 'New First Title' } });
 
       await waitFor(() => {
         expect(
@@ -949,8 +966,10 @@ describe('RecipeEdit', () => {
 
       expect(getByTestId('Recipe::RecipeNutrition::NutritionTable')).toBeTruthy();
 
-      fireEvent.press(getByTestId('Recipe::RecipeNutrition::NutritionTable::OnRemoveNutrition'));
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(
+        getByTestId('Recipe::RecipeNutrition::NutritionTable::OnRemoveNutrition')
+      );
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(editRecipeSpy).toHaveBeenCalled();
@@ -967,8 +986,10 @@ describe('RecipeEdit', () => {
 
       expect(getByTestId('Recipe::RecipeNutrition::NutritionTable')).toBeTruthy();
 
-      fireEvent.press(getByTestId('Recipe::RecipeNutrition::NutritionTable::OnRemoveNutrition'));
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(
+        getByTestId('Recipe::RecipeNutrition::NutritionTable::OnRemoveNutrition')
+      );
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(
         () => {
@@ -987,15 +1008,18 @@ describe('RecipeEdit', () => {
 
       const { getByTestId } = await renderRoute(mockRouteEdit);
 
-      fireEvent.press(getByTestId('Recipe::RecipeNutrition::NutritionTable::OnRemoveNutrition'));
+      await fireEvent.press(
+        getByTestId('Recipe::RecipeNutrition::NutritionTable::OnRemoveNutrition')
+      );
 
       const firstIngredient = mockRouteEdit.recipe.ingredients[0];
-      fireEvent.press(
+      await fireEvent(
         getByTestId('RecipeIngredients::0::OnIngredientChange'),
+        'press',
         `${firstIngredient!.quantity}::${firstIngredient!.unit}::${firstIngredient!.name}::a note`
       );
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(editRecipeSpy).toHaveBeenCalled();
@@ -1013,14 +1037,14 @@ describe('RecipeEdit', () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteEdit);
 
       expect(queryByTestId('ModalImageSelect')).toBeNull();
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
     });
 
     test('modal has autoSelect=true in edit mode', async () => {
       const { getByTestId } = await renderRoute(mockRouteEdit);
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
 
       await waitFor(() => {
         expect(getByTestId('ModalImageSelect::AutoSelect').props.children).toBe('true');
@@ -1034,9 +1058,9 @@ describe('RecipeEdit', () => {
         mockRouteEdit.recipe.image_Source
       );
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
-      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await fireEvent.press(getByTestId('ModalImageSelect::Select'));
 
       await waitFor(() => {
         expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('mock-image-uri');
@@ -1046,10 +1070,10 @@ describe('RecipeEdit', () => {
     test('modal closes after a selection', async () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteEdit);
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
 
-      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await fireEvent.press(getByTestId('ModalImageSelect::Select'));
 
       await waitFor(() => expect(queryByTestId('ModalImageSelect')).toBeNull());
     });
@@ -1059,10 +1083,10 @@ describe('RecipeEdit', () => {
 
       const originalImage = mockRouteEdit.recipe.image_Source;
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
 
-      fireEvent.press(getByTestId('ModalImageSelect::Dismiss'));
+      await fireEvent.press(getByTestId('ModalImageSelect::Dismiss'));
 
       await waitFor(() => expect(queryByTestId('ModalImageSelect')).toBeNull());
       expect(getByTestId('RecipeImage::ImgUri').props.children).toBe(originalImage);
@@ -1071,13 +1095,13 @@ describe('RecipeEdit', () => {
     test('onImagesUpdated appends a URI to the modal list', async () => {
       const { getByTestId } = await renderRoute(mockRouteEdit);
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
 
       const imagesBefore = JSON.parse(getByTestId('ModalImageSelect::Images').props.children);
       expect(imagesBefore).toHaveLength(0);
 
-      fireEvent.press(getByTestId('ModalImageSelect::AddImage'));
+      await fireEvent.press(getByTestId('ModalImageSelect::AddImage'));
 
       await waitFor(() => {
         const imagesAfter = JSON.parse(getByTestId('ModalImageSelect::Images').props.children);
@@ -1095,14 +1119,14 @@ describe('RecipeEdit', () => {
       };
       const { getByTestId } = await renderRoute(recipeWithNoImage);
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
-      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await fireEvent.press(getByTestId('ModalImageSelect::Select'));
       await waitFor(() =>
         expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('mock-image-uri')
       );
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => expect(editRecipeSpy).toHaveBeenCalled());
 
@@ -1117,14 +1141,14 @@ describe('RecipeEdit', () => {
       const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe');
       const { getByTestId } = await renderRoute(mockRouteEdit);
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
-      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await fireEvent.press(getByTestId('ModalImageSelect::Select'));
       await waitFor(() =>
         expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('mock-image-uri')
       );
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => expect(editRecipeSpy).toHaveBeenCalled());
       editRecipeSpy.mockRestore();
@@ -1135,7 +1159,7 @@ describe('RecipeEdit', () => {
       const route: EditRecipeProp = { mode: 'edit', recipe: { ...testRecipes[0]! } };
       const { getByTestId } = await renderRoute(route);
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => expect(mockNavigation.dispatch).toHaveBeenCalled());
       expect(editRecipeSpy).not.toHaveBeenCalled();
@@ -1155,14 +1179,14 @@ describe('RecipeEdit', () => {
       };
       const { getByTestId } = await renderRoute(recipeWithNoImage);
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
-      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await fireEvent.press(getByTestId('ModalImageSelect::Select'));
       await waitFor(() =>
         expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('mock-image-uri')
       );
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(getByTestId('RecipeImage::ImgUri').props.children).toBe(permanentUri);
@@ -1177,14 +1201,14 @@ describe('RecipeEdit', () => {
         .mockRejectedValue(new Error('DB error'));
       const { getByTestId } = await renderRoute(mockRouteEdit);
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
-      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await fireEvent.press(getByTestId('ModalImageSelect::Select'));
       await waitFor(() =>
         expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('mock-image-uri')
       );
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(editRecipeSpy).toHaveBeenCalled();
@@ -1206,8 +1230,8 @@ describe('RecipeEdit', () => {
 
       const { getByTestId } = await renderRoute({ mode: 'edit', recipe: { ...testRecipes[0]! } });
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Synced Title');
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Synced Title');
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(mockNavigation.dispatch).toHaveBeenCalled();
@@ -1226,8 +1250,12 @@ describe('RecipeEdit', () => {
         recipe: { ...testRecipes[0]! },
       });
 
-      fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Modified Title For Ordering');
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent(
+        getByTestId('RecipeTitle::SetTextToEdit'),
+        'press',
+        'Modified Title For Ordering'
+      );
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(editRecipeSpy).toHaveBeenCalled();
@@ -1249,10 +1277,10 @@ describe('RecipeEdit', () => {
 
       const { getByTestId } = await renderRoute(editRoute);
 
-      fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '7');
-      fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), '42');
+      await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', '7');
+      await fireEvent(getByTestId('RecipeTime::SetTextToEdit'), 'press', '42');
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(editRecipeSpy).toHaveBeenCalled();
@@ -1270,12 +1298,13 @@ describe('RecipeEdit', () => {
 
       const { getByTestId } = await renderRoute(editRoute);
 
-      fireEvent.press(
+      await fireEvent(
         getByTestId('RecipeIngredients::0::OnLiveNameChange'),
+        'press',
         'Live-Commit Ingredient'
       );
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
 
       await waitFor(() => {
         expect(editRecipeSpy).toHaveBeenCalled();
@@ -1295,7 +1324,7 @@ describe('RecipeEdit', () => {
       const RecipeEdit = require('@screens/recipe/RecipeEdit').RecipeEdit;
       const recipe = { ...testRecipes[6]! };
 
-      const tree = render(
+      const tree = await render(
         <CopilotProvider>
           <RecipeEdit
             route={{ key: 'k', name: 'RecipeEdit', params: { recipe } }}

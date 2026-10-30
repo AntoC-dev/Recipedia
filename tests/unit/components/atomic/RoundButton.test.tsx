@@ -6,17 +6,17 @@ describe('RoundButton', () => {
   const testID = 'AddRecipe';
   const buttonId = testID + '::RoundButton';
 
-  test('renders the icon on the button', () => {
-    const { getByTestId } = render(
+  test('renders the icon on the button', async () => {
+    const { getByTestId } = await render(
       <RoundButton icon='plus' testID={testID} label='Add recipe' onPressFunction={jest.fn()} />
     );
 
     expect(getByTestId(buttonId + '::Icon')).toHaveTextContent('plus');
   });
 
-  test('calls onPressFunction when pressed', () => {
+  test('calls onPressFunction when pressed', async () => {
     const onPressFunction = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <RoundButton
         icon='plus'
         testID={testID}
@@ -25,29 +25,29 @@ describe('RoundButton', () => {
       />
     );
 
-    fireEvent.press(getByTestId(buttonId));
+    await fireEvent.press(getByTestId(buttonId));
 
     expect(onPressFunction).toHaveBeenCalled();
   });
 
-  test('renders a label when one is provided', () => {
-    const { getByTestId } = render(
+  test('renders a label when one is provided', async () => {
+    const { getByTestId } = await render(
       <RoundButton icon='plus' testID={testID} label='Add recipe' onPressFunction={jest.fn()} />
     );
 
     expect(getByTestId(buttonId + '::Label')).toHaveTextContent('Add recipe');
   });
 
-  test('exposes the label as the button accessibility label', () => {
-    const { getByTestId } = render(
+  test('exposes the label as the button accessibility label', async () => {
+    const { getByTestId } = await render(
       <RoundButton icon='plus' testID={testID} label='Add recipe' onPressFunction={jest.fn()} />
     );
 
     expect(getByTestId(buttonId).props.accessibilityLabel).toBe('Add recipe');
   });
 
-  test('applies a custom container style on top of the default one', () => {
-    const { getByTestId } = render(
+  test('applies a custom container style on top of the default one', async () => {
+    const { getByTestId } = await render(
       <RoundButton
         icon='plus'
         testID={testID}

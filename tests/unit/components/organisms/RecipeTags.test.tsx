@@ -22,7 +22,7 @@ describe('RecipeTags Component', () => {
   const sampleTags = testTags.map(tag => tag.name).sort();
 
   const renderRecipeTags = async (props: RecipeTagProps) => {
-    const result = render(<RecipeTags {...props} />);
+    const result = await render(<RecipeTags {...props} />);
 
     await waitFor(() => {
       expect(result.getByTestId('RecipeTags::PropType')).toBeTruthy();
@@ -115,7 +115,7 @@ describe('RecipeTags Component', () => {
       it('adds a new tag input field when the RoundButton is pressed', async () => {
         const { getByTestId } = await renderRecipeTags(defaultProps);
 
-        fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
+        await fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
 
         await waitFor(() =>
           expect(
@@ -138,8 +138,8 @@ describe('RecipeTags Component', () => {
       it('calls addNewTag exactly once and preserves second input when first is validated', async () => {
         const { getByTestId } = await renderRecipeTags(defaultProps);
 
-        fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
-        fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
+        await fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
+        await fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
 
         await waitFor(() =>
           expect(getByTestId('RecipeTags::List::0::TextInputWithDropdown::OnValidate')).toBeTruthy()
@@ -148,7 +148,9 @@ describe('RecipeTags Component', () => {
           expect(getByTestId('RecipeTags::List::1::TextInputWithDropdown::OnValidate')).toBeTruthy()
         );
 
-        fireEvent.press(getByTestId('RecipeTags::List::0::TextInputWithDropdown::OnValidate'));
+        await fireEvent.press(
+          getByTestId('RecipeTags::List::0::TextInputWithDropdown::OnValidate')
+        );
 
         expect(addNewTagMock).toHaveBeenCalledTimes(1);
         expect(addNewTagMock).toHaveBeenCalledWith('Test string');
@@ -158,8 +160,8 @@ describe('RecipeTags Component', () => {
       it('calls addNewTag callback when a new tag is validated and removes the input', async () => {
         const { getByTestId, queryByTestId } = await renderRecipeTags(defaultProps);
 
-        fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
-        fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
+        await fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
+        await fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
 
         await waitFor(() =>
           expect(
@@ -190,7 +192,9 @@ describe('RecipeTags Component', () => {
           ).toBeTruthy();
         }
 
-        fireEvent.press(getByTestId('RecipeTags::List::0::TextInputWithDropdown::OnValidate'));
+        await fireEvent.press(
+          getByTestId('RecipeTags::List::0::TextInputWithDropdown::OnValidate')
+        );
 
         expect(addNewTagMock).toHaveBeenCalledWith('Test string');
 
@@ -274,7 +278,7 @@ describe('RecipeTags Component', () => {
 
       const { getByTestId } = await renderRecipeTags(props);
 
-      fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
+      await fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
 
       await waitFor(() =>
         expect(

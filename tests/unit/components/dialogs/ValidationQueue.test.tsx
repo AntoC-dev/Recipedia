@@ -28,7 +28,7 @@ describe('ValidationQueue', () => {
     jest.clearAllMocks();
   });
 
-  const renderQueueTags = (items: TagWithSimilarity[], testID = 'test-validation') => {
+  const renderQueueTags = async (items: TagWithSimilarity[], testID = 'test-validation') => {
     return render(
       <ValidationQueue
         type={'Tag'}
@@ -40,7 +40,7 @@ describe('ValidationQueue', () => {
     );
   };
 
-  const renderQueueIngredients = (items: IngredientWithSimilarity[]) => {
+  const renderQueueIngredients = async (items: IngredientWithSimilarity[]) => {
     return render(
       <ValidationQueue
         type={'Ingredient'}
@@ -53,33 +53,35 @@ describe('ValidationQueue', () => {
   };
 
   describe('Rendering & Visibility', () => {
-    test('returns null when items array is empty', () => {
-      const { queryByTestId } = renderQueueTags([]);
+    test('returns null when items array is empty', async () => {
+      const { queryByTestId } = await renderQueueTags([]);
       expect(queryByTestId('test-validation::ValidationQueue::SimilarityDialog::Mock')).toBeNull();
     });
 
-    test('renders SimilarityDialog when tags are present', () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0]!]);
+    test('renders SimilarityDialog when tags are present', async () => {
+      const { getByTestId } = await renderQueueTags([sampleTags[0]!]);
       expect(
         getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock')
       ).toBeTruthy();
     });
 
-    test('renders SimilarityDialog when ingredients are present', () => {
-      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]!]);
+    test('renders SimilarityDialog when ingredients are present', async () => {
+      const { getByTestId } = await renderQueueIngredients([sampleIngredients[0]!]);
       expect(
         getByTestId('test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock')
       ).toBeTruthy();
     });
 
-    test('calls onComplete immediately when items array is empty', () => {
-      renderQueueTags([]);
+    test('calls onComplete immediately when items array is empty', async () => {
+      await renderQueueTags([]);
       expect(mockOnComplete).toHaveBeenCalledTimes(1);
       expect(mockOnValidated).not.toHaveBeenCalled();
     });
 
-    test('passes empty string newItemName when ingredient has no name', () => {
-      const { getByTestId } = renderQueueIngredients([{ unit: 'g', season: [], similarItems: [] }]);
+    test('passes empty string newItemName when ingredient has no name', async () => {
+      const { getByTestId } = await renderQueueIngredients([
+        { unit: 'g', season: [], similarItems: [] },
+      ]);
 
       expect(
         getByTestId(
@@ -90,8 +92,8 @@ describe('ValidationQueue', () => {
   });
 
   describe('Tag Validation Flow', () => {
-    test('shows SimilarityDialog with correct tag props', () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0]!]);
+    test('shows SimilarityDialog with correct tag props', async () => {
+      const { getByTestId } = await renderQueueTags([sampleTags[0]!]);
       expect(
         getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.type')
           .props.children
@@ -103,10 +105,10 @@ describe('ValidationQueue', () => {
       ).toBe('BrandNewTag1');
     });
 
-    test('calls onValidated when tag is confirmed', () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0]!]);
+    test('calls onValidated when tag is confirmed', async () => {
+      const { getByTestId } = await renderQueueTags([sampleTags[0]!]);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onConfirm')
       );
 
@@ -114,7 +116,7 @@ describe('ValidationQueue', () => {
     });
 
     test('moves to next tag after validation', async () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0]!, sampleTags[1]!]);
+      const { getByTestId } = await renderQueueTags([sampleTags[0]!, sampleTags[1]!]);
 
       expect(
         getByTestId(
@@ -122,7 +124,7 @@ describe('ValidationQueue', () => {
         ).props.children
       ).toBe('BrandNewTag1');
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onConfirm')
       );
 
@@ -136,9 +138,9 @@ describe('ValidationQueue', () => {
     });
 
     test('calls onComplete when all tags are processed', async () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0]!]);
+      const { getByTestId } = await renderQueueTags([sampleTags[0]!]);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onConfirm')
       );
 
@@ -149,8 +151,8 @@ describe('ValidationQueue', () => {
   });
 
   describe('Ingredient Validation Flow', () => {
-    test('shows SimilarityDialog with correct ingredient props', () => {
-      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]!]);
+    test('shows SimilarityDialog with correct ingredient props', async () => {
+      const { getByTestId } = await renderQueueIngredients([sampleIngredients[0]!]);
 
       expect(
         getByTestId(
@@ -164,10 +166,10 @@ describe('ValidationQueue', () => {
       ).toBe('UniqueIngredient1');
     });
 
-    test('preserves quantity from original and uses DB unit when validated', () => {
-      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]!]);
+    test('preserves quantity from original and uses DB unit when validated', async () => {
+      const { getByTestId } = await renderQueueIngredients([sampleIngredients[0]!]);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(
           'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onConfirm'
         )
@@ -179,7 +181,7 @@ describe('ValidationQueue', () => {
     });
 
     test('moves to next ingredient after validation', async () => {
-      const { getByTestId } = renderQueueIngredients([
+      const { getByTestId } = await renderQueueIngredients([
         sampleIngredients[0]!,
         sampleIngredients[1]!,
       ]);
@@ -190,7 +192,7 @@ describe('ValidationQueue', () => {
         ).props.children
       ).toBe('UniqueIngredient1');
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(
           'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onConfirm'
         )
@@ -206,9 +208,9 @@ describe('ValidationQueue', () => {
     });
 
     test('calls onComplete when all ingredients are processed', async () => {
-      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]!]);
+      const { getByTestId } = await renderQueueIngredients([sampleIngredients[0]!]);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(
           'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onConfirm'
         )
@@ -221,8 +223,8 @@ describe('ValidationQueue', () => {
   });
 
   describe('Queue Management (FIFO)', () => {
-    test('processes first item in queue', () => {
-      const { getByTestId } = renderQueueTags(sampleTags);
+    test('processes first item in queue', async () => {
+      const { getByTestId } = await renderQueueTags(sampleTags);
 
       expect(
         getByTestId(
@@ -232,9 +234,9 @@ describe('ValidationQueue', () => {
     });
 
     test('removes item after validation and processes next', async () => {
-      const { getByTestId } = renderQueueTags(sampleTags);
+      const { getByTestId } = await renderQueueTags(sampleTags);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onConfirm')
       );
 
@@ -246,7 +248,7 @@ describe('ValidationQueue', () => {
         ).toBe('BrandNewTag2');
       });
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onConfirm')
       );
 
@@ -260,10 +262,10 @@ describe('ValidationQueue', () => {
     });
 
     test('processes all items sequentially', async () => {
-      const { getByTestId } = renderQueueTags(sampleTags);
+      const { getByTestId } = await renderQueueTags(sampleTags);
 
       for (let i = 0; i < sampleTags.length; i++) {
-        fireEvent.press(
+        await fireEvent.press(
           getByTestId(
             'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onConfirm'
           )
@@ -279,7 +281,7 @@ describe('ValidationQueue', () => {
 
   describe('Dialog Interaction', () => {
     test('hides dialog and moves to next when onDismiss is called', async () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0]!, sampleTags[1]!]);
+      const { getByTestId } = await renderQueueTags([sampleTags[0]!, sampleTags[1]!]);
 
       expect(
         getByTestId(
@@ -287,7 +289,7 @@ describe('ValidationQueue', () => {
         ).props.children
       ).toBe('BrandNewTag1');
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onDismiss')
       );
 
@@ -302,23 +304,23 @@ describe('ValidationQueue', () => {
       expect(mockOnValidated).not.toHaveBeenCalled();
     });
 
-    test('passes correct testId to SimilarityDialog', () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0]!], 'custom-test-id');
+    test('passes correct testId to SimilarityDialog', async () => {
+      const { getByTestId } = await renderQueueTags([sampleTags[0]!], 'custom-test-id');
 
       expect(
         getByTestId('custom-test-id::ValidationQueue::Tag::SimilarityDialog::Mock')
       ).toBeTruthy();
     });
 
-    test('handles onUseExisting callback for tags', () => {
+    test('handles onUseExisting callback for tags', async () => {
       const dbTag = { id: 100, name: 'ExistingTag' };
       const tagWithSimilar: TagWithSimilarity[] = [
         { id: 1, name: 'NewTag', similarItems: [dbTag] },
       ];
 
-      const { getByTestId } = renderQueueTags(tagWithSimilar);
+      const { getByTestId } = await renderQueueTags(tagWithSimilar);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(
           'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onUseExisting'
         )
@@ -327,7 +329,7 @@ describe('ValidationQueue', () => {
       expect(mockOnValidated).toHaveBeenCalledTimes(1);
     });
 
-    test('handles onUseExisting callback for ingredients', () => {
+    test('handles onUseExisting callback for ingredients', async () => {
       const dbIngredient: ingredientTableElement = {
         id: 100,
         name: 'ExistingIngredient',
@@ -340,9 +342,9 @@ describe('ValidationQueue', () => {
         { name: 'NewIngredient', quantity: '100', unit: 'g', similarItems: [dbIngredient] },
       ];
 
-      const { getByTestId } = renderQueueIngredients(ingredientWithSimilar);
+      const { getByTestId } = await renderQueueIngredients(ingredientWithSimilar);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(
           'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onUseExisting'
         )
@@ -353,7 +355,7 @@ describe('ValidationQueue', () => {
   });
 
   describe('Similarity Display', () => {
-    test('passes similarItem to SimilarityDialog when item has pre-computed similar entry', () => {
+    test('passes similarItem to SimilarityDialog when item has pre-computed similar entry', async () => {
       const dbIngredient: ingredientTableElement = {
         id: 100,
         name: 'ExistingIngredient',
@@ -363,7 +365,7 @@ describe('ValidationQueue', () => {
         season: [],
       };
 
-      const { getByTestId } = renderQueueIngredients([
+      const { getByTestId } = await renderQueueIngredients([
         { name: 'NewIngredient', quantity: '100', unit: 'g', similarItems: [dbIngredient] },
       ]);
 
@@ -375,8 +377,8 @@ describe('ValidationQueue', () => {
       expect(JSON.parse(similarItemText).name).toBe('ExistingIngredient');
     });
 
-    test('passes no similarItem when item has empty similarItems', () => {
-      const { getByTestId } = renderQueueIngredients([sampleIngredients[0]!]);
+    test('passes no similarItem when item has empty similarItems', async () => {
+      const { getByTestId } = await renderQueueIngredients([sampleIngredients[0]!]);
 
       const similarItemText = getByTestId(
         'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.similarItem'
@@ -385,8 +387,8 @@ describe('ValidationQueue', () => {
       expect(similarItemText).toBe('undefined');
     });
 
-    test('passes no similarItem for tags with no pre-computed match', () => {
-      const { getByTestId } = renderQueueTags([sampleTags[0]!]);
+    test('passes no similarItem for tags with no pre-computed match', async () => {
+      const { getByTestId } = await renderQueueTags([sampleTags[0]!]);
 
       const similarItemText = getByTestId(
         'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.similarItem'
@@ -404,7 +406,7 @@ describe('ValidationQueue', () => {
         { id: 3, name: 'French', similarItems: [] },
       ];
 
-      const { getByTestId } = renderQueueTags(tags);
+      const { getByTestId } = await renderQueueTags(tags);
 
       expect(
         getByTestId(
@@ -412,7 +414,7 @@ describe('ValidationQueue', () => {
         ).props.children
       ).toBe('Italian');
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onConfirm')
       );
 
@@ -435,9 +437,9 @@ describe('ValidationQueue', () => {
         { id: 3, name: 'French', similarItems: [] },
       ];
 
-      const { getByTestId } = renderQueueTags(tags);
+      const { getByTestId } = await renderQueueTags(tags);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(
           'test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onUseExisting'
         )
@@ -460,9 +462,9 @@ describe('ValidationQueue', () => {
         { id: 2, name: 'Italian', similarItems: [] },
       ];
 
-      const { getByTestId } = renderQueueTags(tags);
+      const { getByTestId } = await renderQueueTags(tags);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId('test-validation::ValidationQueue::Tag::SimilarityDialog::Mock::item.onDismiss')
       );
 
@@ -481,7 +483,7 @@ describe('ValidationQueue', () => {
   describe('Ingredient Validation Bug Fixes', () => {
     const mockOnDismissed = jest.fn();
 
-    const renderQueueIngredientsWithDismissed = (items: IngredientWithSimilarity[]) => {
+    const renderQueueIngredientsWithDismissed = async (items: IngredientWithSimilarity[]) => {
       return render(
         <ValidationQueue
           type={'Ingredient'}
@@ -503,9 +505,9 @@ describe('ValidationQueue', () => {
         { name: 'Oignon', quantity: '100', unit: 'g', similarItems: [] },
       ];
 
-      const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
+      const { getByTestId } = await renderQueueIngredientsWithDismissed(formIngredients);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(
           'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onDismiss'
         )
@@ -519,14 +521,14 @@ describe('ValidationQueue', () => {
       expect(dismissedIngredient.quantity).toBe('100');
     });
 
-    test('uses original quantity when available', () => {
+    test('uses original quantity when available', async () => {
       const formIngredients: IngredientWithSimilarity[] = [
         { name: 'UniqueTestIngredient', quantity: '250', unit: 'g', similarItems: [] },
       ];
 
-      const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
+      const { getByTestId } = await renderQueueIngredientsWithDismissed(formIngredients);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(
           'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onConfirm'
         )
@@ -536,14 +538,14 @@ describe('ValidationQueue', () => {
       expect(mergedIngredient.quantity).toBe('250');
     });
 
-    test('uses validated quantity when original quantity is undefined', () => {
+    test('uses validated quantity when original quantity is undefined', async () => {
       const formIngredients: IngredientWithSimilarity[] = [
         { name: 'UniqueTestIngredient', unit: 'g', similarItems: [] },
       ];
 
-      const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
+      const { getByTestId } = await renderQueueIngredientsWithDismissed(formIngredients);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(
           'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onConfirm'
         )
@@ -553,14 +555,14 @@ describe('ValidationQueue', () => {
       expect(mergedIngredient.quantity).toBe('100');
     });
 
-    test('uses validated quantity when original quantity is empty string', () => {
+    test('uses validated quantity when original quantity is empty string', async () => {
       const formIngredients: IngredientWithSimilarity[] = [
         { name: 'UniqueTestIngredient', quantity: '', unit: 'g', similarItems: [] },
       ];
 
-      const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
+      const { getByTestId } = await renderQueueIngredientsWithDismissed(formIngredients);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(
           'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onConfirm'
         )
@@ -570,14 +572,14 @@ describe('ValidationQueue', () => {
       expect(mergedIngredient.quantity).toBe('100');
     });
 
-    test('preserves database ingredient metadata in validated result', () => {
+    test('preserves database ingredient metadata in validated result', async () => {
       const formIngredients: IngredientWithSimilarity[] = [
         { name: 'UniqueTestIngredient', quantity: '100', unit: 'pieces', similarItems: [] },
       ];
 
-      const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
+      const { getByTestId } = await renderQueueIngredientsWithDismissed(formIngredients);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(
           'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onConfirm'
         )
@@ -588,7 +590,7 @@ describe('ValidationQueue', () => {
       expect(mergedIngredient.id).toBeDefined();
     });
 
-    test('handles onUseExisting similarly to onConfirm for ingredients', () => {
+    test('handles onUseExisting similarly to onConfirm for ingredients', async () => {
       const existingIngredient: ingredientTableElement = {
         id: 100,
         name: 'SimilarTestIngredient',
@@ -607,9 +609,9 @@ describe('ValidationQueue', () => {
         },
       ];
 
-      const { getByTestId } = renderQueueIngredientsWithDismissed(formIngredients);
+      const { getByTestId } = await renderQueueIngredientsWithDismissed(formIngredients);
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(
           'test-validation::ValidationQueue::Ingredient::SimilarityDialog::Mock::item.onUseExisting'
         )

@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { fireEvent, render, within } from '@testing-library/react-native';
-import { Divider, Surface, TouchableRipple } from 'react-native-paper';
+import { fireEvent, render } from '@testing-library/react-native';
 import {
   AUTOCOMPLETE_DIVIDER_THICKNESS,
   AUTOCOMPLETE_MAX_VISIBLE_ROWS,
@@ -71,8 +70,8 @@ describe('getAutocompleteListHeight', () => {
 });
 
 describe('getAutocompleteBubbleHeight', () => {
-  test('adds the tail space and the surface vertical padding to the list height', () => {
-    const { getByTestId, UNSAFE_getByType } = render(
+  test('adds the tail space and the surface vertical padding to the list height', async () => {
+    const { getByTestId } = await render(
       <AutocompleteBubble
         testID='AutocompleteBubble'
         items={['A', 'B', 'C', 'D', 'E']}
@@ -83,7 +82,7 @@ describe('getAutocompleteBubbleHeight', () => {
     const tailSpace = StyleSheet.flatten(
       getByTestId('AutocompleteBubble::AutocompleteBubble').props.style
     ).marginTop as number;
-    const surfacePadding = StyleSheet.flatten(UNSAFE_getByType(Surface).props.style)
+    const surfacePadding = StyleSheet.flatten(getByTestId('surface').props.style)
       .paddingVertical as number;
 
     expect(getAutocompleteBubbleHeight(5)).toBe(
@@ -101,7 +100,7 @@ describe('getAutocompleteBubbleHeight', () => {
 describe('AutocompleteBubble', () => {
   const manyItems = Array.from({ length: 300 }, (_, index) => `Tag ${index}`);
 
-  function renderBubble(items: string[], query = '', onSelect = jest.fn()) {
+  async function renderBubble(items: string[], query = '', onSelect = jest.fn()) {
     return render(
       <AutocompleteBubble
         testID='AutocompleteBubble'
@@ -112,27 +111,30 @@ describe('AutocompleteBubble', () => {
     );
   }
 
-  test('keeps taps and nested scrolling working inside the form scroll view', () => {
-    const list = renderBubble(['A', 'B']).getByTestId(listId);
+  test('keeps taps and nested scrolling working inside the form scroll view', async () => {
+    const { getByTestId } = await renderBubble(['A', 'B']);
+    const list = getByTestId(listId);
 
     expect(list.props.keyboardShouldPersistTaps).toBe('handled');
     expect(list.props.nestedScrollEnabled).toBe(true);
   });
 
-  test('uses the app scroll deceleration rate', () => {
-    const list = renderBubble(['A', 'B']).getByTestId(listId);
+  test('uses the app scroll deceleration rate', async () => {
+    const { getByTestId } = await renderBubble(['A', 'B']);
+    const list = getByTestId(listId);
 
     expect(list.props.decelerationRate).toBe(scrollDecelerationRate);
   });
 
-  test('does not draw rows beyond the visible area', () => {
-    const list = renderBubble(['A', 'B']).getByTestId(listId);
+  test('does not draw rows beyond the visible area', async () => {
+    const { getByTestId } = await renderBubble(['A', 'B']);
+    const list = getByTestId(listId);
 
     expect(list.props.drawDistance).toBe(0);
   });
 
-  test('renders every row at the row height without a border', () => {
-    const { getByTestId } = renderBubble(['A', 'B']);
+  test('renders every row at the row height without a border', async () => {
+    const { getByTestId } = await renderBubble(['A', 'B']);
 
     for (const item of ['A', 'B']) {
       const rowStyle = StyleSheet.flatten(getByTestId(itemId(item)).props.style);
@@ -141,84 +143,83 @@ describe('AutocompleteBubble', () => {
     }
   });
 
-  test('exposes each row as a labelled button', () => {
-    const { getByTestId } = renderBubble(['A', 'B']);
+  test('exposes each row as a labelled button', async () => {
+    const { getByTestId } = await renderBubble(['A', 'B']);
 
     const row = getByTestId(itemId('B'));
     expect(row.props.accessibilityRole).toBe('button');
     expect(row.props.accessibilityLabel).toBe('B');
   });
 
-  test('renders a row for an empty suggestion without a highlight', () => {
-    const { getByTestId, queryByTestId } = renderBubble(['', 'A'], 'A');
+  test('renders a row for an empty suggestion without a highlight', async () => {
+    const { getByTestId, queryByTestId } = await renderBubble(['', 'A'], 'A');
 
     expect(getByTestId(itemId(''))).toBeTruthy();
     expect(queryByTestId(matchId(''))).toBeNull();
-    expect(within(getByTestId(matchId('A'))).queryByText('A')).not.toBeNull();
+    expect(getByTestId(matchId('A'))).toHaveTextContent('A');
   });
 
-  test('renders every row of duplicated suggestions', () => {
-    const { getAllByTestId } = renderBubble(['A', 'A']);
+  test('renders every row of duplicated suggestions', async () => {
+    const { getAllByTestId } = await renderBubble(['A', 'A']);
 
     expect(getAllByTestId(itemId('A'))).toHaveLength(2);
   });
 
-  test('renders a bold divider between rows and none after the last', () => {
-    const { UNSAFE_getAllByType } = renderBubble(['A', 'B', 'C']);
+  test('renders a bold divider between rows and none after the last', async () => {
+    const { getAllByTestId } = await renderBubble(['A', 'B', 'C']);
 
-    const dividers = UNSAFE_getAllByType(Divider);
+    const dividers = getAllByTestId('divider');
     expect(dividers).toHaveLength(2);
     expect(dividers.every(divider => divider.props.bold === true)).toBe(true);
   });
 
-  test('renders no divider for a single row', () => {
-    const { UNSAFE_queryAllByType } = renderBubble(['A']);
+  test('renders no divider for a single row', async () => {
+    const { queryAllByTestId } = await renderBubble(['A']);
 
-    expect(UNSAFE_queryAllByType(Divider)).toHaveLength(0);
+    expect(queryAllByTestId('divider')).toHaveLength(0);
   });
 
-  test('renders rows as ripple touchables', () => {
-    const { UNSAFE_getAllByType } = renderBubble(['A', 'B']);
+  test('renders one touchable row per suggestion in order', async () => {
+    const { getAllByTestId } = await renderBubble(['A', 'B']);
 
-    expect(UNSAFE_getAllByType(TouchableRipple).map(ripple => ripple.props.testID)).toEqual([
-      itemId('A'),
-      itemId('B'),
-    ]);
+    expect(getAllByTestId(itemId(''), { exact: false }).map(ripple => ripple.props.testID)).toEqual(
+      [itemId('A'), itemId('B')]
+    );
   });
 
-  test('does not mount rows far outside the bounded viewport', () => {
-    const { getByTestId, queryByTestId } = renderBubble(manyItems);
+  test('does not mount rows far outside the bounded viewport', async () => {
+    const { getByTestId, queryByTestId } = await renderBubble(manyItems);
 
     expect(getByTestId(itemId('Tag 0'))).toBeTruthy();
     expect(queryByTestId(itemId('Tag 299'))).toBeNull();
   });
 
-  test('bounds the list container to the capped height', () => {
-    const { getByTestId } = renderBubble(manyItems);
+  test('bounds the list container to the capped height', async () => {
+    const { getByTestId } = await renderBubble(manyItems);
 
     expect(StyleSheet.flatten(getByTestId(viewportId).props.style)).toEqual(
       expect.objectContaining({ height: getAutocompleteListHeight(AUTOCOMPLETE_MAX_VISIBLE_ROWS) })
     );
   });
 
-  test('places the tail at the default inset', () => {
-    const { getByTestId } = renderBubble(['A']);
+  test('places the tail at the default inset', async () => {
+    const { getByTestId } = await renderBubble(['A']);
 
     expect(StyleSheet.flatten(getByTestId(tailId).props.style).left).toBe(AUTOCOMPLETE_TAIL_INSET);
   });
 
-  test('highlights the matching part of each suggestion', () => {
-    const { getByTestId, queryByTestId } = renderBubble(['Pasta', 'Salmon'], 'as');
+  test('highlights the matching part of each suggestion', async () => {
+    const { getByTestId, queryByTestId } = await renderBubble(['Pasta', 'Salmon'], 'as');
 
     expect(getByTestId(matchId('Pasta')).props.children).toBe('as');
     expect(queryByTestId(matchId('Salmon'))).toBeNull();
   });
 
-  test('calls onSelect with the pressed suggestion', () => {
+  test('calls onSelect with the pressed suggestion', async () => {
     const onSelect = jest.fn();
-    const { getByTestId } = renderBubble(['A', 'B'], '', onSelect);
+    const { getByTestId } = await renderBubble(['A', 'B'], '', onSelect);
 
-    fireEvent.press(getByTestId(itemId('B')));
+    await fireEvent.press(getByTestId(itemId('B')));
 
     expect(onSelect).toHaveBeenCalledWith('B');
   });

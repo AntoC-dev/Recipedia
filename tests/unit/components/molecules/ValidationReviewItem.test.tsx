@@ -20,44 +20,44 @@ describe('ValidationReviewItem', () => {
   });
 
   describe('pending state', () => {
-    test('renders item name', () => {
-      const { getByTestId } = render(<ValidationReviewItem {...defaultProps} />);
+    test('renders item name', async () => {
+      const { getByTestId } = await render(<ValidationReviewItem {...defaultProps} />);
 
       expect(getByTestId('test-item::Name').props.children).toBe('Italian');
     });
 
-    test('renders AddNew chip', () => {
-      const { getByTestId } = render(<ValidationReviewItem {...defaultProps} />);
+    test('renders AddNew chip', async () => {
+      const { getByTestId } = await render(<ValidationReviewItem {...defaultProps} />);
 
       expect(getByTestId('test-item::AddNewChip')).toBeTruthy();
     });
 
-    test('renders Pick chip', () => {
-      const { getByTestId } = render(<ValidationReviewItem {...defaultProps} />);
+    test('renders Pick chip', async () => {
+      const { getByTestId } = await render(<ValidationReviewItem {...defaultProps} />);
 
       expect(getByTestId('test-item::PickChip')).toBeTruthy();
     });
 
-    test('renders Skip chip', () => {
-      const { getByTestId } = render(<ValidationReviewItem {...defaultProps} />);
+    test('renders Skip chip', async () => {
+      const { getByTestId } = await render(<ValidationReviewItem {...defaultProps} />);
 
       expect(getByTestId('test-item::SkipChip')).toBeTruthy();
     });
 
-    test('does not render UseSuggested chip without suggestedMatch', () => {
-      const { queryByTestId } = render(<ValidationReviewItem {...defaultProps} />);
+    test('does not render UseSuggested chip without suggestedMatch', async () => {
+      const { queryByTestId } = await render(<ValidationReviewItem {...defaultProps} />);
 
       expect(queryByTestId('test-item::UseSuggestedChip')).toBeNull();
     });
 
-    test('does not render similar text without suggestedMatch', () => {
-      const { queryByTestId } = render(<ValidationReviewItem {...defaultProps} />);
+    test('does not render similar text without suggestedMatch', async () => {
+      const { queryByTestId } = await render(<ValidationReviewItem {...defaultProps} />);
 
       expect(queryByTestId('test-item::SuggestedMatch')).toBeNull();
     });
 
-    test('renders UseSuggested chip when suggestedMatch is provided', () => {
-      const { getByTestId } = render(
+    test('renders UseSuggested chip when suggestedMatch is provided', async () => {
+      const { getByTestId } = await render(
         <ValidationReviewItem
           {...defaultProps}
           suggestedMatch={{ id: 10, name: 'Italian Cuisine' }}
@@ -67,8 +67,8 @@ describe('ValidationReviewItem', () => {
       expect(getByTestId('test-item::UseSuggestedChip')).toBeTruthy();
     });
 
-    test('renders suggested match text when suggestedMatch is provided', () => {
-      const { getByTestId } = render(
+    test('renders suggested match text when suggestedMatch is provided', async () => {
+      const { getByTestId } = await render(
         <ValidationReviewItem
           {...defaultProps}
           suggestedMatch={{ id: 10, name: 'Italian Cuisine' }}
@@ -78,9 +78,9 @@ describe('ValidationReviewItem', () => {
       expect(getByTestId('test-item::SuggestedMatch')).toBeTruthy();
     });
 
-    test('calls onUseSuggested when UseSuggested chip is pressed', () => {
+    test('calls onUseSuggested when UseSuggested chip is pressed', async () => {
       const onUseSuggested = jest.fn();
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <ValidationReviewItem
           {...defaultProps}
           suggestedMatch={{ id: 10, name: 'Italian Cuisine' }}
@@ -88,38 +88,40 @@ describe('ValidationReviewItem', () => {
         />
       );
 
-      fireEvent.press(getByTestId('test-item::UseSuggestedChip'));
+      await fireEvent.press(getByTestId('test-item::UseSuggestedChip'));
 
       expect(onUseSuggested).toHaveBeenCalledTimes(1);
     });
 
-    test('calls onAddNew when AddNew chip is pressed', () => {
+    test('calls onAddNew when AddNew chip is pressed', async () => {
       const onAddNew = jest.fn();
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <ValidationReviewItem {...defaultProps} onAddNew={onAddNew} />
       );
 
-      fireEvent.press(getByTestId('test-item::AddNewChip'));
+      await fireEvent.press(getByTestId('test-item::AddNewChip'));
 
       expect(onAddNew).toHaveBeenCalledTimes(1);
     });
 
-    test('calls onPickFromDatabase when Pick chip is pressed', () => {
+    test('calls onPickFromDatabase when Pick chip is pressed', async () => {
       const onPickFromDatabase = jest.fn();
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <ValidationReviewItem {...defaultProps} onPickFromDatabase={onPickFromDatabase} />
       );
 
-      fireEvent.press(getByTestId('test-item::PickChip'));
+      await fireEvent.press(getByTestId('test-item::PickChip'));
 
       expect(onPickFromDatabase).toHaveBeenCalledTimes(1);
     });
 
-    test('calls onSkip when Skip chip is pressed', () => {
+    test('calls onSkip when Skip chip is pressed', async () => {
       const onSkip = jest.fn();
-      const { getByTestId } = render(<ValidationReviewItem {...defaultProps} onSkip={onSkip} />);
+      const { getByTestId } = await render(
+        <ValidationReviewItem {...defaultProps} onSkip={onSkip} />
+      );
 
-      fireEvent.press(getByTestId('test-item::SkipChip'));
+      await fireEvent.press(getByTestId('test-item::SkipChip'));
 
       expect(onSkip).toHaveBeenCalledTimes(1);
     });
@@ -135,35 +137,37 @@ describe('ValidationReviewItem', () => {
       },
     };
 
-    test('renders item name', () => {
-      const { getByTestId } = render(<ValidationReviewItem {...resolvedProps} />);
+    test('renders item name', async () => {
+      const { getByTestId } = await render(<ValidationReviewItem {...resolvedProps} />);
 
       expect(getByTestId('test-item::Name').props.children).toBe('Italian');
     });
 
-    test('renders mapped-to status text', () => {
-      const { getByTestId } = render(<ValidationReviewItem {...resolvedProps} />);
+    test('renders mapped-to status text', async () => {
+      const { getByTestId } = await render(<ValidationReviewItem {...resolvedProps} />);
 
       expect(getByTestId('test-item::StatusText')).toBeTruthy();
     });
 
-    test('renders undo button', () => {
-      const { getByTestId } = render(<ValidationReviewItem {...resolvedProps} />);
+    test('renders undo button', async () => {
+      const { getByTestId } = await render(<ValidationReviewItem {...resolvedProps} />);
 
       expect(getByTestId('test-item::UndoButton')).toBeTruthy();
     });
 
-    test('calls onUndo when undo button is pressed', () => {
+    test('calls onUndo when undo button is pressed', async () => {
       const onUndo = jest.fn();
-      const { getByTestId } = render(<ValidationReviewItem {...resolvedProps} onUndo={onUndo} />);
+      const { getByTestId } = await render(
+        <ValidationReviewItem {...resolvedProps} onUndo={onUndo} />
+      );
 
-      fireEvent.press(getByTestId('test-item::UndoButton'));
+      await fireEvent.press(getByTestId('test-item::UndoButton'));
 
       expect(onUndo).toHaveBeenCalledTimes(1);
     });
 
-    test('does not render action chips', () => {
-      const { queryByTestId } = render(<ValidationReviewItem {...resolvedProps} />);
+    test('does not render action chips', async () => {
+      const { queryByTestId } = await render(<ValidationReviewItem {...resolvedProps} />);
 
       expect(queryByTestId('test-item::AddNewChip')).toBeNull();
       expect(queryByTestId('test-item::PickChip')).toBeNull();
@@ -177,23 +181,25 @@ describe('ValidationReviewItem', () => {
       status: 'skipped' as const,
     };
 
-    test('renders skipped status text', () => {
-      const { getByTestId } = render(<ValidationReviewItem {...skippedProps} />);
+    test('renders skipped status text', async () => {
+      const { getByTestId } = await render(<ValidationReviewItem {...skippedProps} />);
 
       expect(getByTestId('test-item::StatusText')).toBeTruthy();
     });
 
-    test('renders undo button', () => {
-      const { getByTestId } = render(<ValidationReviewItem {...skippedProps} />);
+    test('renders undo button', async () => {
+      const { getByTestId } = await render(<ValidationReviewItem {...skippedProps} />);
 
       expect(getByTestId('test-item::UndoButton')).toBeTruthy();
     });
 
-    test('calls onUndo when undo button is pressed', () => {
+    test('calls onUndo when undo button is pressed', async () => {
       const onUndo = jest.fn();
-      const { getByTestId } = render(<ValidationReviewItem {...skippedProps} onUndo={onUndo} />);
+      const { getByTestId } = await render(
+        <ValidationReviewItem {...skippedProps} onUndo={onUndo} />
+      );
 
-      fireEvent.press(getByTestId('test-item::UndoButton'));
+      await fireEvent.press(getByTestId('test-item::UndoButton'));
 
       expect(onUndo).toHaveBeenCalledTimes(1);
     });

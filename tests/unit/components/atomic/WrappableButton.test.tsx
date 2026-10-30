@@ -8,8 +8,8 @@ describe('WrappableButton', () => {
   const testId = 'test';
   const defaultText = 'Button Text';
 
-  test('renders with basic structure and children text', () => {
-    const { getByTestId } = render(
+  test('renders with basic structure and children text', async () => {
+    const { getByTestId } = await render(
       <WrappableButton onPress={mockOnPress} testID={testId}>
         {defaultText}
       </WrappableButton>
@@ -19,22 +19,22 @@ describe('WrappableButton', () => {
     expect(getByTestId(testId + '::Text').props.children).toBe('Button Text');
   });
 
-  test('calls onPress when TouchableOpacity is pressed', () => {
-    const { getByTestId } = render(
+  test('calls onPress when TouchableOpacity is pressed', async () => {
+    const { getByTestId } = await render(
       <WrappableButton onPress={mockOnPress} testID={testId}>
         {defaultText}
       </WrappableButton>
     );
 
-    fireEvent.press(getByTestId(testId));
+    await fireEvent.press(getByTestId(testId));
     expect(mockOnPress).toHaveBeenCalled();
   });
 
-  test('renders with long text content', () => {
+  test('renders with long text content', async () => {
     const longText =
       'This is a very long button text that should wrap to multiple lines without being truncated';
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <WrappableButton onPress={mockOnPress} testID={testId}>
         {longText}
       </WrappableButton>
@@ -44,9 +44,9 @@ describe('WrappableButton', () => {
     expect(getByTestId(testId + '::Text').props.children).toBe(longText);
   });
 
-  test('renders all elements with different testID', () => {
+  test('renders all elements with different testID', async () => {
     const customId = 'customTest';
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <WrappableButton onPress={mockOnPress} testID={customId}>
         Custom Text
       </WrappableButton>
@@ -56,8 +56,8 @@ describe('WrappableButton', () => {
     expect(getByTestId(customId + '::Text').props.children).toBe('Custom Text');
   });
 
-  test('handles empty string children', () => {
-    const { getByTestId } = render(
+  test('handles empty string children', async () => {
+    const { getByTestId } = await render(
       <WrappableButton onPress={mockOnPress} testID={testId}>
         {''}
       </WrappableButton>

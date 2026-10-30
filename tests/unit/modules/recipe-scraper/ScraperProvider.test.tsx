@@ -79,9 +79,9 @@ describe('ScraperProvider', () => {
     Object.defineProperty(Platform, 'OS', { value: originalOS, configurable: true });
   });
 
-  it('does not render the PyodideWebView before any useScraper consumer', () => {
+  it('does not render the PyodideWebView before any useScraper consumer', async () => {
     Object.defineProperty(Platform, 'OS', { value: 'ios', configurable: true });
-    const { queryByTestId } = render(
+    const { queryByTestId } = await render(
       <ScraperProvider>
         <Text>child</Text>
       </ScraperProvider>
@@ -89,11 +89,11 @@ describe('ScraperProvider', () => {
     expect(queryByTestId('pyodide-webview')).toBeNull();
   });
 
-  it('defers warmup until the JS thread is idle', () => {
+  it('defers warmup until the JS thread is idle', async () => {
     Object.defineProperty(Platform, 'OS', { value: 'ios', configurable: true });
     const requestIdleCallbackSpy = jest.spyOn(global, 'requestIdleCallback');
 
-    render(
+    await render(
       <ScraperProvider>
         <ScraperConsumer />
       </ScraperProvider>
@@ -103,9 +103,9 @@ describe('ScraperProvider', () => {
     requestIdleCallbackSpy.mockRestore();
   });
 
-  it('mounts the PyodideWebView on iOS once useScraper is consumed', () => {
+  it('mounts the PyodideWebView on iOS once useScraper is consumed', async () => {
     Object.defineProperty(Platform, 'OS', { value: 'ios', configurable: true });
-    const { queryByTestId } = render(
+    const { queryByTestId } = await render(
       <ScraperProvider>
         <ScraperConsumer />
       </ScraperProvider>
@@ -113,9 +113,9 @@ describe('ScraperProvider', () => {
     expect(queryByTestId('pyodide-webview')).toBeTruthy();
   });
 
-  it('does not mount the PyodideWebView on Android even with useScraper consumer', () => {
+  it('does not mount the PyodideWebView on Android even with useScraper consumer', async () => {
     Object.defineProperty(Platform, 'OS', { value: 'android', configurable: true });
-    const { queryByTestId } = render(
+    const { queryByTestId } = await render(
       <ScraperProvider>
         <ScraperConsumer />
       </ScraperProvider>
@@ -123,9 +123,9 @@ describe('ScraperProvider', () => {
     expect(queryByTestId('pyodide-webview')).toBeNull();
   });
 
-  it('keeps the PyodideWebView mounted only once even with multiple consumers', () => {
+  it('keeps the PyodideWebView mounted only once even with multiple consumers', async () => {
     Object.defineProperty(Platform, 'OS', { value: 'ios', configurable: true });
-    const { queryAllByTestId, rerender } = render(
+    const { queryAllByTestId, rerender } = await render(
       <ScraperProvider>
         <ScraperConsumer />
         <ScraperConsumer />
@@ -133,43 +133,43 @@ describe('ScraperProvider', () => {
     );
     expect(queryAllByTestId('pyodide-webview')).toHaveLength(1);
 
-    act(() => {
-      rerender(
-        <ScraperProvider>
-          <ScraperConsumer />
-          <ScraperConsumer />
-          <ScraperConsumer />
-        </ScraperProvider>
-      );
-    });
+    await rerender(
+      <ScraperProvider>
+        <ScraperConsumer />
+        <ScraperConsumer />
+        <ScraperConsumer />
+      </ScraperProvider>
+    );
     expect(queryAllByTestId('pyodide-webview')).toHaveLength(1);
   });
 
-  it('exposes scrape methods via useScraper context', () => {
+  it('exposes scrape methods via useScraper context', async () => {
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <ScraperProvider>{children}</ScraperProvider>
     );
-    const { result } = renderHook(() => useScraper(), { wrapper });
+    const { result } = await renderHook(() => useScraper(), { wrapper });
 
     expect(typeof result.current.scrapeRecipeFromHtml).toBe('function');
     expect(typeof result.current.scrapeRecipeAuthenticated).toBe('function');
     expect(result.current.initError).toBeNull();
   });
 
-  it('throws when useScraper is used outside ScraperProvider', () => {
+  it('throws when useScraper is used outside ScraperProvider', async () => {
     function Orphan() {
       useScraper();
       return null;
     }
 
-    expect(() => render(<Orphan />)).toThrow('useScraper must be used within a ScraperProvider');
+    await expect(render(<Orphan />)).rejects.toThrow(
+      'useScraper must be used within a ScraperProvider'
+    );
   });
 
   it('surfaces a whenReady failure as initError', async () => {
     Object.defineProperty(Platform, 'OS', { value: 'ios', configurable: true });
     mockedScraper.whenReady.mockRejectedValueOnce(new Error('init boom'));
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ScraperProvider>
         <InitErrorProbe />
       </ScraperProvider>
@@ -182,7 +182,7 @@ describe('ScraperProvider', () => {
     Object.defineProperty(Platform, 'OS', { value: 'ios', configurable: true });
     mockedScraper.whenReady.mockRejectedValueOnce('plain failure');
 
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ScraperProvider>
         <InitErrorProbe />
       </ScraperProvider>
@@ -195,7 +195,7 @@ describe('ScraperProvider', () => {
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <ScraperProvider>{children}</ScraperProvider>
     );
-    const { result } = renderHook(() => useScraper(), { wrapper });
+    const { result } = await renderHook(() => useScraper(), { wrapper });
 
     await result.current.scrapeRecipeFromHtml('<html>', 'https://example.com', { wildMode: false });
 
@@ -211,7 +211,7 @@ describe('ScraperProvider', () => {
     const wrapper = ({ children }: { children: React.ReactNode }) => (
       <ScraperProvider>{children}</ScraperProvider>
     );
-    const { result } = renderHook(() => useScraper(), { wrapper });
+    const { result } = await renderHook(() => useScraper(), { wrapper });
 
     await result.current.scrapeRecipeAuthenticated('https://example.com', 'user', 'pass');
 
@@ -224,16 +224,16 @@ describe('ScraperProvider', () => {
     );
   });
 
-  it('mounts AuthWebView when AuthBridge publishes a login url', () => {
+  it('mounts AuthWebView when AuthBridge publishes a login url', async () => {
     Object.defineProperty(Platform, 'OS', { value: 'ios', configurable: true });
-    const { queryByTestId } = render(
+    const { queryByTestId } = await render(
       <ScraperProvider>
         <Text>child</Text>
       </ScraperProvider>
     );
     expect(queryByTestId('auth-webview')).toBeNull();
 
-    act(() => {
+    await act(() => {
       mockAuthState.currentLoginUrl = 'https://login.example.com';
       mockAuthState.subscriber?.();
     });

@@ -41,7 +41,7 @@ describe('i18n utility', () => {
 
   test('useI18n hook provides translation functionality', async () => {
     // Initialize component before using it
-    const component = render(<TestComponent />);
+    const component = await render(<TestComponent />);
 
     // Verify initial locale is English
     expect(component.getByTestId('current-locale').props.children).toEqual('en');
@@ -53,19 +53,17 @@ describe('i18n utility', () => {
 
   test('useI18n hook allows changing the locale', async () => {
     // Initialize component before using it
-    const component = render(<TestComponent />);
+    const component = await render(<TestComponent />);
 
     // Verify initial locale is English
     expect(component.getByTestId('current-locale').props.children).toEqual('en');
     expect(component.getByTestId('translated-text').props.children).toEqual('Home');
 
     // Change locale to French
-    await act(async () => {
-      fireEvent.press(component.getByTestId('change-to-fr'));
-    });
+    await fireEvent.press(component.getByTestId('change-to-fr'));
 
     // Rerender to see the changes
-    component.rerender(<TestComponent />);
+    await component.rerender(<TestComponent />);
 
     // Verify locale changed to French
     expect(component.getByTestId('current-locale').props.children).toEqual('fr');
@@ -75,10 +73,8 @@ describe('i18n utility', () => {
     expect(component.getByTestId('translated-shopping').props.children).toEqual('Courses');
 
     // Change back to English
-    await act(async () => {
-      fireEvent.press(component.getByTestId('change-to-en'));
-    });
-    component.rerender(<TestComponent />);
+    await fireEvent.press(component.getByTestId('change-to-en'));
+    await component.rerender(<TestComponent />);
 
     // Verify locale changed back to English
     expect(component.getByTestId('current-locale').props.children).toEqual('en');
@@ -87,7 +83,7 @@ describe('i18n utility', () => {
 
   test('useI18n hook provides locale utilities', async () => {
     // Initialize component before using it
-    const component = render(<TestComponent />);
+    const component = await render(<TestComponent />);
 
     // Test getAvailableLocales
     const availableLocales = JSON.parse(component.getByTestId('available-locales').props.children);

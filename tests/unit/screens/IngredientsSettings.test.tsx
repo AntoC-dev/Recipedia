@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, waitFor, RenderResult } from '@testing-library/react-native';
 import { IngredientsSettings } from '@screens/IngredientsSettings';
 import {
   FormIngredientElement,
@@ -37,7 +37,7 @@ const defaultProps = {
 } as any;
 
 const renderIngredientsSettings = async () => {
-  const result = render(<IngredientsSettings {...defaultProps} />);
+  const result = await render(<IngredientsSettings {...defaultProps} />);
 
   await waitFor(() => {
     expect(result.getByTestId('IngredientsSettings::SettingsItemList::Type')).toBeTruthy();
@@ -48,8 +48,8 @@ const renderIngredientsSettings = async () => {
   return result;
 };
 
-type GetByIdType = ReturnType<typeof render>['getByTestId'];
-type QueryByIdType = ReturnType<typeof render>['queryByTestId'];
+type GetByIdType = RenderResult['getByTestId'];
+type QueryByIdType = RenderResult['queryByTestId'];
 
 function dialogIsNotOpen(queryByTestId: QueryByIdType) {
   expect(queryByTestId('IngredientsSettings::ItemDialog::IsVisible')).toBeNull();
@@ -111,7 +111,7 @@ describe('IngredientsSettings Screen', () => {
 
   test('opens add dialog with empty template when add button is pressed', async () => {
     const { getByTestId } = await renderIngredientsSettings();
-    fireEvent.press(getByTestId('IngredientsSettings::BottomActionButton'));
+    await fireEvent.press(getByTestId('IngredientsSettings::BottomActionButton'));
 
     await waitFor(() => {
       expect(getByTestId('IngredientsSettings::ItemDialog::Item')).toBeTruthy();
@@ -124,13 +124,13 @@ describe('IngredientsSettings Screen', () => {
 
   test('opens add dialog when add button is pressed and save value', async () => {
     const { getByTestId } = await renderIngredientsSettings();
-    fireEvent.press(getByTestId('IngredientsSettings::BottomActionButton'));
+    await fireEvent.press(getByTestId('IngredientsSettings::BottomActionButton'));
 
     await waitFor(() => {
       expect(getByTestId('IngredientsSettings::ItemDialog::Item')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('IngredientsSettings::ItemDialog::Item::OnConfirm'));
+    await fireEvent.press(getByTestId('IngredientsSettings::ItemDialog::Item::OnConfirm'));
 
     await waitFor(() => {
       expect(db.get_ingredients().length).toEqual(sortedDataset.length + 1);
@@ -147,7 +147,7 @@ describe('IngredientsSettings Screen', () => {
 
   test('opens edit dialog when edit button is pressed and save value', async () => {
     const { getByTestId } = await renderIngredientsSettings();
-    fireEvent.press(getByTestId('IngredientsSettings::SettingsItemList::OnEdit'));
+    await fireEvent.press(getByTestId('IngredientsSettings::SettingsItemList::OnEdit'));
 
     await waitFor(() => {
       expect(getByTestId('IngredientsSettings::ItemDialog::Item')).toBeTruthy();
@@ -155,7 +155,7 @@ describe('IngredientsSettings Screen', () => {
 
     dialogIsOpen(sortedDataset[0]!, 'edit', getByTestId);
 
-    fireEvent.press(getByTestId('IngredientsSettings::ItemDialog::Item::OnConfirm'));
+    await fireEvent.press(getByTestId('IngredientsSettings::ItemDialog::Item::OnConfirm'));
 
     await waitFor(() => {
       expect(
@@ -170,7 +170,7 @@ describe('IngredientsSettings Screen', () => {
 
   test('opens delete dialog when delete button is pressed and save value', async () => {
     const { getByTestId } = await renderIngredientsSettings();
-    fireEvent.press(getByTestId('IngredientsSettings::SettingsItemList::OnDelete'));
+    await fireEvent.press(getByTestId('IngredientsSettings::SettingsItemList::OnDelete'));
 
     await waitFor(() => {
       expect(getByTestId('IngredientsSettings::ItemDialog::Item')).toBeTruthy();
@@ -178,7 +178,7 @@ describe('IngredientsSettings Screen', () => {
 
     dialogIsOpen(sortedDataset[0]!, 'delete', getByTestId);
 
-    fireEvent.press(getByTestId('IngredientsSettings::ItemDialog::Item::OnConfirm'));
+    await fireEvent.press(getByTestId('IngredientsSettings::ItemDialog::Item::OnConfirm'));
 
     await waitFor(() => {
       expect(db.get_ingredients().length).toEqual(sortedDataset.length - 1);

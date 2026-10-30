@@ -7,7 +7,7 @@ describe('CustomImage component behavior', () => {
   const dummyUri = 'dummy://test-uri';
   const ID = 'Test';
 
-  it('calls onLoadSuccess when expo image onLoad is triggered', () => {
+  it('calls onLoadSuccess when expo image onLoad is triggered', async () => {
     const onLoadMock = jest.fn();
     const dummyEvent: ImageLoadEventData = {
       cacheType: 'none',
@@ -19,27 +19,27 @@ describe('CustomImage component behavior', () => {
         isAnimated: true,
       },
     };
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <CustomImage uri={dummyUri} onLoadSuccess={onLoadMock} testID={ID} />
     );
 
     const expoImage = getByTestId('Test::Image');
-    act(() => {
+    await act(() => {
       expoImage.props.onLoad({ nativeEvent: dummyEvent });
     });
     expect(onLoadMock).toHaveBeenCalledWith(dummyEvent);
   });
 
-  it('calls onError when expo image onError is triggered and shows placeholder', () => {
+  it('calls onError when expo image onError is triggered and shows placeholder', async () => {
     const onErrorMock = jest.fn();
     const dummyError: ImageErrorEventData = { error: 'error string for the test' };
 
-    const { getByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = await render(
       <CustomImage uri={dummyUri} onLoadError={onErrorMock} testID={ID} />
     );
 
     const expoImage = getByTestId('Test::Image');
-    act(() => {
+    await act(() => {
       expoImage.props.onError({ nativeEvent: dummyError });
     });
 
@@ -47,9 +47,9 @@ describe('CustomImage component behavior', () => {
     expect(queryByTestId('Test::Placeholder')).toBeTruthy();
   });
 
-  it('applies custom background color when provided', () => {
+  it('applies custom background color when provided', async () => {
     const customColor = '#FF0000';
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <CustomImage uri={dummyUri} backgroundColor={customColor} testID={ID} />
     );
 
@@ -57,9 +57,9 @@ describe('CustomImage component behavior', () => {
     expect(expoImage).toHaveStyle({ backgroundColor: customColor });
   });
 
-  it('applies size dimensions to wrapper when provided', () => {
+  it('applies size dimensions to wrapper when provided', async () => {
     const size = 100;
-    const { getByTestId } = render(<CustomImage uri={dummyUri} size={size} testID={ID} />);
+    const { getByTestId } = await render(<CustomImage uri={dummyUri} size={size} testID={ID} />);
 
     const wrapper = getByTestId('Test');
     const wrapperStyle = wrapper.props.style;
@@ -70,9 +70,11 @@ describe('CustomImage component behavior', () => {
     expect(flatStyle.height).toBe(size);
   });
 
-  it('applies circular border radius to wrapper when circular and size are provided', () => {
+  it('applies circular border radius to wrapper when circular and size are provided', async () => {
     const size = 100;
-    const { getByTestId } = render(<CustomImage uri={dummyUri} size={size} circular testID={ID} />);
+    const { getByTestId } = await render(
+      <CustomImage uri={dummyUri} size={size} circular testID={ID} />
+    );
 
     const wrapper = getByTestId('Test');
     const wrapperStyle = wrapper.props.style;
@@ -82,8 +84,8 @@ describe('CustomImage component behavior', () => {
     expect(flatStyle.borderRadius).toBe(size / 2);
   });
 
-  it('does not apply border radius when circular but no size provided', () => {
-    const { getByTestId } = render(<CustomImage uri={dummyUri} circular testID={ID} />);
+  it('does not apply border radius when circular but no size provided', async () => {
+    const { getByTestId } = await render(<CustomImage uri={dummyUri} circular testID={ID} />);
 
     const wrapper = getByTestId('Test');
     const wrapperStyle = wrapper.props.style;
@@ -93,8 +95,10 @@ describe('CustomImage component behavior', () => {
     expect(flatStyle.borderRadius).toBe(0);
   });
 
-  it('applies custom borderRadius to wrapper when provided', () => {
-    const { getByTestId } = render(<CustomImage uri={dummyUri} borderRadius={8} testID={ID} />);
+  it('applies custom borderRadius to wrapper when provided', async () => {
+    const { getByTestId } = await render(
+      <CustomImage uri={dummyUri} borderRadius={8} testID={ID} />
+    );
 
     const wrapper = getByTestId('Test');
     const wrapperStyle = wrapper.props.style;
@@ -104,9 +108,9 @@ describe('CustomImage component behavior', () => {
     expect(flatStyle.borderRadius).toBe(8);
   });
 
-  it('custom borderRadius overrides circular', () => {
+  it('custom borderRadius overrides circular', async () => {
     const size = 100;
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <CustomImage uri={dummyUri} size={size} circular borderRadius={16} testID={ID} />
     );
 
@@ -118,46 +122,48 @@ describe('CustomImage component behavior', () => {
     expect(flatStyle.borderRadius).toBe(16);
   });
 
-  it('uses default contentFit when not specified', () => {
-    const { getByTestId } = render(<CustomImage uri={dummyUri} testID={ID} />);
+  it('uses default contentFit when not specified', async () => {
+    const { getByTestId } = await render(<CustomImage uri={dummyUri} testID={ID} />);
     expect(getByTestId('Test::Image').props.contentFit).toBe('cover');
   });
 
-  it('applies custom contentFit when provided', () => {
-    const { getByTestId } = render(<CustomImage uri={dummyUri} contentFit='contain' testID={ID} />);
+  it('applies custom contentFit when provided', async () => {
+    const { getByTestId } = await render(
+      <CustomImage uri={dummyUri} contentFit='contain' testID={ID} />
+    );
 
     expect(getByTestId('Test::Image').props.contentFit).toBe('contain');
   });
 
-  it('uses theme colors as default background when no backgroundColor provided', () => {
-    const { getByTestId } = render(<CustomImage uri={dummyUri} testID={ID} />);
+  it('uses theme colors as default background when no backgroundColor provided', async () => {
+    const { getByTestId } = await render(<CustomImage uri={dummyUri} testID={ID} />);
 
     const expoImage = getByTestId('Test::Image');
     expect(expoImage).toHaveStyle({ backgroundColor: '#7c5800' });
   });
 
-  it('shows placeholder when no uri is provided', () => {
-    const { queryByTestId, getByTestId } = render(<CustomImage testID={ID} />);
+  it('shows placeholder when no uri is provided', async () => {
+    const { queryByTestId, getByTestId } = await render(<CustomImage testID={ID} />);
 
     expect(queryByTestId('Test::Placeholder')).toBeTruthy();
     const image = getByTestId('Test::Image');
     expect(image).toHaveStyle({ opacity: 0 });
   });
 
-  it('keeps decoded bitmaps in memory so scrolling back does not re-decode', () => {
-    const { getByTestId } = render(<CustomImage uri={dummyUri} testID={ID} />);
+  it('keeps decoded bitmaps in memory so scrolling back does not re-decode', async () => {
+    const { getByTestId } = await render(<CustomImage uri={dummyUri} testID={ID} />);
 
     expect(getByTestId('Test::Image').props.cachePolicy).toBe('memory-disk');
   });
 
-  it('keys recycling on the uri so reused list rows drop the previous bitmap', () => {
-    const { getByTestId } = render(<CustomImage uri={dummyUri} testID={ID} />);
+  it('keys recycling on the uri so reused list rows drop the previous bitmap', async () => {
+    const { getByTestId } = await render(<CustomImage uri={dummyUri} testID={ID} />);
 
     expect(getByTestId('Test::Image').props.recyclingKey).toBe(dummyUri);
   });
 
-  it('shows placeholder icon from Icons', () => {
-    const { getByTestId } = render(<CustomImage testID={ID} />);
+  it('shows placeholder icon from Icons', async () => {
+    const { getByTestId } = await render(<CustomImage testID={ID} />);
 
     const placeholder = getByTestId('Test::Placeholder::Source');
     expect(placeholder.props.children).toBe('image-off-outline');

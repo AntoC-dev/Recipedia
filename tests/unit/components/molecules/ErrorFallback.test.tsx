@@ -12,8 +12,8 @@ jest.mock('react-native-safe-area-context', () =>
 );
 
 describe('ErrorFallback', () => {
-  test('renders title, message and report action in recoverable mode', () => {
-    const { getByTestId } = render(
+  test('renders title, message and report action in recoverable mode', async () => {
+    const { getByTestId } = await render(
       <ErrorFallback onReport={jest.fn().mockResolvedValue(undefined)} />
     );
 
@@ -22,8 +22,8 @@ describe('ErrorFallback', () => {
     expect(getByTestId('ErrorFallback::Report')).toBeTruthy();
   });
 
-  test('uses provided testID', () => {
-    const { getByTestId } = render(
+  test('uses provided testID', async () => {
+    const { getByTestId } = await render(
       <ErrorFallback onReport={jest.fn().mockResolvedValue(undefined)} testID='Boom' />
     );
 
@@ -31,8 +31,8 @@ describe('ErrorFallback', () => {
     expect(getByTestId('Boom::Report')).toBeTruthy();
   });
 
-  test('pads the container with the safe-area insets', () => {
-    const { getByTestId } = render(
+  test('pads the container with the safe-area insets', async () => {
+    const { getByTestId } = await render(
       <ErrorFallback onReport={jest.fn().mockResolvedValue(undefined)} />
     );
 
@@ -44,9 +44,9 @@ describe('ErrorFallback', () => {
 
   test('calls onReport when the report action is pressed', async () => {
     const onReport = jest.fn().mockResolvedValue(undefined);
-    const { getByTestId } = render(<ErrorFallback onReport={onReport} />);
+    const { getByTestId } = await render(<ErrorFallback onReport={onReport} />);
 
-    fireEvent.press(getByTestId('ErrorFallback::Report'));
+    await fireEvent.press(getByTestId('ErrorFallback::Report'));
 
     await waitFor(() => expect(onReport).toHaveBeenCalledTimes(1));
   });
@@ -59,9 +59,9 @@ describe('ErrorFallback', () => {
           resolveReport = resolve;
         })
     );
-    const { getByTestId } = render(<ErrorFallback onReport={onReport} />);
+    const { getByTestId } = await render(<ErrorFallback onReport={onReport} />);
 
-    fireEvent.press(getByTestId('ErrorFallback::Report'));
+    await fireEvent.press(getByTestId('ErrorFallback::Report'));
 
     await waitFor(() => expect(getByTestId('ErrorFallback::Report')).toBeDisabled());
 
@@ -70,8 +70,8 @@ describe('ErrorFallback', () => {
     await waitFor(() => expect(getByTestId('ErrorFallback::Report')).toBeEnabled());
   });
 
-  test('shows the persistent message and no action when persistent', () => {
-    const { getByTestId, queryByTestId } = render(<ErrorFallback persistent />);
+  test('shows the persistent message and no action when persistent', async () => {
+    const { getByTestId, queryByTestId } = await render(<ErrorFallback persistent />);
 
     expect(getByTestId('ErrorFallback::Message')).toHaveTextContent(
       'errorBoundary.persistentMessage'

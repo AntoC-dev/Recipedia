@@ -17,8 +17,8 @@ describe('NutritionEmptyState', () => {
   });
 
   describe('Add mode', () => {
-    test('renders with title and add button', () => {
-      const { getByTestId } = render(
+    test('renders with title and add button', async () => {
+      const { getByTestId } = await render(
         <NutritionEmptyState
           onButtonPressed={mockOnButtonPressed}
           mode='add'
@@ -37,10 +37,10 @@ describe('NutritionEmptyState', () => {
       ).toEqual('recipe.roundButton.addManually');
     });
 
-    test('calls onButtonPressed when add button is pressed', () => {
+    test('calls onButtonPressed when add button is pressed', async () => {
       const localMockOnButtonPressed = jest.fn();
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <NutritionEmptyState
           onButtonPressed={localMockOnButtonPressed}
           mode='add'
@@ -48,13 +48,15 @@ describe('NutritionEmptyState', () => {
         />
       );
 
-      fireEvent.press(getByTestId(expectationTestId + 'AddButton::RoundButton::OnPressFunction'));
+      await fireEvent.press(
+        getByTestId(expectationTestId + 'AddButton::RoundButton::OnPressFunction')
+      );
       expect(localMockOnButtonPressed).toHaveBeenCalled();
     });
 
-    test('renders with custom parentTestId', () => {
+    test('renders with custom parentTestId', async () => {
       const customTestId = 'CustomTest';
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <NutritionEmptyState
           onButtonPressed={mockOnButtonPressed}
           mode='add'
@@ -73,8 +75,8 @@ describe('NutritionEmptyState', () => {
   });
 
   describe('OCR mode', () => {
-    test('renders with title and OCR button', () => {
-      const { getByTestId } = render(
+    test('renders with title and OCR button', async () => {
+      const { getByTestId } = await render(
         <NutritionEmptyState
           onButtonPressed={mockOnButtonPressed}
           mode='ocr'
@@ -93,10 +95,10 @@ describe('NutritionEmptyState', () => {
       ).toEqual('recipe.roundButton.scan');
     });
 
-    test('calls onButtonPressed when OCR button is pressed', () => {
+    test('calls onButtonPressed when OCR button is pressed', async () => {
       const localMockOnButtonPressed = jest.fn();
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <NutritionEmptyState
           onButtonPressed={localMockOnButtonPressed}
           mode='ocr'
@@ -104,13 +106,15 @@ describe('NutritionEmptyState', () => {
         />
       );
 
-      fireEvent.press(getByTestId(expectationTestId + 'OCRButton::RoundButton::OnPressFunction'));
+      await fireEvent.press(
+        getByTestId(expectationTestId + 'OCRButton::RoundButton::OnPressFunction')
+      );
       expect(localMockOnButtonPressed).toHaveBeenCalled();
     });
 
-    test('renders with custom parentTestId in OCR mode', () => {
+    test('renders with custom parentTestId in OCR mode', async () => {
       const customTestId = 'CustomTest';
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <NutritionEmptyState
           onButtonPressed={mockOnButtonPressed}
           mode='ocr'

@@ -27,8 +27,8 @@ describe('useImportMemory', () => {
   });
 
   describe('getMemoryStatus', () => {
-    test('returns fresh for unknown URLs', () => {
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+    test('returns fresh for unknown URLs', async () => {
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
 
       expect(result.current.getMemoryStatus('https://example.com/recipe-1')).toBe('fresh');
     });
@@ -43,7 +43,7 @@ describe('useImportMemory', () => {
       };
       await database.addRecipe(importedRecipe);
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
 
       expect(result.current.getMemoryStatus('https://hellofresh.com/recipe-imported')).toBe(
         'imported'
@@ -53,7 +53,7 @@ describe('useImportMemory', () => {
     test('returns seen for URLs marked as seen', async () => {
       await database.markUrlsAsSeen('hellofresh', ['https://hellofresh.com/seen-recipe']);
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
 
       expect(result.current.getMemoryStatus('https://hellofresh.com/seen-recipe')).toBe('seen');
     });
@@ -71,7 +71,7 @@ describe('useImportMemory', () => {
       };
       await database.addRecipe(importedRecipe);
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
 
       expect(result.current.getMemoryStatus(url)).toBe('imported');
     });
@@ -80,7 +80,7 @@ describe('useImportMemory', () => {
       const url = 'https://hellofresh.com/dismissed-recipe';
       await database.markRecipesAsDismissed('hellofresh', [{ url, title: 'Dismissed Recipe' }]);
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
 
       expect(result.current.getMemoryStatus(url)).toBe('dismissed');
     });
@@ -97,20 +97,20 @@ describe('useImportMemory', () => {
       });
       await database.markRecipesAsDismissed('hellofresh', [{ url, title: 'All Recipe' }]);
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
 
       expect(result.current.getMemoryStatus(url)).toBe('dismissed');
     });
   });
 
   describe('processDiscoveredRecipes', () => {
-    test('adds memoryStatus to each recipe', () => {
+    test('adds memoryStatus to each recipe', async () => {
       const recipes = [
         createRecipe('https://example.com/recipe-1', 'Recipe 1'),
         createRecipe('https://example.com/recipe-2', 'Recipe 2'),
       ];
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
       const processed = result.current.processDiscoveredRecipes(recipes, false);
 
       expect(processed[0]!.memoryStatus).toBe('fresh');
@@ -132,7 +132,7 @@ describe('useImportMemory', () => {
         createRecipe('https://hellofresh.com/recipe-2', 'Fresh Recipe'),
       ];
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
       const processed = result.current.processDiscoveredRecipes(recipes, false);
 
       expect(processed[0]!.memoryStatus).toBe('imported');
@@ -147,7 +147,7 @@ describe('useImportMemory', () => {
         createRecipe('https://hellofresh.com/recipe-2', 'Fresh Recipe'),
       ];
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
       const processed = result.current.processDiscoveredRecipes(recipes, false);
 
       expect(processed[0]!.memoryStatus).toBe('seen');
@@ -169,7 +169,7 @@ describe('useImportMemory', () => {
         createRecipe('https://hellofresh.com/recipe-2', 'Fresh Recipe'),
       ];
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
       const processed = result.current.processDiscoveredRecipes(recipes, true);
 
       expect(processed).toHaveLength(1);
@@ -191,7 +191,7 @@ describe('useImportMemory', () => {
         createRecipe('https://hellofresh.com/recipe-2', 'Fresh Recipe'),
       ];
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
       const processed = result.current.processDiscoveredRecipes(recipes, false);
 
       expect(processed).toHaveLength(2);
@@ -205,14 +205,14 @@ describe('useImportMemory', () => {
         createRecipe('https://hellofresh.com/recipe-2', 'Fresh Recipe'),
       ];
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
       const processed = result.current.processDiscoveredRecipes(recipes, true);
 
       expect(processed).toHaveLength(2);
     });
 
-    test('returns empty array for empty input', () => {
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+    test('returns empty array for empty input', async () => {
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
       const processed = result.current.processDiscoveredRecipes([], false);
 
       expect(processed).toEqual([]);
@@ -228,7 +228,7 @@ describe('useImportMemory', () => {
         createRecipe('https://hellofresh.com/recipe-2', 'Fresh Recipe'),
       ];
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
       const processed = result.current.processDiscoveredRecipes(recipes, true);
 
       expect(processed).toHaveLength(1);
@@ -245,7 +245,7 @@ describe('useImportMemory', () => {
         createRecipe('https://hellofresh.com/recipe-2', 'Fresh Recipe'),
       ];
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
       const processed = result.current.processDiscoveredRecipes(recipes, false);
 
       expect(processed).toHaveLength(1);
@@ -266,7 +266,7 @@ describe('useImportMemory', () => {
         await database.addRecipe(importedRecipe);
       }
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
 
       expect(result.current.importedCount).toBe(3);
     });
@@ -274,13 +274,13 @@ describe('useImportMemory', () => {
     test('seenCount reflects number of seen URLs', async () => {
       await database.markUrlsAsSeen('hellofresh', ['url1', 'url2']);
 
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
 
       expect(result.current.seenCount).toBe(2);
     });
 
-    test('counts are zero when nothing imported or seen', () => {
-      const { result } = renderHook(() => useImportMemory('hellofresh'));
+    test('counts are zero when nothing imported or seen', async () => {
+      const { result } = await renderHook(() => useImportMemory('hellofresh'));
 
       expect(result.current.importedCount).toBe(0);
       expect(result.current.seenCount).toBe(0);
@@ -306,8 +306,8 @@ describe('useImportMemory', () => {
       await database.addRecipe(hellofreshRecipe);
       await database.addRecipe(marmitonRecipe);
 
-      const { result: hellofreshResult } = renderHook(() => useImportMemory('hellofresh'));
-      const { result: marmitonResult } = renderHook(() => useImportMemory('marmiton'));
+      const { result: hellofreshResult } = await renderHook(() => useImportMemory('hellofresh'));
+      const { result: marmitonResult } = await renderHook(() => useImportMemory('marmiton'));
 
       expect(hellofreshResult.current.importedCount).toBe(1);
       expect(marmitonResult.current.importedCount).toBe(1);
@@ -317,8 +317,8 @@ describe('useImportMemory', () => {
       await database.markUrlsAsSeen('hellofresh', ['https://hellofresh.com/recipe-1']);
       await database.markUrlsAsSeen('marmiton', ['https://marmiton.org/recipe-1']);
 
-      const { result: hellofreshResult } = renderHook(() => useImportMemory('hellofresh'));
-      const { result: marmitonResult } = renderHook(() => useImportMemory('marmiton'));
+      const { result: hellofreshResult } = await renderHook(() => useImportMemory('hellofresh'));
+      const { result: marmitonResult } = await renderHook(() => useImportMemory('marmiton'));
 
       expect(hellofreshResult.current.seenCount).toBe(1);
       expect(marmitonResult.current.seenCount).toBe(1);

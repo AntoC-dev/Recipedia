@@ -18,7 +18,7 @@ describe('RecipeImage Component', () => {
     labelKey: 'recipe.roundButton.photo',
   };
 
-  const renderRecipeImage = (overrideProps = {}) => {
+  const renderRecipeImage = async (overrideProps = {}) => {
     const defaultProps = {
       imgUri: sampleImageUri,
       openModal: mockOpenModal,
@@ -59,19 +59,19 @@ describe('RecipeImage Component', () => {
     }
   };
 
-  const simulateImageLoadSuccess = (getByTestId: any) => {
+  const simulateImageLoadSuccess = async (getByTestId: any) => {
     const onLoad = getByTestId('RecipeImage::Image').props.onLoad;
     if (onLoad) {
-      act(() => {
+      await act(() => {
         onLoad({ nativeEvent: {} });
       });
     }
   };
 
-  const simulateImageLoadError = (getByTestId: any) => {
+  const simulateImageLoadError = async (getByTestId: any) => {
     const onError = getByTestId('RecipeImage::Image').props.onError;
     if (onError) {
-      act(() => {
+      await act(() => {
         onError({ nativeEvent: {} });
       });
     }
@@ -81,103 +81,103 @@ describe('RecipeImage Component', () => {
     jest.clearAllMocks();
   });
 
-  test('renders with valid image URI and button in top-right position initially', () => {
-    const { getByTestId, queryByTestId } = renderRecipeImage();
+  test('renders with valid image URI and button in top-right position initially', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeImage();
 
     assertContainerStructure(getByTestId, queryByTestId);
     assertButtonStructure(getByTestId, queryByTestId);
   });
 
-  test('handles image load success and positions button in top-right corner', () => {
-    const { getByTestId, queryByTestId } = renderRecipeImage();
+  test('handles image load success and positions button in top-right corner', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeImage();
 
     assertContainerStructure(getByTestId, queryByTestId);
     assertButtonStructure(getByTestId, queryByTestId);
 
-    simulateImageLoadSuccess(getByTestId);
+    await simulateImageLoadSuccess(getByTestId);
 
     assertButtonStructure(getByTestId, queryByTestId);
     expect(mockOpenModal).not.toHaveBeenCalled();
   });
 
-  test('handles image load error and positions button in center', () => {
-    const { getByTestId, queryByTestId } = renderRecipeImage();
+  test('handles image load error and positions button in center', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeImage();
 
     assertContainerStructure(getByTestId, queryByTestId);
     assertButtonStructure(getByTestId, queryByTestId);
 
-    simulateImageLoadError(getByTestId);
+    await simulateImageLoadError(getByTestId);
 
     assertContainerStructure(getByTestId, queryByTestId, sampleImageUri, false);
     assertButtonStructure(getByTestId, queryByTestId);
     expect(mockOpenModal).not.toHaveBeenCalled();
   });
 
-  test('renders without button when overlayButton is not provided', () => {
-    const { getByTestId, queryByTestId } = renderRecipeImage({ overlayButton: undefined });
+  test('renders without button when overlayButton is not provided', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeImage({ overlayButton: undefined });
 
     assertContainerStructure(getByTestId, queryByTestId);
     assertButtonStructure(getByTestId, queryByTestId, false);
 
-    simulateImageLoadSuccess(getByTestId);
+    await simulateImageLoadSuccess(getByTestId);
     assertButtonStructure(getByTestId, queryByTestId, false);
 
-    simulateImageLoadError(getByTestId);
+    await simulateImageLoadError(getByTestId);
     assertContainerStructure(getByTestId, queryByTestId, sampleImageUri, false);
     assertButtonStructure(getByTestId, queryByTestId, false);
   });
 
-  test('handles empty image URI correctly', () => {
-    const { getByTestId, queryByTestId } = renderRecipeImage({ imgUri: emptyImageUri });
+  test('handles empty image URI correctly', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeImage({ imgUri: emptyImageUri });
 
     assertContainerStructure(getByTestId, queryByTestId, emptyImageUri, false);
     assertButtonStructure(getByTestId, queryByTestId, true);
 
-    fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
     expect(mockOpenModal).toHaveBeenCalledWith(recipeColumnsNames.image);
   });
 
-  test('handles multiple image load state changes correctly', () => {
-    const { getByTestId, queryByTestId } = renderRecipeImage();
+  test('handles multiple image load state changes correctly', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeImage();
 
     assertContainerStructure(getByTestId, queryByTestId);
     assertButtonStructure(getByTestId, queryByTestId);
 
-    simulateImageLoadSuccess(getByTestId);
+    await simulateImageLoadSuccess(getByTestId);
     assertButtonStructure(getByTestId, queryByTestId);
 
-    simulateImageLoadError(getByTestId);
+    await simulateImageLoadError(getByTestId);
     assertContainerStructure(getByTestId, queryByTestId, sampleImageUri, false);
     assertButtonStructure(getByTestId, queryByTestId);
 
-    fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
     expect(mockOpenModal).toHaveBeenCalledTimes(1);
     expect(mockOpenModal).toHaveBeenCalledWith(recipeColumnsNames.image);
   });
 
-  test('passes different button icons correctly', () => {
+  test('passes different button icons correctly', async () => {
     const customOverlayButton: ImageButtonConfig = {
       icon: 'image-edit',
       labelKey: 'recipe.roundButton.photo',
     };
-    const { getByTestId, queryByTestId } = renderRecipeImage({
+    const { getByTestId, queryByTestId } = await renderRecipeImage({
       overlayButton: customOverlayButton,
     });
 
     assertContainerStructure(getByTestId, queryByTestId);
     assertButtonStructure(getByTestId, queryByTestId, true, customOverlayButton.icon);
 
-    fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
     expect(mockOpenModal).toHaveBeenCalledWith(recipeColumnsNames.image);
   });
 
-  test('handles different image URIs and maintains state correctly', () => {
-    const { getByTestId, queryByTestId, rerender } = renderRecipeImage();
+  test('handles different image URIs and maintains state correctly', async () => {
+    const { getByTestId, queryByTestId, rerender } = await renderRecipeImage();
 
     assertContainerStructure(getByTestId, queryByTestId);
 
     const newImageUri = 'https://example.com/new-recipe-image.jpg';
-    rerender(
+    await rerender(
       <RecipeImage
         imgUri={newImageUri}
         openModal={mockOpenModal}
@@ -188,7 +188,7 @@ describe('RecipeImage Component', () => {
     assertContainerStructure(getByTestId, queryByTestId, newImageUri);
     assertButtonStructure(getByTestId, queryByTestId);
 
-    rerender(
+    await rerender(
       <RecipeImage
         imgUri={emptyImageUri}
         openModal={mockOpenModal}
@@ -200,8 +200,8 @@ describe('RecipeImage Component', () => {
     assertButtonStructure(getByTestId, queryByTestId);
   });
 
-  test('shows the translated button label before and after the image loads', () => {
-    const { getByTestId } = render(
+  test('shows the translated button label before and after the image loads', async () => {
+    const { getByTestId } = await render(
       <RecipeImage
         imgUri={emptyImageUri}
         openModal={mockOpenModal}
@@ -213,30 +213,30 @@ describe('RecipeImage Component', () => {
       'recipe.roundButton.photo'
     );
 
-    simulateImageLoadSuccess(getByTestId);
+    await simulateImageLoadSuccess(getByTestId);
 
     expect(getByTestId('RecipeImage::RoundButton::Label').props.children).toEqual(
       'recipe.roundButton.photo'
     );
   });
 
-  test('shows the translated button label when an image uri is provided', () => {
-    const { getByTestId } = renderRecipeImage();
+  test('shows the translated button label when an image uri is provided', async () => {
+    const { getByTestId } = await renderRecipeImage();
 
     expect(getByTestId('RecipeImage::RoundButton::Label').props.children).toEqual(
       'recipe.roundButton.photo'
     );
   });
 
-  test('maintains callback functionality across different openModal functions', () => {
-    const { getByTestId, rerender } = renderRecipeImage();
+  test('maintains callback functionality across different openModal functions', async () => {
+    const { getByTestId, rerender } = await renderRecipeImage();
 
-    fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
     expect(mockOpenModal).toHaveBeenCalledTimes(1);
     expect(mockOpenModal).toHaveBeenCalledWith(recipeColumnsNames.image);
 
     const newMockOpenModal = jest.fn();
-    rerender(
+    await rerender(
       <RecipeImage
         imgUri={sampleImageUri}
         openModal={newMockOpenModal}
@@ -244,39 +244,39 @@ describe('RecipeImage Component', () => {
       />
     );
 
-    fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
     expect(newMockOpenModal).toHaveBeenCalledTimes(1);
     expect(newMockOpenModal).toHaveBeenCalledWith(recipeColumnsNames.image);
     expect(mockOpenModal).toHaveBeenCalledTimes(1);
   });
 
-  test('handles rapid image load state changes without errors', () => {
-    const { getByTestId, queryByTestId } = renderRecipeImage();
+  test('handles rapid image load state changes without errors', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeImage();
 
-    simulateImageLoadSuccess(getByTestId);
-    simulateImageLoadError(getByTestId);
+    await simulateImageLoadSuccess(getByTestId);
+    await simulateImageLoadError(getByTestId);
 
     assertContainerStructure(getByTestId, queryByTestId, sampleImageUri, false);
     assertButtonStructure(getByTestId, queryByTestId);
 
-    fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
     expect(mockOpenModal).toHaveBeenCalledTimes(1);
     expect(mockOpenModal).toHaveBeenCalledWith(recipeColumnsNames.image);
   });
 
-  test('shows placeholder after load error', () => {
-    const { getByTestId, queryByTestId } = renderRecipeImage();
+  test('shows placeholder after load error', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeImage();
 
     assertContainerStructure(getByTestId, queryByTestId);
 
-    simulateImageLoadSuccess(getByTestId);
+    await simulateImageLoadSuccess(getByTestId);
     assertContainerStructure(getByTestId, queryByTestId);
 
-    simulateImageLoadError(getByTestId);
+    await simulateImageLoadError(getByTestId);
     assertContainerStructure(getByTestId, queryByTestId, sampleImageUri, false);
   });
 
-  test('handles edge cases with various image URI formats', () => {
+  test('handles edge cases with various image URI formats', async () => {
     const edgeCaseUris = [
       { uri: 'file:///local/path/image.jpg', expectImage: true },
       { uri: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD...', expectImage: true },
@@ -288,21 +288,21 @@ describe('RecipeImage Component', () => {
       { uri: '', expectImage: false },
     ];
 
-    edgeCaseUris.forEach(({ uri, expectImage }) => {
-      const { getByTestId, queryByTestId, unmount } = renderRecipeImage({ imgUri: uri });
+    for (const { uri, expectImage } of edgeCaseUris) {
+      const { getByTestId, queryByTestId, unmount } = await renderRecipeImage({ imgUri: uri });
 
       assertContainerStructure(getByTestId, queryByTestId, uri, expectImage);
       assertButtonStructure(getByTestId, queryByTestId, true);
-      fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
+      await fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
       expect(mockOpenModal).toHaveBeenCalledWith(recipeColumnsNames.image);
 
-      unmount();
+      await unmount();
       jest.clearAllMocks();
-    });
+    }
   });
 
-  test('maintains component stability during prop changes', () => {
-    const { getByTestId, queryByTestId, rerender } = renderRecipeImage();
+  test('maintains component stability during prop changes', async () => {
+    const { getByTestId, queryByTestId, rerender } = await renderRecipeImage();
 
     assertContainerStructure(getByTestId, queryByTestId);
     assertButtonStructure(getByTestId, queryByTestId);
@@ -314,18 +314,18 @@ describe('RecipeImage Component', () => {
     };
     const newCallback = jest.fn();
 
-    rerender(
+    await rerender(
       <RecipeImage imgUri={newUri} openModal={newCallback} overlayButton={newOverlayButton} />
     );
 
     assertContainerStructure(getByTestId, queryByTestId, newUri);
     assertButtonStructure(getByTestId, queryByTestId, true, newOverlayButton.icon);
 
-    fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
+    await fireEvent.press(getByTestId('RecipeImage::RoundButton::OnPressFunction'));
     expect(newCallback).toHaveBeenCalledWith(recipeColumnsNames.image);
     expect(mockOpenModal).not.toHaveBeenCalled();
 
-    rerender(<RecipeImage imgUri={newUri} openModal={newCallback} />);
+    await rerender(<RecipeImage imgUri={newUri} openModal={newCallback} />);
 
     assertButtonStructure(getByTestId, queryByTestId, false);
     assertContainerStructure(getByTestId, queryByTestId, newUri);

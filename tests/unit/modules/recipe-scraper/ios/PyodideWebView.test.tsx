@@ -34,7 +34,7 @@ describe('PyodideWebView (iOS)', () => {
     });
 
     it('passes the bundled asset URI to the WebView source (no JS-side file read)', async () => {
-        const { findByText } = render(<PyodideWebView />);
+        const { findByText } = await render(<PyodideWebView />);
         const sourceText = await findByText(/pyodide-bundle\.html/);
         const source = JSON.parse(sourceText.props.children);
         expect(source.uri).toBe('file:///mock/pyodide-bundle.html');
@@ -42,7 +42,7 @@ describe('PyodideWebView (iOS)', () => {
     });
 
     it('does not instantiate File(...) — that path triggers SDK 55 permission errors on iOS', async () => {
-        render(<PyodideWebView />);
+        await render(<PyodideWebView />);
         await waitFor(() => expect(expoFileSystem.File).not.toHaveBeenCalled());
     });
 });

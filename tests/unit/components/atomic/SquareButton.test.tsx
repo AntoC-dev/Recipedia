@@ -39,31 +39,31 @@ describe('SquareButton', () => {
     jest.clearAllMocks();
   });
 
-  test('renders with image type', () => {
-    const { getByTestId } = render(<SquareButton {...defaultImageProps} />);
+  test('renders with image type', async () => {
+    const { getByTestId } = await render(<SquareButton {...defaultImageProps} />);
 
     expect(getByTestId('test-button::SquareButton')).toBeTruthy();
   });
 
-  test('renders with recipe type', () => {
-    const { getByTestId } = render(<SquareButton {...defaultRecipeProps} />);
+  test('renders with recipe type', async () => {
+    const { getByTestId } = await render(<SquareButton {...defaultRecipeProps} />);
 
     expect(getByTestId('test-button::SquareButton')).toBeTruthy();
   });
 
-  test('calls onPressFunction when pressed', () => {
+  test('calls onPressFunction when pressed', async () => {
     const onPressFunction = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <SquareButton {...defaultImageProps} onPressFunction={onPressFunction} />
     );
 
-    fireEvent.press(getByTestId('test-button'));
+    await fireEvent.press(getByTestId('test-button'));
 
     expect(onPressFunction).toHaveBeenCalledTimes(1);
   });
 
-  test('exposes button role and recipe title for recipe type', () => {
-    const { getByTestId } = render(<SquareButton {...defaultRecipeProps} />);
+  test('exposes button role and recipe title for recipe type', async () => {
+    const { getByTestId } = await render(<SquareButton {...defaultRecipeProps} />);
 
     const button = getByTestId('test-button');
 
@@ -71,8 +71,8 @@ describe('SquareButton', () => {
     expect(button.props.accessibilityLabel).toBe(mockRecipe.title);
   });
 
-  test('exposes button role and generic label for image type', () => {
-    const { getByTestId } = render(<SquareButton {...defaultImageProps} />);
+  test('exposes button role and generic label for image type', async () => {
+    const { getByTestId } = await render(<SquareButton {...defaultImageProps} />);
 
     const button = getByTestId('test-button');
 
@@ -80,36 +80,36 @@ describe('SquareButton', () => {
     expect(button.props.accessibilityLabel).toBe('Image');
   });
 
-  test('uses provided accessibilityLabel over default', () => {
-    const { getByTestId } = render(
+  test('uses provided accessibilityLabel over default', async () => {
+    const { getByTestId } = await render(
       <SquareButton {...defaultImageProps} accessibilityLabel='Recipe photo' />
     );
 
     expect(getByTestId('test-button').props.accessibilityLabel).toBe('Recipe photo');
   });
 
-  test('uses provided accessibilityLabel over recipe title', () => {
-    const { getByTestId } = render(
+  test('uses provided accessibilityLabel over recipe title', async () => {
+    const { getByTestId } = await render(
       <SquareButton {...defaultRecipeProps} accessibilityLabel='Custom recipe label' />
     );
 
     expect(getByTestId('test-button').props.accessibilityLabel).toBe('Custom recipe label');
   });
 
-  test('renders CustomImage with correct testID for image type', () => {
-    const { getByTestId } = render(<SquareButton {...defaultImageProps} />);
+  test('renders CustomImage with correct testID for image type', async () => {
+    const { getByTestId } = await render(<SquareButton {...defaultImageProps} />);
 
     expect(getByTestId('test-button::SquareButton')).toBeTruthy();
   });
 
-  test('renders CustomImage with correct testID for recipe type', () => {
-    const { getByTestId } = render(<SquareButton {...defaultRecipeProps} />);
+  test('renders CustomImage with correct testID for recipe type', async () => {
+    const { getByTestId } = await render(<SquareButton {...defaultRecipeProps} />);
 
     expect(getByTestId('test-button::SquareButton')).toBeTruthy();
   });
 
-  test('takes background from theme secondaryContainer and border from theme outline', () => {
-    const { getByTestId } = render(<SquareButton {...defaultImageProps} />);
+  test('takes background from theme secondaryContainer and border from theme outline', async () => {
+    const { getByTestId } = await render(<SquareButton {...defaultImageProps} />);
 
     const button = getByTestId('test-button');
 

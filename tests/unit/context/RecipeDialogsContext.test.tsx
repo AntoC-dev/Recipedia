@@ -10,13 +10,13 @@ function createDialogsWrapper() {
 
 describe('RecipeDialogsContext', () => {
   describe('validation dialog', () => {
-    test('showValidationDialog sets props and opens dialog', () => {
+    test('showValidationDialog sets props and opens dialog', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
       expect(result.current.isValidationDialogOpen).toBe(false);
 
-      act(() => {
+      await act(() => {
         result.current.showValidationDialog({
           title: 'Test Title',
           content: 'Test Content',
@@ -32,14 +32,14 @@ describe('RecipeDialogsContext', () => {
       expect(result.current.validationDialogProp.cancelText).toBe('Cancel');
     });
 
-    test('showValidationDialog with callbacks', () => {
+    test('showValidationDialog with callbacks', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
       const onConfirm = jest.fn();
       const onCancel = jest.fn();
 
-      act(() => {
+      await act(() => {
         result.current.showValidationDialog({
           title: 'Test',
           content: 'Content',
@@ -53,11 +53,11 @@ describe('RecipeDialogsContext', () => {
       expect(result.current.validationDialogProp.onCancel).toBe(onCancel);
     });
 
-    test('hideValidationDialog closes dialog and resets state', () => {
+    test('hideValidationDialog closes dialog and resets state', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.showValidationDialog({
           title: 'Test Title',
           content: 'Test Content',
@@ -67,7 +67,7 @@ describe('RecipeDialogsContext', () => {
 
       expect(result.current.isValidationDialogOpen).toBe(true);
 
-      act(() => {
+      await act(() => {
         result.current.hideValidationDialog();
       });
 
@@ -80,11 +80,11 @@ describe('RecipeDialogsContext', () => {
   describe('showValidationErrorDialog', () => {
     const mockT = (key: string) => key;
 
-    test('formats singular message for single missing element', () => {
+    test('formats singular message for single missing element', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.showValidationErrorDialog(['Image'], mockT);
       });
 
@@ -95,11 +95,11 @@ describe('RecipeDialogsContext', () => {
       expect(result.current.validationDialogProp.confirmText).toBe('understood');
     });
 
-    test('formats plural message for multiple missing elements', () => {
+    test('formats plural message for multiple missing elements', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.showValidationErrorDialog(['Image', 'Title', 'Description'], mockT);
       });
 
@@ -107,11 +107,11 @@ describe('RecipeDialogsContext', () => {
       expect(result.current.validationDialogProp.title).toBe('alerts.missingElements.titlePlural');
     });
 
-    test('includes all missing elements in content', () => {
+    test('includes all missing elements in content', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.showValidationErrorDialog(['Image', 'Title'], mockT);
       });
 
@@ -121,15 +121,15 @@ describe('RecipeDialogsContext', () => {
   });
 
   describe('similarity dialog', () => {
-    test('showSimilarityDialog opens dialog with item', () => {
+    test('showSimilarityDialog opens dialog with item', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
       const onConfirm = jest.fn();
 
       expect(result.current.similarityDialog.isVisible).toBe(false);
 
-      act(() => {
+      await act(() => {
         result.current.showSimilarityDialog({
           type: 'Tag',
           newItemName: 'Italian',
@@ -143,13 +143,13 @@ describe('RecipeDialogsContext', () => {
       expect(result.current.similarityDialog.item.onConfirm).toBe(onConfirm);
     });
 
-    test('showSimilarityDialog works for Ingredient type', () => {
+    test('showSimilarityDialog works for Ingredient type', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
       const onConfirm = jest.fn();
 
-      act(() => {
+      await act(() => {
         result.current.showSimilarityDialog({
           type: 'Ingredient',
           newItemName: 'Tomato',
@@ -162,11 +162,11 @@ describe('RecipeDialogsContext', () => {
       expect(result.current.similarityDialog.item.newItemName).toBe('Tomato');
     });
 
-    test('hideSimilarityDialog closes dialog and resets state', () => {
+    test('hideSimilarityDialog closes dialog and resets state', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.showSimilarityDialog({
           type: 'Tag',
           newItemName: 'Test',
@@ -176,7 +176,7 @@ describe('RecipeDialogsContext', () => {
 
       expect(result.current.similarityDialog.isVisible).toBe(true);
 
-      act(() => {
+      await act(() => {
         result.current.hideSimilarityDialog();
       });
 
@@ -185,15 +185,15 @@ describe('RecipeDialogsContext', () => {
   });
 
   describe('validation queue', () => {
-    test('setValidationQueue sets tag validation queue', () => {
+    test('setValidationQueue sets tag validation queue', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
       const onValidated = jest.fn();
 
       expect(result.current.validationQueue).toBeNull();
 
-      act(() => {
+      await act(() => {
         result.current.setValidationQueue({
           type: 'Tag',
           items: [{ id: 1, name: 'Italian', similarItems: [] }],
@@ -205,13 +205,13 @@ describe('RecipeDialogsContext', () => {
       expect(result.current.validationQueue?.type).toBe('Tag');
     });
 
-    test('setValidationQueue sets ingredient validation queue', () => {
+    test('setValidationQueue sets ingredient validation queue', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
       const onValidated = jest.fn();
 
-      act(() => {
+      await act(() => {
         result.current.setValidationQueue({
           type: 'Ingredient',
           items: [
@@ -231,11 +231,11 @@ describe('RecipeDialogsContext', () => {
       expect(result.current.validationQueue?.type).toBe('Ingredient');
     });
 
-    test('clearValidationQueue sets queue to null', () => {
+    test('clearValidationQueue sets queue to null', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.setValidationQueue({
           type: 'Tag',
           items: [{ id: 2, name: 'Test', similarItems: [] }],
@@ -245,7 +245,7 @@ describe('RecipeDialogsContext', () => {
 
       expect(result.current.validationQueue).not.toBeNull();
 
-      act(() => {
+      await act(() => {
         result.current.clearValidationQueue();
       });
 
@@ -254,19 +254,19 @@ describe('RecipeDialogsContext', () => {
   });
 
   describe('snackbar', () => {
-    test('starts hidden with empty message', () => {
+    test('starts hidden with empty message', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
       expect(result.current.snackbar.visible).toBe(false);
       expect(result.current.snackbar.message).toBe('');
     });
 
-    test('showSnackbar sets message and makes it visible', () => {
+    test('showSnackbar sets message and makes it visible', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.showSnackbar('No data found');
       });
 
@@ -274,15 +274,15 @@ describe('RecipeDialogsContext', () => {
       expect(result.current.snackbar.message).toBe('No data found');
     });
 
-    test('hideSnackbar hides while keeping the message', () => {
+    test('hideSnackbar hides while keeping the message', async () => {
       const wrapper = createDialogsWrapper();
-      const { result } = renderHook(() => useRecipeDialogs(), { wrapper });
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
 
-      act(() => {
+      await act(() => {
         result.current.showSnackbar('No data found');
       });
 
-      act(() => {
+      await act(() => {
         result.current.hideSnackbar();
       });
 
@@ -292,12 +292,12 @@ describe('RecipeDialogsContext', () => {
   });
 
   describe('error handling', () => {
-    test('throws error when useRecipeDialogs is used outside provider', () => {
+    test('throws error when useRecipeDialogs is used outside provider', async () => {
       const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      expect(() => {
-        renderHook(() => useRecipeDialogs());
-      }).toThrow('useRecipeDialogs must be used within a RecipeDialogsProvider');
+      await expect(renderHook(() => useRecipeDialogs())).rejects.toThrow(
+        'useRecipeDialogs must be used within a RecipeDialogsProvider'
+      );
 
       consoleError.mockRestore();
     });

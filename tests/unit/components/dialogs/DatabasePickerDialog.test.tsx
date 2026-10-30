@@ -53,8 +53,8 @@ describe('DatabasePickerDialog', () => {
   });
 
   describe('visibility', () => {
-    test('renders when isVisible is true', () => {
-      const { getByTestId } = render(
+    test('renders when isVisible is true', async () => {
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -68,8 +68,8 @@ describe('DatabasePickerDialog', () => {
       expect(getByTestId(testId)).toBeTruthy();
     });
 
-    test('does not render when isVisible is false', () => {
-      const { queryByTestId } = render(
+    test('does not render when isVisible is false', async () => {
+      const { queryByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={false}
@@ -85,9 +85,9 @@ describe('DatabasePickerDialog', () => {
   });
 
   describe('content rendering', () => {
-    test('renders title correctly', () => {
+    test('renders title correctly', async () => {
       const title = 'Pick an ingredient';
-      const { getByText } = render(
+      const { getByText } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -101,8 +101,8 @@ describe('DatabasePickerDialog', () => {
       expect(getByText(title)).toBeTruthy();
     });
 
-    test('renders searchbar with placeholder', () => {
-      const { getByTestId } = render(
+    test('renders searchbar with placeholder', async () => {
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -119,8 +119,8 @@ describe('DatabasePickerDialog', () => {
       expect(placeholder.props.children).toBe('alerts.databasePicker.searchPlaceholder');
     });
 
-    test('renders cancel button', () => {
-      const { getByTestId, getByText } = render(
+    test('renders cancel button', async () => {
+      const { getByTestId, getByText } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -136,8 +136,8 @@ describe('DatabasePickerDialog', () => {
       expect(getByText('cancel')).toBeTruthy();
     });
 
-    test('renders all items in the list', () => {
-      const { getByTestId } = render(
+    test('renders all items in the list', async () => {
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -158,8 +158,8 @@ describe('DatabasePickerDialog', () => {
   });
 
   describe('search functionality', () => {
-    test('filters items by search query (case-insensitive)', () => {
-      const { getByTestId, queryByTestId } = render(
+    test('filters items by search query (case-insensitive)', async () => {
+      const { getByTestId, queryByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -171,15 +171,15 @@ describe('DatabasePickerDialog', () => {
       );
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
-      fireEvent.changeText(searchbar, 'tom');
-      act(() => jest.advanceTimersByTime(300));
+      await fireEvent.changeText(searchbar, 'tom');
+      await act(() => jest.advanceTimersByTime(300));
 
       expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe('Tomato');
       expect(queryByTestId(`${testId}::Item::1`)).toBeNull();
     });
 
-    test('shows all items when search query is empty', () => {
-      const { getByTestId } = render(
+    test('shows all items when search query is empty', async () => {
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -195,8 +195,8 @@ describe('DatabasePickerDialog', () => {
       });
     });
 
-    test('shows no results message when no items match search', () => {
-      const { getByTestId, getByText } = render(
+    test('shows no results message when no items match search', async () => {
+      const { getByTestId, getByText } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -208,14 +208,14 @@ describe('DatabasePickerDialog', () => {
       );
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
-      fireEvent.changeText(searchbar, 'xyz123notfound');
-      act(() => jest.advanceTimersByTime(300));
+      await fireEvent.changeText(searchbar, 'xyz123notfound');
+      await act(() => jest.advanceTimersByTime(300));
 
       expect(getByText('alerts.databasePicker.noResults')).toBeTruthy();
     });
 
-    test('filters items correctly with partial matches', () => {
-      const { getByTestId } = render(
+    test('filters items correctly with partial matches', async () => {
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -227,14 +227,14 @@ describe('DatabasePickerDialog', () => {
       );
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
-      fireEvent.changeText(searchbar, 'an');
-      act(() => jest.advanceTimersByTime(300));
+      await fireEvent.changeText(searchbar, 'an');
+      await act(() => jest.advanceTimersByTime(300));
 
       expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe('Banana');
     });
 
-    test('performs case-insensitive search', () => {
-      const { getByTestId } = render(
+    test('performs case-insensitive search', async () => {
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -246,14 +246,14 @@ describe('DatabasePickerDialog', () => {
       );
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
-      fireEvent.changeText(searchbar, 'APPLE');
-      act(() => jest.advanceTimersByTime(300));
+      await fireEvent.changeText(searchbar, 'APPLE');
+      await act(() => jest.advanceTimersByTime(300));
 
       expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe('Apple');
     });
 
-    test('shows all items again after clearing search input', () => {
-      const { getByTestId, queryByTestId } = render(
+    test('shows all items again after clearing search input', async () => {
+      const { getByTestId, queryByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -265,20 +265,20 @@ describe('DatabasePickerDialog', () => {
       );
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
-      fireEvent.changeText(searchbar, 'tom');
-      act(() => jest.advanceTimersByTime(300));
+      await fireEvent.changeText(searchbar, 'tom');
+      await act(() => jest.advanceTimersByTime(300));
       expect(queryByTestId(`${testId}::Item::1`)).toBeNull();
 
-      fireEvent.changeText(searchbar, '');
-      act(() => jest.advanceTimersByTime(300));
+      await fireEvent.changeText(searchbar, '');
+      await act(() => jest.advanceTimersByTime(300));
 
       mockItems.forEach((_, index) => {
         expect(getByTestId(`${testId}::Item::${index}`)).toBeTruthy();
       });
     });
 
-    test('debounces filtering - does not filter immediately on typing', () => {
-      const { getByTestId } = render(
+    test('debounces filtering - does not filter immediately on typing', async () => {
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -290,20 +290,20 @@ describe('DatabasePickerDialog', () => {
       );
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
-      fireEvent.changeText(searchbar, 'tom');
+      await fireEvent.changeText(searchbar, 'tom');
 
       expect(getByTestId(`${testId}::Item::0`)).toBeTruthy();
       expect(getByTestId(`${testId}::Item::1`)).toBeTruthy();
       expect(getByTestId(`${testId}::Item::2`)).toBeTruthy();
       expect(getByTestId(`${testId}::Item::3`)).toBeTruthy();
 
-      act(() => jest.advanceTimersByTime(300));
+      await act(() => jest.advanceTimersByTime(300));
 
       expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe('Tomato');
     });
 
-    test('resets debounce timer on each keystroke', () => {
-      const { getByTestId, queryByTestId } = render(
+    test('resets debounce timer on each keystroke', async () => {
+      const { getByTestId, queryByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -316,15 +316,15 @@ describe('DatabasePickerDialog', () => {
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
 
-      fireEvent.changeText(searchbar, 't');
-      act(() => jest.advanceTimersByTime(200));
-      fireEvent.changeText(searchbar, 'to');
-      act(() => jest.advanceTimersByTime(200));
-      fireEvent.changeText(searchbar, 'tom');
+      await fireEvent.changeText(searchbar, 't');
+      await act(() => jest.advanceTimersByTime(200));
+      await fireEvent.changeText(searchbar, 'to');
+      await act(() => jest.advanceTimersByTime(200));
+      await fireEvent.changeText(searchbar, 'tom');
 
       expect(getByTestId(`${testId}::Item::3`)).toBeTruthy();
 
-      act(() => jest.advanceTimersByTime(300));
+      await act(() => jest.advanceTimersByTime(300));
 
       expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe('Tomato');
       expect(queryByTestId(`${testId}::Item::1`)).toBeNull();
@@ -332,8 +332,8 @@ describe('DatabasePickerDialog', () => {
   });
 
   describe('empty state', () => {
-    test('shows no results message when items array is empty', () => {
-      const { getByText } = render(
+    test('shows no results message when items array is empty', async () => {
+      const { getByText } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -349,8 +349,8 @@ describe('DatabasePickerDialog', () => {
   });
 
   describe('item selection', () => {
-    test('calls onSelect with correct item when list item is pressed', () => {
-      const { getByTestId } = render(
+    test('calls onSelect with correct item when list item is pressed', async () => {
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -361,14 +361,14 @@ describe('DatabasePickerDialog', () => {
         />
       );
 
-      fireEvent.press(getByTestId(`${testId}::Item::1`));
+      await fireEvent.press(getByTestId(`${testId}::Item::1`));
 
       expect(mockOnSelect).toHaveBeenCalledWith(mockItems[1]);
       expect(mockOnSelect).toHaveBeenCalledTimes(1);
     });
 
-    test('calls onSelect with correct item when selecting from filtered list', () => {
-      const { getByTestId } = render(
+    test('calls onSelect with correct item when selecting from filtered list', async () => {
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -380,15 +380,15 @@ describe('DatabasePickerDialog', () => {
       );
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
-      fireEvent.changeText(searchbar, 'app');
-      act(() => jest.advanceTimersByTime(300));
-      fireEvent.press(getByTestId(`${testId}::Item::0`));
+      await fireEvent.changeText(searchbar, 'app');
+      await act(() => jest.advanceTimersByTime(300));
+      await fireEvent.press(getByTestId(`${testId}::Item::0`));
 
       expect(mockOnSelect).toHaveBeenCalledWith(mockItems[1]);
     });
 
-    test('clears search query when item is selected', () => {
-      const { getByTestId } = render(
+    test('clears search query when item is selected', async () => {
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -400,21 +400,21 @@ describe('DatabasePickerDialog', () => {
       );
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
-      fireEvent.changeText(searchbar, 'tom');
-      act(() => jest.advanceTimersByTime(300));
+      await fireEvent.changeText(searchbar, 'tom');
+      await act(() => jest.advanceTimersByTime(300));
 
       const textInput = getByTestId(`${testId}::Searchbar::TextInput`);
       expect(textInput.props.value).toBe('tom');
 
-      fireEvent.press(getByTestId(`${testId}::Item::0`));
+      await fireEvent.press(getByTestId(`${testId}::Item::0`));
 
       expect(textInput.props.value).toBe('');
     });
   });
 
   describe('dismiss behavior', () => {
-    test('calls onDismiss when cancel button is pressed', () => {
-      const { getByTestId } = render(
+    test('calls onDismiss when cancel button is pressed', async () => {
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -425,13 +425,13 @@ describe('DatabasePickerDialog', () => {
         />
       );
 
-      fireEvent.press(getByTestId(`${testId}::CancelButton`));
+      await fireEvent.press(getByTestId(`${testId}::CancelButton`));
 
       expect(mockOnDismiss).toHaveBeenCalledTimes(1);
     });
 
-    test('clears search query when dialog is dismissed', () => {
-      const { getByTestId } = render(
+    test('clears search query when dialog is dismissed', async () => {
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -443,19 +443,19 @@ describe('DatabasePickerDialog', () => {
       );
 
       const searchbarInput = getByTestId(`${testId}::Searchbar::TextInput`);
-      fireEvent.changeText(searchbarInput, 'search text');
-      act(() => jest.advanceTimersByTime(300));
+      await fireEvent.changeText(searchbarInput, 'search text');
+      await act(() => jest.advanceTimersByTime(300));
 
       expect(searchbarInput.props.value).toBe('search text');
 
-      fireEvent.press(getByTestId(`${testId}::CancelButton`));
+      await fireEvent.press(getByTestId(`${testId}::CancelButton`));
 
       expect(searchbarInput.props.value).toBe('');
     });
   });
 
   describe('edge cases', () => {
-    test('updates displayed items when items prop changes', () => {
+    test('updates displayed items when items prop changes', async () => {
       const newItems: ingredientTableElement[] = [
         {
           id: 10,
@@ -466,7 +466,7 @@ describe('DatabasePickerDialog', () => {
         },
       ];
 
-      const { getByTestId, queryByTestId, rerender } = render(
+      const { getByTestId, queryByTestId, rerender } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -479,7 +479,7 @@ describe('DatabasePickerDialog', () => {
 
       expect(getByTestId(`${testId}::Item::3`)).toBeTruthy();
 
-      rerender(
+      await rerender(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -494,8 +494,8 @@ describe('DatabasePickerDialog', () => {
       expect(queryByTestId(`${testId}::Item::1`)).toBeNull();
     });
 
-    test('treats whitespace-only search as non-empty', () => {
-      const { getByTestId, getByText } = render(
+    test('treats whitespace-only search as non-empty', async () => {
+      const { getByTestId, getByText } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -507,13 +507,13 @@ describe('DatabasePickerDialog', () => {
       );
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
-      fireEvent.changeText(searchbar, '   ');
-      act(() => jest.advanceTimersByTime(300));
+      await fireEvent.changeText(searchbar, '   ');
+      await act(() => jest.advanceTimersByTime(300));
 
       expect(getByText('alerts.databasePicker.noResults')).toBeTruthy();
     });
 
-    test('handles items with very long names', () => {
+    test('handles items with very long names', async () => {
       const longNameItem = {
         id: 99,
         name: 'Very Long Item Name That Should Be Truncated Or Handled Properly In The UI Component',
@@ -522,7 +522,7 @@ describe('DatabasePickerDialog', () => {
         season: [],
       };
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -538,7 +538,7 @@ describe('DatabasePickerDialog', () => {
       expect(titleElement.props.children).toBe(longNameItem.name);
     });
 
-    test('handles special characters in search query', () => {
+    test('handles special characters in search query', async () => {
       const specialItem = {
         id: 100,
         name: 'Item-with-special_chars',
@@ -547,7 +547,7 @@ describe('DatabasePickerDialog', () => {
         season: [],
       };
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -559,13 +559,13 @@ describe('DatabasePickerDialog', () => {
       );
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
-      fireEvent.changeText(searchbar, 'special_chars');
-      act(() => jest.advanceTimersByTime(300));
+      await fireEvent.changeText(searchbar, 'special_chars');
+      await act(() => jest.advanceTimersByTime(300));
 
       expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe(specialItem.name);
     });
 
-    test('handles accented characters in search', () => {
+    test('handles accented characters in search', async () => {
       const accentedItem = {
         id: 101,
         name: 'Café',
@@ -574,7 +574,7 @@ describe('DatabasePickerDialog', () => {
         season: [],
       };
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -586,15 +586,15 @@ describe('DatabasePickerDialog', () => {
       );
 
       const searchbar = getByTestId(`${testId}::Searchbar`);
-      fireEvent.changeText(searchbar, 'café');
-      act(() => jest.advanceTimersByTime(300));
+      await fireEvent.changeText(searchbar, 'café');
+      await act(() => jest.advanceTimersByTime(300));
 
       expect(getByTestId(`${testId}::Item::0::Title`).props.children).toBe(accentedItem.name);
     });
   });
 
   describe('FlashList integration', () => {
-    test('uses correct keyExtractor for items', () => {
+    test('uses correct keyExtractor for items', async () => {
       const duplicateNameItems = [
         {
           id: 1,
@@ -612,7 +612,7 @@ describe('DatabasePickerDialog', () => {
         },
       ];
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -627,8 +627,8 @@ describe('DatabasePickerDialog', () => {
       expect(getByTestId(`${testId}::Item::1`)).toBeTruthy();
     });
 
-    test('list dismisses the keyboard on drag', () => {
-      const { UNSAFE_getAllByType } = render(
+    test('list dismisses the keyboard on drag', async () => {
+      const { container } = await render(
         <DatabasePickerDialog
           testId={testId}
           isVisible={true}
@@ -639,8 +639,7 @@ describe('DatabasePickerDialog', () => {
         />
       );
 
-      const { ScrollView } = require('react-native');
-      expectKeyboardDismissesOnDrag(UNSAFE_getAllByType, ScrollView);
+      expectKeyboardDismissesOnDrag(container);
     });
   });
 });

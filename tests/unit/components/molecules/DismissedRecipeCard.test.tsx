@@ -22,29 +22,31 @@ describe('DismissedRecipeCard', () => {
     jest.clearAllMocks();
   });
 
-  test('renders recipe title', () => {
-    const { getByTestId } = render(<DismissedRecipeCard {...defaultProps} />);
+  test('renders recipe title', async () => {
+    const { getByTestId } = await render(<DismissedRecipeCard {...defaultProps} />);
 
     expect(getByTestId('test-card::Title').props.children).toBe('Dismissed Recipe');
   });
 
-  test('renders the recipe thumbnail', () => {
-    const { getByTestId } = render(<DismissedRecipeCard {...defaultProps} />);
+  test('renders the recipe thumbnail', async () => {
+    const { getByTestId } = await render(<DismissedRecipeCard {...defaultProps} />);
 
     expect(getByTestId('test-card::Thumbnail')).toBeTruthy();
   });
 
-  test('renders restore button', () => {
-    const { getByTestId } = render(<DismissedRecipeCard {...defaultProps} />);
+  test('renders restore button', async () => {
+    const { getByTestId } = await render(<DismissedRecipeCard {...defaultProps} />);
 
     expect(getByTestId('test-card::RestoreButton')).toBeTruthy();
   });
 
-  test('calls onRestore when restore button pressed', () => {
+  test('calls onRestore when restore button pressed', async () => {
     const onRestore = jest.fn();
-    const { getByTestId } = render(<DismissedRecipeCard {...defaultProps} onRestore={onRestore} />);
+    const { getByTestId } = await render(
+      <DismissedRecipeCard {...defaultProps} onRestore={onRestore} />
+    );
 
-    fireEvent.press(getByTestId('test-card::RestoreButton'));
+    await fireEvent.press(getByTestId('test-card::RestoreButton'));
 
     expect(onRestore).toHaveBeenCalledTimes(1);
   });

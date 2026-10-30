@@ -10,8 +10,8 @@ import { padding } from '@styles/spacing';
 const testID = 'Screen::SectionHeader';
 
 describe('ListSectionHeader', () => {
-  test('renders the title as a titleMedium accessibility header', () => {
-    const { getByTestId } = render(<ListSectionHeader testID={testID} title='To cook' />);
+  test('renders the title as a titleMedium accessibility header', async () => {
+    const { getByTestId } = await render(<ListSectionHeader testID={testID} title='To cook' />);
 
     const header = getByTestId(testID);
 
@@ -20,8 +20,8 @@ describe('ListSectionHeader', () => {
     expect(header.props.accessibilityRole).toBe('header');
   });
 
-  test('colors the header with the theme primary and spaces it from the rows above', () => {
-    const { getByTestId } = render(<ListSectionHeader testID={testID} title='To cook' />);
+  test('colors the header with the theme primary and spaces it from the rows above', async () => {
+    const { getByTestId } = await render(<ListSectionHeader testID={testID} title='To cook' />);
 
     expect(StyleSheet.flatten(getByTestId(testID).props.style)).toEqual(
       expect.objectContaining({
@@ -32,8 +32,8 @@ describe('ListSectionHeader', () => {
     );
   });
 
-  test('carries no horizontal padding so the list container owns the inset', () => {
-    const { getByTestId } = render(<ListSectionHeader testID={testID} title='Dairy' />);
+  test('carries no horizontal padding so the list container owns the inset', async () => {
+    const { getByTestId } = await render(<ListSectionHeader testID={testID} title='Dairy' />);
 
     const style = StyleSheet.flatten(getByTestId(testID).props.style);
 

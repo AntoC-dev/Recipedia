@@ -27,7 +27,7 @@ const defaultProps = {
 };
 
 const renderDefaultPersonsSettings = async () => {
-  const result = render(<DefaultPersonsSettings {...(defaultProps as any)} />);
+  const result = await render(<DefaultPersonsSettings {...(defaultProps as any)} />);
 
   await waitFor(() => {
     expect(result.getByTestId('DefaultPersonSettings::Slider')).toBeTruthy();
@@ -80,7 +80,7 @@ describe('DefaultPersonsSettings Screen', () => {
   test('updates persons value when slider changes', async () => {
     const { getByTestId } = await renderDefaultPersonsSettings();
 
-    fireEvent.press(getByTestId('DefaultPersonSettings::Slider'));
+    await fireEvent.press(getByTestId('DefaultPersonSettings::Slider'));
 
     await waitFor(() => {
       expect(getByTestId('DefaultPersonSettings::PersonsValue').props.children).toEqual([
@@ -95,7 +95,7 @@ describe('DefaultPersonsSettings Screen', () => {
     const { getByTestId } = await renderDefaultPersonsSettings();
 
     // Press the cancel button
-    fireEvent.press(getByTestId('DefaultPersonSettings::Cancel'));
+    await fireEvent.press(getByTestId('DefaultPersonSettings::Cancel'));
 
     // Verify that navigation.goBack was called
     expect(mockNavigationFunctions.goBack).toHaveBeenCalled();
@@ -104,9 +104,9 @@ describe('DefaultPersonsSettings Screen', () => {
   test('saves persons value and navigates back when save button is pressed', async () => {
     const { getByTestId } = await renderDefaultPersonsSettings();
 
-    fireEvent.press(getByTestId('DefaultPersonSettings::Slider'));
+    await fireEvent.press(getByTestId('DefaultPersonSettings::Slider'));
 
-    fireEvent.press(getByTestId('DefaultPersonSettings::Save'));
+    await fireEvent.press(getByTestId('DefaultPersonSettings::Save'));
 
     await waitFor(() => {
       expect(mockSetDefaultPersons).toHaveBeenCalledWith(5);
@@ -143,9 +143,9 @@ describe('DefaultPersonsSettings Screen', () => {
 
     const { getByTestId } = await renderDefaultPersonsSettings();
 
-    fireEvent.press(getByTestId('DefaultPersonSettings::Slider'));
+    await fireEvent.press(getByTestId('DefaultPersonSettings::Slider'));
 
-    fireEvent.press(getByTestId('DefaultPersonSettings::Save'));
+    await fireEvent.press(getByTestId('DefaultPersonSettings::Save'));
 
     await waitFor(() => {
       expect(mockNavigationFunctions.goBack).toHaveBeenCalled();
@@ -166,8 +166,8 @@ describe('DefaultPersonsSettings Screen', () => {
 
     expect(queryByTestId('DefaultPersonSettings::LoadingOverlay::Overlay')).toBeNull();
 
-    fireEvent.press(getByTestId('DefaultPersonSettings::Slider'));
-    fireEvent.press(getByTestId('DefaultPersonSettings::Save'));
+    await fireEvent.press(getByTestId('DefaultPersonSettings::Slider'));
+    await fireEvent.press(getByTestId('DefaultPersonSettings::Save'));
 
     await waitFor(() => {
       expect(mockNavigationFunctions.goBack).toHaveBeenCalled();

@@ -30,7 +30,7 @@ export function useTestForm(defaults?: Partial<RecipeFormInput>) {
   });
 }
 
-export function renderWithForm<P extends { form: Form }>(
+export async function renderWithForm<P extends { form: Form }>(
   Component: React.ComponentType<P>,
   buildProps: (form: Form) => P,
   defaults?: Partial<RecipeFormInput>
@@ -50,7 +50,7 @@ export function renderWithForm<P extends { form: Form }>(
       </FormProvider>
     );
   }
-  const utils = render(<TestHost />);
+  const utils = await render(<TestHost />);
   if (!formRef.current) {
     throw new Error('TestHost failed to capture form');
   }

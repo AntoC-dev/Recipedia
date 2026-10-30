@@ -1,6 +1,6 @@
 import React, { act } from 'react';
 import { Keyboard, View } from 'react-native';
-import { fireEvent, render, waitFor, within } from '@testing-library/react-native';
+import { fireEvent, render, waitFor, within, RenderResult } from '@testing-library/react-native';
 import {
   TextInputWithDropDown,
   AUTOCOMPLETE_ANCHOR_ID,
@@ -20,10 +20,6 @@ const inputId = 'TextInputWithDropDown::CustomTextInput';
 const listId = 'TextInputWithDropDown::AutocompleteList';
 const itemId = (item: string) => `TextInputWithDropDown::AutocompleteItem::${item}`;
 
-function isHostNode(node: { type: unknown }) {
-  return typeof node.type === 'string';
-}
-
 function SlotHost(props: TextInputWithDropDownType) {
   return (
     <TextInputWithDropDown
@@ -38,10 +34,8 @@ function SlotHost(props: TextInputWithDropDownType) {
   );
 }
 
-async function typeText(input: ReturnType<typeof render>['getByTestId'], text: string) {
-  await act(async () => {
-    fireEvent.changeText(input(inputId), text);
-  });
+async function typeText(input: RenderResult['getByTestId'], text: string) {
+  await fireEvent.changeText(input(inputId), text);
 }
 
 describe('filterSuggestions', () => {
@@ -108,15 +102,17 @@ describe('TextInputWithDropDown Component', () => {
   });
 
   describe('rendering', () => {
-    test('renders input without dropdown when not focused', () => {
-      const { getByTestId, queryByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+    test('renders input without dropdown when not focused', async () => {
+      const { getByTestId, queryByTestId } = await render(
+        <TextInputWithDropDown {...defaultProps} />
+      );
 
       expect(getByTestId(inputId)).toBeTruthy();
       expect(queryByTestId(listId)).toBeNull();
     });
 
-    test('renders with initial value from props', () => {
-      const { getByTestId } = render(
+    test('renders with initial value from props', async () => {
+      const { getByTestId } = await render(
         <TextInputWithDropDown {...defaultProps} value='Initial Value' />
       );
 
@@ -124,13 +120,11 @@ describe('TextInputWithDropDown Component', () => {
     });
 
     test('wraps the field and its bubble in a single autocomplete anchor', async () => {
-      const { getByTestId, UNSAFE_getAllByProps } = render(
-        <TextInputWithDropDown {...defaultProps} />
-      );
+      const { getByTestId, container } = await render(<TextInputWithDropDown {...defaultProps} />);
 
       await typeText(getByTestId, 'past');
 
-      const anchors = UNSAFE_getAllByProps({ nativeID: AUTOCOMPLETE_ANCHOR_ID }).filter(isHostNode);
+      const anchors = container.queryAll(node => node.props.nativeID === AUTOCOMPLETE_ANCHOR_ID);
       expect(anchors).toHaveLength(1);
       expect(within(anchors[0]!).getByTestId(inputId)).toBeTruthy();
       expect(within(anchors[0]!).getByTestId(itemId('Pasta'))).toBeTruthy();
@@ -139,7 +133,7 @@ describe('TextInputWithDropDown Component', () => {
 
   describe('dropdown visibility', () => {
     test('shows dropdown when typing matching text', async () => {
-      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+      const { getByTestId } = await render(<TextInputWithDropDown {...defaultProps} />);
 
       await typeText(getByTestId, 'past');
 
@@ -147,32 +141,32 @@ describe('TextInputWithDropDown Component', () => {
     });
 
     test('shows dropdown on focus when text has matches', async () => {
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId } = await render(
         <TextInputWithDropDown {...defaultProps} value='Sal' />
       );
 
       expect(queryByTestId(listId)).toBeNull();
 
-      await act(async () => {
-        fireEvent(getByTestId(inputId), 'focus');
-      });
+      await fireEvent(getByTestId(inputId), 'focus');
 
       await waitFor(() => expect(getByTestId(itemId('Salmon'))).toBeTruthy());
     });
 
     test('calls onFocus when the input gains focus', async () => {
       const onFocus = jest.fn();
-      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} onFocus={onFocus} />);
+      const { getByTestId } = await render(
+        <TextInputWithDropDown {...defaultProps} onFocus={onFocus} />
+      );
 
-      await act(async () => {
-        fireEvent(getByTestId(inputId), 'focus');
-      });
+      await fireEvent(getByTestId(inputId), 'focus');
 
       expect(onFocus).toHaveBeenCalledTimes(1);
     });
 
     test('hides dropdown when no matching items', async () => {
-      const { getByTestId, queryByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+      const { getByTestId, queryByTestId } = await render(
+        <TextInputWithDropDown {...defaultProps} />
+      );
 
       await typeText(getByTestId, 'nonexistentitem');
 
@@ -181,7 +175,9 @@ describe('TextInputWithDropDown Component', () => {
     });
 
     test('hides dropdown when text matches exactly one item', async () => {
-      const { getByTestId, queryByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+      const { getByTestId, queryByTestId } = await render(
+        <TextInputWithDropDown {...defaultProps} />
+      );
 
       await typeText(getByTestId, 'pasta');
 
@@ -190,7 +186,7 @@ describe('TextInputWithDropDown Component', () => {
     });
 
     test('keeps dropdown when the exact text also prefixes other items', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <TextInputWithDropDown {...defaultProps} referenceTextArray={['Salt', 'Salted Butter']} />
       );
 
@@ -204,7 +200,7 @@ describe('TextInputWithDropDown Component', () => {
   describe('onChangeText callback', () => {
     test('fires onChangeText on every keystroke with the typed text', async () => {
       const mockOnChangeText = jest.fn();
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <TextInputWithDropDown {...defaultProps} onChangeText={mockOnChangeText} />
       );
 
@@ -220,23 +216,21 @@ describe('TextInputWithDropDown Component', () => {
 
     test('fires both onChangeText and onValidate when a dropdown item is selected', async () => {
       const mockOnChangeText = jest.fn();
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <TextInputWithDropDown {...defaultProps} onChangeText={mockOnChangeText} />
       );
 
       await typeText(getByTestId, 'past');
       mockOnChangeText.mockClear();
 
-      await act(async () => {
-        fireEvent.press(getByTestId(itemId('Pasta')));
-      });
+      await fireEvent.press(getByTestId(itemId('Pasta')));
 
       expect(mockOnChangeText).toHaveBeenCalledWith('Pasta');
       expect(mockOnValidate).toHaveBeenCalledWith('Pasta');
     });
 
     test('does not throw when onChangeText is not provided', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <TextInputWithDropDown {...defaultProps} onChangeText={undefined} />
       );
 
@@ -247,79 +241,59 @@ describe('TextInputWithDropDown Component', () => {
   describe('item selection', () => {
     test('dismisses the keyboard when an item is selected', async () => {
       const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
-      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+      const { getByTestId } = await render(<TextInputWithDropDown {...defaultProps} />);
 
       await typeText(getByTestId, 'past');
-      await act(async () => {
-        fireEvent.press(getByTestId(itemId('Pasta')));
-      });
+      await fireEvent.press(getByTestId(itemId('Pasta')));
 
       expect(dismissSpy).toHaveBeenCalled();
       dismissSpy.mockRestore();
     });
 
     test('calls onValidate exactly once when endEditing fires after dropdown selection', async () => {
-      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+      const { getByTestId } = await render(<TextInputWithDropDown {...defaultProps} />);
 
       await typeText(getByTestId, 'past');
-      await act(async () => {
-        fireEvent.press(getByTestId(itemId('Pasta')));
-      });
-      await act(async () => {
-        fireEvent(getByTestId(inputId), 'endEditing');
-      });
+      await fireEvent.press(getByTestId(itemId('Pasta')));
+      await fireEvent(getByTestId(inputId), 'endEditing');
 
       expect(mockOnValidate).toHaveBeenCalledTimes(1);
       expect(mockOnValidate).toHaveBeenCalledWith('Pasta');
     });
 
     test('validates again on a later endEditing after a selection', async () => {
-      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+      const { getByTestId } = await render(<TextInputWithDropDown {...defaultProps} />);
 
       await typeText(getByTestId, 'past');
-      await act(async () => {
-        fireEvent.press(getByTestId(itemId('Pasta')));
-      });
-      await act(async () => {
-        fireEvent(getByTestId(inputId), 'endEditing');
-      });
-      await act(async () => {
-        fireEvent(getByTestId(inputId), 'endEditing');
-      });
+      await fireEvent.press(getByTestId(itemId('Pasta')));
+      await fireEvent(getByTestId(inputId), 'endEditing');
+      await fireEvent(getByTestId(inputId), 'endEditing');
 
       expect(mockOnValidate).toHaveBeenCalledTimes(2);
     });
 
     test('validates the next edit after picking from a dropdown left open on an unfocused input', async () => {
-      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+      const { getByTestId } = await render(<TextInputWithDropDown {...defaultProps} />);
 
       await typeText(getByTestId, 'past');
-      await act(async () => {
-        fireEvent(getByTestId(inputId), 'endEditing');
-      });
-      await act(async () => {
-        fireEvent.press(getByTestId(itemId('Pasta')));
-      });
+      await fireEvent(getByTestId(inputId), 'endEditing');
+      await fireEvent.press(getByTestId(itemId('Pasta')));
       mockOnValidate.mockClear();
 
-      await act(async () => {
-        fireEvent(getByTestId(inputId), 'focus');
-      });
+      await fireEvent(getByTestId(inputId), 'focus');
       await typeText(getByTestId, 'custom text');
-      await act(async () => {
-        fireEvent(getByTestId(inputId), 'endEditing');
-      });
+      await fireEvent(getByTestId(inputId), 'endEditing');
 
       expect(mockOnValidate).toHaveBeenCalledWith('custom text');
     });
 
     test('selects item and closes the dropdown when pressing an item', async () => {
-      const { getByTestId, queryByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+      const { getByTestId, queryByTestId } = await render(
+        <TextInputWithDropDown {...defaultProps} />
+      );
 
       await typeText(getByTestId, 'past');
-      await act(async () => {
-        fireEvent.press(getByTestId(itemId('Pasta')));
-      });
+      await fireEvent.press(getByTestId(itemId('Pasta')));
 
       expect(getByTestId(inputId).props.value).toEqual('Pasta');
       expect(mockOnValidate).toHaveBeenCalledWith('Pasta');
@@ -327,12 +301,10 @@ describe('TextInputWithDropDown Component', () => {
     });
 
     test('calls onValidate on end editing', async () => {
-      const { getByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+      const { getByTestId } = await render(<TextInputWithDropDown {...defaultProps} />);
 
       await typeText(getByTestId, 'custom text');
-      await act(async () => {
-        fireEvent(getByTestId(inputId), 'endEditing');
-      });
+      await fireEvent(getByTestId(inputId), 'endEditing');
 
       expect(mockOnValidate).toHaveBeenCalledWith('custom text');
     });
@@ -340,16 +312,14 @@ describe('TextInputWithDropDown Component', () => {
     test('routes a dropdown pick through onSelect (not onChangeText/onValidate) when onSelect is provided', async () => {
       const onSelect = jest.fn();
       const onChangeText = jest.fn();
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <TextInputWithDropDown {...defaultProps} onChangeText={onChangeText} onSelect={onSelect} />
       );
 
       await typeText(getByTestId, 'past');
       onChangeText.mockClear();
 
-      await act(async () => {
-        fireEvent.press(getByTestId(itemId('Pasta')));
-      });
+      await fireEvent.press(getByTestId(itemId('Pasta')));
 
       expect(onSelect).toHaveBeenCalledTimes(1);
       expect(onSelect).toHaveBeenCalledWith('Pasta');
@@ -358,20 +328,14 @@ describe('TextInputWithDropDown Component', () => {
     });
 
     test('works without onValidate callback', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <TextInputWithDropDown {...defaultProps} onValidate={undefined} />
       );
 
       await typeText(getByTestId, 'past');
-      await act(async () => {
-        fireEvent.press(getByTestId(itemId('Pasta')));
-      });
-      await act(async () => {
-        fireEvent(getByTestId(inputId), 'endEditing');
-      });
-      await act(async () => {
-        fireEvent(getByTestId(inputId), 'endEditing');
-      });
+      await fireEvent.press(getByTestId(itemId('Pasta')));
+      await fireEvent(getByTestId(inputId), 'endEditing');
+      await fireEvent(getByTestId(inputId), 'endEditing');
 
       expect(getByTestId(inputId).props.value).toEqual('Pasta');
     });
@@ -379,7 +343,7 @@ describe('TextInputWithDropDown Component', () => {
 
   describe('renderLayout', () => {
     test('lets the parent place the field and the bubble', async () => {
-      const { getByTestId } = render(<SlotHost {...defaultProps} />);
+      const { getByTestId } = await render(<SlotHost {...defaultProps} />);
 
       await typeText(getByTestId, 'past');
 
@@ -390,18 +354,18 @@ describe('TextInputWithDropDown Component', () => {
     });
 
     test('anchors only the field, not the slotted bubble', async () => {
-      const { getByTestId, UNSAFE_getAllByProps } = render(<SlotHost {...defaultProps} />);
+      const { getByTestId, container } = await render(<SlotHost {...defaultProps} />);
 
       await typeText(getByTestId, 'past');
 
-      const anchors = UNSAFE_getAllByProps({ nativeID: AUTOCOMPLETE_ANCHOR_ID }).filter(isHostNode);
+      const anchors = container.queryAll(node => node.props.nativeID === AUTOCOMPLETE_ANCHOR_ID);
       expect(anchors).toHaveLength(1);
       expect(within(anchors[0]!).getByTestId(inputId)).toBeTruthy();
       expect(within(anchors[0]!).queryByTestId(itemId('Pasta'))).toBeNull();
     });
 
     test('keeps the slotted suggestions in sync with the typed text', async () => {
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId } = await render(
         <SlotHost {...defaultProps} referenceTextArray={['Apple', 'Apricot', 'Banana']} />
       );
 
@@ -414,7 +378,7 @@ describe('TextInputWithDropDown Component', () => {
     });
 
     test('clears the slot when the dropdown hides', async () => {
-      const { getByTestId, queryByTestId } = render(<SlotHost {...defaultProps} />);
+      const { getByTestId, queryByTestId } = await render(<SlotHost {...defaultProps} />);
 
       await typeText(getByTestId, 'past');
       await typeText(getByTestId, 'nonexistentitem');
@@ -425,16 +389,14 @@ describe('TextInputWithDropDown Component', () => {
     test('routes a slotted pick to the latest onSelect prop', async () => {
       const staleOnSelect = jest.fn();
       const latestOnSelect = jest.fn();
-      const { getByTestId, rerender } = render(
+      const { getByTestId, rerender } = await render(
         <SlotHost {...defaultProps} onSelect={staleOnSelect} />
       );
 
       await typeText(getByTestId, 'past');
-      rerender(<SlotHost {...defaultProps} onSelect={latestOnSelect} />);
+      await rerender(<SlotHost {...defaultProps} onSelect={latestOnSelect} />);
 
-      await act(async () => {
-        fireEvent.press(getByTestId(itemId('Pasta')));
-      });
+      await fireEvent.press(getByTestId(itemId('Pasta')));
 
       expect(staleOnSelect).not.toHaveBeenCalled();
       expect(latestOnSelect).toHaveBeenCalledWith('Pasta');
@@ -443,22 +405,22 @@ describe('TextInputWithDropDown Component', () => {
   });
 
   describe('external value changes', () => {
-    test('syncs internal state when value prop changes externally', () => {
-      const { getByTestId, rerender } = render(
+    test('syncs internal state when value prop changes externally', async () => {
+      const { getByTestId, rerender } = await render(
         <TextInputWithDropDown {...defaultProps} value='Initial' />
       );
 
-      rerender(<TextInputWithDropDown {...defaultProps} value='Updated Value' />);
+      await rerender(<TextInputWithDropDown {...defaultProps} value='Updated Value' />);
 
       expect(getByTestId(inputId).props.value).toEqual('Updated Value');
     });
 
-    test('handles value changing to undefined', () => {
-      const { getByTestId, rerender } = render(
+    test('handles value changing to undefined', async () => {
+      const { getByTestId, rerender } = await render(
         <TextInputWithDropDown {...defaultProps} value='Initial' />
       );
 
-      rerender(<TextInputWithDropDown {...defaultProps} value={undefined} />);
+      await rerender(<TextInputWithDropDown {...defaultProps} value={undefined} />);
 
       expect(getByTestId(inputId).props.value).toEqual('');
     });
@@ -466,7 +428,9 @@ describe('TextInputWithDropDown Component', () => {
 
   describe('filtering', () => {
     test('filters items case-insensitively', async () => {
-      const { getByTestId, queryByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+      const { getByTestId, queryByTestId } = await render(
+        <TextInputWithDropDown {...defaultProps} />
+      );
 
       await typeText(getByTestId, 'PAST');
 
@@ -475,7 +439,7 @@ describe('TextInputWithDropDown Component', () => {
     });
 
     test('shows multiple matching items', async () => {
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <TextInputWithDropDown
           {...defaultProps}
           referenceTextArray={['Apple', 'Apricot', 'Banana']}
@@ -491,7 +455,7 @@ describe('TextInputWithDropDown Component', () => {
 
   describe('edge cases', () => {
     test('handles empty reference array', async () => {
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId } = await render(
         <TextInputWithDropDown {...defaultProps} referenceTextArray={[]} />
       );
 
@@ -501,12 +465,14 @@ describe('TextInputWithDropDown Component', () => {
     });
 
     test('handles rapid text changes', async () => {
-      const { getByTestId, queryByTestId } = render(<TextInputWithDropDown {...defaultProps} />);
+      const { getByTestId, queryByTestId } = await render(
+        <TextInputWithDropDown {...defaultProps} />
+      );
 
       await act(async () => {
-        fireEvent.changeText(getByTestId(inputId), 'p');
-        fireEvent.changeText(getByTestId(inputId), 'pa');
-        fireEvent.changeText(getByTestId(inputId), 'past');
+        await fireEvent.changeText(getByTestId(inputId), 'p');
+        await fireEvent.changeText(getByTestId(inputId), 'pa');
+        await fireEvent.changeText(getByTestId(inputId), 'past');
       });
       expect(getByTestId(itemId('Pasta'))).toBeTruthy();
 

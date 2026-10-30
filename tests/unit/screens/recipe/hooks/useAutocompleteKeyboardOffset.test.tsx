@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dimensions, Text, View } from 'react-native';
-import { act, fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, RenderResult } from '@testing-library/react-native';
 import { KeyboardControllerNative, useKeyboardState } from 'react-native-keyboard-controller';
 import { AUTOCOMPLETE_ANCHOR_ID } from '@components/molecules/TextInputWithDropDown';
 import { useAutocompleteKeyboardOffset } from '@screens/recipe/hooks/useAutocompleteKeyboardOffset';
@@ -71,24 +71,20 @@ function OffsetHarness() {
   );
 }
 
-let renderResult: ReturnType<typeof render> | null = null;
+let renderResult: RenderResult | null = null;
 
 function wrapper() {
   return renderResult!.getByTestId('ScrollViewWrapper');
 }
 
 async function layOut() {
-  await act(async () => {
-    fireEvent(wrapper(), 'layout', {
-      nativeEvent: { layout: { x: 0, y: 0, width: 0, height: 0 } },
-    });
+  await fireEvent(wrapper(), 'layout', {
+    nativeEvent: { layout: { x: 0, y: 0, width: 0, height: 0 } },
   });
 }
 
 async function focus(target: FakeElement | number | undefined) {
-  await act(async () => {
-    fireEvent(wrapper(), 'focus', { target });
-  });
+  await fireEvent(wrapper(), 'focus', { target });
 }
 
 function shownOffset() {
@@ -98,11 +94,11 @@ function shownOffset() {
 describe('useAutocompleteKeyboardOffset', () => {
   let findNodeHandleSpy: ReturnType<typeof mockFindNodeHandle>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     findNodeHandleSpy = mockFindNodeHandle(scrollViewNativeHandle);
     setKeyboardHeight(openKeyboardHeight);
     placeScrollViewAt(88);
-    renderResult = render(<OffsetHarness />);
+    renderResult = await render(<OffsetHarness />);
   });
 
   afterEach(() => {
@@ -208,7 +204,7 @@ describe('useAutocompleteKeyboardOffset', () => {
     await layOut();
     await focus(autocompleteInput);
     setKeyboardHeight(0);
-    renderResult!.rerender(<OffsetHarness />);
+    await renderResult!.rerender(<OffsetHarness />);
 
     expect(shownOffset()).toBe(baseOffset);
   });

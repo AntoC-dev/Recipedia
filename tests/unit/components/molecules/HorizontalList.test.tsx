@@ -16,32 +16,32 @@ describe('HorizontalList', () => {
       testID: 'test-list',
     };
 
-    test('renders all tag items', () => {
-      const { getByTestId } = render(<HorizontalList {...tagProps} />);
+    test('renders all tag items', async () => {
+      const { getByTestId } = await render(<HorizontalList {...tagProps} />);
 
       expect(getByTestId('test-list::0::Chip')).toBeTruthy();
       expect(getByTestId('test-list::1::Chip')).toBeTruthy();
       expect(getByTestId('test-list::2::Chip')).toBeTruthy();
     });
 
-    test('renders tag text content', () => {
-      const { getByTestId } = render(<HorizontalList {...tagProps} />);
+    test('renders tag text content', async () => {
+      const { getByTestId } = await render(<HorizontalList {...tagProps} />);
 
       expect(getByTestId('test-list::0::Chip::Children').props.children).toBe('Tag1');
       expect(getByTestId('test-list::1::Chip::Children').props.children).toBe('Tag2');
     });
 
-    test('calls onPress with tag when pressed', () => {
+    test('calls onPress with tag when pressed', async () => {
       const onPress = jest.fn();
-      const { getByTestId } = render(<HorizontalList {...tagProps} onPress={onPress} />);
+      const { getByTestId } = await render(<HorizontalList {...tagProps} onPress={onPress} />);
 
-      fireEvent.press(getByTestId('test-list::1::Chip'));
+      await fireEvent.press(getByTestId('test-list::1::Chip'));
 
       expect(onPress).toHaveBeenCalledWith('Tag2');
     });
 
-    test('handles empty array', () => {
-      const { queryByTestId } = render(
+    test('handles empty array', async () => {
+      const { queryByTestId } = await render(
         <HorizontalList propType='Tag' item={[]} testID='test-list' />
       );
 
@@ -50,15 +50,15 @@ describe('HorizontalList', () => {
   });
 
   describe('key stability', () => {
-    test('shows correct tag content after first tag is removed', () => {
-      const { getByTestId, rerender } = render(
+    test('shows correct tag content after first tag is removed', async () => {
+      const { getByTestId, rerender } = await render(
         <HorizontalList propType='Tag' item={['Alpha', 'Beta', 'Gamma']} testID='test-list' />
       );
 
       expect(getByTestId('test-list::0::Chip::Children').props.children).toBe('Alpha');
       expect(getByTestId('test-list::1::Chip::Children').props.children).toBe('Beta');
 
-      rerender(<HorizontalList propType='Tag' item={['Beta', 'Gamma']} testID='test-list' />);
+      await rerender(<HorizontalList propType='Tag' item={['Beta', 'Gamma']} testID='test-list' />);
 
       expect(getByTestId('test-list::0::Chip::Children').props.children).toBe('Beta');
       expect(getByTestId('test-list::1::Chip::Children').props.children).toBe('Gamma');
@@ -72,31 +72,31 @@ describe('HorizontalList', () => {
       testID: 'test-list',
     };
 
-    test('renders all image items', () => {
-      const { getByTestId } = render(<HorizontalList {...imageProps} />);
+    test('renders all image items', async () => {
+      const { getByTestId } = await render(<HorizontalList {...imageProps} />);
 
       expect(getByTestId('test-list::List#0::SquareButton')).toBeTruthy();
       expect(getByTestId('test-list::List#1::SquareButton')).toBeTruthy();
     });
 
-    test('calls onPress with image path when pressed', () => {
+    test('calls onPress with image path when pressed', async () => {
       const onPress = jest.fn();
-      const { getByTestId } = render(<HorizontalList {...imageProps} onPress={onPress} />);
+      const { getByTestId } = await render(<HorizontalList {...imageProps} onPress={onPress} />);
 
-      fireEvent.press(getByTestId('test-list::List#0::SquareButton').parent!);
+      await fireEvent.press(getByTestId('test-list::List#0::SquareButton').parent!);
 
       expect(onPress).toHaveBeenCalledWith('https://example.com/img1.jpg');
     });
 
-    test('gives each image button a numbered accessibility label', () => {
-      const { getByTestId } = render(<HorizontalList {...imageProps} />);
+    test('gives each image button a numbered accessibility label', async () => {
+      const { getByTestId } = await render(<HorizontalList {...imageProps} />);
 
       expect(getByTestId('test-list::List#0').props.accessibilityLabel).toBe('Image 1');
       expect(getByTestId('test-list::List#1').props.accessibilityLabel).toBe('Image 2');
     });
 
-    test('handles empty array', () => {
-      const { queryByTestId } = render(
+    test('handles empty array', async () => {
+      const { queryByTestId } = await render(
         <HorizontalList propType='Image' item={[]} testID='test-list' />
       );
 

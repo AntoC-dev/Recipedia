@@ -38,8 +38,8 @@ describe('RecipeNutrition', () => {
   });
 
   describe('Read-only mode', () => {
-    test('renders nutrition table with basic structure', () => {
-      const { getByTestId } = render(
+    test('renders nutrition table with basic structure', async () => {
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.readOnly}
@@ -57,8 +57,8 @@ describe('RecipeNutrition', () => {
       );
     });
 
-    test('does not render when no nutrition data provided', () => {
-      const { queryByTestId } = render(
+    test('does not render when no nutrition data provided', async () => {
+      const { queryByTestId } = await render(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.readOnly}
@@ -70,13 +70,13 @@ describe('RecipeNutrition', () => {
       expect(queryByTestId(nutritionEmptyStateTestId)).toBeNull();
     });
 
-    test('renders with different portion weight', () => {
+    test('renders with different portion weight', async () => {
       const nutritionWithPortion: nutritionTableElement = {
         ...mockNutrition,
         portionWeight: 150,
       };
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={nutritionWithPortion}
           mode={recipeStateType.readOnly}
@@ -91,7 +91,7 @@ describe('RecipeNutrition', () => {
       ).toBe(150);
     });
 
-    test('renders with decimal nutrition values', () => {
+    test('renders with decimal nutrition values', async () => {
       const nutritionWithDecimals: nutritionTableElement = {
         ...mockNutrition,
         energyKcal: 123.456,
@@ -99,7 +99,7 @@ describe('RecipeNutrition', () => {
         salt: 0.123,
       };
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={nutritionWithDecimals}
           mode={recipeStateType.readOnly}
@@ -117,8 +117,8 @@ describe('RecipeNutrition', () => {
   });
 
   describe('Add manual mode', () => {
-    test('shows empty state when no nutrition data', () => {
-      const { getByTestId } = render(
+    test('shows empty state when no nutrition data', async () => {
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.addManual}
@@ -135,8 +135,8 @@ describe('RecipeNutrition', () => {
       expect(getByTestId(nutritionEmptyStateTestId + '::OnAddNutrition')).toBeTruthy();
     });
 
-    test('calls onNutritionChange when adding nutrition', () => {
-      const { getByTestId } = render(
+    test('calls onNutritionChange when adding nutrition', async () => {
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.addManual}
@@ -145,7 +145,7 @@ describe('RecipeNutrition', () => {
         />
       );
 
-      fireEvent.press(getByTestId(nutritionEmptyStateTestId + '::OnAddNutrition'));
+      await fireEvent.press(getByTestId(nutritionEmptyStateTestId + '::OnAddNutrition'));
 
       expect(mockOnChange).toHaveBeenCalledWith({
         energyKcal: defaultValueNumber,
@@ -169,8 +169,8 @@ describe('RecipeNutrition', () => {
       mockOpenModal.mockClear();
     });
 
-    test('shows empty state with OCR button when no nutrition data', () => {
-      const { getByTestId } = render(
+    test('shows empty state with OCR button when no nutrition data', async () => {
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.addOCR}
@@ -188,8 +188,8 @@ describe('RecipeNutrition', () => {
       expect(getByTestId(nutritionEmptyStateTestId + '::OnOCRNutrition')).toBeTruthy();
     });
 
-    test('calls openModal when OCR button is pressed', () => {
-      const { getByTestId } = render(
+    test('calls openModal when OCR button is pressed', async () => {
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.addOCR}
@@ -199,14 +199,14 @@ describe('RecipeNutrition', () => {
         />
       );
 
-      fireEvent.press(getByTestId(nutritionEmptyStateTestId + '::OnOCRNutrition'));
+      await fireEvent.press(getByTestId(nutritionEmptyStateTestId + '::OnOCRNutrition'));
 
       expect(mockOpenModal).toHaveBeenCalled();
       expect(mockOnChange).not.toHaveBeenCalled();
     });
 
-    test('shows nutrition table when nutrition data is available', () => {
-      const { getByTestId, queryByTestId } = render(
+    test('shows nutrition table when nutrition data is available', async () => {
+      const { getByTestId, queryByTestId } = await render(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.addOCR}
@@ -224,8 +224,8 @@ describe('RecipeNutrition', () => {
   });
 
   describe('Edit mode', () => {
-    test('renders editable table with remove button', () => {
-      const { getByTestId } = render(
+    test('renders editable table with remove button', async () => {
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.edit}
@@ -243,8 +243,8 @@ describe('RecipeNutrition', () => {
       );
     });
 
-    test('calls onNutritionChange when nutrition values change', () => {
-      const { getByTestId } = render(
+    test('calls onNutritionChange when nutrition values change', async () => {
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.edit}
@@ -253,7 +253,7 @@ describe('RecipeNutrition', () => {
         />
       );
 
-      fireEvent.press(getByTestId(nutritionTableTestId + '::OnNutritionChange'));
+      await fireEvent.press(getByTestId(nutritionTableTestId + '::OnNutritionChange'));
 
       expect(mockOnChange).toHaveBeenCalledWith({
         ...mockNutrition,
@@ -261,8 +261,8 @@ describe('RecipeNutrition', () => {
       });
     });
 
-    test('calls onNutritionChange when removing nutrition', () => {
-      const { getByTestId } = render(
+    test('calls onNutritionChange when removing nutrition', async () => {
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.edit}
@@ -271,13 +271,13 @@ describe('RecipeNutrition', () => {
         />
       );
 
-      fireEvent.press(getByTestId(nutritionTableTestId + '::OnRemoveNutrition'));
+      await fireEvent.press(getByTestId(nutritionTableTestId + '::OnRemoveNutrition'));
 
       expect(mockOnChange).toHaveBeenCalledWith(undefined);
     });
 
-    test('handles nutrition changes with partial updates', () => {
-      const { getByTestId } = render(
+    test('handles nutrition changes with partial updates', async () => {
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.edit}
@@ -286,7 +286,7 @@ describe('RecipeNutrition', () => {
         />
       );
 
-      fireEvent.press(getByTestId(nutritionTableTestId + '::OnNutritionChange'));
+      await fireEvent.press(getByTestId(nutritionTableTestId + '::OnNutritionChange'));
 
       expect(mockOnChange).toHaveBeenCalledWith({
         ...mockNutrition,
@@ -296,9 +296,9 @@ describe('RecipeNutrition', () => {
   });
 
   describe('Component props and behavior', () => {
-    test('renders with custom testID structure', () => {
+    test('renders with custom testID structure', async () => {
       const customTestId = 'CustomNutritionTest';
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.readOnly}
@@ -314,12 +314,12 @@ describe('RecipeNutrition', () => {
       );
     });
 
-    test('handles mode transitions correctly', () => {
+    test('handles mode transitions correctly', async () => {
       const mockOnChange = jest.fn();
       const mockOpenModal = jest.fn();
 
       // Test addManual mode with no data shows empty state
-      const { rerender, queryByTestId } = render(
+      const { rerender, queryByTestId } = await render(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.addManual}
@@ -332,7 +332,7 @@ describe('RecipeNutrition', () => {
       expect(queryByTestId(nutritionTableTestId)).toBeNull();
 
       // Test addOCR mode with no data shows empty state with OCR button
-      rerender(
+      await rerender(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.addOCR}
@@ -347,7 +347,7 @@ describe('RecipeNutrition', () => {
       expect(queryByTestId(nutritionEmptyStateTestId + '::Mode')?.props.children).toBe('ocr');
 
       // Test readOnly mode with data shows table
-      rerender(
+      await rerender(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.readOnly}
@@ -359,7 +359,7 @@ describe('RecipeNutrition', () => {
       expect(queryByTestId(nutritionTableTestId)).toBeTruthy();
 
       // Test edit mode with data shows editable table
-      rerender(
+      await rerender(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.edit}
@@ -373,13 +373,13 @@ describe('RecipeNutrition', () => {
       expect(queryByTestId(nutritionTableTestId + '::IsEditable')?.props.children).toEqual(true);
     });
 
-    test('handles nutrition data with various portion weights', () => {
+    test('handles nutrition data with various portion weights', async () => {
       const nutritionWith150gPortion: nutritionTableElement = {
         ...mockNutrition,
         portionWeight: 150,
       };
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={nutritionWith150gPortion}
           mode={recipeStateType.readOnly}
@@ -397,8 +397,8 @@ describe('RecipeNutrition', () => {
   });
 
   describe('Error display', () => {
-    test('renders error helper below table when error prop provided', () => {
-      const { getByTestId } = render(
+    test('renders error helper below table when error prop provided', async () => {
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.edit}
@@ -412,8 +412,8 @@ describe('RecipeNutrition', () => {
       expect(helper.props.type).toBe('error');
     });
 
-    test('renders error helper below empty state when nutrition missing in edit mode', () => {
-      const { getByTestId } = render(
+    test('renders error helper below empty state when nutrition missing in edit mode', async () => {
+      const { getByTestId } = await render(
         <RecipeNutrition
           nutrition={undefined}
           mode={recipeStateType.addManual}
@@ -427,8 +427,8 @@ describe('RecipeNutrition', () => {
       );
     });
 
-    test('omits error helper when error prop is absent', () => {
-      const { queryByTestId } = render(
+    test('omits error helper when error prop is absent', async () => {
+      const { queryByTestId } = await render(
         <RecipeNutrition
           nutrition={mockNutrition}
           mode={recipeStateType.edit}

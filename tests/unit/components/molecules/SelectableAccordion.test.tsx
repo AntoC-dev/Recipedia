@@ -27,7 +27,7 @@ describe('SelectableAccordion', () => {
     jest.clearAllMocks();
   });
 
-  test('renders title in accordion header', () => {
+  test('renders title in accordion header', async () => {
     const props: SelectableAccordionProps = {
       testID: 'TestAccordion',
       title: 'Pick a fruit',
@@ -36,12 +36,12 @@ describe('SelectableAccordion', () => {
       onPress: mockOnPress,
     };
 
-    const { getByTestId } = render(<SelectableAccordion {...props} />);
+    const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
     expect(getByTestId('TestAccordion::Title').props.children).toBe('Pick a fruit');
   });
 
-  test('toggling accordion fires onPress on header', () => {
+  test('toggling accordion fires onPress on header', async () => {
     const props: SelectableAccordionProps = {
       testID: 'TestAccordion',
       title: 'Fruit',
@@ -50,15 +50,15 @@ describe('SelectableAccordion', () => {
       onPress: mockOnPress,
     };
 
-    const { getByTestId } = render(<SelectableAccordion {...props} />);
+    const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
-    fireEvent.press(getByTestId('TestAccordion::Header'));
+    await fireEvent.press(getByTestId('TestAccordion::Header'));
 
     expect(mockOnPress).not.toHaveBeenCalled();
   });
 
   describe('description', () => {
-    test('shows selected labels joined with comma in multi-select', () => {
+    test('shows selected labels joined with comma in multi-select', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Seasonality',
@@ -68,12 +68,12 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::Description').props.children).toBe('January, March');
     });
 
-    test('shows selected label in single-select', () => {
+    test('shows selected label in single-select', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Fruit',
@@ -82,12 +82,12 @@ describe('SelectableAccordion', () => {
         onPress: mockOnPress,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::Description').props.children).toBe('Banana');
     });
 
-    test('shows empty description when nothing selected in multi-select', () => {
+    test('shows empty description when nothing selected in multi-select', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Seasonality',
@@ -97,12 +97,12 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::Description').props.children).toBe('');
     });
 
-    test('shows empty description when nothing selected in single-select', () => {
+    test('shows empty description when nothing selected in single-select', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Fruit',
@@ -111,12 +111,12 @@ describe('SelectableAccordion', () => {
         onPress: mockOnPress,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::Description').props.children).toBe('');
     });
 
-    test('shows allSelectedLabel when all items are selected', () => {
+    test('shows allSelectedLabel when all items are selected', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Seasonality',
@@ -127,12 +127,12 @@ describe('SelectableAccordion', () => {
         allSelectedLabel: 'All year',
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::Description').props.children).toBe('All year');
     });
 
-    test('shows individual labels when not all items are selected even with allSelectedLabel', () => {
+    test('shows individual labels when not all items are selected even with allSelectedLabel', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Seasonality',
@@ -143,12 +143,12 @@ describe('SelectableAccordion', () => {
         allSelectedLabel: 'All year',
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::Description').props.children).toBe('January, March');
     });
 
-    test('shows joined labels when all selected but no allSelectedLabel', () => {
+    test('shows joined labels when all selected but no allSelectedLabel', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Seasonality',
@@ -158,14 +158,14 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::Description').props.children).toBe(
         'January, February, March'
       );
     });
 
-    test('preserves item order in description regardless of selection order', () => {
+    test('preserves item order in description regardless of selection order', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Seasonality',
@@ -175,12 +175,12 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::Description').props.children).toBe('January, March');
     });
 
-    test('ignores selectedValues that do not match any item', () => {
+    test('ignores selectedValues that do not match any item', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Fruit',
@@ -189,14 +189,14 @@ describe('SelectableAccordion', () => {
         onPress: mockOnPress,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::Description').props.children).toBe('');
     });
   });
 
   describe('single-select mode', () => {
-    test('pressing an item calls onPress with its value', () => {
+    test('pressing an item calls onPress with its value', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Fruit',
@@ -205,14 +205,14 @@ describe('SelectableAccordion', () => {
         onPress: mockOnPress,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
-      fireEvent.press(getByTestId('TestAccordion::banana'));
+      await fireEvent.press(getByTestId('TestAccordion::banana'));
 
       expect(mockOnPress).toHaveBeenCalledWith('banana');
     });
 
-    test('RadioButton.Group receives value matching selectedValues[0]', () => {
+    test('RadioButton.Group receives value matching selectedValues[0]', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Fruit',
@@ -221,12 +221,12 @@ describe('SelectableAccordion', () => {
         onPress: mockOnPress,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::RadioGroup').props.value).toBe('cherry');
     });
 
-    test('RadioButton.Group receives empty string when no value selected', () => {
+    test('RadioButton.Group receives empty string when no value selected', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Fruit',
@@ -235,12 +235,12 @@ describe('SelectableAccordion', () => {
         onPress: mockOnPress,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::RadioGroup').props.value).toBe('');
     });
 
-    test('renders all items', () => {
+    test('renders all items', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Fruit',
@@ -249,14 +249,14 @@ describe('SelectableAccordion', () => {
         onPress: mockOnPress,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       for (const item of singleSelectItems) {
         expect(getByTestId('TestAccordion::' + item.value)).toBeTruthy();
       }
     });
 
-    test('renders FlatList with correct testID', () => {
+    test('renders FlatList with correct testID', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Fruit',
@@ -265,12 +265,12 @@ describe('SelectableAccordion', () => {
         onPress: mockOnPress,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::List')).toBeTruthy();
     });
 
-    test('does not render RadioGroup in multi-select mode', () => {
+    test('does not render RadioGroup in multi-select mode', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -280,14 +280,14 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { queryByTestId } = render(<SelectableAccordion {...props} />);
+      const { queryByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(queryByTestId('TestAccordion::RadioGroup')).toBeNull();
     });
   });
 
   describe('multi-select mode', () => {
-    test('pressing a chip calls onPress with its value', () => {
+    test('pressing a chip calls onPress with its value', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -297,14 +297,14 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
-      fireEvent.press(getByTestId('TestAccordion::2'));
+      await fireEvent.press(getByTestId('TestAccordion::2'));
 
       expect(mockOnPress).toHaveBeenCalledWith('2');
     });
 
-    test('selected chips have selected=true', () => {
+    test('selected chips have selected=true', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -314,13 +314,13 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::1::Selected').props.children).toBe('true');
       expect(getByTestId('TestAccordion::3::Selected').props.children).toBe('true');
     });
 
-    test('unselected chips have selected=false', () => {
+    test('unselected chips have selected=false', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -330,12 +330,12 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::2::Selected').props.children).toBe('false');
     });
 
-    test('renders all items', () => {
+    test('renders all items', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -345,14 +345,14 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       for (const item of multiSelectItems) {
         expect(getByTestId('TestAccordion::' + item.value)).toBeTruthy();
       }
     });
 
-    test('renders chip labels', () => {
+    test('renders chip labels', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -362,7 +362,7 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       for (const item of multiSelectItems) {
         expect(getByTestId('TestAccordion::' + item.value + '::Children').props.children).toBe(
@@ -371,7 +371,7 @@ describe('SelectableAccordion', () => {
       }
     });
 
-    test('renders FlatList with correct testID', () => {
+    test('renders FlatList with correct testID', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -381,12 +381,12 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::List')).toBeTruthy();
     });
 
-    test('all chips are unselected when selectedValues is empty', () => {
+    test('all chips are unselected when selectedValues is empty', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -396,7 +396,7 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       for (const item of multiSelectItems) {
         expect(getByTestId('TestAccordion::' + item.value + '::Selected').props.children).toBe(
@@ -405,7 +405,7 @@ describe('SelectableAccordion', () => {
       }
     });
 
-    test('all chips are selected when all values are in selectedValues', () => {
+    test('all chips are selected when all values are in selectedValues', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -415,7 +415,7 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       for (const item of multiSelectItems) {
         expect(getByTestId('TestAccordion::' + item.value + '::Selected').props.children).toBe(
@@ -426,7 +426,7 @@ describe('SelectableAccordion', () => {
   });
 
   describe('toggle all button', () => {
-    test('does not render button when onToggleAll is not provided', () => {
+    test('does not render button when onToggleAll is not provided', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -436,12 +436,12 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { queryByTestId } = render(<SelectableAccordion {...props} />);
+      const { queryByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(queryByTestId('TestAccordion::ToggleAllButton')).toBeNull();
     });
 
-    test('does not render button in single-select mode even with onToggleAll', () => {
+    test('does not render button in single-select mode even with onToggleAll', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Fruit',
@@ -451,12 +451,12 @@ describe('SelectableAccordion', () => {
         onToggleAll: mockOnToggleAll,
       };
 
-      const { queryByTestId } = render(<SelectableAccordion {...props} />);
+      const { queryByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(queryByTestId('TestAccordion::ToggleAllButton')).toBeNull();
     });
 
-    test('renders button in multi-select mode when onToggleAll is provided', () => {
+    test('renders button in multi-select mode when onToggleAll is provided', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -467,12 +467,12 @@ describe('SelectableAccordion', () => {
         onToggleAll: mockOnToggleAll,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::ToggleAllButton')).toBeTruthy();
     });
 
-    test('shows select_all label when not all items are selected', () => {
+    test('shows select_all label when not all items are selected', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -483,14 +483,14 @@ describe('SelectableAccordion', () => {
         onToggleAll: mockOnToggleAll,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::ToggleAllButton::Children').props.children).toBe(
         'select_all'
       );
     });
 
-    test('shows deselect_all label when all items are selected', () => {
+    test('shows deselect_all label when all items are selected', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -501,14 +501,14 @@ describe('SelectableAccordion', () => {
         onToggleAll: mockOnToggleAll,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::ToggleAllButton::Children').props.children).toBe(
         'deselect_all'
       );
     });
 
-    test('shows select_all label when no items are selected', () => {
+    test('shows select_all label when no items are selected', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -519,14 +519,14 @@ describe('SelectableAccordion', () => {
         onToggleAll: mockOnToggleAll,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::ToggleAllButton::Children').props.children).toBe(
         'select_all'
       );
     });
 
-    test('pressing button calls onToggleAll', () => {
+    test('pressing button calls onToggleAll', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Months',
@@ -537,16 +537,16 @@ describe('SelectableAccordion', () => {
         onToggleAll: mockOnToggleAll,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
-      fireEvent.press(getByTestId('TestAccordion::ToggleAllButton'));
+      await fireEvent.press(getByTestId('TestAccordion::ToggleAllButton'));
 
       expect(mockOnToggleAll).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('empty items', () => {
-    test('renders with no items in single-select mode', () => {
+    test('renders with no items in single-select mode', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Empty',
@@ -555,13 +555,13 @@ describe('SelectableAccordion', () => {
         onPress: mockOnPress,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::Title').props.children).toBe('Empty');
       expect(getByTestId('TestAccordion::Description').props.children).toBe('');
     });
 
-    test('renders with no items in multi-select mode', () => {
+    test('renders with no items in multi-select mode', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Empty',
@@ -571,13 +571,13 @@ describe('SelectableAccordion', () => {
         multiSelect: true,
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::Title').props.children).toBe('Empty');
       expect(getByTestId('TestAccordion::Description').props.children).toBe('');
     });
 
-    test('allSelectedLabel shown when items and selectedValues are both empty', () => {
+    test('allSelectedLabel shown when items and selectedValues are both empty', async () => {
       const props: SelectableAccordionProps = {
         testID: 'TestAccordion',
         title: 'Empty',
@@ -588,7 +588,7 @@ describe('SelectableAccordion', () => {
         allSelectedLabel: 'All',
       };
 
-      const { getByTestId } = render(<SelectableAccordion {...props} />);
+      const { getByTestId } = await render(<SelectableAccordion {...props} />);
 
       expect(getByTestId('TestAccordion::Description').props.children).toBe('All');
     });

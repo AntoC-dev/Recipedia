@@ -1,5 +1,5 @@
 import { fireEvent, waitFor, within } from '@testing-library/react-native';
-import { KeyboardToolbar } from 'react-native-keyboard-controller';
+import { KEYBOARD_TOOLBAR_HOST_TYPES, queryAllByHostType } from '@test-helpers/hostQueries';
 import { keyboardToolbarCaretClearance } from '@styles/spacing';
 import { isPreventRemoveArmed, resetPreventRemove } from '@mocks/deps/react-navigation-mock';
 import { AddFromScrapeProp, AddManuallyProp } from '@customTypes/RecipeNavigationTypes';
@@ -90,7 +90,7 @@ describe('RecipeFormScreen discard guard with a frozen form provider', () => {
   test('arms the guard when a field is edited', async () => {
     const { getByTestId } = await renderRoute(mockRouteAddManually);
 
-    fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), 'Half Typed Recipe');
+    await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Half Typed Recipe');
 
     await waitFor(() => {
       expect(isPreventRemoveArmed()).toBe(true);
@@ -166,9 +166,9 @@ describe('RecipeFormScreen keyboard handling', () => {
 
   test('keeps the caret clear of the measured keyboard toolbar', async () => {
     const measuredToolbarHeight = 57;
-    const { getByTestId, UNSAFE_getByType } = await renderRoute(mockRouteAddManually);
+    const { container, getByTestId } = await renderRoute(mockRouteAddManually);
 
-    fireEvent(UNSAFE_getByType(KeyboardToolbar.Prev), 'layout', {
+    await fireEvent(queryAllByHostType(container, KEYBOARD_TOOLBAR_HOST_TYPES.prev)[0]!, 'layout', {
       nativeEvent: { layout: { x: 0, y: 0, width: 390, height: measuredToolbarHeight } },
     });
 
@@ -184,11 +184,13 @@ describe('RecipeFormScreen keyboard handling', () => {
   });
 
   test('offers previous, next and done controls above the keyboard', async () => {
-    const { UNSAFE_getByType } = await renderRoute(mockRouteAddManually);
+    const { container } = await renderRoute(mockRouteAddManually);
 
-    expect(UNSAFE_getByType(KeyboardToolbar.Prev)).toBeTruthy();
-    expect(UNSAFE_getByType(KeyboardToolbar.Next)).toBeTruthy();
-    expect(UNSAFE_getByType(KeyboardToolbar.Done).props.text).toEqual('done');
+    expect(queryAllByHostType(container, KEYBOARD_TOOLBAR_HOST_TYPES.prev)).toHaveLength(1);
+    expect(queryAllByHostType(container, KEYBOARD_TOOLBAR_HOST_TYPES.next)).toHaveLength(1);
+    expect(queryAllByHostType(container, KEYBOARD_TOOLBAR_HOST_TYPES.done)[0]!.props.text).toEqual(
+      'done'
+    );
   });
 
   test('keeps taps on form controls while the keyboard is open', async () => {

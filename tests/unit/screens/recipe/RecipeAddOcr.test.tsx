@@ -110,14 +110,14 @@ describe('RecipeAddOcr', () => {
     const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddOCR);
 
     expect(queryByTestId('ModalImageSelect')).toBeNull();
-    fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+    await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
     await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
   });
 
   test('modal has autoSelect=false in OCR mode', async () => {
     const { getByTestId } = await renderRoute(mockRouteAddOCR);
 
-    fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+    await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
 
     await waitFor(() => {
       expect(getByTestId('ModalImageSelect::AutoSelect').props.children).toBe('false');
@@ -134,10 +134,10 @@ describe('RecipeAddOcr', () => {
     test('selecting from modal for image target updates RecipeImage via cropImage result', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddOCR);
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
 
-      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await fireEvent.press(getByTestId('ModalImageSelect::Select'));
 
       await waitFor(() => {
         expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('/path/to/cropped/img');
@@ -147,10 +147,10 @@ describe('RecipeAddOcr', () => {
     test('modal is dismissed after image selection', async () => {
       const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddOCR);
 
-      fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
 
-      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await fireEvent.press(getByTestId('ModalImageSelect::Select'));
 
       await waitFor(() => expect(queryByTestId('ModalImageSelect')).toBeNull());
     });
@@ -158,9 +158,9 @@ describe('RecipeAddOcr', () => {
 
   describe('OCR feedback snackbar', () => {
     async function selectImageForTitleTarget(getByTestId: (id: string) => unknown) {
-      fireEvent.press(getByTestId('RecipeTitle::OpenModal') as never);
+      await fireEvent.press(getByTestId('RecipeTitle::OpenModal') as never);
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
-      fireEvent.press(getByTestId('ModalImageSelect::Select') as never);
+      await fireEvent.press(getByTestId('ModalImageSelect::Select') as never);
     }
 
     test('shows the no-data snackbar when extraction yields empty', async () => {
@@ -205,7 +205,7 @@ describe('RecipeAddOcr', () => {
 
       await waitFor(() => expect(getByTestId('Recipe::OcrSnackbar')).toBeTruthy());
 
-      fireEvent.press(getByTestId('Recipe::OcrSnackbar::Dismiss'));
+      await fireEvent.press(getByTestId('Recipe::OcrSnackbar::Dismiss'));
 
       await waitFor(() => expect(queryByTestId('Recipe::OcrSnackbar')).toBeNull());
     });
@@ -218,7 +218,7 @@ describe('RecipeAddOcr', () => {
     };
     const { getByTestId } = await renderRoute(routeWithGalleryImage);
 
-    fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+    await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
 
     await waitFor(() => {
       expect(getByTestId('ModalImageSelect::Images').props.children).toBe(
@@ -231,7 +231,7 @@ describe('RecipeAddOcr', () => {
     test('pressing the back button navigates back', async () => {
       const { getByTestId } = await renderRoute(mockRouteAddOCR);
 
-      fireEvent.press(getByTestId('Recipe::AppBar::BackButton'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::BackButton'));
 
       expect(mockNavigation.goBack).toHaveBeenCalled();
     });
@@ -249,9 +249,9 @@ describe('RecipeAddOcr', () => {
 
       const { getByTestId } = await renderRoute(mockRouteAddOCR);
 
-      fireEvent.press(getByTestId('RecipeTitle::OpenModal'));
+      await fireEvent.press(getByTestId('RecipeTitle::OpenModal'));
       await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
-      fireEvent.press(getByTestId('ModalImageSelect::Select'));
+      await fireEvent.press(getByTestId('ModalImageSelect::Select'));
 
       await waitFor(() => {
         expect(OCR.extractFieldFromImage).toHaveBeenCalled();
@@ -262,14 +262,14 @@ describe('RecipeAddOcr', () => {
         );
       });
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
       });
       expect(getByTestId('Recipe::Alert::Title').props.children).toBe('addAnyway');
 
-      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+      await fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
 
       await waitFor(() => {
         expect(mockNavigation.goBack).toHaveBeenCalled();

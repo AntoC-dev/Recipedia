@@ -69,7 +69,7 @@ describe('BulkImportValidation', () => {
     await database.closeAndReset();
   });
 
-  const renderComponent = (recipes: ConvertedImportRecipe[] = []) => {
+  const renderComponent = async (recipes: ConvertedImportRecipe[] = []) => {
     setMockRouteParams({ providerId: 'hellofresh', selectedRecipes: recipes });
     return render(
       <DefaultPersonsProvider>
@@ -86,7 +86,7 @@ describe('BulkImportValidation', () => {
       acknowledgeWarning: jest.fn(),
     };
 
-    test('shows matching-tags text during matching-tags init stage', () => {
+    test('shows matching-tags text during matching-tags init stage', async () => {
       jest.spyOn(useValidationWorkflowModule, 'useValidationWorkflow').mockReturnValue({
         phase: 'initializing',
         initStage: 'matching-tags',
@@ -98,12 +98,12 @@ describe('BulkImportValidation', () => {
         handlers: noOpHandlers,
       });
 
-      const { getByText } = renderComponent();
+      const { getByText } = await renderComponent();
 
       expect(getByText('bulkImport.validation.matchingTags')).toBeTruthy();
     });
 
-    test('shows matching-ingredients text during matching-ingredients init stage', () => {
+    test('shows matching-ingredients text during matching-ingredients init stage', async () => {
       jest.spyOn(useValidationWorkflowModule, 'useValidationWorkflow').mockReturnValue({
         phase: 'initializing',
         initStage: 'matching-ingredients',
@@ -115,12 +115,12 @@ describe('BulkImportValidation', () => {
         handlers: noOpHandlers,
       });
 
-      const { getByText } = renderComponent();
+      const { getByText } = await renderComponent();
 
       expect(getByText('bulkImport.validation.matchingIngredients')).toBeTruthy();
     });
 
-    test('shows initializing text for unknown init stage', () => {
+    test('shows initializing text for unknown init stage', async () => {
       jest.spyOn(useValidationWorkflowModule, 'useValidationWorkflow').mockReturnValue({
         phase: 'initializing',
         initStage: 'unknown-stage' as any,
@@ -132,7 +132,7 @@ describe('BulkImportValidation', () => {
         handlers: noOpHandlers,
       });
 
-      const { getByText } = renderComponent();
+      const { getByText } = await renderComponent();
 
       expect(getByText('bulkImport.validation.initializing')).toBeTruthy();
     });
@@ -146,7 +146,7 @@ describe('BulkImportValidation', () => {
       title: 'Normal Recipe',
       ingredients: [{ name: 'UnknownIngredient', quantity: '100', unit: 'g' }],
     });
-    const { getByTestId } = renderComponent([recipeWithEmptyIngredients, normalRecipe]);
+    const { getByTestId } = await renderComponent([recipeWithEmptyIngredients, normalRecipe]);
 
     await waitFor(
       () => {
@@ -156,14 +156,14 @@ describe('BulkImportValidation', () => {
     );
   });
 
-  test('renders app bar with title', () => {
-    const { getByTestId } = renderComponent();
+  test('renders app bar with title', async () => {
+    const { getByTestId } = await renderComponent();
 
     expect(getByTestId('BulkImportValidation::AppBar')).toBeTruthy();
   });
 
   test('shows error when no valid recipes', async () => {
-    const { getByText } = renderComponent();
+    const { getByText } = await renderComponent();
 
     await waitFor(() => {
       expect(getByText('bulkImport.validation.importError')).toBeTruthy();
@@ -177,7 +177,7 @@ describe('BulkImportValidation', () => {
         ingredients: [{ name: 'TestIngredient', quantity: '100', unit: 'g' }],
       }),
     ];
-    const { getByTestId } = renderComponent(recipes);
+    const { getByTestId } = await renderComponent(recipes);
 
     await waitFor(() => {
       expect(getByTestId('BulkImportValidation::ValidationReviewList')).toBeTruthy();
@@ -190,17 +190,17 @@ describe('BulkImportValidation', () => {
         ingredients: [{ name: 'UnknownIngredient', quantity: '100', unit: 'g' }],
       }),
     ];
-    const { getByTestId } = renderComponent(recipes);
+    const { getByTestId } = await renderComponent(recipes);
 
     await waitFor(() => {
       expect(getByTestId('BulkImportValidation::ValidationReviewList')).toBeTruthy();
     });
   });
 
-  test('goes back when cancel pressed', () => {
-    const { getByTestId } = renderComponent();
+  test('goes back when cancel pressed', async () => {
+    const { getByTestId } = await renderComponent();
 
-    fireEvent.press(getByTestId('BulkImportValidation::AppBar::BackButton'));
+    await fireEvent.press(getByTestId('BulkImportValidation::AppBar::BackButton'));
 
     expect(mockGoBack).toHaveBeenCalledTimes(1);
   });
@@ -214,13 +214,13 @@ describe('BulkImportValidation', () => {
         tags: [{ id: 0, name: 'TestTag' }],
       }),
     ];
-    const { getByTestId, getByText } = renderComponent(recipes);
+    const { getByTestId, getByText } = await renderComponent(recipes);
 
     await waitFor(() => {
       expect(getByTestId('BulkImportValidation::ValidationReviewList')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('BulkImportValidation::ValidationReviewList::onImport'));
+    await fireEvent.press(getByTestId('BulkImportValidation::ValidationReviewList::onImport'));
 
     await waitFor(
       () => {
@@ -240,13 +240,13 @@ describe('BulkImportValidation', () => {
         tags: [{ id: 0, name: 'TestTag' }],
       }),
     ];
-    const { getByTestId } = renderComponent(recipes);
+    const { getByTestId } = await renderComponent(recipes);
 
     await waitFor(() => {
       expect(getByTestId('BulkImportValidation::ValidationReviewList')).toBeTruthy();
     });
 
-    fireEvent.press(getByTestId('BulkImportValidation::ValidationReviewList::onImport'));
+    await fireEvent.press(getByTestId('BulkImportValidation::ValidationReviewList::onImport'));
 
     await waitFor(
       () => {
@@ -255,7 +255,7 @@ describe('BulkImportValidation', () => {
       { timeout: 3000 }
     );
 
-    fireEvent.press(getByTestId('BulkImportValidation::FinishButton'));
+    await fireEvent.press(getByTestId('BulkImportValidation::FinishButton'));
 
     expect(mockDispatch).toHaveBeenCalledWith(
       expect.objectContaining({

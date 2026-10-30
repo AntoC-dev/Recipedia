@@ -8,63 +8,63 @@ describe('BottomActionButton', () => {
   const testID = 'RecipeView';
   const buttonId = testID + '::BottomActionButton';
 
-  test('renders the label', () => {
-    const { getByTestId } = render(
+  test('renders the label', async () => {
+    const { getByTestId } = await render(
       <BottomActionButton testID={testID} label='Save' onPress={jest.fn()} />
     );
 
     expect(getByTestId(buttonId + '::Children')).toHaveTextContent('Save');
   });
 
-  test('calls onPress when pressed', () => {
+  test('calls onPress when pressed', async () => {
     const onPress = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <BottomActionButton testID={testID} label='Save' onPress={onPress} />
     );
 
-    fireEvent.press(getByTestId(buttonId));
+    await fireEvent.press(getByTestId(buttonId));
 
     expect(onPress).toHaveBeenCalled();
   });
 
   test('awaits a promise-returning onPress without throwing', async () => {
     const onPress = jest.fn().mockResolvedValue(undefined);
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <BottomActionButton testID={testID} label='Save' onPress={onPress} />
     );
 
-    fireEvent.press(getByTestId(buttonId));
+    await fireEvent.press(getByTestId(buttonId));
 
     await waitFor(() => expect(onPress).toHaveBeenCalled());
   });
 
-  test('is enabled by default', () => {
-    const { getByTestId } = render(
+  test('is enabled by default', async () => {
+    const { getByTestId } = await render(
       <BottomActionButton testID={testID} label='Save' onPress={jest.fn()} />
     );
 
     expect(getByTestId(buttonId)).toBeEnabled();
   });
 
-  test('is disabled when the disabled prop is set', () => {
-    const { getByTestId } = render(
+  test('is disabled when the disabled prop is set', async () => {
+    const { getByTestId } = await render(
       <BottomActionButton testID={testID} label='Save' onPress={jest.fn()} disabled={true} />
     );
 
     expect(getByTestId(buttonId)).toBeDisabled();
   });
 
-  test('reserves only the standard padding when there is no bottom inset', () => {
-    const { getByTestId } = render(
+  test('reserves only the standard padding when there is no bottom inset', async () => {
+    const { getByTestId } = await render(
       <BottomActionButton testID={testID} label='Save' onPress={jest.fn()} />
     );
 
     expect(getByTestId(buttonId + '::Container')).toHaveStyle({ paddingBottom: padding.small });
   });
 
-  test('adds the safe-area bottom inset on top of the standard padding', () => {
+  test('adds the safe-area bottom inset on top of the standard padding', async () => {
     const insets = { top: 0, right: 0, bottom: 34, left: 0 };
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <SafeAreaInsetsContext.Provider value={insets}>
         <BottomActionButton testID={testID} label='Save' onPress={jest.fn()} />
       </SafeAreaInsetsContext.Provider>
@@ -75,8 +75,8 @@ describe('BottomActionButton', () => {
     });
   });
 
-  test('pins itself to the bottom of the screen', () => {
-    const { getByTestId } = render(
+  test('pins itself to the bottom of the screen', async () => {
+    const { getByTestId } = await render(
       <BottomActionButton testID={testID} label='Save' onPress={jest.fn()} />
     );
 

@@ -24,14 +24,14 @@ describe('TutorialController Component', () => {
   const renderTutorialProvider = async () => {
     const { View, Text } = require('react-native');
     jest.useFakeTimers();
-    const result = render(
+    const result = await render(
       <TutorialProvider onComplete={mockOnComplete}>
         <View testID='test-child'>
           <Text testID='test-child-text'>Test Child</Text>
         </View>
       </TutorialProvider>
     );
-    act(() => jest.advanceTimersByTime(300));
+    await act(() => jest.advanceTimersByTime(300));
     jest.useRealTimers();
     return result;
   };
@@ -70,7 +70,7 @@ describe('TutorialController Component', () => {
     const { View, Text } = require('react-native');
 
     jest.useFakeTimers();
-    render(
+    await render(
       <TutorialProvider onComplete={mockOnComplete}>
         <View testID='test-child'>
           <Text testID='test-child-text'>Test Child</Text>
@@ -78,40 +78,40 @@ describe('TutorialController Component', () => {
       </TutorialProvider>
     );
 
-    act(() => jest.advanceTimersByTime(299));
+    await act(() => jest.advanceTimersByTime(299));
     expect(mockMethods.start).not.toHaveBeenCalled();
 
-    act(() => jest.advanceTimersByTime(1));
+    await act(() => jest.advanceTimersByTime(1));
     expect(mockMethods.start).toHaveBeenCalled();
 
     jest.useRealTimers();
   });
 
-  test('auto-starts only once across re-renders', () => {
+  test('auto-starts only once across re-renders', async () => {
     const mockMethods = getMockCopilotMethods();
     setMockCopilotState({ isActive: true, visible: false });
     const { View } = require('react-native');
 
     jest.useFakeTimers();
-    const { rerender } = render(
+    const { rerender } = await render(
       <TutorialProvider onComplete={mockOnComplete}>
         <View testID='test-child' />
       </TutorialProvider>
     );
-    act(() => jest.advanceTimersByTime(300));
+    await act(() => jest.advanceTimersByTime(300));
 
-    rerender(
+    await rerender(
       <TutorialProvider onComplete={mockOnComplete}>
         <View testID='test-child' />
       </TutorialProvider>
     );
-    act(() => jest.advanceTimersByTime(300));
+    await act(() => jest.advanceTimersByTime(300));
 
     expect(mockMethods.start).toHaveBeenCalledTimes(1);
     jest.useRealTimers();
   });
 
-  test('auto-starts with the latest start when its identity changes before the delay', () => {
+  test('auto-starts with the latest start when its identity changes before the delay', async () => {
     const { useCopilot } = require('react-native-copilot');
     const originalImpl = useCopilot.getMockImplementation();
     const start1 = jest.fn();
@@ -127,20 +127,20 @@ describe('TutorialController Component', () => {
     const { View } = require('react-native');
 
     jest.useFakeTimers();
-    const { rerender } = render(
+    const { rerender } = await render(
       <TutorialProvider onComplete={mockOnComplete}>
         <View testID='test-child' />
       </TutorialProvider>
     );
 
     currentStart = start2;
-    rerender(
+    await rerender(
       <TutorialProvider onComplete={mockOnComplete}>
         <View testID='test-child' />
       </TutorialProvider>
     );
 
-    act(() => jest.advanceTimersByTime(300));
+    await act(() => jest.advanceTimersByTime(300));
 
     expect(start1).not.toHaveBeenCalled();
     expect(start2).toHaveBeenCalledTimes(1);
@@ -209,7 +209,7 @@ describe('TutorialController Component', () => {
 
     const { unmount } = await renderTutorialProvider();
 
-    unmount();
+    await unmount();
 
     expect(mockEvents.off).toHaveBeenCalledWith('stepChange', expect.any(Function));
     expect(mockEvents.off).toHaveBeenCalledWith('stop', expect.any(Function));

@@ -26,7 +26,7 @@ describe('FilterAccordion Component', () => {
   const mockAddFilter = jest.fn();
   const mockRemoveFilter = jest.fn();
 
-  const renderFilterAccordion = (overrideProps = {}) => {
+  const renderFilterAccordion = async (overrideProps = {}) => {
     const defaultProps: FilterAccordionProps = {
       testId: defaultTestId,
       tagsList: sampleTags,
@@ -71,47 +71,47 @@ describe('FilterAccordion Component', () => {
     jest.clearAllMocks();
   });
 
-  test('renders accordion sections with correct data and collapsed state', () => {
-    const { getByTestId } = renderFilterAccordion();
+  test('renders accordion sections with correct data and collapsed state', async () => {
+    const { getByTestId } = await renderFilterAccordion();
 
     assertAccordionStructure(getByTestId);
   });
 
-  test('handles filter selection and updates checkbox states correctly', () => {
-    const { getByTestId } = renderFilterAccordion();
+  test('handles filter selection and updates checkbox states correctly', async () => {
+    const { getByTestId } = await renderFilterAccordion();
 
     assertAccordionStructure(getByTestId);
 
     const checkbox = defaultTestId + '::FilterAccordion::Accordion::0::Item::0::CheckBox';
 
-    fireEvent.press(getByTestId(checkbox));
+    await fireEvent.press(getByTestId(checkbox));
 
     expect(mockAddFilter).toHaveBeenCalledTimes(1);
     expect(mockRemoveFilter).not.toHaveBeenCalled();
   });
 
-  test('handles filter deselection when filter is already selected', () => {
+  test('handles filter deselection when filter is already selected', async () => {
     const filtersWithSelection = createFiltersStateWithItems(nonIngredientFilters.tags, [
       sampleTags[0]!,
     ]);
 
-    const { getByTestId } = renderFilterAccordion({ filtersState: filtersWithSelection });
+    const { getByTestId } = await renderFilterAccordion({ filtersState: filtersWithSelection });
     const item = defaultTestId + '::FilterAccordion::Accordion::2::Item::0';
     expect(getByTestId(item + '::CheckBox::Status').props.children).toEqual('checked');
 
-    fireEvent.press(getByTestId(item));
+    await fireEvent.press(getByTestId(item));
 
     expect(mockRemoveFilter).toHaveBeenCalledTimes(1);
     expect(mockAddFilter).not.toHaveBeenCalled();
   });
 
-  test('displays multiple selected filters correctly across different sections', () => {
+  test('displays multiple selected filters correctly across different sections', async () => {
     const selectedTags = [sampleTags[0]!, sampleTags[1]!];
     const complexFiltersState = new Map<TListFilter, string[]>();
     complexFiltersState.set(nonIngredientFilters.tags, selectedTags);
     complexFiltersState.set(nonIngredientFilters.recipeTitleInclude, ['Spaghetti']);
 
-    const { getByTestId } = renderFilterAccordion({ filtersState: complexFiltersState });
+    const { getByTestId } = await renderFilterAccordion({ filtersState: complexFiltersState });
     expect(
       getByTestId(`${defaultTestId}::FilterAccordion::Accordion::2::Item::0::CheckBox::Status`)
         .props.children
@@ -122,8 +122,8 @@ describe('FilterAccordion Component', () => {
     ).toEqual('checked');
   });
 
-  test('handles empty data gracefully', () => {
-    const { queryByTestId } = renderFilterAccordion({
+  test('handles empty data gracefully', async () => {
+    const { queryByTestId } = await renderFilterAccordion({
       tagsList: [],
       ingredientsList: [],
     });
@@ -131,21 +131,21 @@ describe('FilterAccordion Component', () => {
     assertAccordionStructure(queryByTestId, []);
   });
 
-  test('uses different testId correctly for multiple instances', () => {
+  test('uses different testId correctly for multiple instances', async () => {
     const customTestId = 'custom-filter-accordion';
-    const { getByTestId } = renderFilterAccordion({ testId: customTestId });
+    const { getByTestId } = await renderFilterAccordion({ testId: customTestId });
 
     assertAccordionStructure(getByTestId, sampleFilteredIngredients, customTestId);
   });
 
-  test('handles rapid successive interactions without errors', () => {
-    const { getByTestId } = renderFilterAccordion();
+  test('handles rapid successive interactions without errors', async () => {
+    const { getByTestId } = await renderFilterAccordion();
 
     const itemTestId = `${defaultTestId}::FilterAccordion::Accordion::0::Item::0`;
 
-    fireEvent.press(getByTestId(itemTestId));
-    fireEvent.press(getByTestId(itemTestId));
-    fireEvent.press(getByTestId(itemTestId));
+    await fireEvent.press(getByTestId(itemTestId));
+    await fireEvent.press(getByTestId(itemTestId));
+    await fireEvent.press(getByTestId(itemTestId));
 
     expect(mockAddFilter).toHaveBeenCalledTimes(3);
     expect(mockRemoveFilter).toHaveBeenCalledTimes(0);

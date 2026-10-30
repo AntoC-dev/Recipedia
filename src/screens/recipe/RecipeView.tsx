@@ -158,6 +158,7 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
       />
 
       <ScrollView
+        testID={RECIPE_TEST_ID + '::ScrollView'}
         decelerationRate={scrollDecelerationRate}
         horizontal={false}
         showsVerticalScrollIndicator={false}

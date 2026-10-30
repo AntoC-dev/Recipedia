@@ -15,46 +15,46 @@ describe('UrlInputDialog', () => {
     jest.clearAllMocks();
   });
 
-  test('renders dialog when visible', () => {
-    const { getByTestId } = render(<UrlInputDialog {...defaultProps} />);
+  test('renders dialog when visible', async () => {
+    const { getByTestId } = await render(<UrlInputDialog {...defaultProps} />);
 
     expect(getByTestId('test::UrlDialog::Title')).toBeTruthy();
   });
 
-  test('renders input field when not loading', () => {
-    const { getByTestId } = render(<UrlInputDialog {...defaultProps} />);
+  test('renders input field when not loading', async () => {
+    const { getByTestId } = await render(<UrlInputDialog {...defaultProps} />);
 
     expect(getByTestId('test::UrlDialog::Input::CustomTextInput')).toBeTruthy();
   });
 
-  test('shows loading indicator when isLoading', () => {
-    const { getByTestId } = render(<UrlInputDialog {...defaultProps} isLoading={true} />);
+  test('shows loading indicator when isLoading', async () => {
+    const { getByTestId } = await render(<UrlInputDialog {...defaultProps} isLoading={true} />);
 
     expect(getByTestId('test::UrlDialog::Loading')).toBeTruthy();
   });
 
-  test('calls onClose when cancel pressed', () => {
+  test('calls onClose when cancel pressed', async () => {
     const onClose = jest.fn();
-    const { getByTestId } = render(<UrlInputDialog {...defaultProps} onClose={onClose} />);
+    const { getByTestId } = await render(<UrlInputDialog {...defaultProps} onClose={onClose} />);
 
-    fireEvent.press(getByTestId('test::UrlDialog::CancelButton'));
+    await fireEvent.press(getByTestId('test::UrlDialog::CancelButton'));
 
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  test('does not call onClose when cancel pressed during loading', () => {
+  test('does not call onClose when cancel pressed during loading', async () => {
     const onClose = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <UrlInputDialog {...defaultProps} onClose={onClose} isLoading={true} />
     );
 
-    fireEvent.press(getByTestId('test::UrlDialog::CancelButton'));
+    await fireEvent.press(getByTestId('test::UrlDialog::CancelButton'));
 
     expect(onClose).not.toHaveBeenCalled();
   });
 
-  test('submit button is disabled when URL is empty', () => {
-    const { getByTestId } = render(<UrlInputDialog {...defaultProps} />);
+  test('submit button is disabled when URL is empty', async () => {
+    const { getByTestId } = await render(<UrlInputDialog {...defaultProps} />);
 
     expect(getByTestId('test::UrlDialog::SubmitButton').props.accessibilityState.disabled).toBe(
       true
@@ -62,9 +62,12 @@ describe('UrlInputDialog', () => {
   });
 
   test('shows validation error for invalid URL', async () => {
-    const { getByTestId } = render(<UrlInputDialog {...defaultProps} />);
+    const { getByTestId } = await render(<UrlInputDialog {...defaultProps} />);
 
-    fireEvent.changeText(getByTestId('test::UrlDialog::Input::CustomTextInput'), 'invalid-url');
+    await fireEvent.changeText(
+      getByTestId('test::UrlDialog::Input::CustomTextInput'),
+      'invalid-url'
+    );
 
     await waitFor(() => {
       expect(getByTestId('test::UrlDialog::HelperText').props.children).toBe(
@@ -75,9 +78,9 @@ describe('UrlInputDialog', () => {
 
   test('calls onSubmit with normalized URL when valid URL submitted', async () => {
     const onSubmit = jest.fn();
-    const { getByTestId } = render(<UrlInputDialog {...defaultProps} onSubmit={onSubmit} />);
+    const { getByTestId } = await render(<UrlInputDialog {...defaultProps} onSubmit={onSubmit} />);
 
-    fireEvent.changeText(
+    await fireEvent.changeText(
       getByTestId('test::UrlDialog::Input::CustomTextInput'),
       'https://example.com/recipe'
     );
@@ -88,13 +91,13 @@ describe('UrlInputDialog', () => {
       );
     });
 
-    fireEvent.press(getByTestId('test::UrlDialog::SubmitButton'));
+    await fireEvent.press(getByTestId('test::UrlDialog::SubmitButton'));
 
     expect(onSubmit).toHaveBeenCalledWith('https://example.com/recipe');
   });
 
-  test('displays external error message', () => {
-    const { getByTestId } = render(
+  test('displays external error message', async () => {
+    const { getByTestId } = await render(
       <UrlInputDialog {...defaultProps} error='Network error occurred' />
     );
 
@@ -104,11 +107,11 @@ describe('UrlInputDialog', () => {
   });
 
   test('clears URL when dialog becomes visible', async () => {
-    const { getByTestId, rerender } = render(
+    const { getByTestId, rerender } = await render(
       <UrlInputDialog {...defaultProps} isVisible={false} />
     );
 
-    rerender(<UrlInputDialog {...defaultProps} isVisible={true} />);
+    await rerender(<UrlInputDialog {...defaultProps} isVisible={true} />);
 
     await waitFor(() => {
       expect(getByTestId('test::UrlDialog::Input::CustomTextInput').props.value).toBe('');

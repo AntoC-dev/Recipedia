@@ -19,26 +19,51 @@ describe('useReducedMotion', () => {
   test('reflects the initial system preference', async () => {
     (AccessibilityInfo.isReduceMotionEnabled as jest.Mock).mockResolvedValue(true);
 
-    const { result } = renderHook(() => useReducedMotion());
+    const renderedPreferences: boolean[] = [];
+    const { result } = await renderHook(() => {
+      const isReduced = useReducedMotion();
+      renderedPreferences.push(isReduced);
+      return isReduced;
+    });
 
-    expect(result.current).toBe(false);
+    expect(renderedPreferences[0]).toBe(false);
     await waitFor(() => expect(result.current).toBe(true));
   });
 
   test('updates when the preference changes', async () => {
-    const { result } = renderHook(() => useReducedMotion());
+    const { result } = await renderHook(() => useReducedMotion());
 
     await waitFor(() => expect(result.current).toBe(false));
 
-    act(() => changeHandler(true));
+    await act(() => changeHandler(true));
 
     expect(result.current).toBe(true);
   });
 
-  test('removes the subscription on unmount', () => {
-    const { unmount } = renderHook(() => useReducedMotion());
+  test('ignores a preference that resolves after unmount', async () => {
+    let resolvePreference: (enabled: boolean) => void = () => {};
+    (AccessibilityInfo.isReduceMotionEnabled as jest.Mock).mockReturnValue(
+      new Promise<boolean>(resolve => {
+        resolvePreference = resolve;
+      })
+    );
+    const renderedPreferences: boolean[] = [];
+    const { unmount } = await renderHook(() => {
+      const isReduced = useReducedMotion();
+      renderedPreferences.push(isReduced);
+      return isReduced;
+    });
+    await unmount();
 
-    unmount();
+    await act(async () => resolvePreference(true));
+
+    expect(renderedPreferences).not.toContain(true);
+  });
+
+  test('removes the subscription on unmount', async () => {
+    const { unmount } = await renderHook(() => useReducedMotion());
+
+    await unmount();
 
     expect(remove).toHaveBeenCalled();
   });

@@ -22,14 +22,14 @@ describe('DismissedRecipesSettings', () => {
     await database.closeAndReset();
   });
 
-  test('renders app bar with title', () => {
-    const { getByTestId } = render(<DismissedRecipesSettings />);
+  test('renders app bar with title', async () => {
+    const { getByTestId } = await render(<DismissedRecipesSettings />);
 
     expect(getByTestId('DismissedRecipesSettings::AppBar')).toBeTruthy();
   });
 
-  test('shows empty state when no dismissed recipes', () => {
-    const { getByTestId } = render(<DismissedRecipesSettings />);
+  test('shows empty state when no dismissed recipes', async () => {
+    const { getByTestId } = await render(<DismissedRecipesSettings />);
 
     expect(getByTestId('DismissedRecipesSettings::Empty')).toBeTruthy();
   });
@@ -39,7 +39,7 @@ describe('DismissedRecipesSettings', () => {
       { url: 'https://hellofresh.com/recipe-1', title: 'Dismissed Recipe' },
     ]);
 
-    const { getByTestId } = render(<DismissedRecipesSettings />);
+    const { getByTestId } = await render(<DismissedRecipesSettings />);
 
     expect(getByTestId('DismissedRecipesSettings::hellofresh')).toBeTruthy();
     expect(getByTestId('DismissedRecipesSettings::hellofresh::0::Title').props.children).toBe(
@@ -55,7 +55,7 @@ describe('DismissedRecipesSettings', () => {
       { url: 'https://quitoque.fr/recipe-1', title: 'Quitoque Recipe' },
     ]);
 
-    const { getByTestId } = render(<DismissedRecipesSettings />);
+    const { getByTestId } = await render(<DismissedRecipesSettings />);
 
     expect(getByTestId('DismissedRecipesSettings::hellofresh')).toBeTruthy();
     expect(getByTestId('DismissedRecipesSettings::quitoque')).toBeTruthy();
@@ -66,7 +66,7 @@ describe('DismissedRecipesSettings', () => {
       { url: 'https://hellofresh.com/recipe-1', title: 'Recipe 1' },
     ]);
 
-    const { getByTestId } = render(<DismissedRecipesSettings />);
+    const { getByTestId } = await render(<DismissedRecipesSettings />);
 
     expect(getByTestId('DismissedRecipesSettings::hellofresh::Description').props.children).toBe(
       'bulkImport.dismissed.count'
@@ -79,7 +79,7 @@ describe('DismissedRecipesSettings', () => {
       { url: 'https://hellofresh.com/recipe-2', title: 'Recipe 2' },
     ]);
 
-    const { getByTestId } = render(<DismissedRecipesSettings />);
+    const { getByTestId } = await render(<DismissedRecipesSettings />);
 
     expect(getByTestId('DismissedRecipesSettings::hellofresh::Description').props.children).toBe(
       'bulkImport.dismissed.countPlural'
@@ -90,9 +90,9 @@ describe('DismissedRecipesSettings', () => {
     const url = 'https://hellofresh.com/recipe-1';
     await database.markRecipesAsDismissed('hellofresh', [{ url, title: 'Dismissed Recipe' }]);
 
-    const { getByTestId, queryByTestId } = render(<DismissedRecipesSettings />);
+    const { getByTestId, queryByTestId } = await render(<DismissedRecipesSettings />);
 
-    fireEvent.press(getByTestId('DismissedRecipesSettings::hellofresh::0::RestoreButton'));
+    await fireEvent.press(getByTestId('DismissedRecipesSettings::hellofresh::0::RestoreButton'));
 
     await waitFor(() => {
       expect(queryByTestId('DismissedRecipesSettings::hellofresh::0::Title')).toBeNull();
@@ -100,10 +100,10 @@ describe('DismissedRecipesSettings', () => {
     expect(database.getDismissedUrls('hellofresh').has(url)).toBe(false);
   });
 
-  test('navigates back when app bar back pressed', () => {
-    const { getByTestId } = render(<DismissedRecipesSettings />);
+  test('navigates back when app bar back pressed', async () => {
+    const { getByTestId } = await render(<DismissedRecipesSettings />);
 
-    fireEvent.press(getByTestId('DismissedRecipesSettings::AppBar::BackButton'));
+    await fireEvent.press(getByTestId('DismissedRecipesSettings::AppBar::BackButton'));
 
     expect(mockGoBack).toHaveBeenCalledTimes(1);
   });

@@ -24,7 +24,7 @@ function Probe({ name }: { name: 'recipeTitle' }) {
   );
 }
 
-function renderHostedProbe(defaults?: Partial<RecipeFormInput>) {
+async function renderHostedProbe(defaults?: Partial<RecipeFormInput>) {
   const formRef: { current: Form | null } = { current: null };
   function Host() {
     const form = useForm<RecipeFormInput>({
@@ -52,21 +52,21 @@ function renderHostedProbe(defaults?: Partial<RecipeFormInput>) {
       </FormProvider>
     );
   }
-  const utils = render(<Host />);
+  const utils = await render(<Host />);
   if (!formRef.current) throw new Error('form not captured');
   return { ...utils, form: formRef.current };
 }
 
 describe('useInlineErrorFor', () => {
-  test('returns no error before the field has been touched or the form submitted', () => {
-    const { getByTestId } = renderHostedProbe();
+  test('returns no error before the field has been touched or the form submitted', async () => {
+    const { getByTestId } = await renderHostedProbe();
     expect(getByTestId('error').props.children).toBe('');
     expect(getByTestId('isTouched').props.children).toBe('false');
     expect(getByTestId('showInlineError').props.children).toBe('false');
   });
 
   test('surfaces the translated inline error after the field is edited and invalid', async () => {
-    const { getByTestId, form } = renderHostedProbe({ recipeTitle: 'Pancakes' });
+    const { getByTestId, form } = await renderHostedProbe({ recipeTitle: 'Pancakes' });
     await act(async () => {
       form.setValue('recipeTitle', '', {
         shouldDirty: true,
@@ -79,7 +79,7 @@ describe('useInlineErrorFor', () => {
   });
 
   test('hides the inline error after a bare blur with no edit', async () => {
-    const { getByTestId, form } = renderHostedProbe();
+    const { getByTestId, form } = await renderHostedProbe();
     await act(async () => {
       form.setValue('recipeTitle', '', { shouldTouch: true, shouldValidate: true });
     });
@@ -89,7 +89,7 @@ describe('useInlineErrorFor', () => {
   });
 
   test('keeps the inline error after the field is edited then cleared back to empty', async () => {
-    const { getByTestId, form } = renderHostedProbe();
+    const { getByTestId, form } = await renderHostedProbe();
     await act(async () => {
       form.setValue('recipeTitle', 'Temp', { shouldDirty: true, shouldTouch: true });
     });
@@ -105,7 +105,7 @@ describe('useInlineErrorFor', () => {
   });
 
   test('latches hasBeenEdited once the field is edited and keeps it after clearing', async () => {
-    const { getByTestId, form } = renderHostedProbe();
+    const { getByTestId, form } = await renderHostedProbe();
     expect(getByTestId('hasBeenEdited').props.children).toBe('false');
     await act(async () => {
       form.setValue('recipeTitle', 'Temp', { shouldDirty: true, shouldTouch: true });
@@ -118,7 +118,7 @@ describe('useInlineErrorFor', () => {
   });
 
   test('keeps hasBeenEdited latched after form.reset() since it tracks the component lifetime', async () => {
-    const { getByTestId, form } = renderHostedProbe();
+    const { getByTestId, form } = await renderHostedProbe();
     await act(async () => {
       form.setValue('recipeTitle', 'Temp', { shouldDirty: true, shouldTouch: true });
     });
@@ -130,7 +130,7 @@ describe('useInlineErrorFor', () => {
   });
 
   test('keeps hasBeenEdited false after a bare blur with no edit', async () => {
-    const { getByTestId, form } = renderHostedProbe();
+    const { getByTestId, form } = await renderHostedProbe();
     await act(async () => {
       form.setValue('recipeTitle', '', { shouldTouch: true, shouldValidate: true });
     });
@@ -138,7 +138,7 @@ describe('useInlineErrorFor', () => {
   });
 
   test('surfaces the inline error after submit even when the field was never touched', async () => {
-    const { getByTestId, form } = renderHostedProbe();
+    const { getByTestId, form } = await renderHostedProbe();
     await act(async () => {
       await form.handleSubmit(
         () => {},
@@ -150,7 +150,7 @@ describe('useInlineErrorFor', () => {
   });
 
   test('returns no error when programmatic setValue does not mark the field touched', async () => {
-    const { getByTestId, form } = renderHostedProbe({ recipeTitle: 'Pancakes' });
+    const { getByTestId, form } = await renderHostedProbe({ recipeTitle: 'Pancakes' });
     await act(async () => {
       form.setValue('recipeTitle', '', { shouldTouch: false, shouldValidate: true });
     });
@@ -159,7 +159,7 @@ describe('useInlineErrorFor', () => {
   });
 
   test('form.reset() clears touchedFields and re-hides the inline error', async () => {
-    const { getByTestId, form } = renderHostedProbe({ recipeTitle: 'Pancakes' });
+    const { getByTestId, form } = await renderHostedProbe({ recipeTitle: 'Pancakes' });
     await act(async () => {
       form.setValue('recipeTitle', '', {
         shouldDirty: true,

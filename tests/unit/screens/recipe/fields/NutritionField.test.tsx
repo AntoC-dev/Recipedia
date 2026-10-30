@@ -16,8 +16,8 @@ jest.mock('@components/molecules/NutritionEmptyState', () =>
 );
 
 describe('RecipeNutritionField', () => {
-  test('does not render nutrition table when value is undefined in readOnly mode', () => {
-    const { queryByTestId } = renderWithForm(RecipeNutritionField, f => ({
+  test('does not render nutrition table when value is undefined in readOnly mode', async () => {
+    const { queryByTestId } = await renderWithForm(RecipeNutritionField, f => ({
       form: f,
       stackMode: recipeStateType.readOnly,
       openModalForField: jest.fn(),
@@ -27,8 +27,8 @@ describe('RecipeNutritionField', () => {
     expect(queryByTestId('Recipe::RecipeNutrition::NutritionTable')).toBeNull();
   });
 
-  test('renders empty state in addManual mode when nutrition undefined', () => {
-    const { getByTestId } = renderWithForm(RecipeNutritionField, f => ({
+  test('renders empty state in addManual mode when nutrition undefined', async () => {
+    const { getByTestId } = await renderWithForm(RecipeNutritionField, f => ({
       form: f,
       stackMode: recipeStateType.addManual,
       openModalForField: jest.fn(),
@@ -38,7 +38,7 @@ describe('RecipeNutritionField', () => {
     expect(getByTestId('Recipe::RecipeNutrition::NutritionEmptyState')).toBeTruthy();
   });
 
-  test('setRecipeNutrition writes through to form on edit', () => {
+  test('setRecipeNutrition writes through to form on edit', async () => {
     const nutrition = {
       energyKcal: 200,
       energyKj: 836,
@@ -51,7 +51,7 @@ describe('RecipeNutritionField', () => {
       salt: 0.5,
       portionWeight: 100,
     };
-    const { getByTestId, form } = renderWithForm(
+    const { getByTestId, form } = await renderWithForm(
       RecipeNutritionField,
       f => ({
         form: f,
@@ -62,11 +62,13 @@ describe('RecipeNutritionField', () => {
       }),
       { recipeNutrition: nutrition }
     );
-    fireEvent.press(getByTestId('Recipe::RecipeNutrition::NutritionTable::OnNutritionChange'));
+    await fireEvent.press(
+      getByTestId('Recipe::RecipeNutrition::NutritionTable::OnNutritionChange')
+    );
     expect(form.getValues('recipeNutrition')?.energyKcal).toBe(300);
   });
 
-  test('renders nutrition table with form value in readOnly mode', () => {
+  test('renders nutrition table with form value in readOnly mode', async () => {
     const nutrition = {
       energyKcal: 200,
       energyKj: 836,
@@ -79,7 +81,7 @@ describe('RecipeNutritionField', () => {
       salt: 0.5,
       portionWeight: 100,
     };
-    const { getByTestId } = renderWithForm(
+    const { getByTestId } = await renderWithForm(
       RecipeNutritionField,
       form => ({
         form,
@@ -108,7 +110,7 @@ describe('RecipeNutritionField', () => {
       salt: 0.5,
       portionWeight: 100,
     };
-    const { getByTestId } = renderWithForm(
+    const { getByTestId } = await renderWithForm(
       RecipeNutritionField,
       f => ({
         form: f,
@@ -121,16 +123,16 @@ describe('RecipeNutritionField', () => {
     );
     // The mock's OnNutritionChange commits { energyKcal: 300 } — a real change
     // from the default, so the field dirties; energyKj remains invalid.
-    await act(async () => {
-      fireEvent.press(getByTestId('Recipe::RecipeNutrition::NutritionTable::OnNutritionChange'));
-    });
+    await fireEvent.press(
+      getByTestId('Recipe::RecipeNutrition::NutritionTable::OnNutritionChange')
+    );
     expect(getByTestId('Recipe::RecipeNutrition::Error').props.children).toBe(
       'alerts.inlineErrors.nutrition'
     );
   });
 
   test('surfaces inline nutrition error after adding nutrition from an undefined default', async () => {
-    const { getByTestId, queryByTestId, form } = renderWithForm(RecipeNutritionField, f => ({
+    const { getByTestId, queryByTestId, form } = await renderWithForm(RecipeNutritionField, f => ({
       form: f,
       stackMode: recipeStateType.addManual,
       openModalForField: jest.fn(),
@@ -138,9 +140,9 @@ describe('RecipeNutritionField', () => {
       t,
     }));
     expect(queryByTestId('Recipe::RecipeNutrition::Error')).toBeNull();
-    await act(async () => {
-      fireEvent.press(getByTestId('Recipe::RecipeNutrition::NutritionEmptyState::OnAddNutrition'));
-    });
+    await fireEvent.press(
+      getByTestId('Recipe::RecipeNutrition::NutritionEmptyState::OnAddNutrition')
+    );
     expect(form.getValues('recipeNutrition')?.energyKcal).toBe(defaultValueNumber);
     expect(getByTestId('Recipe::RecipeNutrition::Error').props.children).toBe(
       'alerts.inlineErrors.nutrition'
@@ -160,7 +162,7 @@ describe('RecipeNutritionField', () => {
       salt: 0.5,
       portionWeight: 100,
     };
-    const { queryByTestId, form } = renderWithForm(
+    const { queryByTestId, form } = await renderWithForm(
       RecipeNutritionField,
       f => ({
         form: f,

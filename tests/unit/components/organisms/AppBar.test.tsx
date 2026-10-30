@@ -14,7 +14,7 @@ describe('AppBar Component', () => {
     testID: 'Test',
   };
 
-  const renderComponent = (props: AppBarProps = baseProps) => {
+  const renderComponent = async (props: AppBarProps = baseProps) => {
     return render(<AppBar {...props} />);
   };
 
@@ -23,39 +23,39 @@ describe('AppBar Component', () => {
   });
 
   describe('simple mode (just back button)', () => {
-    test('renders AppBar header with testID', () => {
-      const { getByTestId } = renderComponent();
+    test('renders AppBar header with testID', async () => {
+      const { getByTestId } = await renderComponent();
       expect(getByTestId('Test::AppBar')).toBeTruthy();
     });
 
-    test('renders back button', () => {
-      const { getByTestId } = renderComponent();
+    test('renders back button', async () => {
+      const { getByTestId } = await renderComponent();
       expect(getByTestId('Test::AppBar::BackButton')).toBeTruthy();
     });
 
-    test('does not render cancel button', () => {
-      const { queryByTestId } = renderComponent();
+    test('does not render cancel button', async () => {
+      const { queryByTestId } = await renderComponent();
       expect(queryByTestId('Test::AppBar::Cancel')).toBeNull();
     });
 
-    test('does not render delete button', () => {
-      const { queryByTestId } = renderComponent();
+    test('does not render delete button', async () => {
+      const { queryByTestId } = await renderComponent();
       expect(queryByTestId('Test::AppBar::Delete')).toBeNull();
     });
 
-    test('does not render edit button', () => {
-      const { queryByTestId } = renderComponent();
+    test('does not render edit button', async () => {
+      const { queryByTestId } = await renderComponent();
       expect(queryByTestId('Test::AppBar::Edit')).toBeNull();
     });
 
-    test('does not render validate button', () => {
-      const { queryByTestId } = renderComponent();
+    test('does not render validate button', async () => {
+      const { queryByTestId } = await renderComponent();
       expect(queryByTestId('Test::AppBar::Validate')).toBeNull();
     });
 
-    test('back button calls onGoBack', () => {
-      const { getByTestId } = renderComponent();
-      fireEvent.press(getByTestId('Test::AppBar::BackButton'));
+    test('back button calls onGoBack', async () => {
+      const { getByTestId } = await renderComponent();
+      await fireEvent.press(getByTestId('Test::AppBar::BackButton'));
       expect(mockOnGoBack).toHaveBeenCalledTimes(1);
     });
   });
@@ -66,13 +66,13 @@ describe('AppBar Component', () => {
       title: 'Test Title',
     };
 
-    test('renders title', () => {
-      const { getByText } = renderComponent(settingsProps);
+    test('renders title', async () => {
+      const { getByText } = await renderComponent(settingsProps);
       expect(getByText('Test Title')).toBeTruthy();
     });
 
-    test('renders with custom testID', () => {
-      const { getByTestId } = renderComponent({ ...settingsProps, testID: 'Custom' });
+    test('renders with custom testID', async () => {
+      const { getByTestId } = await renderComponent({ ...settingsProps, testID: 'Custom' });
       expect(getByTestId('Custom::AppBar')).toBeTruthy();
       expect(getByTestId('Custom::AppBar::BackButton')).toBeTruthy();
     });
@@ -85,40 +85,40 @@ describe('AppBar Component', () => {
       onEdit: mockOnEdit,
     };
 
-    test('renders back button', () => {
-      const { getByTestId } = renderComponent(readOnlyProps);
+    test('renders back button', async () => {
+      const { getByTestId } = await renderComponent(readOnlyProps);
       expect(getByTestId('Test::AppBar::BackButton')).toBeTruthy();
     });
 
-    test('renders delete button', () => {
-      const { getByTestId } = renderComponent(readOnlyProps);
+    test('renders delete button', async () => {
+      const { getByTestId } = await renderComponent(readOnlyProps);
       expect(getByTestId('Test::AppBar::Delete')).toBeTruthy();
     });
 
-    test('renders edit button', () => {
-      const { getByTestId } = renderComponent(readOnlyProps);
+    test('renders edit button', async () => {
+      const { getByTestId } = await renderComponent(readOnlyProps);
       expect(getByTestId('Test::AppBar::Edit')).toBeTruthy();
     });
 
-    test('does not render cancel button', () => {
-      const { queryByTestId } = renderComponent(readOnlyProps);
+    test('does not render cancel button', async () => {
+      const { queryByTestId } = await renderComponent(readOnlyProps);
       expect(queryByTestId('Test::AppBar::Cancel')).toBeNull();
     });
 
-    test('does not render validate button', () => {
-      const { queryByTestId } = renderComponent(readOnlyProps);
+    test('does not render validate button', async () => {
+      const { queryByTestId } = await renderComponent(readOnlyProps);
       expect(queryByTestId('Test::AppBar::Validate')).toBeNull();
     });
 
-    test('delete button calls onDelete', () => {
-      const { getByTestId } = renderComponent(readOnlyProps);
-      fireEvent.press(getByTestId('Test::AppBar::Delete'));
+    test('delete button calls onDelete', async () => {
+      const { getByTestId } = await renderComponent(readOnlyProps);
+      await fireEvent.press(getByTestId('Test::AppBar::Delete'));
       expect(mockOnDelete).toHaveBeenCalledTimes(1);
     });
 
-    test('edit button calls onEdit', () => {
-      const { getByTestId } = renderComponent(readOnlyProps);
-      fireEvent.press(getByTestId('Test::AppBar::Edit'));
+    test('edit button calls onEdit', async () => {
+      const { getByTestId } = await renderComponent(readOnlyProps);
+      await fireEvent.press(getByTestId('Test::AppBar::Edit'));
       expect(mockOnEdit).toHaveBeenCalledTimes(1);
     });
   });
@@ -131,59 +131,59 @@ describe('AppBar Component', () => {
       onValidate: mockOnValidate,
     };
 
-    test('renders cancel button', () => {
-      const { getByTestId } = renderComponent(editProps);
+    test('renders cancel button', async () => {
+      const { getByTestId } = await renderComponent(editProps);
       expect(getByTestId('Test::AppBar::Cancel')).toBeTruthy();
     });
 
-    test('renders validate button', () => {
-      const { getByTestId } = renderComponent(editProps);
+    test('renders validate button', async () => {
+      const { getByTestId } = await renderComponent(editProps);
       expect(getByTestId('Test::AppBar::Validate')).toBeTruthy();
     });
 
-    test('does not render back button', () => {
-      const { queryByTestId } = renderComponent(editProps);
+    test('does not render back button', async () => {
+      const { queryByTestId } = await renderComponent(editProps);
       expect(queryByTestId('Test::AppBar::BackButton')).toBeNull();
     });
 
-    test('does not render delete button when callback not provided', () => {
-      const { queryByTestId } = renderComponent(editProps);
+    test('does not render delete button when callback not provided', async () => {
+      const { queryByTestId } = await renderComponent(editProps);
       expect(queryByTestId('Test::AppBar::Delete')).toBeNull();
     });
 
-    test('does not render edit button when callback not provided', () => {
-      const { queryByTestId } = renderComponent(editProps);
+    test('does not render edit button when callback not provided', async () => {
+      const { queryByTestId } = await renderComponent(editProps);
       expect(queryByTestId('Test::AppBar::Edit')).toBeNull();
     });
 
-    test('renders delete button when callback provided', () => {
+    test('renders delete button when callback provided', async () => {
       const propsWithDelete: AppBarProps = { ...editProps, onDelete: mockOnDelete };
-      const { getByTestId } = renderComponent(propsWithDelete);
+      const { getByTestId } = await renderComponent(propsWithDelete);
       expect(getByTestId('Test::AppBar::Delete')).toBeTruthy();
     });
 
-    test('renders edit button when callback provided', () => {
+    test('renders edit button when callback provided', async () => {
       const propsWithEdit: AppBarProps = { ...editProps, onEdit: mockOnEdit };
-      const { getByTestId } = renderComponent(propsWithEdit);
+      const { getByTestId } = await renderComponent(propsWithEdit);
       expect(getByTestId('Test::AppBar::Edit')).toBeTruthy();
     });
 
-    test('cancel button calls onCancel', () => {
-      const { getByTestId } = renderComponent(editProps);
-      fireEvent.press(getByTestId('Test::AppBar::Cancel'));
+    test('cancel button calls onCancel', async () => {
+      const { getByTestId } = await renderComponent(editProps);
+      await fireEvent.press(getByTestId('Test::AppBar::Cancel'));
       expect(mockOnCancel).toHaveBeenCalledTimes(1);
     });
 
-    test('validate button calls onValidate', () => {
-      const { getByTestId } = renderComponent(editProps);
-      fireEvent.press(getByTestId('Test::AppBar::Validate'));
+    test('validate button calls onValidate', async () => {
+      const { getByTestId } = await renderComponent(editProps);
+      await fireEvent.press(getByTestId('Test::AppBar::Validate'));
       expect(mockOnValidate).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('callbacks not called on render', () => {
-    test('no callbacks called on initial render', () => {
-      renderComponent({
+    test('no callbacks called on initial render', async () => {
+      await renderComponent({
         ...baseProps,
         onCancel: mockOnCancel,
         onValidate: mockOnValidate,

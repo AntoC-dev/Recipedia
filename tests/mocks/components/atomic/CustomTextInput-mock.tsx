@@ -47,9 +47,8 @@ export function CustomTextInputMock({
         onEndEditing={handleEndEditing}
         onBlur={onBlur}
         onLayout={onLayout}
-      >
-        {label}
-      </TextInput>
+      />
+      {label !== undefined && <Text testID={testID + '::Label'}>{label}</Text>}
       {error !== undefined && <Text testID={testID + '::error'}>{String(error)}</Text>}
     </>
   );

@@ -10,8 +10,8 @@ describe('ImageThumbnail', () => {
   const testID = 'Screenshot';
   const thumbnailId = testID + '::Thumbnail';
 
-  test('forwards uri and size to the underlying image', () => {
-    const { getByTestId } = render(
+  test('forwards uri and size to the underlying image', async () => {
+    const { getByTestId } = await render(
       <ImageThumbnail uri='file:///photo.jpg' size={80} testID={testID} />
     );
 
@@ -19,27 +19,29 @@ describe('ImageThumbnail', () => {
     expect(getByTestId(testID + '::Size')).toHaveTextContent('80');
   });
 
-  test('defaults the border radius to zero when not provided', () => {
-    const { getByTestId } = render(<ImageThumbnail size={80} testID={testID} />);
+  test('defaults the border radius to zero when not provided', async () => {
+    const { getByTestId } = await render(<ImageThumbnail size={80} testID={testID} />);
 
     expect(getByTestId(testID + '::BorderRadius')).toHaveTextContent('0');
   });
 
-  test('forwards an explicit border radius to the underlying image', () => {
-    const { getByTestId } = render(<ImageThumbnail size={60} borderRadius={8} testID={testID} />);
+  test('forwards an explicit border radius to the underlying image', async () => {
+    const { getByTestId } = await render(
+      <ImageThumbnail size={60} borderRadius={8} testID={testID} />
+    );
 
     expect(getByTestId(testID + '::BorderRadius')).toHaveTextContent('8');
   });
 
-  test('renders no icon overlay when no icon is given', () => {
-    const { queryByTestId } = render(<ImageThumbnail size={80} testID={testID} />);
+  test('renders no icon overlay when no icon is given', async () => {
+    const { queryByTestId } = await render(<ImageThumbnail size={80} testID={testID} />);
 
     expect(queryByTestId(thumbnailId + '::IconButton')).toBeNull();
     expect(queryByTestId(thumbnailId + '::Icon')).toBeNull();
   });
 
-  test('renders a pressable icon button when onIconPress is given', () => {
-    const { getByTestId, queryByTestId } = render(
+  test('renders a pressable icon button when onIconPress is given', async () => {
+    const { getByTestId, queryByTestId } = await render(
       <ImageThumbnail size={80} testID={testID} icon='close' onIconPress={jest.fn()} />
     );
 
@@ -47,19 +49,19 @@ describe('ImageThumbnail', () => {
     expect(queryByTestId(thumbnailId + '::Icon')).toBeNull();
   });
 
-  test('calls onIconPress when the icon button is pressed', () => {
+  test('calls onIconPress when the icon button is pressed', async () => {
     const onIconPress = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ImageThumbnail size={80} testID={testID} icon='close' onIconPress={onIconPress} />
     );
 
-    fireEvent.press(getByTestId(thumbnailId + '::IconButton'));
+    await fireEvent.press(getByTestId(thumbnailId + '::IconButton'));
 
     expect(onIconPress).toHaveBeenCalled();
   });
 
-  test('renders a display-only icon when onIconPress is omitted', () => {
-    const { getByTestId, queryByTestId } = render(
+  test('renders a display-only icon when onIconPress is omitted', async () => {
+    const { getByTestId, queryByTestId } = await render(
       <ImageThumbnail size={60} testID={testID} icon='history' />
     );
 
@@ -68,20 +70,24 @@ describe('ImageThumbnail', () => {
     expect(queryByTestId(thumbnailId + '::IconButton')).toBeNull();
   });
 
-  test('scales the display-only icon to a fifth of the thumbnail size', () => {
-    const { getByTestId } = render(<ImageThumbnail size={60} testID={testID} icon='history' />);
+  test('scales the display-only icon to a fifth of the thumbnail size', async () => {
+    const { getByTestId } = await render(
+      <ImageThumbnail size={60} testID={testID} icon='history' />
+    );
 
     expect(getByTestId(thumbnailId + '::Icon').props.size).toBe(12);
   });
 
-  test('rounds the icon size to a whole number', () => {
-    const { getByTestId } = render(<ImageThumbnail size={57} testID={testID} icon='history' />);
+  test('rounds the icon size to a whole number', async () => {
+    const { getByTestId } = await render(
+      <ImageThumbnail size={57} testID={testID} icon='history' />
+    );
 
     expect(getByTestId(thumbnailId + '::Icon').props.size).toBe(11);
   });
 
-  test('sizes the icon button touch target from the thumbnail size', () => {
-    const { getByTestId } = render(
+  test('sizes the icon button touch target from the thumbnail size', async () => {
+    const { getByTestId } = await render(
       <ImageThumbnail size={80} testID={testID} icon='close' onIconPress={jest.fn()} />
     );
 

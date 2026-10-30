@@ -40,7 +40,7 @@ describe('SimilarityDialog', () => {
   });
 
   const renderDialog = async (props: SimilarityDialogProps) => {
-    const result = render(<SimilarityDialog {...props} />);
+    const result = await render(<SimilarityDialog {...props} />);
     if (props.isVisible) {
       await waitFor(() => {
         expect(result.getByTestId(`${modalTestId}::Title`)).toBeTruthy();
@@ -102,7 +102,7 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId, queryByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
 
       expect(queryByTestId(`${modalTestId}::Title`)).toBeNull();
       expect(getByTestId(`${testId}::DatabasePicker`)).toBeTruthy();
@@ -124,8 +124,8 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId, queryByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
-      fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
 
       expect(queryByTestId(`${modalTestId}::Title`)).toBeNull();
       expect(getByTestId(`${testId}::PickConfirmation`)).toBeTruthy();
@@ -197,7 +197,7 @@ describe('SimilarityDialog', () => {
     test('calls onUseExisting and onClose when use button is pressed', async () => {
       const { getByTestId } = await renderDialog(baseProps);
 
-      fireEvent.press(getByTestId(`${modalTestId}::UseButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::UseButton`));
 
       expect(mockOnUseExisting).toHaveBeenCalledWith(similarIngredient);
       expect(mockOnClose).toHaveBeenCalled();
@@ -207,7 +207,7 @@ describe('SimilarityDialog', () => {
     test('opens ItemDialog when add button is pressed', async () => {
       const { getByTestId } = await renderDialog(baseProps);
 
-      fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
 
       expect(getByTestId(`${testId}::ItemDialog::IsVisible`).props.children).toBe(true);
     });
@@ -215,7 +215,7 @@ describe('SimilarityDialog', () => {
     test('opens DatabasePickerDialog when pick button is pressed', async () => {
       const { getByTestId } = await renderDialog(baseProps);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
 
       expect(getByTestId(`${testId}::DatabasePicker`)).toBeTruthy();
     });
@@ -276,7 +276,7 @@ describe('SimilarityDialog', () => {
     test('calls onDismiss and onClose when cancel button is pressed', async () => {
       const { getByTestId } = await renderDialog(baseProps);
 
-      fireEvent.press(getByTestId(`${modalTestId}::CancelButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::CancelButton`));
 
       expect(mockOnDismiss).toHaveBeenCalled();
       expect(mockOnClose).toHaveBeenCalled();
@@ -323,7 +323,7 @@ describe('SimilarityDialog', () => {
     test('calls onUseExisting and onClose when use button is pressed', async () => {
       const { getByTestId } = await renderDialog(baseProps);
 
-      fireEvent.press(getByTestId(`${modalTestId}::UseButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::UseButton`));
 
       expect(mockOnUseExisting).toHaveBeenCalledWith(similarTag);
       expect(mockOnClose).toHaveBeenCalled();
@@ -371,7 +371,7 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
 
       expect(getByTestId(`${testId}::DatabasePicker`)).toBeTruthy();
     });
@@ -391,7 +391,7 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
 
       expect(getByTestId(`${testId}::DatabasePicker`)).toBeTruthy();
     });
@@ -411,10 +411,10 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId, queryByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
       expect(getByTestId(`${testId}::DatabasePicker`)).toBeTruthy();
 
-      fireEvent.press(getByTestId(`${testId}::DatabasePicker::CancelButton`));
+      await fireEvent.press(getByTestId(`${testId}::DatabasePicker::CancelButton`));
 
       expect(queryByTestId(`${testId}::DatabasePicker`)).toBeNull();
       expect(getByTestId(`${modalTestId}::Title`)).toBeTruthy();
@@ -435,7 +435,7 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
 
       expect(getByTestId(`${testId}::DatabasePicker`)).toBeTruthy();
     });
@@ -455,7 +455,7 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
 
       expect(getByTestId(`${testId}::DatabasePicker`)).toBeTruthy();
     });
@@ -477,14 +477,14 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId, queryByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
       expect(getByTestId(`${testId}::DatabasePicker`)).toBeTruthy();
 
-      fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
+      await fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
       expect(queryByTestId(`${testId}::DatabasePicker`)).toBeNull();
       expect(getByTestId(`${testId}::PickConfirmation`)).toBeTruthy();
 
-      fireEvent.press(getByTestId(`${testId}::PickConfirmation::ConfirmButton`));
+      await fireEvent.press(getByTestId(`${testId}::PickConfirmation::ConfirmButton`));
 
       expect(mockOnUseExisting).toHaveBeenCalled();
       expect(mockOnClose).toHaveBeenCalled();
@@ -505,9 +505,9 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
-      fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
-      fireEvent.press(getByTestId(`${testId}::PickConfirmation::ConfirmButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
+      await fireEvent.press(getByTestId(`${testId}::PickConfirmation::ConfirmButton`));
 
       expect(mockOnUseExisting).toHaveBeenCalled();
       expect(mockOnClose).toHaveBeenCalled();
@@ -529,11 +529,11 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId, queryByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
-      fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
       expect(getByTestId(`${testId}::PickConfirmation`)).toBeTruthy();
 
-      fireEvent.press(getByTestId(`${testId}::PickConfirmation::CancelButton`));
+      await fireEvent.press(getByTestId(`${testId}::PickConfirmation::CancelButton`));
 
       expect(queryByTestId(`${testId}::PickConfirmation`)).toBeNull();
       expect(getByTestId(`${modalTestId}::Title`)).toBeTruthy();
@@ -554,8 +554,8 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
-      fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
 
       expect(getByTestId(`${testId}::PickConfirmation`)).toBeTruthy();
       expect(getByTestId(`${testId}::PickConfirmation::ConfirmButton`)).toBeTruthy();
@@ -577,8 +577,8 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
-      fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
 
       const confirmDialog = getByTestId(`${testId}::PickConfirmation`);
       expect(confirmDialog).toBeTruthy();
@@ -601,7 +601,7 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
 
       expect(getByTestId(`${testId}::ItemDialog::IsVisible`).props.children).toBe(true);
       expect(getByTestId(`${testId}::ItemDialog::Mode`).props.children).toBe('add');
@@ -623,7 +623,7 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
 
       expect(getByTestId(`${testId}::ItemDialog::Item::Type`).props.children).toBe('Tag');
     });
@@ -642,10 +642,10 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId, queryByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
       expect(getByTestId(`${testId}::ItemDialog::IsVisible`).props.children).toBe(true);
 
-      fireEvent.press(getByTestId(`${testId}::ItemDialog::OnClose`));
+      await fireEvent.press(getByTestId(`${testId}::ItemDialog::OnClose`));
 
       expect(queryByTestId(`${testId}::ItemDialog::IsVisible`)).toBeNull();
     });
@@ -664,8 +664,8 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
-      fireEvent.press(getByTestId(`${testId}::ItemDialog::Item::OnConfirm`));
+      await fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
+      await fireEvent.press(getByTestId(`${testId}::ItemDialog::Item::OnConfirm`));
 
       await waitFor(() => {
         expect(mockOnConfirm).toHaveBeenCalled();
@@ -687,8 +687,8 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
-      fireEvent.press(getByTestId(`${testId}::ItemDialog::Item::OnConfirm`));
+      await fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
+      await fireEvent.press(getByTestId(`${testId}::ItemDialog::Item::OnConfirm`));
 
       await waitFor(() => {
         expect(mockOnConfirm).toHaveBeenCalled();
@@ -713,13 +713,13 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId, rerender, queryByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
-      fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
       expect(getByTestId(`${testId}::PickConfirmation`)).toBeTruthy();
 
-      rerender(<SimilarityDialog {...props} isVisible={false} />);
+      await rerender(<SimilarityDialog {...props} isVisible={false} />);
 
-      rerender(<SimilarityDialog {...props} isVisible={true} />);
+      await rerender(<SimilarityDialog {...props} isVisible={true} />);
 
       await waitFor(() => {
         expect(getByTestId(`${modalTestId}::Title`)).toBeTruthy();
@@ -745,7 +745,7 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::UseButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::UseButton`));
 
       expect(mockOnClose).toHaveBeenCalled();
       expect(mockOnUseExisting).not.toHaveBeenCalled();
@@ -765,7 +765,7 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::CancelButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::CancelButton`));
 
       expect(mockOnClose).toHaveBeenCalled();
       expect(mockOnDismiss).not.toHaveBeenCalled();
@@ -809,9 +809,9 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
-      fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
-      fireEvent.press(getByTestId(`${testId}::PickConfirmation::ConfirmButton`));
+      await fireEvent.press(getByTestId(`${modalTestId}::PickButton`));
+      await fireEvent.press(getByTestId(`${testId}::DatabasePicker::Item::0`));
+      await fireEvent.press(getByTestId(`${testId}::PickConfirmation::ConfirmButton`));
 
       expect(mockOnClose).toHaveBeenCalled();
       expect(mockOnUseExisting).not.toHaveBeenCalled();
@@ -837,8 +837,8 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
-      fireEvent.press(getByTestId(`${testId}::ItemDialog::Item::OnConfirm`));
+      await fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
+      await fireEvent.press(getByTestId(`${testId}::ItemDialog::Item::OnConfirm`));
 
       await waitFor(() => {
         expect(mockOnClose).toHaveBeenCalled();
@@ -868,8 +868,8 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
-      fireEvent.press(getByTestId(`${testId}::ItemDialog::Item::OnConfirm`));
+      await fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
+      await fireEvent.press(getByTestId(`${testId}::ItemDialog::Item::OnConfirm`));
 
       await waitFor(() => {
         expect(mockOnClose).toHaveBeenCalled();
@@ -899,8 +899,8 @@ describe('SimilarityDialog', () => {
 
       const { getByTestId } = await renderDialog(props);
 
-      fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
-      fireEvent.press(getByTestId(`${testId}::ItemDialog::Item::OnConfirm`));
+      await fireEvent.press(getByTestId(`${modalTestId}::AddButton`));
+      await fireEvent.press(getByTestId(`${testId}::ItemDialog::Item::OnConfirm`));
 
       await waitFor(() => {
         expect(mockOnClose).toHaveBeenCalled();

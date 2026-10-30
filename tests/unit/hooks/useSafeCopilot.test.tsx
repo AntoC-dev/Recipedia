@@ -57,10 +57,10 @@ describe('useSafeCopilot Hook', () => {
     resetMockCopilot();
   });
 
-  test('returns copilot data when CopilotProvider is available', () => {
+  test('returns copilot data when CopilotProvider is available', async () => {
     useCopilot.mockReturnValue(mockCopilotData);
 
-    const { result } = renderHook(() => useSafeCopilot());
+    const { result } = await renderHook(() => useSafeCopilot());
 
     const copilotSafeResult = result.current!;
     expect(copilotSafeResult.currentStep).toEqual(mockCopilotData.currentStep);
@@ -73,29 +73,29 @@ describe('useSafeCopilot Hook', () => {
     expect(typeof copilotSafeResult.goToPrev).toBe('function');
   });
 
-  test('returns null when CopilotProvider is not available', () => {
+  test('returns null when CopilotProvider is not available', async () => {
     useCopilot.mockImplementation(() => {
       throw new Error('useCopilot must be used within CopilotProvider');
     });
 
-    const { result } = renderHook(() => useSafeCopilot());
+    const { result } = await renderHook(() => useSafeCopilot());
     expect(result.current).toBeNull();
   });
 
-  test('returns null when useCopilot throws an error', () => {
+  test('returns null when useCopilot throws an error', async () => {
     useCopilot.mockImplementation(() => {
       throw new Error('useCopilot must be used within CopilotProvider');
     });
 
-    const { result } = renderHook(() => useSafeCopilot());
+    const { result } = await renderHook(() => useSafeCopilot());
     expect(result.current).toBeNull();
   });
 
-  test('handles different copilot states correctly', () => {
+  test('handles different copilot states correctly', async () => {
     // Test with tutorial in progress
     useCopilot.mockReturnValue(mockMiddleStepData);
 
-    const { result: result1 } = renderHook(() => useSafeCopilot());
+    const { result: result1 } = await renderHook(() => useSafeCopilot());
 
     const copilotResult1 = result1.current!;
     expect(copilotResult1.isFirstStep).toBe(mockMiddleStepData.isFirstStep);
@@ -105,7 +105,7 @@ describe('useSafeCopilot Hook', () => {
     // Test with last step
     useCopilot.mockReturnValue(mockLastStepData);
 
-    const { result: result2 } = renderHook(() => useSafeCopilot());
+    const { result: result2 } = await renderHook(() => useSafeCopilot());
 
     const copilotResult2 = result2.current!;
     expect(copilotResult2.isFirstStep).toBe(mockLastStepData.isFirstStep);
@@ -113,10 +113,10 @@ describe('useSafeCopilot Hook', () => {
     expect(copilotResult2.currentStep!.order).toBe(mockLastStepData.currentStep.order);
   });
 
-  test('provides access to copilot events when available', () => {
+  test('provides access to copilot events when available', async () => {
     useCopilot.mockReturnValue(mockCopilotData);
 
-    const { result } = renderHook(() => useSafeCopilot());
+    const { result } = await renderHook(() => useSafeCopilot());
 
     const copilotSafeResult = result.current!;
     expect(copilotSafeResult.copilotEvents).toBeTruthy();
@@ -125,33 +125,33 @@ describe('useSafeCopilot Hook', () => {
     expect(typeof copilotSafeResult.copilotEvents!.emit).toBe('function');
   });
 
-  test('maintains consistency across multiple calls when provider available', () => {
+  test('maintains consistency across multiple calls when provider available', async () => {
     useCopilot.mockReturnValue(mockCopilotData);
 
-    const { result: result1 } = renderHook(() => useSafeCopilot());
-    const { result: result2 } = renderHook(() => useSafeCopilot());
+    const { result: result1 } = await renderHook(() => useSafeCopilot());
+    const { result: result2 } = await renderHook(() => useSafeCopilot());
 
     const copilotResult1 = result1.current!;
     const copilotResult2 = result2.current!;
     expect(copilotResult1).toEqual(copilotResult2);
   });
 
-  test('maintains consistency across multiple calls when provider unavailable', () => {
+  test('maintains consistency across multiple calls when provider unavailable', async () => {
     useCopilot.mockImplementation(() => {
       throw new Error('useCopilot must be used within CopilotProvider');
     });
 
-    const { result: result1 } = renderHook(() => useSafeCopilot());
-    const { result: result2 } = renderHook(() => useSafeCopilot());
+    const { result: result1 } = await renderHook(() => useSafeCopilot());
+    const { result: result2 } = await renderHook(() => useSafeCopilot());
 
     expect(result1.current).toBe(null);
     expect(result2.current).toBe(null);
   });
 
-  test('handles edge case with no current step', () => {
+  test('handles edge case with no current step', async () => {
     useCopilot.mockReturnValue(mockNoCurrentStepData);
 
-    const { result } = renderHook(() => useSafeCopilot());
+    const { result } = await renderHook(() => useSafeCopilot());
 
     const copilotSafeResult = result.current!;
     expect(copilotSafeResult).toBeTruthy();

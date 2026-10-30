@@ -240,15 +240,15 @@ describe('markAllRecipeFieldsTouched', () => {
     recipeNutrition: undefined,
   };
 
-  test('marks the touched-gated top-level fields as touched without mutating their values', () => {
-    const { result } = renderHook(() =>
+  test('marks the touched-gated top-level fields as touched without mutating their values', async () => {
+    const { result } = await renderHook(() =>
       useForm<RecipeFormInput>({
         resolver: zodResolver(recipeFormSchema),
         defaultValues: { ...baseDefaults, recipeTitle: 'Pancakes', recipePersons: 4 },
       })
     );
 
-    act(() => {
+    await act(() => {
       markAllRecipeFieldsTouched(result.current);
     });
 

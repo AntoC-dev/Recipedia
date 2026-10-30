@@ -21,7 +21,7 @@ describe('useVisibleImageLoader', () => {
     const recipes = [recipeWithoutImage(0), recipeWithoutImage(1)];
     const fetchImageUrl = jest.fn(async (url: string) => `${url}/image`);
 
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useVisibleImageLoader({
         recipes,
         visibleUrls: new Set([urlOf(0), urlOf(1)]),
@@ -43,7 +43,7 @@ describe('useVisibleImageLoader', () => {
     const recipes = [recipeWithImage(0), recipeWithoutImage(1)];
     const fetchImageUrl = jest.fn(async (url: string) => `${url}/image`);
 
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useVisibleImageLoader({
         recipes,
         visibleUrls: new Set([urlOf(0), urlOf(1)]),
@@ -64,7 +64,7 @@ describe('useVisibleImageLoader', () => {
     const recipes = Array.from({ length: 10 }, (_, i) => recipeWithoutImage(i));
     const fetchImageUrl = jest.fn(async (url: string) => `${url}/image`);
 
-    renderHook(() =>
+    await renderHook(() =>
       useVisibleImageLoader({
         recipes,
         visibleUrls: new Set([urlOf(0)]),
@@ -87,7 +87,7 @@ describe('useVisibleImageLoader', () => {
     const recipes = [recipeWithoutImage(0)];
     const fetchImageUrl = jest.fn(async () => null);
 
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useVisibleImageLoader({
         recipes,
         visibleUrls: new Set([urlOf(0)]),
@@ -113,7 +113,7 @@ describe('useVisibleImageLoader', () => {
       return `${url}/image`;
     });
 
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useVisibleImageLoader({
         recipes,
         visibleUrls: new Set([urlOf(0), urlOf(1)]),
@@ -142,7 +142,7 @@ describe('useVisibleImageLoader', () => {
         })
     );
 
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useVisibleImageLoader({
         recipes,
         visibleUrls: new Set(recipes.map(r => r.url)),
@@ -188,7 +188,7 @@ describe('useVisibleImageLoader', () => {
         })
     );
 
-    const { unmount } = renderHook(() =>
+    const { unmount } = await renderHook(() =>
       useVisibleImageLoader({
         recipes,
         visibleUrls: new Set([urlOf(0)]),
@@ -202,7 +202,7 @@ describe('useVisibleImageLoader', () => {
     });
     expect(signals[0]!.aborted).toBe(false);
 
-    unmount();
+    await unmount();
 
     expect(signals[0]!.aborted).toBe(true);
   });
@@ -219,7 +219,7 @@ describe('useVisibleImageLoader', () => {
       return Promise.resolve(`${url}/image`);
     });
 
-    const { result, rerender } = renderHook(
+    const { result, rerender } = await renderHook(
       (props: { visibleUrls: Set<string> }) =>
         useVisibleImageLoader({
           recipes,
@@ -236,7 +236,7 @@ describe('useVisibleImageLoader', () => {
       expect(fetchImageUrl).toHaveBeenCalledWith(urlOf(0), expect.anything());
     });
 
-    rerender({ visibleUrls: new Set([urlOf(4)]) });
+    await rerender({ visibleUrls: new Set([urlOf(4)]) });
 
     await waitFor(() => {
       expect(result.current.imageMap.get(urlOf(4))).toBe(`${urlOf(4)}/image`);
@@ -255,7 +255,7 @@ describe('useVisibleImageLoader', () => {
     const recipes = [recipeWithoutImage(0), recipeWithoutImage(1)];
     const fetchImageUrl = jest.fn(async (url: string) => `${url}/image`);
 
-    const { result, rerender } = renderHook(
+    const { result, rerender } = await renderHook(
       (props: { visibleUrls: Set<string> }) =>
         useVisibleImageLoader({
           recipes,
@@ -270,7 +270,7 @@ describe('useVisibleImageLoader', () => {
       expect(result.current.imageMap.get(urlOf(0))).toBe(`${urlOf(0)}/image`);
     });
 
-    rerender({ visibleUrls: new Set([urlOf(1)]) });
+    await rerender({ visibleUrls: new Set([urlOf(1)]) });
 
     await waitFor(() => {
       expect(result.current.imageMap.get(urlOf(1))).toBe(`${urlOf(1)}/image`);
@@ -281,7 +281,7 @@ describe('useVisibleImageLoader', () => {
     const recipes = [recipeWithoutImage(0)];
     const fetchImageUrl = jest.fn(async () => null);
 
-    const { result, rerender } = renderHook(
+    const { result, rerender } = await renderHook(
       (props: { visibleUrls: Set<string> }) =>
         useVisibleImageLoader({
           recipes,
@@ -299,8 +299,8 @@ describe('useVisibleImageLoader', () => {
       expect(result.current.pendingCount).toBe(0);
     });
 
-    rerender({ visibleUrls: new Set([urlOf(0)]) });
-    rerender({ visibleUrls: new Set([urlOf(0)]) });
+    await rerender({ visibleUrls: new Set([urlOf(0)]) });
+    await rerender({ visibleUrls: new Set([urlOf(0)]) });
     await act(() => new Promise(resolve => setTimeout(resolve, 20)));
 
     expect(fetchImageUrl).toHaveBeenCalledTimes(1);
@@ -315,7 +315,7 @@ describe('useVisibleImageLoader', () => {
         })
     );
 
-    renderHook(() =>
+    await renderHook(() =>
       useVisibleImageLoader({
         recipes,
         visibleUrls: new Set([urlOf(0)]),
@@ -345,7 +345,7 @@ describe('useVisibleImageLoader', () => {
         })
     );
 
-    const { result, rerender } = renderHook(
+    const { result, rerender } = await renderHook(
       (props: { visibleUrls: Set<string> }) =>
         useVisibleImageLoader({
           recipes,
@@ -361,12 +361,12 @@ describe('useVisibleImageLoader', () => {
       expect(fetchImageUrl).toHaveBeenCalledTimes(1);
     });
 
-    rerender({ visibleUrls: new Set([urlOf(4)]) });
+    await rerender({ visibleUrls: new Set([urlOf(4)]) });
     await waitFor(() => {
       expect(result.current.imageMap.get(urlOf(4))).toBe(`${urlOf(4)}/image`);
     });
 
-    rerender({ visibleUrls: new Set([urlOf(0)]) });
+    await rerender({ visibleUrls: new Set([urlOf(0)]) });
     await waitFor(() => {
       expect(result.current.imageMap.get(urlOf(0))).toBe(`${urlOf(0)}/image`);
     });
@@ -381,7 +381,7 @@ describe('useVisibleImageLoader', () => {
         })
     );
 
-    const { unmount } = renderHook(() =>
+    const { unmount } = await renderHook(() =>
       useVisibleImageLoader({
         recipes,
         visibleUrls: new Set([urlOf(0), urlOf(1)]),
@@ -395,7 +395,7 @@ describe('useVisibleImageLoader', () => {
       expect(fetchImageUrl).toHaveBeenCalledTimes(1);
     });
 
-    unmount();
+    await unmount();
     await act(() => new Promise(resolve => setTimeout(resolve, 20)));
 
     expect(fetchImageUrl).toHaveBeenCalledTimes(1);
@@ -412,7 +412,7 @@ describe('useVisibleImageLoader', () => {
         })
     );
 
-    const { result, rerender } = renderHook(
+    const { result, rerender } = await renderHook(
       (props: { enabled: boolean }) =>
         useVisibleImageLoader({
           recipes,
@@ -429,7 +429,7 @@ describe('useVisibleImageLoader', () => {
       expect(signals).toHaveLength(1);
     });
 
-    rerender({ enabled: false });
+    await rerender({ enabled: false });
 
     expect(signals[0]!.aborted).toBe(true);
     await waitFor(() => {
@@ -443,7 +443,7 @@ describe('useVisibleImageLoader', () => {
     const recipes = [recipeWithoutImage(0)];
     const fetchImageUrl = jest.fn(async (url: string) => `${url}/image`);
 
-    renderHook(() =>
+    await renderHook(() =>
       useVisibleImageLoader({
         recipes,
         visibleUrls: new Set([urlOf(0)]),
@@ -473,7 +473,7 @@ describe('useVisibleImageLoader', () => {
     const callsFor = (url: string) =>
       fetchImageUrl.mock.calls.filter(call => call[0] === url).length;
 
-    const { rerender } = renderHook(
+    const { rerender } = await renderHook(
       (props: { visibleUrls: Set<string> }) =>
         useVisibleImageLoader({
           recipes,
@@ -489,12 +489,12 @@ describe('useVisibleImageLoader', () => {
       expect(callsFor(urlOf(0))).toBe(1);
     });
 
-    rerender({ visibleUrls: new Set([urlOf(4)]) });
+    await rerender({ visibleUrls: new Set([urlOf(4)]) });
     await waitFor(() => {
       expect(lateRejections).toHaveLength(1);
     });
 
-    rerender({ visibleUrls: new Set([urlOf(0)]) });
+    await rerender({ visibleUrls: new Set([urlOf(0)]) });
     await waitFor(() => {
       expect(callsFor(urlOf(0))).toBe(2);
     });
@@ -502,7 +502,7 @@ describe('useVisibleImageLoader', () => {
     await act(async () => {
       lateRejections[0]!();
     });
-    rerender({ visibleUrls: new Set([urlOf(0)]) });
+    await rerender({ visibleUrls: new Set([urlOf(0)]) });
     await act(() => new Promise(resolve => setTimeout(resolve, 20)));
 
     expect(callsFor(urlOf(0))).toBe(2);
@@ -515,7 +515,7 @@ describe('useVisibleImageLoader', () => {
       throw new TypeError('lookup exploded');
     });
 
-    renderHook(() =>
+    await renderHook(() =>
       useVisibleImageLoader({
         recipes,
         visibleUrls: new Set([urlOf(0)]),
@@ -545,7 +545,7 @@ describe('useVisibleImageLoader', () => {
         })
     );
 
-    const { unmount } = renderHook(() =>
+    const { unmount } = await renderHook(() =>
       useVisibleImageLoader({
         recipes,
         visibleUrls: new Set([urlOf(0)]),
@@ -557,7 +557,7 @@ describe('useVisibleImageLoader', () => {
     await waitFor(() => {
       expect(fetchImageUrl).toHaveBeenCalled();
     });
-    unmount();
+    await unmount();
     await act(() => new Promise(resolve => setTimeout(resolve, 20)));
 
     expect(warnSpy).not.toHaveBeenCalled();
@@ -568,7 +568,7 @@ describe('useVisibleImageLoader', () => {
     const recipes = [recipeWithoutImage(0), recipeWithoutImage(0)];
     const fetchImageUrl = jest.fn(async (url: string) => `${url}/image`);
 
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useVisibleImageLoader({
         recipes,
         visibleUrls: new Set([urlOf(0)]),
@@ -596,7 +596,7 @@ describe('useVisibleImageLoader', () => {
         })
     );
 
-    const { result, rerender } = renderHook(
+    const { result, rerender } = await renderHook(
       (props: { enabled: boolean }) =>
         useVisibleImageLoader({
           recipes,
@@ -612,8 +612,8 @@ describe('useVisibleImageLoader', () => {
       expect(fetchImageUrl).toHaveBeenCalledTimes(1);
     });
 
-    rerender({ enabled: false });
-    rerender({ enabled: true });
+    await rerender({ enabled: false });
+    await rerender({ enabled: true });
 
     await waitFor(() => {
       expect(result.current.imageMap.get(urlOf(0))).toBe(`${urlOf(0)}/image`);
@@ -625,7 +625,7 @@ describe('useVisibleImageLoader', () => {
     const recipes = [recipeWithoutImage(0)];
     const fetchImageUrl = jest.fn(async (url: string) => `${url}/image`);
 
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useVisibleImageLoader({
         recipes,
         visibleUrls: new Set([urlOf(0)]),

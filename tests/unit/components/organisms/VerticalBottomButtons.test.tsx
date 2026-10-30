@@ -41,7 +41,7 @@ jest.mock(
 
 jest.mock('react-i18next', () => require('@mocks/utils/i18n-mock').i18nMock());
 
-function renderWithProvider(component: React.ReactElement, tabBarHeight?: number) {
+async function renderWithProvider(component: React.ReactElement, tabBarHeight?: number) {
   return render(
     <BottomTabBarHeightContext.Provider value={tabBarHeight}>
       <DefaultPersonsProvider>{component}</DefaultPersonsProvider>
@@ -49,9 +49,9 @@ function renderWithProvider(component: React.ReactElement, tabBarHeight?: number
   );
 }
 
-function openUrlDialog(getByTestId: (id: string) => any) {
-  fireEvent.press(getByTestId('ExpandButton'));
-  fireEvent.press(getByTestId('UrlButton'));
+async function openUrlDialog(getByTestId: (id: string) => any) {
+  await fireEvent.press(getByTestId('ExpandButton'));
+  await fireEvent.press(getByTestId('UrlButton'));
 }
 
 describe('VerticalBottomButtons Component', () => {
@@ -60,8 +60,8 @@ describe('VerticalBottomButtons Component', () => {
     mockFetchHtmlSuccess();
   });
 
-  test('renders expand button in collapsed state', () => {
-    const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
+  test('renders expand button in collapsed state', async () => {
+    const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
     expect(getByTestId('ExpandButton')).toBeTruthy();
 
@@ -70,10 +70,10 @@ describe('VerticalBottomButtons Component', () => {
     expect(queryByTestId('GalleryButton')).toBeNull();
     expect(queryByTestId('CameraButton')).toBeNull();
   });
-  test('renders all action buttons in expanded state', () => {
-    const { queryByTestId, getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+  test('renders all action buttons in expanded state', async () => {
+    const { queryByTestId, getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-    fireEvent.press(getByTestId('ExpandButton'));
+    await fireEvent.press(getByTestId('ExpandButton'));
 
     expect(getByTestId('ReduceButton')).toBeTruthy();
     expect(getByTestId('RecipeEdit')).toBeTruthy();
@@ -83,14 +83,14 @@ describe('VerticalBottomButtons Component', () => {
     expect(queryByTestId('ExpandButton')).toBeNull();
   });
 
-  test('collapses menu when reduce button is pressed', () => {
-    const { queryByTestId, getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+  test('collapses menu when reduce button is pressed', async () => {
+    const { queryByTestId, getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-    fireEvent.press(getByTestId('ExpandButton'));
+    await fireEvent.press(getByTestId('ExpandButton'));
 
     expect(getByTestId('ReduceButton')).toBeTruthy();
 
-    fireEvent.press(getByTestId('ReduceButton'));
+    await fireEvent.press(getByTestId('ReduceButton'));
 
     expect(getByTestId('ExpandButton')).toBeTruthy();
 
@@ -101,13 +101,13 @@ describe('VerticalBottomButtons Component', () => {
   });
 
   test('navigates to manual recipe creation when edit button is pressed', async () => {
-    const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+    const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-    fireEvent.press(getByTestId('ExpandButton'));
+    await fireEvent.press(getByTestId('ExpandButton'));
 
     expect(getByTestId('RecipeEdit')).toBeTruthy();
 
-    fireEvent.press(getByTestId('RecipeEdit'));
+    await fireEvent.press(getByTestId('RecipeEdit'));
 
     await waitFor(() => expect(mockNavigate).toHaveBeenCalled());
 
@@ -115,13 +115,13 @@ describe('VerticalBottomButtons Component', () => {
   });
 
   test('picks image and navigates to recipe creation when gallery button is pressed', async () => {
-    const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+    const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-    fireEvent.press(getByTestId('ExpandButton'));
+    await fireEvent.press(getByTestId('ExpandButton'));
 
     expect(getByTestId('GalleryButton')).toBeTruthy();
 
-    fireEvent.press(getByTestId('GalleryButton'));
+    await fireEvent.press(getByTestId('GalleryButton'));
 
     await waitFor(() => expect(mockNavigate).toHaveBeenCalled());
 
@@ -131,13 +131,13 @@ describe('VerticalBottomButtons Component', () => {
   });
 
   test('takes photo and navigates to recipe creation when camera button is pressed', async () => {
-    const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+    const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-    fireEvent.press(getByTestId('ExpandButton'));
+    await fireEvent.press(getByTestId('ExpandButton'));
 
     expect(getByTestId('CameraButton')).toBeTruthy();
 
-    fireEvent.press(getByTestId('CameraButton'));
+    await fireEvent.press(getByTestId('CameraButton'));
 
     await waitFor(() => expect(mockNavigate).toHaveBeenCalled());
 
@@ -148,30 +148,30 @@ describe('VerticalBottomButtons Component', () => {
 
   test('does not navigate when the gallery selection is cancelled', async () => {
     (pickImage as jest.Mock).mockResolvedValueOnce('');
-    const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+    const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-    fireEvent.press(getByTestId('ExpandButton'));
-    fireEvent.press(getByTestId('GalleryButton'));
+    await fireEvent.press(getByTestId('ExpandButton'));
+    await fireEvent.press(getByTestId('GalleryButton'));
 
     await waitFor(() => expect(pickImage).toHaveBeenCalled());
 
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
-  test('handles state transitions correctly', () => {
-    const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
+  test('handles state transitions correctly', async () => {
+    const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
     expect(getByTestId('ExpandButton')).toBeTruthy();
     expect(queryByTestId('ReduceButton')).toBeNull();
 
-    fireEvent.press(getByTestId('ExpandButton'));
+    await fireEvent.press(getByTestId('ExpandButton'));
     expect(queryByTestId('ExpandButton')).toBeNull();
     expect(getByTestId('ReduceButton')).toBeTruthy();
     expect(getByTestId('RecipeEdit')).toBeTruthy();
     expect(getByTestId('GalleryButton')).toBeTruthy();
     expect(getByTestId('CameraButton')).toBeTruthy();
 
-    fireEvent.press(getByTestId('ReduceButton'));
+    await fireEvent.press(getByTestId('ReduceButton'));
     expect(getByTestId('ExpandButton')).toBeTruthy();
     expect(queryByTestId('ReduceButton')).toBeNull();
     expect(queryByTestId('RecipeEdit')).toBeNull();
@@ -180,33 +180,33 @@ describe('VerticalBottomButtons Component', () => {
   });
 
   describe('URL import flow', () => {
-    test('opens the URL dialog when the URL button is pressed', () => {
-      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+    test('opens the URL dialog when the URL button is pressed', async () => {
+      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-      openUrlDialog(getByTestId);
+      await openUrlDialog(getByTestId);
 
       expect(getByTestId('VerticalBottomButtons::UrlDialog::Title')).toBeTruthy();
     });
 
-    test('closes the URL dialog and clears the error when cancel is pressed', () => {
-      const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
+    test('closes the URL dialog and clears the error when cancel is pressed', async () => {
+      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-      openUrlDialog(getByTestId);
-      fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::CancelButton'));
+      await openUrlDialog(getByTestId);
+      await fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::CancelButton'));
 
       expect(queryByTestId('VerticalBottomButtons::UrlDialog::Title')).toBeNull();
     });
 
     test('navigates to scrape results and closes the dialog on successful submit', async () => {
       mockScrapeRecipeFromHtmlSuccess(createEmptyScrapedRecipe({ title: 'Pasta' }));
-      const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-      openUrlDialog(getByTestId);
-      fireEvent.changeText(
+      await openUrlDialog(getByTestId);
+      await fireEvent.changeText(
         getByTestId('VerticalBottomButtons::UrlDialog::Input::CustomTextInput'),
         'https://example.com/recipe'
       );
-      fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
+      await fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
 
       await waitFor(() =>
         expect(mockNavigate).toHaveBeenCalledWith(
@@ -219,14 +219,14 @@ describe('VerticalBottomButtons Component', () => {
 
     test('keeps the URL dialog open and shows an error when scraping fails', async () => {
       mockScrapeRecipeFromHtmlError('No recipe found', 'NoRecipeFoundError');
-      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-      openUrlDialog(getByTestId);
-      fireEvent.changeText(
+      await openUrlDialog(getByTestId);
+      await fireEvent.changeText(
         getByTestId('VerticalBottomButtons::UrlDialog::Input::CustomTextInput'),
         'https://example.com/recipe'
       );
-      fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
+      await fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
 
       await waitFor(() =>
         expect(getByTestId('VerticalBottomButtons::UrlDialog::HelperText')).toHaveTextContent(
@@ -239,14 +239,14 @@ describe('VerticalBottomButtons Component', () => {
 
     test('opens the authentication dialog and hides the URL dialog when scraping requires auth', async () => {
       mockScrapeRecipeFromHtmlError('Login required', 'AuthenticationRequired', 'quitoque.fr');
-      const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-      openUrlDialog(getByTestId);
-      fireEvent.changeText(
+      await openUrlDialog(getByTestId);
+      await fireEvent.changeText(
         getByTestId('VerticalBottomButtons::UrlDialog::Input::CustomTextInput'),
         'https://quitoque.fr/recipe'
       );
-      fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
+      await fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
 
       await waitFor(() =>
         expect(getByTestId('VerticalBottomButtons::AuthDialog::Title')).toBeTruthy()
@@ -256,31 +256,34 @@ describe('VerticalBottomButtons Component', () => {
   });
 
   describe('Authentication flow', () => {
-    function triggerAuthRequired(getByTestId: (id: string) => any) {
+    async function triggerAuthRequired(getByTestId: (id: string) => any) {
       mockScrapeRecipeFromHtmlError('Login required', 'AuthenticationRequired', 'quitoque.fr');
-      openUrlDialog(getByTestId);
-      fireEvent.changeText(
+      await openUrlDialog(getByTestId);
+      await fireEvent.changeText(
         getByTestId('VerticalBottomButtons::UrlDialog::Input::CustomTextInput'),
         'https://quitoque.fr/recipe'
       );
-      fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
+      await fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
     }
 
     test('navigates to scrape results and closes the dialog on successful credentials', async () => {
-      const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-      triggerAuthRequired(getByTestId);
+      await triggerAuthRequired(getByTestId);
       await waitFor(() =>
         expect(getByTestId('VerticalBottomButtons::AuthDialog::Title')).toBeTruthy()
       );
 
       mockScrapeRecipeAuthenticatedSuccess(createEmptyScrapedRecipe({ title: 'Secured Recipe' }));
-      fireEvent.changeText(getByTestId('VerticalBottomButtons::AuthDialog::UsernameInput'), 'chef');
-      fireEvent.changeText(
+      await fireEvent.changeText(
+        getByTestId('VerticalBottomButtons::AuthDialog::UsernameInput'),
+        'chef'
+      );
+      await fireEvent.changeText(
         getByTestId('VerticalBottomButtons::AuthDialog::PasswordInput'),
         'secret'
       );
-      fireEvent.press(getByTestId('VerticalBottomButtons::AuthDialog::SubmitButton'));
+      await fireEvent.press(getByTestId('VerticalBottomButtons::AuthDialog::SubmitButton'));
 
       await waitFor(() =>
         expect(mockNavigate).toHaveBeenCalledWith(
@@ -292,20 +295,23 @@ describe('VerticalBottomButtons Component', () => {
     });
 
     test('keeps the auth dialog open and shows an error on failed credentials', async () => {
-      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-      triggerAuthRequired(getByTestId);
+      await triggerAuthRequired(getByTestId);
       await waitFor(() =>
         expect(getByTestId('VerticalBottomButtons::AuthDialog::Title')).toBeTruthy()
       );
 
       mockScrapeRecipeAuthenticatedError('Invalid credentials', 'AuthenticationFailed');
-      fireEvent.changeText(getByTestId('VerticalBottomButtons::AuthDialog::UsernameInput'), 'chef');
-      fireEvent.changeText(
+      await fireEvent.changeText(
+        getByTestId('VerticalBottomButtons::AuthDialog::UsernameInput'),
+        'chef'
+      );
+      await fireEvent.changeText(
         getByTestId('VerticalBottomButtons::AuthDialog::PasswordInput'),
         'wrong'
       );
-      fireEvent.press(getByTestId('VerticalBottomButtons::AuthDialog::SubmitButton'));
+      await fireEvent.press(getByTestId('VerticalBottomButtons::AuthDialog::SubmitButton'));
 
       await waitFor(() =>
         expect(getByTestId('VerticalBottomButtons::AuthDialog::HelperText')).toHaveTextContent(
@@ -317,44 +323,47 @@ describe('VerticalBottomButtons Component', () => {
     });
 
     test('closes the auth dialog and clears auth state when cancel is pressed', async () => {
-      const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-      triggerAuthRequired(getByTestId);
+      await triggerAuthRequired(getByTestId);
       await waitFor(() =>
         expect(getByTestId('VerticalBottomButtons::AuthDialog::Title')).toBeTruthy()
       );
 
-      fireEvent.press(getByTestId('VerticalBottomButtons::AuthDialog::CancelButton'));
+      await fireEvent.press(getByTestId('VerticalBottomButtons::AuthDialog::CancelButton'));
 
       expect(queryByTestId('VerticalBottomButtons::AuthDialog::Title')).toBeNull();
     });
 
     test('ignores auth submit once authRequired has already been cleared', async () => {
-      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-      triggerAuthRequired(getByTestId);
+      await triggerAuthRequired(getByTestId);
       await waitFor(() =>
         expect(getByTestId('VerticalBottomButtons::AuthDialog::Title')).toBeTruthy()
       );
 
       mockScrapeRecipeFromHtmlSuccess(createEmptyScrapedRecipe({ title: 'Pasta' }));
-      fireEvent.press(getByTestId('ExpandButton'));
-      fireEvent.press(getByTestId('UrlButton'));
-      fireEvent.changeText(
+      await fireEvent.press(getByTestId('ExpandButton'));
+      await fireEvent.press(getByTestId('UrlButton'));
+      await fireEvent.changeText(
         getByTestId('VerticalBottomButtons::UrlDialog::Input::CustomTextInput'),
         'https://example.com/recipe'
       );
-      fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
+      await fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
 
       await waitFor(() => expect(mockNavigate).toHaveBeenCalled());
       mockNavigate.mockClear();
 
-      fireEvent.changeText(getByTestId('VerticalBottomButtons::AuthDialog::UsernameInput'), 'chef');
-      fireEvent.changeText(
+      await fireEvent.changeText(
+        getByTestId('VerticalBottomButtons::AuthDialog::UsernameInput'),
+        'chef'
+      );
+      await fireEvent.changeText(
         getByTestId('VerticalBottomButtons::AuthDialog::PasswordInput'),
         'secret'
       );
-      fireEvent.press(getByTestId('VerticalBottomButtons::AuthDialog::SubmitButton'));
+      await fireEvent.press(getByTestId('VerticalBottomButtons::AuthDialog::SubmitButton'));
 
       expect(mockScrapeRecipeAuthenticated).not.toHaveBeenCalled();
       expect(mockNavigate).not.toHaveBeenCalled();
@@ -374,30 +383,30 @@ describe('VerticalBottomButtons Component', () => {
       jest.useRealTimers();
     });
 
-    test('auto-opens the FAB during the demo', () => {
+    test('auto-opens the FAB during the demo', async () => {
       setMockCopilotState({
         isActive: true,
         currentStep: { order: 1, name: 'Home', text: 'Home step' },
       });
 
-      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL);
       });
 
       expect(getByTestId('ReduceButton')).toBeTruthy();
     });
 
-    test('does not start the demo on mount when the current step does not match Home', () => {
+    test('does not start the demo on mount when the current step does not match Home', async () => {
       setMockCopilotState({
         isActive: true,
         currentStep: { order: 2, name: 'Search', text: 'Search step' },
       });
 
-      const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL);
       });
 
@@ -405,37 +414,37 @@ describe('VerticalBottomButtons Component', () => {
       expect(queryByTestId('ReduceButton')).toBeNull();
     });
 
-    test('restarts the demo interval when a duplicate stepChange arrives on the same step', () => {
+    test('restarts the demo interval when a duplicate stepChange arrives on the same step', async () => {
       setMockCopilotState({
         isActive: true,
         currentStep: { order: 1, name: 'Home', text: 'Home step' },
       });
 
-      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
       triggerStepChangeEvent({ order: 1, name: 'Home', text: 'Home step' });
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL);
       });
 
       expect(getByTestId('ReduceButton')).toBeTruthy();
     });
 
-    test('stops the demo and collapses the FAB when stepChange moves to a different step', () => {
+    test('stops the demo and collapses the FAB when stepChange moves to a different step', async () => {
       setMockCopilotState({
         isActive: true,
         currentStep: { order: 1, name: 'Home', text: 'Home step' },
       });
 
-      const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL);
       });
       expect(getByTestId('ReduceButton')).toBeTruthy();
 
-      act(() => {
+      await act(() => {
         triggerStepChangeEvent({ order: 2, name: 'Search', text: 'Search step' });
       });
 
@@ -443,16 +452,16 @@ describe('VerticalBottomButtons Component', () => {
       expect(queryByTestId('ReduceButton')).toBeNull();
     });
 
-    test('does not auto-run the demo when reduced motion is enabled', () => {
+    test('does not auto-run the demo when reduced motion is enabled', async () => {
       mockUseReducedMotion.mockReturnValue(true);
       setMockCopilotState({
         isActive: true,
         currentStep: { order: 1, name: 'Home', text: 'Home step' },
       });
 
-      const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-      act(() => {
+      await act(() => {
         jest.advanceTimersByTime(TUTORIAL_DEMO_INTERVAL * 2);
       });
 
@@ -460,23 +469,23 @@ describe('VerticalBottomButtons Component', () => {
       expect(queryByTestId('ReduceButton')).toBeNull();
     });
 
-    test('renders with tutorial wrapper when copilot is available', () => {
+    test('renders with tutorial wrapper when copilot is available', async () => {
       setMockCopilotState({
         isActive: true,
         currentStep: { order: 1, name: 'Home', text: 'Test step' },
       });
 
-      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
       expect(getByTestId('CopilotStep::Home')).toBeTruthy();
       expect(getByTestId('HomeTutorial')).toBeTruthy();
       expect(getByTestId('ExpandButton')).toBeTruthy();
     });
 
-    test('renders without tutorial wrapper when copilot is not available', () => {
+    test('renders without tutorial wrapper when copilot is not available', async () => {
       setMockCopilotState({ isActive: false });
 
-      const { queryByTestId, getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { queryByTestId, getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
       expect(queryByTestId('CopilotStep::Home')).toBeNull();
       expect(queryByTestId('HomeTutorial')).toBeNull();
@@ -490,7 +499,7 @@ describe('VerticalBottomButtons Component', () => {
         currentStep: { order: 1, name: 'Home', text: 'Home step' },
       });
 
-      const { getByTestId, queryByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
       await waitFor(() => {
         expect(mockEvents.on).toHaveBeenCalledWith('stepChange', expect.any(Function));
@@ -511,7 +520,7 @@ describe('VerticalBottomButtons Component', () => {
         currentStep: { order: 1, name: 'Home', text: 'Home step' },
       });
 
-      const { unmount, getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+      const { unmount, getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
       await waitFor(() => {
         expect(mockEvents.on).toHaveBeenCalled();
@@ -519,7 +528,7 @@ describe('VerticalBottomButtons Component', () => {
         expect(getByTestId('HomeTutorial')).toBeTruthy();
       });
 
-      unmount();
+      await unmount();
 
       expect(mockEvents.off).toHaveBeenCalledWith('stepChange', expect.any(Function));
       expect(mockEvents.off).toHaveBeenCalledWith('stop', expect.any(Function));
@@ -527,20 +536,20 @@ describe('VerticalBottomButtons Component', () => {
   });
 
   describe('Tab bar clearance', () => {
-    test('clears the measured tab bar height', () => {
-      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />, 128);
+    test('clears the measured tab bar height', async () => {
+      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />, 128);
 
       expect(getByTestId('FAB.Group').props.style).toEqual({ paddingBottom: 128 });
     });
 
-    test('adds no clearance when no tab bar is mounted', () => {
-      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />);
+    test('adds no clearance when no tab bar is mounted', async () => {
+      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
       expect(getByTestId('FAB.Group').props.style).toEqual({ paddingBottom: 0 });
     });
 
-    test('spaces the FAB off the tab bar without restating the safe-area inset', () => {
-      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />, 128);
+    test('spaces the FAB off the tab bar without restating the safe-area inset', async () => {
+      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />, 128);
 
       expect(getByTestId('ExpandButton')).toHaveStyle({
         marginBottom: padding.small,
@@ -554,7 +563,7 @@ describe('VerticalBottomButtons Component', () => {
         currentStep: { order: 1, name: 'Home', text: 'Home step' },
       });
 
-      const { getByTestId } = renderWithProvider(<VerticalBottomButtons />, 128);
+      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />, 128);
 
       await waitFor(() => {
         expect(getByTestId('HomeTutorial').props.style.bottom).toBe(padding.small);

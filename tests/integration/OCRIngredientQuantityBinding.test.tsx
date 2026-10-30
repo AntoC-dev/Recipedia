@@ -137,7 +137,7 @@ function queueOcrResults(...results: TextRecognitionResult[]) {
   }
 }
 
-function renderOcrHook() {
+async function renderOcrHook() {
   return renderHook(
     () => ({
       ocr: useRecipeOCR(),
@@ -148,7 +148,7 @@ function renderOcrHook() {
 }
 
 async function runNamesThenQuantities(
-  result: ReturnType<typeof renderOcrHook>['result'],
+  result: Awaited<ReturnType<typeof renderOcrHook>>['result'],
   namesOcr: TextRecognitionResult,
   quantitiesOcr: TextRecognitionResult
 ) {
@@ -219,7 +219,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
       ['Quitoque V2 (iOS)', v2Names, v2Quantities, 9],
       ['Quitoque V3 (iOS)', v3Names, v3Quantities, 11],
     ])('%s', async (_label, namesOcr, quantitiesOcr, qtyCountInOcr) => {
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
       await runNamesThenQuantities(result, namesOcr, quantitiesOcr);
 
       const ingredients = result.current.form.form.getValues('recipeIngredients')!;
@@ -233,7 +233,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
   describe('intermediate state after names pass', () => {
     test('Quitoque V1: form ingredient count matches OCR-extracted name count', async () => {
       queueOcrResults(v1Names);
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
 
       await act(async () => {
         await result.current.ocr.fillOneField('names.jpg', 'ingredientNames');
@@ -248,7 +248,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
 
     test('Quitoque V1: ingredients appear in OCR scan order', async () => {
       queueOcrResults(v1Names);
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
 
       await act(async () => {
         await result.current.ocr.fillOneField('names.jpg', 'ingredientNames');
@@ -267,7 +267,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
 
     test('Quitoque V1: no quantities are set before the qty pass runs', async () => {
       queueOcrResults(v1Names);
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
 
       await act(async () => {
         await result.current.ocr.fillOneField('names.jpg', 'ingredientNames');
@@ -286,7 +286,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
 
   describe('quantity assignment by position', () => {
     test('Quitoque V1 (matched counts): each ingredient receives the qty at its row index', async () => {
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
       await runNamesThenQuantities(result, v1Names, v1Quantities);
 
       const final = result.current.form.form.getValues('recipeIngredients')!;
@@ -297,7 +297,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
     });
 
     test('Quitoque V3: no name duplicated', async () => {
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
       await runNamesThenQuantities(result, v3Names, v3Quantities);
 
       const final = result.current.form.form.getValues('recipeIngredients')!;
@@ -311,7 +311,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
 
   describe('order preservation across both passes', () => {
     test('HelloFresh: final ingredient order matches OCR scan order', async () => {
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
       await runNamesThenQuantities(result, hfNames, hfQuantities);
 
       const finalNames = result.current.form.form
@@ -325,7 +325,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
   describe('synthetic edge cases', () => {
     test('empty ingredient-names OCR result leaves form ingredients empty', async () => {
       queueOcrResults({ text: '', blocks: [] });
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
 
       await act(async () => {
         await result.current.ocr.fillOneField('names.jpg', 'ingredientNames');
@@ -337,7 +337,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
     test('empty quantities pass keeps previously-scanned ingredients with empty qty', async () => {
       const namesOcr = syntheticBlock(['Carotte', 'Cumin', 'Navet']);
       const emptyQuantities: TextRecognitionResult = { text: '', blocks: [] };
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
 
       await runNamesThenQuantities(result, namesOcr, emptyQuantities);
 
@@ -351,7 +351,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
     test('qty count less than ingredient count: first rows receive qty', async () => {
       const namesOcr = syntheticBlock(['Carotte', 'Cumin', 'Navet']);
       const qtyOcr = syntheticBlock(['100', '50']);
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
 
       await runNamesThenQuantities(result, namesOcr, qtyOcr);
 
@@ -363,7 +363,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
     test('qty count greater than ingredient count: first N values bound to ingredients', async () => {
       const namesOcr = syntheticBlock(['Carotte', 'Cumin']);
       const qtyOcr = syntheticBlock(['100', '50', '25']);
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
 
       await runNamesThenQuantities(result, namesOcr, qtyOcr);
 
@@ -376,7 +376,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
 
     test('qty pass without a prior names pass is a no-op (empty form stays empty)', async () => {
       queueOcrResults(syntheticBlock(['100', '200']));
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
 
       await act(async () => {
         await result.current.ocr.fillOneField('qty.jpg', 'ingredientQuantities');
@@ -388,7 +388,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
     test('names pass is idempotent: rescanning the same image does not duplicate rows', async () => {
       const namesOcr = syntheticBlock(['Carotte', 'Cumin', 'Navet']);
       queueOcrResults(namesOcr, namesOcr);
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
 
       await act(async () => {
         await result.current.ocr.fillOneField('names.jpg', 'ingredientNames');
@@ -406,7 +406,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
     test('after names pass, no row has quantity "0"', async () => {
       const namesOcr = syntheticBlock(['Carotte', 'Cumin', 'Navet']);
       queueOcrResults(namesOcr);
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
 
       await act(async () => {
         await result.current.ocr.fillOneField('names.jpg', 'ingredientNames');
@@ -428,7 +428,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
       const namesOcr = syntheticBlock(['Carotte', 'Cumin']);
       const qtyOcr = syntheticBlock(['100', '50']);
       queueOcrResults(namesOcr, qtyOcr);
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
 
       await act(async () => {
         await result.current.ocr.fillOneField('names.jpg', 'ingredientNames');
@@ -448,7 +448,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
 
   describe('per-row quantity correctness for real captures', () => {
     test('Quitoque V1: each ingredient ends with its expected quantity', async () => {
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
       await runNamesThenQuantities(result, v1Names, v1Quantities);
 
       const final = result.current.form.form.getValues('recipeIngredients')!;
@@ -456,7 +456,7 @@ describe('OCR ingredient + quantity binding (full pipeline, no mocks beyond ML K
     });
 
     test('HelloFresh: every ingredient receives a non-zero, non-empty quantity string', async () => {
-      const { result } = renderOcrHook();
+      const { result } = await renderOcrHook();
       await runNamesThenQuantities(result, hfNames, hfQuantities);
 
       const final = result.current.form.form.getValues('recipeIngredients')!;

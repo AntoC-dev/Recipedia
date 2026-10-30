@@ -23,7 +23,7 @@ function createWrapper() {
   };
 }
 
-function renderTagHook() {
+async function renderTagHook() {
   return renderHook(
     () => ({
       tagOps: useRecipeTags(),
@@ -49,9 +49,9 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
 
   describe('addTag — exact DB match', () => {
     test('tag added directly to form without going through validation queue', async () => {
-      const { result } = renderTagHook();
+      const { result } = await renderTagHook();
 
-      act(() => {
+      await act(() => {
         result.current.tagOps.addTag('Italian');
       });
 
@@ -66,9 +66,9 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
 
   describe('addTag — fuzzy (similar but not exact) DB match', () => {
     test('validation queue is set when a close-but-not-exact name is entered', async () => {
-      const { result } = renderTagHook();
+      const { result } = await renderTagHook();
 
-      act(() => {
+      await act(() => {
         result.current.tagOps.addTag('Quik Meels');
       });
 
@@ -83,9 +83,9 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
 
   describe('addTag — no DB match', () => {
     test('brand-new tag with no similar entry is queued for validation', async () => {
-      const { result } = renderTagHook();
+      const { result } = await renderTagHook();
 
-      act(() => {
+      await act(() => {
         result.current.tagOps.addTag('Completely Unique Tag XYZABC');
       });
 
@@ -98,10 +98,10 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
   });
 
   describe('addTag — empty string', () => {
-    test('empty tag name is a no-op', () => {
-      const { result } = renderTagHook();
+    test('empty tag name is a no-op', async () => {
+      const { result } = await renderTagHook();
 
-      act(() => {
+      await act(() => {
         result.current.tagOps.addTag('');
       });
 
@@ -112,9 +112,9 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
 
   describe('addTag — duplicate', () => {
     test('adding a tag that already exists in form is a no-op (case-insensitive)', async () => {
-      const { result } = renderTagHook();
+      const { result } = await renderTagHook();
 
-      act(() => {
+      await act(() => {
         result.current.tagOps.addTag('Italian');
       });
 
@@ -122,7 +122,7 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
       });
 
-      act(() => {
+      await act(() => {
         result.current.dialogs.clearValidationQueue();
         result.current.tagOps.addTag('ITALIAN');
       });
@@ -134,9 +134,9 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
 
   describe('removeTag', () => {
     test('tag is removed from form by exact name', async () => {
-      const { result } = renderTagHook();
+      const { result } = await renderTagHook();
 
-      act(() => {
+      await act(() => {
         result.current.tagOps.addTag('Italian');
       });
 
@@ -144,7 +144,7 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tagOps.removeTag('Italian');
       });
 
@@ -154,9 +154,9 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
 
   describe('addTagIfNotDuplicate', () => {
     test('does not add when tag already exists in form (case-insensitive)', async () => {
-      const { result } = renderTagHook();
+      const { result } = await renderTagHook();
 
-      act(() => {
+      await act(() => {
         result.current.tagOps.addTag('Italian');
       });
 
@@ -164,7 +164,7 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(1);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tagOps.addTagIfNotDuplicate({ id: 1, name: 'ITALIAN' });
       });
 
@@ -172,13 +172,13 @@ describe('RecipeFormTagsPipeline (real useTags + real RecipeDatabase)', () => {
     });
 
     test('adds tag when it is genuinely new', async () => {
-      const { result } = renderTagHook();
+      const { result } = await renderTagHook();
 
       await waitFor(() => {
         expect(result.current.form.form.getValues('recipeTags')!).toHaveLength(0);
       });
 
-      act(() => {
+      await act(() => {
         result.current.tagOps.addTagIfNotDuplicate({ id: 5, name: 'Vegan' });
       });
 

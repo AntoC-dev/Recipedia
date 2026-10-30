@@ -115,7 +115,7 @@ describe('RecipeSelectionCard Performance', () => {
 
       const scenario = async () => {
         const card = screen.getByTestId('PerfTest::Card');
-        fireEvent.press(card);
+        await fireEvent.press(card);
       };
 
       await measureRenders(<RecipeSelectionCardWrapper recipe={recipe} />, { runs: 10, scenario });
@@ -126,7 +126,7 @@ describe('RecipeSelectionCard Performance', () => {
 
       const scenario = async () => {
         const checkbox = screen.getByTestId('PerfTest::Card::Checkbox');
-        fireEvent.press(checkbox);
+        await fireEvent.press(checkbox);
       };
 
       await measureRenders(<RecipeSelectionCardWrapper recipe={recipe} />, { runs: 10, scenario });
@@ -137,7 +137,7 @@ describe('RecipeSelectionCard Performance', () => {
 
       const scenario = async () => {
         const card = screen.getByTestId('PerfTest::Card');
-        fireEvent.press(card);
+        await fireEvent.press(card);
       };
 
       await measureRenders(<RecipeSelectionCardWrapper recipe={recipe} />, { runs: 10, scenario });
@@ -163,7 +163,7 @@ describe('RecipeSelectionCard Performance', () => {
     test('50 cards with selection toggle', async () => {
       const scenario = async () => {
         const card = screen.getByTestId('PerfTest::Card::25');
-        fireEvent.press(card);
+        await fireEvent.press(card);
       };
 
       await measureRenders(<BatchCardsWrapper count={50} memoryStatus='fresh' />, {
@@ -182,9 +182,9 @@ describe('RecipeSelectionCard Performance', () => {
 
     test('100 cards with multiple selections', async () => {
       const scenario = async () => {
-        fireEvent.press(screen.getByTestId('PerfTest::Card::25'));
-        fireEvent.press(screen.getByTestId('PerfTest::Card::50'));
-        fireEvent.press(screen.getByTestId('PerfTest::Card::75'));
+        await fireEvent.press(screen.getByTestId('PerfTest::Card::25'));
+        await fireEvent.press(screen.getByTestId('PerfTest::Card::50'));
+        await fireEvent.press(screen.getByTestId('PerfTest::Card::75'));
       };
 
       await measureRenders(<BatchCardsWrapper count={100} memoryStatus='fresh' />, {

@@ -24,8 +24,8 @@ const sampleSteps: preparationStepElement[] = [
 ];
 
 describe('RecipePreparation (read-only)', () => {
-  it('renders each step as numbered title + description', () => {
-    const { getByTestId } = render(<RecipePreparation steps={sampleSteps} />);
+  it('renders each step as numbered title + description', async () => {
+    const { getByTestId } = await render(<RecipePreparation steps={sampleSteps} />);
 
     sampleSteps.forEach((step, index) => {
       const title = getByTestId(`RecipePreparation::ReadOnlyStep::${index}::SectionTitle`);
@@ -35,21 +35,21 @@ describe('RecipePreparation (read-only)', () => {
     });
   });
 
-  it('renders nothing when steps are empty', () => {
-    const { queryByTestId } = render(<RecipePreparation steps={[]} />);
+  it('renders nothing when steps are empty', async () => {
+    const { queryByTestId } = await render(<RecipePreparation steps={[]} />);
     expect(queryByTestId('RecipePreparation::ReadOnlyStep::0::SectionTitle')).toBeNull();
   });
 
-  it('does not render a prefix text', () => {
-    const { queryByTestId } = render(<RecipePreparation steps={sampleSteps} />);
+  it('does not render a prefix text', async () => {
+    const { queryByTestId } = await render(<RecipePreparation steps={sampleSteps} />);
     expect(queryByTestId('RecipePreparation::PrefixText')).toBeNull();
   });
 });
 
 describe('PreparationSection', () => {
-  it('renders prefix, children, and add button', () => {
+  it('renders prefix, children, and add button', async () => {
     const onAddStep = jest.fn();
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText } = await render(
       <PreparationSection prefixText='Preparation :' onAddStep={onAddStep}>
         <React.Fragment>{getChildText()}</React.Fragment>
       </PreparationSection>
@@ -65,22 +65,24 @@ describe('PreparationSection', () => {
     );
   });
 
-  it('fires onAddStep when add button pressed', () => {
+  it('fires onAddStep when add button pressed', async () => {
     const onAddStep = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <PreparationSection prefixText='Preparation :' onAddStep={onAddStep}>
         {null}
       </PreparationSection>
     );
 
-    fireEvent.press(getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction'));
+    await fireEvent.press(
+      getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction')
+    );
     expect(onAddStep).toHaveBeenCalledTimes(1);
   });
 });
 
 describe('PreparationEmptyAdd', () => {
-  it('renders OCR + add buttons with the right icons and labels', () => {
-    const { getByTestId } = render(
+  it('renders OCR + add buttons with the right icons and labels', async () => {
+    const { getByTestId } = await render(
       <PreparationEmptyAdd prefixText='Preparation :' openModal={jest.fn()} onAddStep={jest.fn()} />
     );
 
@@ -98,25 +100,29 @@ describe('PreparationEmptyAdd', () => {
     );
   });
 
-  it('fires openModal and onAddStep callbacks independently', () => {
+  it('fires openModal and onAddStep callbacks independently', async () => {
     const openModal = jest.fn();
     const onAddStep = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <PreparationEmptyAdd prefixText='Preparation :' openModal={openModal} onAddStep={onAddStep} />
     );
 
-    fireEvent.press(getByTestId('RecipePreparation::OpenModal::RoundButton::OnPressFunction'));
+    await fireEvent.press(
+      getByTestId('RecipePreparation::OpenModal::RoundButton::OnPressFunction')
+    );
     expect(openModal).toHaveBeenCalledTimes(1);
     expect(onAddStep).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction'));
+    await fireEvent.press(
+      getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction')
+    );
     expect(onAddStep).toHaveBeenCalledTimes(1);
   });
 });
 
 describe('EditableStep', () => {
-  it('renders title + description from props', () => {
-    const { getByTestId } = render(
+  it('renders title + description from props', async () => {
+    const { getByTestId } = await render(
       <EditableStep
         index={0}
         title='My title'
@@ -137,10 +143,10 @@ describe('EditableStep', () => {
     ).toEqual('My description');
   });
 
-  it('live-changes title on keystroke and commits on blur', () => {
+  it('live-changes title on keystroke and commits on blur', async () => {
     const onTitleChange = jest.fn();
     const onTitleCommit = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <EditableStep
         index={0}
         title='Original'
@@ -155,18 +161,18 @@ describe('EditableStep', () => {
     const titleInput = getByTestId(
       'RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput'
     );
-    fireEvent.changeText(titleInput, 'Mid typing');
+    await fireEvent.changeText(titleInput, 'Mid typing');
     expect(onTitleChange).toHaveBeenCalledWith('Mid typing');
     expect(onTitleCommit).not.toHaveBeenCalled();
 
-    fireEvent(titleInput, 'endEditing', { nativeEvent: { text: 'Final' } });
+    await fireEvent(titleInput, 'endEditing', { nativeEvent: { text: 'Final' } });
     expect(onTitleCommit).toHaveBeenCalledWith('Final');
   });
 
-  it('live-changes description on keystroke and commits on blur', () => {
+  it('live-changes description on keystroke and commits on blur', async () => {
     const onDescriptionChange = jest.fn();
     const onDescriptionCommit = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <EditableStep
         index={0}
         title=''
@@ -181,16 +187,16 @@ describe('EditableStep', () => {
     const descInput = getByTestId(
       'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
     );
-    fireEvent.changeText(descInput, 'Mid typing');
+    await fireEvent.changeText(descInput, 'Mid typing');
     expect(onDescriptionChange).toHaveBeenCalledWith('Mid typing');
     expect(onDescriptionCommit).not.toHaveBeenCalled();
 
-    fireEvent(descInput, 'endEditing', { nativeEvent: { text: 'Final desc' } });
+    await fireEvent(descInput, 'endEditing', { nativeEvent: { text: 'Final desc' } });
     expect(onDescriptionCommit).toHaveBeenCalledWith('Final desc');
   });
 
-  it('does not render a description error helper when descriptionError is undefined', () => {
-    const { queryByTestId, getByTestId } = render(
+  it('does not render a description error helper when descriptionError is undefined', async () => {
+    const { queryByTestId, getByTestId } = await render(
       <EditableStep
         index={0}
         title=''
@@ -208,8 +214,8 @@ describe('EditableStep', () => {
     ).toBe('false');
   });
 
-  it('renders the description error helper and flags the input when descriptionError is set', () => {
-    const { getByTestId } = render(
+  it('renders the description error helper and flags the input when descriptionError is set', async () => {
+    const { getByTestId } = await render(
       <EditableStep
         index={2}
         title='A title'

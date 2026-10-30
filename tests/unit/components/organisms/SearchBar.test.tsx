@@ -17,7 +17,7 @@ describe('SearchBar Component', () => {
     updateSearchString: mockUpdateSearchString,
   };
 
-  const renderSearchBar = (propForComponent: SearchBarProps = defaultProps) => {
+  const renderSearchBar = async (propForComponent: SearchBarProps = defaultProps) => {
     return render(<SearchBar {...propForComponent} />);
   };
 
@@ -48,169 +48,169 @@ describe('SearchBar Component', () => {
     jest.clearAllMocks();
   });
 
-  test('renders with correct initial state and configuration', () => {
-    const { getByTestId, queryByTestId } = renderSearchBar();
+  test('renders with correct initial state and configuration', async () => {
+    const { getByTestId, queryByTestId } = await renderSearchBar();
 
     assertSearchBar(getByTestId, queryByTestId);
   });
 
-  test('never supplies a right prop, which would make Paper hide its clear icon with display none', () => {
-    const { getByTestId } = renderSearchBar();
+  test('never supplies a right prop, which would make Paper hide its clear icon with display none', async () => {
+    const { getByTestId } = await renderSearchBar();
 
     expect(getByTestId(defaultTestId + '::HasRight').props.children).toBe('false');
   });
 
-  test('clears the search and leaves search mode through the built-in clear icon', () => {
-    const { getByTestId } = renderSearchBar();
+  test('clears the search and leaves search mode through the built-in clear icon', async () => {
+    const { getByTestId } = await renderSearchBar();
 
-    fireEvent.changeText(getByTestId(defaultTestId + '::TextInput'), 'pasta');
-    fireEvent.press(getByTestId(defaultTestId + '-clear-icon'));
+    await fireEvent.changeText(getByTestId(defaultTestId + '::TextInput'), 'pasta');
+    await fireEvent.press(getByTestId(defaultTestId + '-clear-icon'));
 
     expect(getByTestId(defaultTestId + '::TextInput').props.value).toBe('');
     expect(mockUpdateSearchString).toHaveBeenLastCalledWith('');
     expect(mockSetSearchBarClicked).toHaveBeenLastCalledWith(false);
   });
 
-  test('propagates a single empty search when the clear icon is pressed', () => {
-    const { getByTestId } = renderSearchBar();
+  test('propagates a single empty search when the clear icon is pressed', async () => {
+    const { getByTestId } = await renderSearchBar();
 
-    fireEvent.changeText(getByTestId(defaultTestId + '::TextInput'), 'pasta');
+    await fireEvent.changeText(getByTestId(defaultTestId + '::TextInput'), 'pasta');
     mockUpdateSearchString.mockClear();
-    fireEvent.press(getByTestId(defaultTestId + '-clear-icon'));
+    await fireEvent.press(getByTestId(defaultTestId + '-clear-icon'));
 
     expect(mockUpdateSearchString).toHaveBeenCalledTimes(1);
     expect(mockUpdateSearchString).toHaveBeenCalledWith('');
   });
 
-  test('requests a search-labelled keyboard return key', () => {
-    const { getByTestId } = renderSearchBar();
+  test('requests a search-labelled keyboard return key', async () => {
+    const { getByTestId } = await renderSearchBar();
 
     expect(getByTestId(defaultTestId + '::TextInput').props.returnKeyType).toBe('search');
   });
 
-  test('displays right icon when text is typed', () => {
-    const { getByTestId, queryByTestId } = renderSearchBar();
+  test('displays right icon when text is typed', async () => {
+    const { getByTestId, queryByTestId } = await renderSearchBar();
 
-    fireEvent.changeText(getByTestId(defaultTestId), 'pasta');
+    await fireEvent.changeText(getByTestId(defaultTestId), 'pasta');
 
     assertSearchBar(getByTestId, queryByTestId, 'pasta');
   });
 
-  test('handles text input changes correctly', () => {
-    const { getByTestId } = renderSearchBar();
+  test('handles text input changes correctly', async () => {
+    const { getByTestId } = await renderSearchBar();
 
     const textInput = getByTestId(defaultTestId);
     expect(mockUpdateSearchString).not.toHaveBeenCalled();
 
-    fireEvent.changeText(textInput, 'spaghetti');
+    await fireEvent.changeText(textInput, 'spaghetti');
     expect(mockUpdateSearchString).toHaveBeenCalledWith('spaghetti');
 
-    fireEvent.changeText(textInput, '');
+    await fireEvent.changeText(textInput, '');
     expect(mockUpdateSearchString).toHaveBeenCalledWith('');
 
-    fireEvent.changeText(textInput, 'café & créme');
+    await fireEvent.changeText(textInput, 'café & créme');
     expect(mockUpdateSearchString).toHaveBeenCalledWith('café & créme');
   });
 
-  test('updates local value and calls parent callback on text change', () => {
-    const { getByTestId } = renderSearchBar();
+  test('updates local value and calls parent callback on text change', async () => {
+    const { getByTestId } = await renderSearchBar();
 
     const textInput = getByTestId(defaultTestId + '::TextInput');
     expect(textInput.props.value).toBe('');
 
-    fireEvent.changeText(getByTestId(defaultTestId), 'risotto');
+    await fireEvent.changeText(getByTestId(defaultTestId), 'risotto');
 
     expect(textInput.props.value).toBe('risotto');
     expect(mockUpdateSearchString).toHaveBeenCalledWith('risotto');
   });
 
-  test('opens the suggestions when the input is touched', () => {
-    const { getByTestId } = renderSearchBar();
+  test('opens the suggestions when the input is touched', async () => {
+    const { getByTestId } = await renderSearchBar();
 
     expect(mockSetSearchBarClicked).not.toHaveBeenCalled();
 
     const textInput = getByTestId(defaultTestId);
-    fireEvent(textInput, 'onPressIn');
+    await fireEvent(textInput, 'onPressIn');
 
     expect(mockSetSearchBarClicked).toHaveBeenCalledWith(true);
   });
 
-  test('does not open the suggestions on a bare focus such as the one Android restores after back', () => {
-    const { getByTestId } = renderSearchBar();
+  test('does not open the suggestions on a bare focus such as the one Android restores after back', async () => {
+    const { getByTestId } = await renderSearchBar();
 
-    fireEvent(getByTestId(defaultTestId), 'onFocus');
+    await fireEvent(getByTestId(defaultTestId), 'onFocus');
 
     expect(mockSetSearchBarClicked).not.toHaveBeenCalled();
   });
 
-  test('does not collapse on blur', () => {
-    const { getByTestId } = renderSearchBar();
+  test('does not collapse on blur', async () => {
+    const { getByTestId } = await renderSearchBar();
 
     expect(mockSetSearchBarClicked).not.toHaveBeenCalled();
 
     const textInput = getByTestId(defaultTestId);
-    fireEvent(textInput, 'onBlur');
+    await fireEvent(textInput, 'onBlur');
 
     expect(mockSetSearchBarClicked).not.toHaveBeenCalled();
   });
 
-  test('collapses and dismisses keyboard on submit', () => {
+  test('collapses and dismisses keyboard on submit', async () => {
     const { Keyboard } = require('react-native');
     jest.spyOn(Keyboard, 'dismiss').mockImplementation(() => {});
 
-    const { getByTestId } = renderSearchBar();
+    const { getByTestId } = await renderSearchBar();
 
     expect(mockSetSearchBarClicked).not.toHaveBeenCalled();
 
     const textInput = getByTestId(defaultTestId);
-    fireEvent(textInput, 'submitEditing');
+    await fireEvent(textInput, 'submitEditing');
 
     expect(Keyboard.dismiss).toHaveBeenCalled();
     expect(mockSetSearchBarClicked).toHaveBeenCalledWith(false);
   });
 
-  test('renders clear button when text has been typed', () => {
-    const { getByTestId, queryByTestId } = renderSearchBar();
+  test('renders clear button when text has been typed', async () => {
+    const { getByTestId, queryByTestId } = await renderSearchBar();
 
-    fireEvent.changeText(getByTestId(defaultTestId), 'test search');
+    await fireEvent.changeText(getByTestId(defaultTestId), 'test search');
 
     assertSearchBar(getByTestId, queryByTestId, 'test search');
   });
 
-  test('toggles clear icon availability based on typed text length', () => {
-    const { getByTestId } = renderSearchBar();
+  test('toggles clear icon availability based on typed text length', async () => {
+    const { getByTestId } = await renderSearchBar();
     const textInput = getByTestId(defaultTestId);
 
     expectClearIconEnabled(getByTestId, false);
 
-    fireEvent.changeText(textInput, 'a');
+    await fireEvent.changeText(textInput, 'a');
     expectClearIconEnabled(getByTestId, true);
 
-    fireEvent.changeText(textInput, 'pasta recipe');
+    await fireEvent.changeText(textInput, 'pasta recipe');
     expectClearIconEnabled(getByTestId, true);
 
-    fireEvent.changeText(textInput, '');
+    await fireEvent.changeText(textInput, '');
     expectClearIconEnabled(getByTestId, false);
   });
 
-  test('uses different testId correctly for multiple instances', () => {
+  test('uses different testId correctly for multiple instances', async () => {
     const prop: SearchBarProps = { ...defaultProps, testId: 'custom-search-bar' };
-    const { getByTestId, queryByTestId } = renderSearchBar(prop);
+    const { getByTestId, queryByTestId } = await renderSearchBar(prop);
 
     expect(getByTestId('custom-search-bar::Mode').props.children).toBe('bar');
     expect(getByTestId('custom-search-bar::TextInput').props.value).toBe('');
     expect(queryByTestId(defaultTestId)).toBeNull();
   });
 
-  test('maintains functionality across rapid interactions', () => {
-    const { getByTestId } = renderSearchBar();
+  test('maintains functionality across rapid interactions', async () => {
+    const { getByTestId } = await renderSearchBar();
 
     const textInput = getByTestId(defaultTestId);
 
-    fireEvent(textInput, 'onPressIn');
-    fireEvent.changeText(textInput, 'new text');
-    fireEvent(textInput, 'onPressIn');
-    fireEvent(textInput, 'submitEditing');
+    await fireEvent(textInput, 'onPressIn');
+    await fireEvent.changeText(textInput, 'new text');
+    await fireEvent(textInput, 'onPressIn');
+    await fireEvent(textInput, 'submitEditing');
 
     expect(mockSetSearchBarClicked).toHaveBeenCalledTimes(3);
     expect(mockUpdateSearchString).toHaveBeenCalledTimes(1);
@@ -218,7 +218,7 @@ describe('SearchBar Component', () => {
     expect(mockUpdateSearchString).toHaveBeenCalledWith('new text');
   });
 
-  test('handles edge cases with typed text content', () => {
+  test('handles edge cases with typed text content', async () => {
     const edgeCases = [
       ' ',
       '   ',
@@ -230,30 +230,30 @@ describe('SearchBar Component', () => {
       '@#$%^&*()',
     ];
 
-    edgeCases.forEach(text => {
-      const { getByTestId, queryByTestId, unmount } = renderSearchBar();
+    for (const text of edgeCases) {
+      const { getByTestId, queryByTestId, unmount } = await renderSearchBar();
 
-      fireEvent.changeText(getByTestId(defaultTestId), text);
+      await fireEvent.changeText(getByTestId(defaultTestId), text);
 
       assertSearchBar(getByTestId, queryByTestId, text);
 
-      unmount();
+      await unmount();
       jest.clearAllMocks();
-    });
+    }
   });
 
-  test('preserves callback functionality across prop changes', () => {
+  test('preserves callback functionality across prop changes', async () => {
     const props: SearchBarProps = { ...defaultProps };
-    const { getByTestId, rerender } = renderSearchBar(props);
+    const { getByTestId, rerender } = await renderSearchBar(props);
 
     const textInput = getByTestId(defaultTestId);
-    fireEvent.changeText(textInput, 'initial');
+    await fireEvent.changeText(textInput, 'initial');
     expect(mockUpdateSearchString).toHaveBeenCalledWith('initial');
 
     const newMockSetSearchBarClicked = jest.fn();
     const newMockUpdateSearchString = jest.fn();
 
-    rerender(
+    await rerender(
       <SearchBar
         {...props}
         setSearchBarClicked={newMockSetSearchBarClicked}
@@ -261,8 +261,8 @@ describe('SearchBar Component', () => {
       />
     );
 
-    fireEvent.changeText(textInput, 'updated');
-    fireEvent(textInput, 'onPressIn');
+    await fireEvent.changeText(textInput, 'updated');
+    await fireEvent(textInput, 'onPressIn');
 
     expect(newMockUpdateSearchString).toHaveBeenCalledTimes(1);
     expect(newMockSetSearchBarClicked).toHaveBeenCalledTimes(1);
@@ -270,56 +270,56 @@ describe('SearchBar Component', () => {
     expect(mockSetSearchBarClicked).not.toHaveBeenCalled();
   });
 
-  test('handles simultaneous touch and text changes correctly', () => {
-    const { getByTestId } = renderSearchBar();
+  test('handles simultaneous touch and text changes correctly', async () => {
+    const { getByTestId } = await renderSearchBar();
     const textInput = getByTestId(defaultTestId);
 
-    fireEvent(textInput, 'onPressIn');
-    fireEvent.changeText(textInput, 'focused text');
+    await fireEvent(textInput, 'onPressIn');
+    await fireEvent.changeText(textInput, 'focused text');
 
     expect(mockSetSearchBarClicked).toHaveBeenCalledWith(true);
     expect(mockUpdateSearchString).toHaveBeenCalledWith('focused text');
 
-    fireEvent(textInput, 'submitEditing');
+    await fireEvent(textInput, 'submitEditing');
     expect(mockSetSearchBarClicked).toHaveBeenLastCalledWith(false);
 
     expect(mockSetSearchBarClicked).toHaveBeenCalledTimes(2);
     expect(mockUpdateSearchString).toHaveBeenCalledTimes(1);
   });
 
-  test('maintains component stability during progressive typing', () => {
-    const { getByTestId, queryByTestId } = renderSearchBar();
+  test('maintains component stability during progressive typing', async () => {
+    const { getByTestId, queryByTestId } = await renderSearchBar();
 
     assertSearchBar(getByTestId, queryByTestId);
 
     const textProgression = ['a', 'ap', 'app', 'apple', 'apple pie', ''];
     const textInput = getByTestId(defaultTestId);
 
-    textProgression.forEach(text => {
-      fireEvent.changeText(textInput, text);
+    for (const text of textProgression) {
+      await fireEvent.changeText(textInput, text);
 
       assertSearchBar(getByTestId, queryByTestId, text);
 
-      fireEvent(textInput, 'onPressIn');
+      await fireEvent(textInput, 'onPressIn');
       expect(mockSetSearchBarClicked).toHaveBeenCalledWith(true);
 
       jest.clearAllMocks();
-    });
+    }
   });
 
-  test('clears search, dismisses keyboard and exits search mode when clear button is pressed', () => {
+  test('clears search, dismisses keyboard and exits search mode when clear button is pressed', async () => {
     const { Keyboard } = require('react-native');
     jest.spyOn(Keyboard, 'dismiss').mockImplementation(() => {});
 
-    const { getByTestId } = renderSearchBar();
+    const { getByTestId } = await renderSearchBar();
 
-    fireEvent.changeText(getByTestId(defaultTestId), 'test search');
+    await fireEvent.changeText(getByTestId(defaultTestId), 'test search');
 
     const textInput = getByTestId(defaultTestId + '::TextInput');
     expect(textInput.props.value).toBe('test search');
 
     jest.clearAllMocks();
-    fireEvent.press(getByTestId(defaultTestId + '-clear-icon'));
+    await fireEvent.press(getByTestId(defaultTestId + '-clear-icon'));
 
     expect(textInput.props.value).toBe('');
     expect(Keyboard.dismiss).toHaveBeenCalled();
@@ -328,38 +328,38 @@ describe('SearchBar Component', () => {
   });
 
   describe('Clear icon availability', () => {
-    test('stays unavailable while the field is empty', () => {
-      const { getByTestId } = renderSearchBar();
+    test('stays unavailable while the field is empty', async () => {
+      const { getByTestId } = await renderSearchBar();
 
       expectClearIconEnabled(getByTestId, false);
     });
 
-    test('becomes available once text is typed and unavailable again when emptied', () => {
-      const { getByTestId } = renderSearchBar();
+    test('becomes available once text is typed and unavailable again when emptied', async () => {
+      const { getByTestId } = await renderSearchBar();
 
-      fireEvent.changeText(getByTestId(defaultTestId), 'test');
+      await fireEvent.changeText(getByTestId(defaultTestId), 'test');
       expectClearIconEnabled(getByTestId, true);
 
-      fireEvent.changeText(getByTestId(defaultTestId), '');
+      await fireEvent.changeText(getByTestId(defaultTestId), '');
       expectClearIconEnabled(getByTestId, false);
     });
   });
 
   describe('clearRef functionality', () => {
-    test('clears text when clear() is called via ref', () => {
+    test('clears text when clear() is called via ref', async () => {
       const clearRef = createRef<SearchBarHandle>();
-      const { getByTestId, queryByTestId } = renderSearchBar({
+      const { getByTestId, queryByTestId } = await renderSearchBar({
         ...defaultProps,
         clearRef,
       });
 
-      fireEvent.changeText(getByTestId(defaultTestId), 'some text');
+      await fireEvent.changeText(getByTestId(defaultTestId), 'some text');
 
       const textInput = getByTestId(defaultTestId + '::TextInput');
       expect(textInput.props.value).toBe('some text');
       expectClearIconEnabled(getByTestId, true);
 
-      act(() => {
+      await act(() => {
         clearRef.current?.clear();
       });
 
@@ -367,9 +367,9 @@ describe('SearchBar Component', () => {
       expectClearIconEnabled(getByTestId, false);
     });
 
-    test('sets text when setText() is called via ref', () => {
+    test('sets text when setText() is called via ref', async () => {
       const clearRef = createRef<SearchBarHandle>();
-      const { getByTestId } = renderSearchBar({
+      const { getByTestId } = await renderSearchBar({
         ...defaultProps,
         clearRef,
       });
@@ -377,7 +377,7 @@ describe('SearchBar Component', () => {
       const textInput = getByTestId(defaultTestId + '::TextInput');
       expect(textInput.props.value).toBe('');
 
-      act(() => {
+      await act(() => {
         clearRef.current?.setText('Margherita Pizza');
       });
 
@@ -386,10 +386,10 @@ describe('SearchBar Component', () => {
       expect(mockUpdateSearchString).not.toHaveBeenCalled();
     });
 
-    test('works without clearRef provided', () => {
-      const { getByTestId } = renderSearchBar();
+    test('works without clearRef provided', async () => {
+      const { getByTestId } = await renderSearchBar();
 
-      fireEvent.changeText(getByTestId(defaultTestId), 'no ref');
+      await fireEvent.changeText(getByTestId(defaultTestId), 'no ref');
 
       expect(getByTestId(defaultTestId + '::TextInput').props.value).toBe('no ref');
     });

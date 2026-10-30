@@ -37,7 +37,7 @@ beforeEach(() => {
 });
 
 describe('RecipeIngredientsField', () => {
-  test('renders one IngredientRow per form ingredient', () => {
+  test('renders one IngredientRow per form ingredient', async () => {
     const ingredients = [
       {
         id: 1,
@@ -48,7 +48,7 @@ describe('RecipeIngredientsField', () => {
         season: [],
       },
     ];
-    const { getByTestId, queryByTestId } = renderWithForm(
+    const { getByTestId, queryByTestId } = await renderWithForm(
       RecipeIngredientsField,
       form => ({
         form,
@@ -63,19 +63,21 @@ describe('RecipeIngredientsField', () => {
     expect(getByTestId('RecipeIngredients::0::NameInput::Value').props.children).toBe('flour');
   });
 
-  test('add button appends a new empty ingredient through useFieldArray', () => {
-    const { getByTestId, form } = renderWithForm(RecipeIngredientsField, f => ({
+  test('add button appends a new empty ingredient through useFieldArray', async () => {
+    const { getByTestId, form } = await renderWithForm(RecipeIngredientsField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
       openModalForField: jest.fn(),
       t,
     }));
-    fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+    await fireEvent.press(
+      getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+    );
     expect(form.getValues('recipeIngredients')).toHaveLength(1);
   });
 
-  test('table add button is labelled with the new ingredient label', () => {
-    const { getByTestId } = renderWithForm(RecipeIngredientsField, f => ({
+  test('table add button is labelled with the new ingredient label', async () => {
+    const { getByTestId } = await renderWithForm(RecipeIngredientsField, f => ({
       form: f,
       stackMode: recipeStateType.edit,
       openModalForField: jest.fn(),
@@ -86,7 +88,7 @@ describe('RecipeIngredientsField', () => {
     );
   });
 
-  test('row commit with same name writes via the field-array without invoking validation', () => {
+  test('row commit with same name writes via the field-array without invoking validation', async () => {
     const ingredients = [
       {
         id: 1,
@@ -97,7 +99,7 @@ describe('RecipeIngredientsField', () => {
         season: [],
       },
     ];
-    const { getByTestId, form } = renderWithForm(
+    const { getByTestId, form } = await renderWithForm(
       RecipeIngredientsField,
       f => ({
         form: f,
@@ -107,15 +109,17 @@ describe('RecipeIngredientsField', () => {
       }),
       { recipeIngredients: ingredients }
     );
-    act(() => {
-      fireEvent.press(getByTestId('RecipeIngredients::0::OnIngredientChange'), '300@@g--flour');
-    });
+    await fireEvent(
+      getByTestId('RecipeIngredients::0::OnIngredientChange'),
+      'press',
+      '300@@g--flour'
+    );
     expect(mockFindSimilarIngredients).not.toHaveBeenCalled();
     expect(form.getValues('recipeIngredients.0.quantity')).toBe('300');
     expect(form.getValues('recipeIngredients.0.name')).toBe('flour');
   });
 
-  test('row commit with a new name routes through the fuzzy-match validation pipeline', () => {
+  test('row commit with a new name routes through the fuzzy-match validation pipeline', async () => {
     const ingredients = [
       {
         id: 1,
@@ -126,7 +130,7 @@ describe('RecipeIngredientsField', () => {
         season: [],
       },
     ];
-    const { getByTestId } = renderWithForm(
+    const { getByTestId } = await renderWithForm(
       RecipeIngredientsField,
       f => ({
         form: f,
@@ -136,12 +140,11 @@ describe('RecipeIngredientsField', () => {
       }),
       { recipeIngredients: ingredients }
     );
-    act(() => {
-      fireEvent.press(
-        getByTestId('RecipeIngredients::0::OnIngredientChange'),
-        '300@@g--almond flour'
-      );
-    });
+    await fireEvent(
+      getByTestId('RecipeIngredients::0::OnIngredientChange'),
+      'press',
+      '300@@g--almond flour'
+    );
     expect(mockFindSimilarIngredients).toHaveBeenCalledWith('almond flour');
   });
 
@@ -149,7 +152,7 @@ describe('RecipeIngredientsField', () => {
     const ingredients = [
       { name: 'flour', quantity: '200', type: ingredientType.cereal, season: [] },
     ];
-    const { getByTestId, form } = renderWithForm(
+    const { getByTestId, form } = await renderWithForm(
       RecipeIngredientsField,
       f => ({
         form: f,
@@ -162,16 +165,14 @@ describe('RecipeIngredientsField', () => {
     await act(async () => {
       form.setValue('recipeIngredients.0.name', '', { shouldValidate: true });
     });
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipeIngredients::0::OnIngredientChange'), '200@@g--');
-    });
+    await fireEvent(getByTestId('RecipeIngredients::0::OnIngredientChange'), 'press', '200@@g--');
     expect(getByTestId('RecipeIngredients::0::Error').props.children).toBe(
       'alerts.inlineErrors.ingredientRow'
     );
   });
 
   test('surfaces row-level error after a quantity-only commit and blur without a name edit', async () => {
-    const { getByTestId } = renderWithForm(
+    const { getByTestId } = await renderWithForm(
       RecipeIngredientsField,
       f => ({
         form: f,
@@ -181,12 +182,8 @@ describe('RecipeIngredientsField', () => {
       }),
       { recipeIngredients: [{ name: '', quantity: '' }] }
     );
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipeIngredients::0::OnIngredientChange'), '100@@--');
-    });
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipeIngredients::0::OnBlur'));
-    });
+    await fireEvent(getByTestId('RecipeIngredients::0::OnIngredientChange'), 'press', '100@@--');
+    await fireEvent.press(getByTestId('RecipeIngredients::0::OnBlur'));
     expect(getByTestId('RecipeIngredients::0::Error').props.children).toBe(
       'alerts.inlineErrors.ingredientRow'
     );
@@ -194,7 +191,7 @@ describe('RecipeIngredientsField', () => {
 
   test('does not show row error when row is invalid but untouched', async () => {
     const ingredients = [{ name: '', quantity: '', type: undefined, season: [] }];
-    const { queryByTestId, form } = renderWithForm(
+    const { queryByTestId, form } = await renderWithForm(
       RecipeIngredientsField,
       f => ({
         form: f,
@@ -213,7 +210,7 @@ describe('RecipeIngredientsField', () => {
   test('surfaces row-level error inline after submit failure even without prior row edit', async () => {
     const ingredients = [{ name: '', quantity: '', type: undefined, season: [] }];
     const formRef: { form: Form | null } = { form: null };
-    const { getByTestId } = renderWithForm(
+    const { getByTestId } = await renderWithForm(
       RecipeIngredientsField,
       f => {
         formRef.form = f;
@@ -253,7 +250,7 @@ describe('RecipeIngredientsField', () => {
       mockFindSimilarIngredients.mockImplementation((name: string) =>
         name.toLowerCase() === 'carrots' ? [carrots] : []
       );
-      const { getByTestId, form } = renderWithForm(
+      const { getByTestId, form } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
@@ -265,9 +262,7 @@ describe('RecipeIngredientsField', () => {
       );
 
       // The autocomplete dropdown fires the dedicated `onSelect` path.
-      await act(async () => {
-        fireEvent.press(getByTestId('RecipeIngredients::0::OnSelectName'), 'Carrots');
-      });
+      await fireEvent(getByTestId('RecipeIngredients::0::OnSelectName'), 'press', 'Carrots');
 
       const row = form.getValues('recipeIngredients.0');
       expect(row.id).toBe(42);
@@ -281,7 +276,7 @@ describe('RecipeIngredientsField', () => {
       mockFindSimilarIngredients.mockImplementation((name: string) =>
         name.toLowerCase() === 'carrots' ? [carrots] : []
       );
-      const { getByTestId, form } = renderWithForm(
+      const { getByTestId, form } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
@@ -293,9 +288,11 @@ describe('RecipeIngredientsField', () => {
       );
       const rowBeforeResolution = getByTestId('RecipeIngredients::0::Row');
 
-      await act(async () => {
-        fireEvent.press(getByTestId('RecipeIngredients::0::OnIngredientChange'), '@@--Carrots');
-      });
+      await fireEvent(
+        getByTestId('RecipeIngredients::0::OnIngredientChange'),
+        'press',
+        '@@--Carrots'
+      );
 
       expect(form.getValues('recipeIngredients.0.id')).toBe(42);
       const isSameRowInstance = getByTestId('RecipeIngredients::0::Row') === rowBeforeResolution;
@@ -307,7 +304,7 @@ describe('RecipeIngredientsField', () => {
       mockFindSimilarIngredients.mockImplementation((name: string) =>
         name.toLowerCase() === 'carrots' ? [carrots] : []
       );
-      const { getByTestId, queryByTestId, form } = renderWithForm(
+      const { getByTestId, queryByTestId, form } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
@@ -323,17 +320,13 @@ describe('RecipeIngredientsField', () => {
       await act(async () => {
         form.setValue('recipeIngredients.0.name', '', { shouldValidate: true });
       });
-      await act(async () => {
-        fireEvent.press(getByTestId('RecipeIngredients::0::OnIngredientChange'), '100@@g--');
-      });
+      await fireEvent(getByTestId('RecipeIngredients::0::OnIngredientChange'), 'press', '100@@g--');
       expect(getByTestId('RecipeIngredients::0::Error').props.children).toBe(
         'alerts.inlineErrors.ingredientRow'
       );
 
       // Pick "Carrots" from the dropdown via the dedicated select path.
-      await act(async () => {
-        fireEvent.press(getByTestId('RecipeIngredients::0::OnSelectName'), 'Carrots');
-      });
+      await fireEvent(getByTestId('RecipeIngredients::0::OnSelectName'), 'press', 'Carrots');
 
       await waitFor(() => {
         expect(queryByTestId('RecipeIngredients::0::Error')).toBeNull();
@@ -343,7 +336,7 @@ describe('RecipeIngredientsField', () => {
 
   test('surfaces array-level error inline after submit failure on empty array', async () => {
     const formRef: { form: Form | null } = { form: null };
-    const { getByTestId } = renderWithForm(
+    const { getByTestId } = await renderWithForm(
       RecipeIngredientsField,
       f => {
         formRef.form = f;
@@ -369,7 +362,7 @@ describe('RecipeIngredientsField', () => {
   });
 
   describe('ingredient seasonality (per-row month array)', () => {
-    test('mounts a row whose seasonality came from the DB and exposes it via form state', () => {
+    test('mounts a row whose seasonality came from the DB and exposes it via form state', async () => {
       const ingredients = [
         {
           id: 1,
@@ -380,7 +373,7 @@ describe('RecipeIngredientsField', () => {
           season: ['3', '4', '5'],
         },
       ];
-      const { getByTestId, form } = renderWithForm(
+      const { getByTestId, form } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
@@ -395,7 +388,7 @@ describe('RecipeIngredientsField', () => {
       expect(form.getValues('recipeIngredients.0.season')).toEqual(['3', '4', '5']);
     });
 
-    test('writes the edited seasonality month array back via form.setValue', () => {
+    test('writes the edited seasonality month array back via form.setValue', async () => {
       const ingredients = [
         {
           id: 1,
@@ -406,7 +399,7 @@ describe('RecipeIngredientsField', () => {
           season: ['3', '4', '5'],
         },
       ];
-      const { form } = renderWithForm(
+      const { form } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
@@ -417,14 +410,14 @@ describe('RecipeIngredientsField', () => {
         { recipeIngredients: ingredients }
       );
 
-      act(() => {
+      await act(() => {
         form.setValue('recipeIngredients.0.season', ['6', '7', '8'], { shouldDirty: true });
       });
 
       expect(form.getValues('recipeIngredients.0.season')).toEqual(['6', '7', '8']);
     });
 
-    test('post-save snapshot carries the edited per-ingredient season', () => {
+    test('post-save snapshot carries the edited per-ingredient season', async () => {
       const ingredients = [
         {
           id: 1,
@@ -443,7 +436,7 @@ describe('RecipeIngredientsField', () => {
           season: [],
         },
       ];
-      const { form } = renderWithForm(
+      const { form } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
@@ -454,7 +447,7 @@ describe('RecipeIngredientsField', () => {
         { recipeIngredients: ingredients }
       );
 
-      act(() => {
+      await act(() => {
         form.setValue('recipeIngredients.0.season', ['6', '7', '8', '9']);
       });
 
@@ -474,7 +467,7 @@ describe('RecipeIngredientsField', () => {
       );
     });
     const formRef: { form: Form | null } = { form: null };
-    const { getByTestId } = renderWithForm(
+    const { getByTestId } = await renderWithForm(
       RecipeIngredientsField,
       f => {
         formRef.form = f;
@@ -489,16 +482,14 @@ describe('RecipeIngredientsField', () => {
       },
       { recipeIngredients: initial }
     );
-    await act(async () => {
-      fireEvent.press(getByTestId('RecipeIngredients::0::OnRemoveIngredient'));
-    });
+    await fireEvent.press(getByTestId('RecipeIngredients::0::OnRemoveIngredient'));
     expect(getByTestId('RecipeIngredients::Error').props.children).toBe(
       'alerts.inlineErrors.titleIngredients'
     );
   });
 
   describe('read-only mode', () => {
-    test('renders ingredients via the read-only organism without edit affordances', () => {
+    test('renders ingredients via the read-only organism without edit affordances', async () => {
       const ingredients = [
         {
           id: 1,
@@ -509,7 +500,7 @@ describe('RecipeIngredientsField', () => {
           season: [],
         },
       ];
-      const { getByTestId, queryByTestId } = renderWithForm(
+      const { getByTestId, queryByTestId } = await renderWithForm(
         RecipeIngredientsField,
         form => ({
           form,
@@ -527,8 +518,8 @@ describe('RecipeIngredientsField', () => {
       ).toBeNull();
     });
 
-    test('falls back to an empty list when the form value is undefined', () => {
-      const { getByTestId } = renderWithForm(
+    test('falls back to an empty list when the form value is undefined', async () => {
+      const { getByTestId } = await renderWithForm(
         RecipeIngredientsField,
         form => ({
           form,
@@ -543,9 +534,9 @@ describe('RecipeIngredientsField', () => {
   });
 
   describe('addOCR mode', () => {
-    test('empty array renders the empty-state block and opens the names OCR modal', () => {
+    test('empty array renders the empty-state block and opens the names OCR modal', async () => {
       const openModalForField = jest.fn();
-      const { getByTestId } = renderWithForm(
+      const { getByTestId } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
@@ -562,14 +553,14 @@ describe('RecipeIngredientsField', () => {
       expect(getByTestId('RecipeIngredients::AddButton::RoundButton::Label').props.children).toBe(
         'recipe.roundButton.addManually'
       );
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId('RecipeIngredients::OpenModalNames::RoundButton::OnPressFunction')
       );
       expect(openModalForField).toHaveBeenCalledWith('ingredientNames');
     });
 
-    test('empty array manual-add button appends a row through the field array', () => {
-      const { getByTestId, form } = renderWithForm(
+    test('empty array manual-add button appends a row through the field array', async () => {
+      const { getByTestId, form } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
@@ -579,11 +570,13 @@ describe('RecipeIngredientsField', () => {
         }),
         { recipeIngredients: [] }
       );
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
       expect(form.getValues('recipeIngredients')).toHaveLength(1);
     });
 
-    test('non-empty array hides the empty-state block and renders the add-tail OCR block', () => {
+    test('non-empty array hides the empty-state block and renders the add-tail OCR block', async () => {
       const openModalForField = jest.fn();
       const ingredients = [
         {
@@ -595,7 +588,7 @@ describe('RecipeIngredientsField', () => {
           season: [],
         },
       ];
-      const { getByTestId, queryByTestId, form } = renderWithForm(
+      const { getByTestId, queryByTestId, form } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
@@ -614,11 +607,13 @@ describe('RecipeIngredientsField', () => {
       expect(getByTestId('RecipeIngredients::AddButton::RoundButton::Label').props.children).toBe(
         'recipe.roundButton.addManually'
       );
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId('RecipeIngredients::OpenModalQuantities::RoundButton::OnPressFunction')
       );
       expect(openModalForField).toHaveBeenCalledWith('ingredientQuantities');
-      fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+      await fireEvent.press(
+        getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction')
+      );
       expect(form.getValues('recipeIngredients')).toHaveLength(2);
     });
   });
@@ -634,7 +629,7 @@ describe('RecipeIngredientsField', () => {
     };
 
     test('opens for the pressed row prefilled with its name, and cancel closes without saving', async () => {
-      const { getByTestId, queryByTestId, form } = renderWithForm(
+      const { getByTestId, queryByTestId, form } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
@@ -644,19 +639,17 @@ describe('RecipeIngredientsField', () => {
         }),
         { recipeIngredients: [flourRow] }
       );
-      fireEvent.press(getByTestId('RecipeIngredients::0::NoteButton'));
+      await fireEvent.press(getByTestId('RecipeIngredients::0::NoteButton'));
       expect(getByTestId('RecipeIngredients::NoteDialog::IngredientName').props.children).toBe(
         'flour'
       );
-      await act(async () => {
-        fireEvent.press(getByTestId('RecipeIngredients::NoteDialog::CancelButton'));
-      });
+      await fireEvent.press(getByTestId('RecipeIngredients::NoteDialog::CancelButton'));
       expect(queryByTestId('RecipeIngredients::NoteDialog::Title')).toBeNull();
       expect(form.getValues('recipeIngredients.0.note')).toBeUndefined();
     });
 
     test('saving writes the trimmed note back onto the focused row and closes the dialog', async () => {
-      const { getByTestId, queryByTestId, form } = renderWithForm(
+      const { getByTestId, queryByTestId, form } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
@@ -666,14 +659,12 @@ describe('RecipeIngredientsField', () => {
         }),
         { recipeIngredients: [flourRow] }
       );
-      fireEvent.press(getByTestId('RecipeIngredients::0::NoteButton'));
-      fireEvent.changeText(
+      await fireEvent.press(getByTestId('RecipeIngredients::0::NoteButton'));
+      await fireEvent.changeText(
         getByTestId('RecipeIngredients::NoteDialog::Input::CustomTextInput'),
         '  for the sauce  '
       );
-      await act(async () => {
-        fireEvent.press(getByTestId('RecipeIngredients::NoteDialog::SaveButton'));
-      });
+      await fireEvent.press(getByTestId('RecipeIngredients::NoteDialog::SaveButton'));
       expect(form.getValues('recipeIngredients.0.note')).toBe('for the sauce');
       expect(form.getValues('recipeIngredients.0.quantity')).toBe('200');
       expect(form.getValues('recipeIngredients.0.name')).toBe('flour');
@@ -681,7 +672,7 @@ describe('RecipeIngredientsField', () => {
     });
 
     test('saving an unnamed row with no unit falls back to blank unit, name and note', async () => {
-      const { getByTestId, queryByTestId, form } = renderWithForm(
+      const { getByTestId, queryByTestId, form } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
@@ -691,16 +682,14 @@ describe('RecipeIngredientsField', () => {
         }),
         { recipeIngredients: [{ quantity: '50' }] }
       );
-      fireEvent.press(getByTestId('RecipeIngredients::0::NoteButton'));
-      await act(async () => {
-        fireEvent.press(getByTestId('RecipeIngredients::NoteDialog::SaveButton'));
-      });
+      await fireEvent.press(getByTestId('RecipeIngredients::0::NoteButton'));
+      await fireEvent.press(getByTestId('RecipeIngredients::NoteDialog::SaveButton'));
       expect(queryByTestId('RecipeIngredients::NoteDialog::Title')).toBeNull();
       expect(form.getValues('recipeIngredients.0.quantity')).toBe('50');
     });
 
     test('saving is a no-op once the focused row has been removed before the dialog closes', async () => {
-      const { getByTestId, form } = renderWithForm(
+      const { getByTestId, form } = await renderWithForm(
         RecipeIngredientsField,
         f => ({
           form: f,
@@ -710,13 +699,9 @@ describe('RecipeIngredientsField', () => {
         }),
         { recipeIngredients: [flourRow] }
       );
-      fireEvent.press(getByTestId('RecipeIngredients::0::NoteButton'));
-      await act(async () => {
-        fireEvent.press(getByTestId('RecipeIngredients::0::OnRemoveIngredient'));
-      });
-      await act(async () => {
-        fireEvent.press(getByTestId('RecipeIngredients::NoteDialog::SaveButton'));
-      });
+      await fireEvent.press(getByTestId('RecipeIngredients::0::NoteButton'));
+      await fireEvent.press(getByTestId('RecipeIngredients::0::OnRemoveIngredient'));
+      await fireEvent.press(getByTestId('RecipeIngredients::NoteDialog::SaveButton'));
       expect(form.getValues('recipeIngredients')).toHaveLength(0);
     });
   });

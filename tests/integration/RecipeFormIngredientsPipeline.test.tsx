@@ -93,7 +93,7 @@ function createWrapper() {
   };
 }
 
-function renderIngredientHook() {
+async function renderIngredientHook() {
   return renderHook(
     () => ({
       ingredientOps: useRecipeIngredients(),
@@ -119,9 +119,9 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
 
   describe('addOrMergeIngredient', () => {
     test('adds new ingredient to empty form', async () => {
-      const { result } = renderIngredientHook();
+      const { result } = await renderIngredientHook();
 
-      act(() => {
+      await act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
           id: 1,
           name: 'Tomato',
@@ -138,9 +138,9 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
     });
 
     test('merges quantities when duplicate name + same unit', async () => {
-      const { result } = renderIngredientHook();
+      const { result } = await renderIngredientHook();
 
-      act(() => {
+      await act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
           id: 2,
           name: 'Onion',
@@ -151,7 +151,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
         });
       });
 
-      act(() => {
+      await act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
           id: 3,
           name: 'Onion',
@@ -167,9 +167,9 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
     });
 
     test('replaces existing when duplicate name + different unit', async () => {
-      const { result } = renderIngredientHook();
+      const { result } = await renderIngredientHook();
 
-      act(() => {
+      await act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
           id: 4,
           name: 'Garlic',
@@ -180,7 +180,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
         });
       });
 
-      act(() => {
+      await act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
           id: 5,
           name: 'Garlic',
@@ -197,9 +197,9 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
     });
 
     test('adds as separate ingredient when same name + same unit + different non-empty notes', async () => {
-      const { result } = renderIngredientHook();
+      const { result } = await renderIngredientHook();
 
-      act(() => {
+      await act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
           id: 6,
           name: 'Tomato',
@@ -211,7 +211,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
         });
       });
 
-      act(() => {
+      await act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
           id: 7,
           name: 'Tomato',
@@ -235,9 +235,9 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
 
   describe('editIngredients', () => {
     test('updates quantity in-place without triggering validation when name does not change', async () => {
-      const { result } = renderIngredientHook();
+      const { result } = await renderIngredientHook();
 
-      act(() => {
+      await act(() => {
         result.current.ingredientOps.addOrMergeIngredient({
           id: 8,
           name: 'Onion',
@@ -248,7 +248,7 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
         });
       });
 
-      act(() => {
+      await act(() => {
         result.current.ingredientOps.editIngredients(
           0,
           '200@@g--Onion',
@@ -262,15 +262,15 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
     });
 
     test('triggers validation queue when name changes to a fuzzy-matching DB ingredient', async () => {
-      const { result } = renderIngredientHook();
+      const { result } = await renderIngredientHook();
 
-      act(() => {
+      await act(() => {
         result.current.form.form.setValue('recipeIngredients', [{ name: '' }] as never, {
           shouldValidate: true,
         });
       });
 
-      act(() => {
+      await act(() => {
         result.current.ingredientOps.editIngredients(
           0,
           '100@@g--Onions',
@@ -288,15 +288,15 @@ describe('RecipeFormIngredientsPipeline (real DB + FuzzyIndex, no internal mocks
     });
 
     test('resolves directly without validation queue when name changes to an exact DB match', async () => {
-      const { result } = renderIngredientHook();
+      const { result } = await renderIngredientHook();
 
-      act(() => {
+      await act(() => {
         result.current.form.form.setValue('recipeIngredients', [{ name: '' }] as never, {
           shouldValidate: true,
         });
       });
 
-      act(() => {
+      await act(() => {
         result.current.ingredientOps.editIngredients(
           0,
           '150@@g--Tomato',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, RenderResult } from '@testing-library/react-native';
 import { TutorialTooltip } from '@components/molecules/TutorialTooltip';
 import { mockNavigate } from '@mocks/deps/react-navigation-mock';
 
@@ -39,8 +39,8 @@ describe('TutorialTooltip Component', () => {
   });
 
   function assertTooltipContent(
-    getByTestId: ReturnType<typeof render>['getByTestId'],
-    queryByTestId: ReturnType<typeof render>['queryByTestId'],
+    getByTestId: RenderResult['getByTestId'],
+    queryByTestId: RenderResult['queryByTestId'],
     currentStep: number,
     isLastStep: boolean = false
   ) {
@@ -79,56 +79,56 @@ describe('TutorialTooltip Component', () => {
     expect(getByTestId('TutorialTooltip::Next')).toBeTruthy();
   }
 
-  test('returns null when copilot data is not available', () => {
+  test('returns null when copilot data is not available', async () => {
     useCopilot.mockImplementation(() => {
       throw new Error('useCopilot must be used within CopilotProvider');
     });
 
-    const { queryByTestId } = render(<TutorialTooltip />);
+    const { queryByTestId } = await render(<TutorialTooltip />);
     expect(queryByTestId('tutorial-tooltip')).toBeNull();
   });
 
-  test('returns null when no current step is available', () => {
+  test('returns null when no current step is available', async () => {
     useCopilot.mockReturnValue({ ...defaultMockFirstStepData, currentStep: null });
 
-    const { queryByTestId } = render(<TutorialTooltip />);
+    const { queryByTestId } = await render(<TutorialTooltip />);
     expect(queryByTestId('tutorial-tooltip')).toBeNull();
   });
 
-  test('shows only skip and next buttons on first step', () => {
+  test('shows only skip and next buttons on first step', async () => {
     useCopilot.mockReturnValue(defaultMockFirstStepData);
 
-    const { getByTestId, queryByTestId } = render(<TutorialTooltip />);
+    const { getByTestId, queryByTestId } = await render(<TutorialTooltip />);
 
     assertTooltipContent(getByTestId, queryByTestId, mockHomeStep.order);
   });
 
-  test('shows all buttons on middle step', () => {
+  test('shows all buttons on middle step', async () => {
     useCopilot.mockReturnValue({ ...defaultMockData, currentStep: mockSearchStep });
 
-    const { getByTestId, queryByTestId } = render(<TutorialTooltip />);
+    const { getByTestId, queryByTestId } = await render(<TutorialTooltip />);
 
     assertTooltipContent(getByTestId, queryByTestId, mockSearchStep.order);
   });
 
-  test('shows finish button on last step', () => {
+  test('shows finish button on last step', async () => {
     useCopilot.mockReturnValue({ ...defaultMockData, currentStep: mockShoppingStep });
 
-    const { getByTestId, queryByTestId } = render(<TutorialTooltip />);
+    const { getByTestId, queryByTestId } = await render(<TutorialTooltip />);
     assertTooltipContent(getByTestId, queryByTestId, mockShoppingStep.order);
   });
 
-  test('calls stop when skip button is pressed', () => {
+  test('calls stop when skip button is pressed', async () => {
     const mockStop = jest.fn();
     useCopilot.mockReturnValue({ ...defaultMockFirstStepData, stop: mockStop });
 
-    const { getByTestId } = render(<TutorialTooltip />);
+    const { getByTestId } = await render(<TutorialTooltip />);
 
-    fireEvent.press(getByTestId('TutorialTooltip::Skip'));
+    await fireEvent.press(getByTestId('TutorialTooltip::Skip'));
     expect(mockStop).toHaveBeenCalled();
   });
 
-  test('calls stop when finish button is pressed', () => {
+  test('calls stop when finish button is pressed', async () => {
     const mockStop = jest.fn();
     useCopilot.mockReturnValue({
       ...defaultMockData,
@@ -136,18 +136,18 @@ describe('TutorialTooltip Component', () => {
       stop: mockStop,
     });
 
-    const { getByTestId } = render(<TutorialTooltip />);
+    const { getByTestId } = await render(<TutorialTooltip />);
 
-    fireEvent.press(getByTestId('TutorialTooltip::Next'));
+    await fireEvent.press(getByTestId('TutorialTooltip::Next'));
     expect(mockStop).toHaveBeenCalled();
   });
 
   test('navigates to next screen when next is pressed', async () => {
     useCopilot.mockReturnValue(defaultMockData);
 
-    const { getByTestId } = render(<TutorialTooltip />);
+    const { getByTestId } = await render(<TutorialTooltip />);
 
-    fireEvent.press(getByTestId('TutorialTooltip::Next'));
+    await fireEvent.press(getByTestId('TutorialTooltip::Next'));
     await Promise.resolve();
     expect(mockNavigate).toHaveBeenCalledWith('Search');
   });
@@ -155,14 +155,14 @@ describe('TutorialTooltip Component', () => {
   test('navigates to previous screen when previous is pressed', async () => {
     useCopilot.mockReturnValue({ ...defaultMockData, currentStep: mockSearchStep });
 
-    const { getByTestId } = render(<TutorialTooltip />);
+    const { getByTestId } = await render(<TutorialTooltip />);
 
-    fireEvent.press(getByTestId('TutorialTooltip::Previous'));
+    await fireEvent.press(getByTestId('TutorialTooltip::Previous'));
     await Promise.resolve();
     expect(mockNavigate).toHaveBeenCalledWith('Home');
   });
 
-  test('advances the step when moving to a non-self-advancing screen', () => {
+  test('advances the step when moving to a non-self-advancing screen', async () => {
     const mockGoToNext = jest.fn().mockResolvedValue(undefined);
     useCopilot.mockReturnValue({
       ...defaultMockData,
@@ -170,15 +170,15 @@ describe('TutorialTooltip Component', () => {
       goToNext: mockGoToNext,
     });
 
-    const { getByTestId } = render(<TutorialTooltip />);
+    const { getByTestId } = await render(<TutorialTooltip />);
 
-    fireEvent.press(getByTestId('TutorialTooltip::Next'));
+    await fireEvent.press(getByTestId('TutorialTooltip::Next'));
 
     expect(mockNavigate).toHaveBeenCalledWith('Menu');
     expect(mockGoToNext).toHaveBeenCalled();
   });
 
-  test('does not advance the step when navigating to the self-advancing Search screen', () => {
+  test('does not advance the step when navigating to the self-advancing Search screen', async () => {
     const mockGoToNext = jest.fn().mockResolvedValue(undefined);
     useCopilot.mockReturnValue({
       ...defaultMockData,
@@ -186,15 +186,15 @@ describe('TutorialTooltip Component', () => {
       goToNext: mockGoToNext,
     });
 
-    const { getByTestId } = render(<TutorialTooltip />);
+    const { getByTestId } = await render(<TutorialTooltip />);
 
-    fireEvent.press(getByTestId('TutorialTooltip::Next'));
+    await fireEvent.press(getByTestId('TutorialTooltip::Next'));
 
     expect(mockNavigate).toHaveBeenCalledWith('Search');
     expect(mockGoToNext).not.toHaveBeenCalled();
   });
 
-  test('renders correctly with valid step order', () => {
+  test('renders correctly with valid step order', async () => {
     useCopilot.mockReturnValue({
       currentStep: { ...mockShoppingStep, text: 'Last valid step' },
       isFirstStep: false,
@@ -204,7 +204,7 @@ describe('TutorialTooltip Component', () => {
       stop: jest.fn(),
     });
 
-    const { getByTestId, queryByTestId } = render(<TutorialTooltip />);
+    const { getByTestId, queryByTestId } = await render(<TutorialTooltip />);
     assertTooltipContent(getByTestId, queryByTestId, mockShoppingStep.order, true);
   });
 });

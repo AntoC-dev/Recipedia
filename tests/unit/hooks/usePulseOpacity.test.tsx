@@ -3,42 +3,42 @@ import { Animated } from 'react-native';
 import { usePulseOpacity } from '@hooks/usePulseOpacity';
 
 describe('usePulseOpacity', () => {
-  test('returns an Animated.Value', () => {
-    const { result } = renderHook(() => usePulseOpacity());
+  test('returns an Animated.Value', async () => {
+    const { result } = await renderHook(() => usePulseOpacity());
     expect(result.current).toBeInstanceOf(Animated.Value);
   });
 
-  test('returns a stable value across re-renders', () => {
-    const { result, rerender } = renderHook(() => usePulseOpacity());
+  test('returns a stable value across re-renders', async () => {
+    const { result, rerender } = await renderHook(() => usePulseOpacity());
     const first = result.current;
-    rerender({});
+    await rerender({});
     expect(result.current).toBe(first);
   });
 
-  test('starts a looping animation on mount and stops on unmount', () => {
+  test('starts a looping animation on mount and stops on unmount', async () => {
     const start = jest.fn();
     const stop = jest.fn();
     const loopSpy = jest
       .spyOn(Animated, 'loop')
       .mockReturnValue({ start, stop } as unknown as Animated.CompositeAnimation);
 
-    const { unmount } = renderHook(() => usePulseOpacity());
+    const { unmount } = await renderHook(() => usePulseOpacity());
     expect(start).toHaveBeenCalledTimes(1);
 
-    unmount();
+    await unmount();
     expect(stop).toHaveBeenCalledTimes(1);
 
     loopSpy.mockRestore();
   });
 
-  test('drives the animation with custom bounds and duration', () => {
+  test('drives the animation with custom bounds and duration', async () => {
     const loopSpy = jest.spyOn(Animated, 'loop').mockReturnValue({
       start: jest.fn(),
       stop: jest.fn(),
     } as unknown as Animated.CompositeAnimation);
     const timingSpy = jest.spyOn(Animated, 'timing');
 
-    renderHook(() => usePulseOpacity(0.1, 0.9, 500));
+    await renderHook(() => usePulseOpacity(0.1, 0.9, 500));
 
     expect(timingSpy).toHaveBeenCalledWith(
       expect.anything(),

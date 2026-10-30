@@ -35,8 +35,8 @@ describe('NutritionTable', () => {
   });
 
   describe('Read-only mode', () => {
-    test('renders with nutrition data and title', () => {
-      const { getByTestId } = render(
+    test('renders with nutrition data and title', async () => {
+      const { getByTestId } = await render(
         <NutritionTable nutrition={mockNutrition} parentTestId={testId} />
       );
 
@@ -46,8 +46,8 @@ describe('NutritionTable', () => {
       );
     });
 
-    test('renders in read-only mode without subtitle (indicates segmented buttons present)', () => {
-      const { getByTestId, queryByTestId } = render(
+    test('renders in read-only mode without subtitle (indicates segmented buttons present)', async () => {
+      const { getByTestId, queryByTestId } = await render(
         <NutritionTable nutrition={mockNutrition} parentTestId={testId} />
       );
 
@@ -59,8 +59,8 @@ describe('NutritionTable', () => {
       expect(queryByTestId(`${testId}::NutritionTable::EditForm`)).toBeNull();
     });
 
-    test('renders all nutrition rows with correct testIds and values', () => {
-      const { getByTestId } = render(
+    test('renders all nutrition rows with correct testIds and values', async () => {
+      const { getByTestId } = await render(
         <NutritionTable nutrition={mockNutrition} parentTestId={testId} />
       );
 
@@ -97,8 +97,8 @@ describe('NutritionTable', () => {
       });
     });
 
-    test('renders component successfully in read-only mode', () => {
-      const { getByTestId, queryByTestId } = render(
+    test('renders component successfully in read-only mode', async () => {
+      const { getByTestId, queryByTestId } = await render(
         <NutritionTable nutrition={mockNutrition} parentTestId={testId} />
       );
 
@@ -113,8 +113,8 @@ describe('NutritionTable', () => {
       expect(getByTestId(`${testId}::NutritionTable::NutritionRow::EnergyKcal`)).toBeTruthy();
     });
 
-    test('does not render edit form in read-only mode', () => {
-      const { queryByTestId } = render(
+    test('does not render edit form in read-only mode', async () => {
+      const { queryByTestId } = await render(
         <NutritionTable nutrition={mockNutrition} parentTestId={testId} />
       );
 
@@ -123,8 +123,8 @@ describe('NutritionTable', () => {
   });
 
   describe('Edit mode', () => {
-    test('renders subtitle instead of segmented buttons when editable', () => {
-      const { getByTestId } = render(
+    test('renders subtitle instead of segmented buttons when editable', async () => {
+      const { getByTestId } = await render(
         <NutritionTable nutrition={mockNutrition} isEditable={true} parentTestId={testId} />
       );
 
@@ -133,11 +133,11 @@ describe('NutritionTable', () => {
       );
     });
 
-    test('renders edit form when isEditable is true', () => {
+    test('renders edit form when isEditable is true', async () => {
       const mockOnNutritionChange = jest.fn();
       const mockOnRemoveNutrition = jest.fn();
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <NutritionTable
           nutrition={mockNutrition}
           isEditable={true}
@@ -159,10 +159,10 @@ describe('NutritionTable', () => {
       ).toBe('true');
     });
 
-    test('calls onNutritionChange when nutrition row values change', () => {
+    test('calls onNutritionChange when nutrition row values change', async () => {
       const mockOnNutritionChange = jest.fn();
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <NutritionTable
           nutrition={mockNutrition}
           isEditable={true}
@@ -171,17 +171,17 @@ describe('NutritionTable', () => {
         />
       );
 
-      fireEvent.press(
+      await fireEvent.press(
         getByTestId(`${testId}::NutritionTable::NutritionRow::EnergyKcal::OnValueChange`)
       );
 
       expect(mockOnNutritionChange).toHaveBeenCalledWith({ energyKcal: 999 });
     });
 
-    test('calls onNutritionChange when portion weight changes', () => {
+    test('calls onNutritionChange when portion weight changes', async () => {
       const mockOnNutritionChange = jest.fn();
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <NutritionTable
           nutrition={mockNutrition}
           isEditable={true}
@@ -190,17 +190,19 @@ describe('NutritionTable', () => {
         />
       );
 
-      fireEvent.press(getByTestId(`${testId}::NutritionTable::EditForm::OnPortionWeightChange`));
+      await fireEvent.press(
+        getByTestId(`${testId}::NutritionTable::EditForm::OnPortionWeightChange`)
+      );
 
       expect(mockOnNutritionChange).toHaveBeenCalledWith({ portionWeight: 150 });
     });
   });
 
   describe('Delete functionality', () => {
-    test('shows delete dialog when remove button pressed in edit form', () => {
+    test('shows delete dialog when remove button pressed in edit form', async () => {
       const mockOnRemoveNutrition = jest.fn();
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <NutritionTable
           nutrition={mockNutrition}
           isEditable={true}
@@ -219,10 +221,10 @@ describe('NutritionTable', () => {
       );
     });
 
-    test('calls onRemoveNutrition when delete is confirmed', () => {
+    test('calls onRemoveNutrition when delete is confirmed', async () => {
       const mockOnRemoveNutrition = jest.fn();
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <NutritionTable
           nutrition={mockNutrition}
           isEditable={true}
@@ -232,17 +234,17 @@ describe('NutritionTable', () => {
         />
       );
 
-      fireEvent.press(getByTestId(`${testId}::NutritionTable::EditForm::OnRemoveNutrition`));
+      await fireEvent.press(getByTestId(`${testId}::NutritionTable::EditForm::OnRemoveNutrition`));
 
-      fireEvent.press(getByTestId(`${testId}::DeleteAlert::Alert::OnConfirm`));
+      await fireEvent.press(getByTestId(`${testId}::DeleteAlert::Alert::OnConfirm`));
 
       expect(mockOnRemoveNutrition).toHaveBeenCalledTimes(1);
     });
 
-    test('does not call onRemoveNutrition when delete is canceled', () => {
+    test('does not call onRemoveNutrition when delete is canceled', async () => {
       const mockOnRemoveNutrition = jest.fn();
 
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <NutritionTable
           nutrition={mockNutrition}
           isEditable={true}
@@ -252,18 +254,18 @@ describe('NutritionTable', () => {
         />
       );
 
-      fireEvent.press(getByTestId(`${testId}::NutritionTable::EditForm::OnRemoveNutrition`));
+      await fireEvent.press(getByTestId(`${testId}::NutritionTable::EditForm::OnRemoveNutrition`));
 
-      fireEvent.press(getByTestId(`${testId}::DeleteAlert::Alert::OnCancel`));
+      await fireEvent.press(getByTestId(`${testId}::DeleteAlert::Alert::OnCancel`));
 
       expect(mockOnRemoveNutrition).not.toHaveBeenCalled();
     });
   });
 
   describe('Props handling', () => {
-    test('renders with correct testId structure', () => {
+    test('renders with correct testId structure', async () => {
       const customTestId = 'CustomTest';
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <NutritionTable nutrition={mockNutrition} parentTestId={customTestId} />
       );
 
@@ -273,8 +275,8 @@ describe('NutritionTable', () => {
       );
     });
 
-    test('handles undefined onNutritionChange gracefully', () => {
-      const { getByTestId } = render(
+    test('handles undefined onNutritionChange gracefully', async () => {
+      const { getByTestId } = await render(
         <NutritionTable nutrition={mockNutrition} isEditable={true} parentTestId={testId} />
       );
 
@@ -288,8 +290,8 @@ describe('NutritionTable', () => {
       expect(portionWeightElement.props.children).toBe('100');
     });
 
-    test('handles undefined onRemoveNutrition gracefully', () => {
-      const { getByTestId } = render(
+    test('handles undefined onRemoveNutrition gracefully', async () => {
+      const { getByTestId } = await render(
         <NutritionTable
           nutrition={mockNutrition}
           isEditable={true}

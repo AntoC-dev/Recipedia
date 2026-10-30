@@ -319,7 +319,7 @@ describe('useRecipeIngredients', () => {
         ingredients: rows as never,
       };
       const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipe));
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () => ({ ingredients: useRecipeIngredients(), form: useRecipeForm() }),
         { wrapper }
       );
@@ -335,7 +335,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -347,7 +347,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '300@@g--Flour',
@@ -364,7 +364,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -376,7 +376,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '200@@kg--Flour',
@@ -393,7 +393,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -405,7 +405,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.form.form.setValue(
             'recipeIngredients',
             [{ name: 'Flour', quantity: '200', unit: '' }] as never,
@@ -413,7 +413,7 @@ describe('useRecipeIngredients', () => {
           );
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '200@@g--Flour',
@@ -445,7 +445,7 @@ describe('useRecipeIngredients', () => {
         };
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeMissingQty));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({ ingredients: useRecipeIngredients(), form: useRecipeForm() }),
           { wrapper }
         );
@@ -489,13 +489,13 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(() => useRecipeIngredients(), { wrapper });
+        const { result } = await renderHook(() => useRecipeIngredients(), { wrapper });
 
         await waitFor(() => {
           expect(result.current.editIngredients).toBeDefined();
         });
 
-        act(() => {
+        await act(() => {
           result.current.editIngredients(-1, '100@@g--Test', noopApplyPatch);
         });
 
@@ -510,13 +510,13 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(() => useRecipeIngredients(), { wrapper });
+        const { result } = await renderHook(() => useRecipeIngredients(), { wrapper });
 
         await waitFor(() => {
           expect(result.current.editIngredients).toBeDefined();
         });
 
-        act(() => {
+        await act(() => {
           result.current.editIngredients(100, '100@@g--Test', noopApplyPatch);
         });
 
@@ -538,7 +538,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -551,7 +551,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '200@@g--Spaghettis',
@@ -569,7 +569,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -582,7 +582,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '200@@g--Spaghetti',
@@ -612,7 +612,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -625,7 +625,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '200@@g--Spaghetti',
@@ -655,7 +655,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -668,7 +668,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '200@@g--Spaghettis',
@@ -682,7 +682,7 @@ describe('useRecipeIngredients', () => {
 
         const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
 
-        act(() => {
+        await act(() => {
           queue.onValidated(queue.items[0]!, spaghettiIngredient);
         });
 
@@ -701,7 +701,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -716,7 +716,7 @@ describe('useRecipeIngredients', () => {
 
         // Edit row 2 (Milk) to "Flour" — duplicate at row 0. Names match exact,
         // so replaceIngredientAtIndex fires directly without a queue.
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             2,
             '150@@g--Flour',
@@ -745,7 +745,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -758,7 +758,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '200@@g--Spaghettis',
@@ -772,7 +772,7 @@ describe('useRecipeIngredients', () => {
 
         const queue = result.current.dialogs.validationQueue as IngredientValidationProps;
 
-        act(() => {
+        await act(() => {
           queue.onDismissed?.(queue.items[0]!);
         });
 
@@ -789,7 +789,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -801,7 +801,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 10,
             name: 'Butter',
@@ -821,7 +821,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -833,7 +833,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 1,
             name: 'Flour',
@@ -853,7 +853,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -865,7 +865,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 1,
             name: 'Flour',
@@ -886,7 +886,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -898,7 +898,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 1,
             name: 'FLOUR',
@@ -922,7 +922,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithFormIngredient)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -934,7 +934,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 1,
             name: 'Flour',
@@ -967,7 +967,7 @@ describe('useRecipeIngredients', () => {
         };
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithSpaced));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -979,7 +979,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 1,
             name: 'Carotte  ',
@@ -1014,7 +1014,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithDecomposed)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1026,7 +1026,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 1,
             name: precomposedCafe,
@@ -1046,7 +1046,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1058,7 +1058,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 99,
             name: 'Whole Wheat Flour',
@@ -1088,7 +1088,7 @@ describe('useRecipeIngredients', () => {
         };
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithQty));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1100,7 +1100,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 1,
             name: 'Riz basmati Bio',
@@ -1134,7 +1134,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithDoubleSpaced)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1146,7 +1146,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')!).toHaveLength(1);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 1,
             name: 'Riz basmati Bio',
@@ -1170,7 +1170,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithEmptyNameIngredient)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1182,7 +1182,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 2,
             name: '',
@@ -1224,7 +1224,7 @@ describe('useRecipeIngredients', () => {
       test('preserves note when updating quantity only', async () => {
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1236,7 +1236,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '300@@g--Flour%%for the sauce',
@@ -1253,7 +1253,7 @@ describe('useRecipeIngredients', () => {
       test('updates note when explicitly changed', async () => {
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1265,7 +1265,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '200@@g--Flour%%for the filling',
@@ -1281,7 +1281,7 @@ describe('useRecipeIngredients', () => {
       test('clears note when empty string passed', async () => {
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1293,7 +1293,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '200@@g--Flour%%',
@@ -1307,7 +1307,7 @@ describe('useRecipeIngredients', () => {
       test('adds note to ingredient without one', async () => {
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1319,7 +1319,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             1,
             '100@@g--Sugar%%for the topping',
@@ -1364,7 +1364,7 @@ describe('useRecipeIngredients', () => {
         };
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeForRapidEdits));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1376,7 +1376,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '200@@g--Flour%%for the dough',
@@ -1426,7 +1426,7 @@ describe('useRecipeIngredients', () => {
       test('does not merge when both have different notes', async () => {
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1438,7 +1438,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 1,
             name: 'Flour',
@@ -1464,7 +1464,7 @@ describe('useRecipeIngredients', () => {
       test('merges when both have same note', async () => {
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1476,7 +1476,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 1,
             name: 'Flour',
@@ -1511,7 +1511,7 @@ describe('useRecipeIngredients', () => {
         };
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithoutNote));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1523,7 +1523,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 1,
             name: 'Flour',
@@ -1545,7 +1545,7 @@ describe('useRecipeIngredients', () => {
       test('falls back to existing note when new note is undefined', async () => {
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1557,7 +1557,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 1,
             name: 'Flour',
@@ -1577,7 +1577,7 @@ describe('useRecipeIngredients', () => {
       test('preserves new note when replacing with different unit', async () => {
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1589,7 +1589,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.addOrMergeIngredient({
             id: 1,
             name: 'Flour',
@@ -1622,7 +1622,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithDuplicates)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1634,7 +1634,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.replaceAllMatchingFormIngredients({
             id: 10,
             name: 'Olive Oil',
@@ -1671,7 +1671,7 @@ describe('useRecipeIngredients', () => {
         };
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithNotes));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1683,7 +1683,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.replaceAllMatchingFormIngredients({
             id: 5,
             name: 'Vinegar',
@@ -1709,7 +1709,7 @@ describe('useRecipeIngredients', () => {
         };
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithMixedCase));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1721,7 +1721,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(2);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.replaceAllMatchingFormIngredients({
             id: 10,
             name: 'Olive Oil',
@@ -1742,7 +1742,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1754,7 +1754,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.replaceAllMatchingFormIngredients({
             id: 100,
             name: 'NonExistent',
@@ -1777,7 +1777,7 @@ describe('useRecipeIngredients', () => {
           { name: 'pois chiches', quantity: '50', unit: 'g' },
         ]);
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.replaceAllMatchingFormIngredients(poisChiche, 'Pois chiches');
         });
 
@@ -1793,7 +1793,7 @@ describe('useRecipeIngredients', () => {
           { name: 'Pois chiches', quantity: '400', unit: 'g' },
         ]);
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.replaceAllMatchingFormIngredients(poisChiche, 'Pois chiches');
         });
 
@@ -1815,7 +1815,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithDuplicates)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             fieldArray: useIdentityProbeFieldArray(),
@@ -1829,7 +1829,7 @@ describe('useRecipeIngredients', () => {
 
         const saltBefore = result.current.fieldArray.fields[1];
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.replaceAllMatchingFormIngredients({
             id: 10,
             name: 'Olive Oil',
@@ -1854,7 +1854,7 @@ describe('useRecipeIngredients', () => {
           { name: 'Rice', quantity: '200', unit: 'g' },
         ]);
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.resolvePlaceholderIngredient('Pois chiches', {
             ...poisChiche,
             quantity: '50',
@@ -1869,7 +1869,7 @@ describe('useRecipeIngredients', () => {
       test('uses the validated quantity when the placeholder has none', async () => {
         const result = await renderWithRows([{ name: 'Pois chiches', quantity: '', unit: 'g' }]);
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.resolvePlaceholderIngredient('Pois chiches', {
             ...poisChiche,
             quantity: '50',
@@ -1888,7 +1888,7 @@ describe('useRecipeIngredients', () => {
           { name: 'Pois chiches', quantity: '50', unit: 'g' },
         ]);
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.resolvePlaceholderIngredient('Pois chiches', poisChiche);
         });
 
@@ -1904,7 +1904,7 @@ describe('useRecipeIngredients', () => {
           { name: 'Pois chiche', quantity: '100', unit: 'g' },
         ]);
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.resolvePlaceholderIngredient('Pois chiches', {
             ...poisChiche,
             unit: 'kg',
@@ -1921,7 +1921,7 @@ describe('useRecipeIngredients', () => {
       test('appends the validated ingredient when originalName is undefined', async () => {
         const result = await renderWithRows([{ name: 'Salt', quantity: '1', unit: 'tsp' }]);
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.resolvePlaceholderIngredient(undefined, poisChiche);
         });
 
@@ -1936,7 +1936,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1948,7 +1948,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '200@@g--Flour',
@@ -1973,7 +1973,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -1986,7 +1986,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '200@@g--Spaghetti',
@@ -2021,7 +2021,7 @@ describe('useRecipeIngredients', () => {
 
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithEmptyRow));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -2034,7 +2034,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '@@--Spaghetti',
@@ -2063,7 +2063,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -2076,7 +2076,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '350@@kg--Spaghetti',
@@ -2137,7 +2137,7 @@ describe('useRecipeIngredients', () => {
 
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithDuplicate));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -2150,7 +2150,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '300@@piece--Spaghetti',
@@ -2214,7 +2214,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithDuplicateUnit)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -2227,7 +2227,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(3);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '300@@g--Spaghetti',
@@ -2253,7 +2253,7 @@ describe('useRecipeIngredients', () => {
           createMockRecipeProp('edit', recipeWithIngredients)
         );
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -2267,7 +2267,7 @@ describe('useRecipeIngredients', () => {
 
         const originalIngredient = result.current.form.form.getValues('recipeIngredients')[0];
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             `${originalIngredient!.quantity}@@${originalIngredient!.unit}--${originalIngredient!.name}`,
@@ -2300,7 +2300,7 @@ describe('useRecipeIngredients', () => {
 
         const wrapper = createIngredientsWrapper(createMockRecipeProp('edit', recipeWithKnownId));
 
-        const { result } = renderHook(
+        const { result } = await renderHook(
           () => ({
             ingredients: useRecipeIngredients(),
             form: useRecipeForm(),
@@ -2312,7 +2312,7 @@ describe('useRecipeIngredients', () => {
           expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
         });
 
-        act(() => {
+        await act(() => {
           result.current.ingredients.editIngredients(
             0,
             '300@@g--Flour',

@@ -19,7 +19,7 @@ describe('Alert Dialog', () => {
   };
 
   // Helper function to render Alert with default props
-  const renderAlert = (overrideProps = {}) => {
+  const renderAlert = async (overrideProps = {}) => {
     const prop: AlertProps = { ...defaultProps, ...overrideProps };
     return render(<Alert {...prop} />);
   };
@@ -62,15 +62,15 @@ describe('Alert Dialog', () => {
     jest.clearAllMocks();
   });
 
-  test('renders single-action dialog correctly when cancelText is not provided', () => {
-    const { getByTestId } = renderAlert();
+  test('renders single-action dialog correctly when cancelText is not provided', async () => {
+    const { getByTestId } = await renderAlert();
 
     // Assert single-action dialog layout
     assertSingleActionDialog(getByTestId);
   });
 
-  test('renders dual-action dialog correctly when cancelText is provided', () => {
-    const { getByTestId } = renderAlert({
+  test('renders dual-action dialog correctly when cancelText is provided', async () => {
+    const { getByTestId } = await renderAlert({
       cancelText: 'Cancel',
       onCancel: mockOnCancel,
     });
@@ -79,8 +79,8 @@ describe('Alert Dialog', () => {
     assertDualActionDialog(getByTestId);
   });
 
-  test('does not render dialog when isVisible is false', () => {
-    const { queryByTestId } = renderAlert({ isVisible: false });
+  test('does not render dialog when isVisible is false', async () => {
+    const { queryByTestId } = await renderAlert({ isVisible: false });
 
     // Assert dialog elements are not accessible when not visible
     expect(queryByTestId('test-alert::Dialog::Title')).toBeNull();
@@ -89,14 +89,14 @@ describe('Alert Dialog', () => {
     expect(queryByTestId('test-alert::Dialog::Cancel')).toBeNull();
   });
 
-  test('calls onClose and onConfirm when confirm button is pressed', () => {
-    const { getByTestId } = renderAlert({ onConfirm: mockOnConfirm });
+  test('calls onClose and onConfirm when confirm button is pressed', async () => {
+    const { getByTestId } = await renderAlert({ onConfirm: mockOnConfirm });
 
     assertSingleActionDialog(getByTestId);
     expect(mockOnClose).not.toHaveBeenCalled();
     expect(mockOnConfirm).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('test-alert::Dialog::Confirm'));
+    await fireEvent.press(getByTestId('test-alert::Dialog::Confirm'));
 
     expect(mockOnClose).toHaveBeenCalledTimes(1);
     expect(mockOnConfirm).toHaveBeenCalledTimes(1);
@@ -105,8 +105,8 @@ describe('Alert Dialog', () => {
     assertSingleActionDialog(getByTestId);
   });
 
-  test('calls onClose and onCancel when cancel button is pressed in dual-action layout', () => {
-    const { getByTestId } = renderAlert({
+  test('calls onClose and onCancel when cancel button is pressed in dual-action layout', async () => {
+    const { getByTestId } = await renderAlert({
       cancelText: 'Cancel',
       onCancel: mockOnCancel,
       onConfirm: mockOnConfirm,
@@ -117,7 +117,7 @@ describe('Alert Dialog', () => {
     expect(mockOnCancel).not.toHaveBeenCalled();
     expect(mockOnConfirm).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('test-alert::Dialog::Cancel'));
+    await fireEvent.press(getByTestId('test-alert::Dialog::Cancel'));
 
     expect(mockOnClose).toHaveBeenCalledTimes(1);
     expect(mockOnCancel).toHaveBeenCalledTimes(1);
@@ -127,14 +127,14 @@ describe('Alert Dialog', () => {
     assertDualActionDialog(getByTestId);
   });
 
-  test('works correctly without optional onConfirm callback', () => {
-    const { getByTestId } = renderAlert({ onConfirm: undefined });
+  test('works correctly without optional onConfirm callback', async () => {
+    const { getByTestId } = await renderAlert({ onConfirm: undefined });
 
     // Assert initial state
     assertSingleActionDialog(getByTestId);
     expect(mockOnClose).not.toHaveBeenCalled();
 
-    fireEvent.press(getByTestId('test-alert::Dialog::Confirm'));
+    await fireEvent.press(getByTestId('test-alert::Dialog::Confirm'));
 
     expect(mockOnClose).toHaveBeenCalledTimes(1);
 
@@ -142,8 +142,8 @@ describe('Alert Dialog', () => {
     assertSingleActionDialog(getByTestId);
   });
 
-  test('works correctly without optional onCancel callback in dual-action layout', () => {
-    const { getByTestId } = renderAlert({
+  test('works correctly without optional onCancel callback in dual-action layout', async () => {
+    const { getByTestId } = await renderAlert({
       cancelText: 'Cancel',
       onCancel: undefined,
     });
@@ -152,7 +152,7 @@ describe('Alert Dialog', () => {
     expect(mockOnClose).not.toHaveBeenCalled();
 
     // Press cancel button (should not throw error)
-    fireEvent.press(getByTestId('test-alert::Dialog::Cancel'));
+    await fireEvent.press(getByTestId('test-alert::Dialog::Cancel'));
 
     // Assert only onClose was called (onCancel was undefined)
     expect(mockOnClose).toHaveBeenCalledTimes(1);
@@ -161,7 +161,7 @@ describe('Alert Dialog', () => {
     assertDualActionDialog(getByTestId);
   });
 
-  test('displays custom title and content correctly', () => {
+  test('displays custom title and content correctly', async () => {
     const customProps = {
       title: 'Custom Alert Title',
       content: 'This is a custom alert message with detailed information.',
@@ -169,7 +169,7 @@ describe('Alert Dialog', () => {
       cancelText: 'Custom Cancel',
     };
 
-    const { getByTestId } = renderAlert(customProps);
+    const { getByTestId } = await renderAlert(customProps);
 
     // Assert custom content is displayed correctly
     expect(getByTestId('test-alert::Dialog::Title').props.children).toEqual('Custom Alert Title');
@@ -180,8 +180,8 @@ describe('Alert Dialog', () => {
     expect(getByTestId('test-alert::Dialog::Cancel')).toBeTruthy();
   });
 
-  test('uses different testId correctly for multiple instances', () => {
-    const { getByTestId } = renderAlert({ testId: 'custom-alert-id' });
+  test('uses different testId correctly for multiple instances', async () => {
+    const { getByTestId } = await renderAlert({ testId: 'custom-alert-id' });
 
     // Assert elements use the custom testId
     expect(getByTestId('custom-alert-id::Dialog::Title')).toBeTruthy();
@@ -200,8 +200,8 @@ describe('Alert Dialog', () => {
     );
   });
 
-  test('maintains proper button order in dual-action layout', () => {
-    const { getByTestId } = renderAlert({
+  test('maintains proper button order in dual-action layout', async () => {
+    const { getByTestId } = await renderAlert({
       cancelText: 'Cancel',
       confirmText: 'OK',
       onCancel: mockOnCancel,
@@ -215,7 +215,7 @@ describe('Alert Dialog', () => {
     expect(confirmButton).toBeTruthy();
 
     // Test both buttons work independently
-    fireEvent.press(cancelButton);
+    await fireEvent.press(cancelButton);
     expect(mockOnCancel).toHaveBeenCalledTimes(1);
     expect(mockOnConfirm).not.toHaveBeenCalled();
 
@@ -224,7 +224,7 @@ describe('Alert Dialog', () => {
 
     jest.clearAllMocks();
 
-    fireEvent.press(confirmButton);
+    await fireEvent.press(confirmButton);
     expect(mockOnConfirm).toHaveBeenCalledTimes(1);
     expect(mockOnCancel).not.toHaveBeenCalled();
 
@@ -232,8 +232,8 @@ describe('Alert Dialog', () => {
     expect(confirmButton).toBeTruthy();
   });
 
-  test('restores the Material button sizing that Dialog.Actions strips with compact', () => {
-    const { getByTestId } = renderAlert({
+  test('restores the Material button sizing that Dialog.Actions strips with compact', async () => {
+    const { getByTestId } = await renderAlert({
       cancelText: 'Cancel',
       onCancel: mockOnCancel,
     });
@@ -249,8 +249,8 @@ describe('Alert Dialog', () => {
     expect(confirmStyle).toMatchObject(dialogActionStyles.button);
   });
 
-  test('leaves the actions row to Dialog.Actions instead of nesting its own layout', () => {
-    const { getByTestId, queryByTestId } = renderAlert({
+  test('leaves the actions row to Dialog.Actions instead of nesting its own layout', async () => {
+    const { getByTestId, queryByTestId } = await renderAlert({
       cancelText: 'Cancel',
       onCancel: mockOnCancel,
     });

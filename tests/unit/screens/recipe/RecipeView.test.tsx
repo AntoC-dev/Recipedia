@@ -111,7 +111,7 @@ describe('RecipeView', () => {
 
     expect(RecipeDatabase.getInstance().get_menu()).toEqual([]);
 
-    fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+    await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
     await waitFor(() => {
       expect(RecipeDatabase.getInstance().get_menu()).toHaveLength(1);
@@ -126,7 +126,7 @@ describe('RecipeView', () => {
     test('pressing the edit button pushes the RecipeEdit route', async () => {
       const { getByTestId } = await renderRoute(mockRouteReadOnly);
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Edit'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Edit'));
 
       expect(mockNavigation.push).toHaveBeenCalledWith('RecipeEdit', {
         recipe: (mockRouteReadOnly as Extract<RecipePropType, { mode: 'readOnly' }>).recipe,
@@ -138,7 +138,7 @@ describe('RecipeView', () => {
     test('shows delete confirmation dialog', async () => {
       const { getByTestId } = await renderRoute(mockRouteReadOnly);
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Delete'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Delete'));
 
       expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
       expect(getByTestId('Recipe::Alert::Title').props.children).toBe('deleteRecipe');
@@ -149,8 +149,8 @@ describe('RecipeView', () => {
       const deleteRecipeSpy = jest.spyOn(dbInstance, 'deleteRecipe');
       const { getByTestId } = await renderRoute(mockRouteReadOnly);
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Delete'));
-      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Delete'));
+      await fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
 
       await waitFor(() => {
         expect(deleteRecipeSpy).toHaveBeenCalled();
@@ -168,8 +168,8 @@ describe('RecipeView', () => {
     test('navigates back after confirming delete success', async () => {
       const { getByTestId } = await renderRoute(mockRouteReadOnly);
 
-      fireEvent.press(getByTestId('Recipe::AppBar::Delete'));
-      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::Delete'));
+      await fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::Content').props.children).toContain(
@@ -177,7 +177,7 @@ describe('RecipeView', () => {
         );
       });
 
-      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+      await fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
 
       expect(mockNavigation.goBack).toHaveBeenCalled();
     });
@@ -187,13 +187,13 @@ describe('RecipeView', () => {
     test('confirming the success dialog navigates back', async () => {
       const { getByTestId } = await renderRoute(mockRouteReadOnly);
 
-      fireEvent.press(getByTestId('Recipe::BottomActionButton'));
+      await fireEvent.press(getByTestId('Recipe::BottomActionButton'));
 
       await waitFor(() => {
         expect(getByTestId('Recipe::Alert::IsVisible').props.children).toBe(true);
       });
 
-      fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
+      await fireEvent.press(getByTestId('Recipe::Alert::OnConfirm'));
 
       expect(mockNavigation.goBack).toHaveBeenCalled();
     });
@@ -206,9 +206,9 @@ describe('RecipeView', () => {
       expect(queryByTestId('RecipeScalingSnackbar')).toBeNull();
     });
 
-    test('shows the scaling snackbar when scaledFromServings is present', () => {
+    test('shows the scaling snackbar when scaledFromServings is present', async () => {
       const recipe = testRecipes[1]!;
-      const { getByTestId } = render(
+      const { getByTestId } = await render(
         <RecipeView
           route={makeRoute('RecipeView', { recipe, scaledFromServings: 2 })}
           navigation={mockNavigation as never}
@@ -221,16 +221,16 @@ describe('RecipeView', () => {
       );
     });
 
-    test('dismissing the scaling snackbar hides it', () => {
+    test('dismissing the scaling snackbar hides it', async () => {
       const recipe = testRecipes[1]!;
-      const { getByTestId, queryByTestId } = render(
+      const { getByTestId, queryByTestId } = await render(
         <RecipeView
           route={makeRoute('RecipeView', { recipe, scaledFromServings: 2 })}
           navigation={mockNavigation as never}
         />
       );
 
-      fireEvent.press(getByTestId('RecipeScalingSnackbar::Action'));
+      await fireEvent.press(getByTestId('RecipeScalingSnackbar::Action'));
 
       expect(queryByTestId('RecipeScalingSnackbar')).toBeNull();
     });
@@ -241,22 +241,20 @@ describe('RecipeView', () => {
       const { getByTestId } = await renderRoute(mockRouteReadOnly);
       (mockNavigation.goBack as jest.Mock).mockClear();
 
-      fireEvent.press(getByTestId('Recipe::AppBar::BackButton'));
+      await fireEvent.press(getByTestId('Recipe::AppBar::BackButton'));
 
       expect(mockNavigation.goBack).toHaveBeenCalled();
     });
   });
 
   test('recipe form dismisses the keyboard on drag', async () => {
-    const { UNSAFE_getAllByType } = await renderRoute({ mode: 'addManually' });
-    const { ScrollView } = require('react-native');
-    expectKeyboardDismissesOnDrag(UNSAFE_getAllByType, ScrollView);
+    const { container } = await renderRoute({ mode: 'addManually' });
+    expectKeyboardDismissesOnDrag(container);
   });
 
   test('reserves the pinned button height without re-adding the bottom safe-area inset', async () => {
-    const { UNSAFE_getAllByType } = await renderRoute(mockRouteReadOnly);
-    const { ScrollView } = require('react-native');
-    const scrollView = UNSAFE_getAllByType(ScrollView)[0]!;
+    const { getByTestId } = await renderRoute(mockRouteReadOnly);
+    const scrollView = getByTestId('Recipe::ScrollView');
 
     expect(scrollView.props.contentContainerStyle).toEqual({
       paddingBottom: bottomActionButtonHeight,

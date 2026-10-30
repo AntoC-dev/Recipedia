@@ -40,7 +40,7 @@ const toCookHeaderId = `${screenId}::SectionHeader::ToCook`;
 const cookedHeaderId = `${screenId}::SectionHeader::Cooked`;
 
 async function renderMenuAndWait() {
-  const result = render(<Menu {...defaultProps} />);
+  const result = await render(<Menu {...defaultProps} />);
 
   const hasMenuItems = RecipeDatabase.getInstance().get_menu().length > 0;
 
@@ -65,7 +65,7 @@ describe('Menu Screen', () => {
     await database.addMultipleRecipes(testRecipes);
   });
 
-  afterEach(async () => await database.closeAndReset());
+  afterEach(async () => database.closeAndReset());
 
   describe('Empty Menu State', () => {
     test('renders empty state text when menu is empty', async () => {
@@ -225,7 +225,7 @@ describe('Menu Screen', () => {
       const firstMenuItem = menu[0];
       const initialCookedStatus = firstMenuItem!.isCooked;
 
-      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::Checkbox`));
+      await fireEvent.press(getByTestId(`${screenId}::MenuItem::1::Checkbox`));
 
       await waitFor(() => {
         const updatedMenu = database.get_menu();
@@ -241,7 +241,7 @@ describe('Menu Screen', () => {
 
       const { getByTestId } = await renderMenuAndWait();
 
-      fireEvent.press(getByTestId(`${screenId}::MenuItem::2::Checkbox`));
+      await fireEvent.press(getByTestId(`${screenId}::MenuItem::2::Checkbox`));
 
       await waitFor(() => {
         const updatedMenu = database.get_menu();
@@ -266,7 +266,7 @@ describe('Menu Screen', () => {
 
       expect(queryByTestId(removeSnackbarId)).toBeNull();
 
-      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
+      await fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
 
       await waitFor(() => {
         const updatedMenu = database.get_menu();
@@ -283,7 +283,7 @@ describe('Menu Screen', () => {
     test('keeps the undo snackbar up for the long paper duration', async () => {
       const { getByTestId } = await renderMenuAndWait();
 
-      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
+      await fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
 
       await waitFor(() => {
         expect(getByTestId(removeSnackbarId)).toBeTruthy();
@@ -299,13 +299,13 @@ describe('Menu Screen', () => {
 
       const initialMenuLength = database.get_menu().length;
 
-      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
+      await fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
 
       await waitFor(() => {
         expect(database.get_menu().length).toBe(initialMenuLength - 1);
       });
 
-      fireEvent.press(getByTestId(`${removeSnackbarId}::Action`));
+      await fireEvent.press(getByTestId(`${removeSnackbarId}::Action`));
 
       await waitFor(() => {
         expect(database.get_menu().length).toBe(initialMenuLength);
@@ -318,17 +318,17 @@ describe('Menu Screen', () => {
 
       const secondRecipeId = database.get_menu()[1]!.recipeId;
 
-      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
+      await fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
       await waitFor(() => {
         expect(database.get_menu().length).toBe(1);
       });
 
-      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
+      await fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
       await waitFor(() => {
         expect(database.get_menu().length).toBe(0);
       });
 
-      fireEvent.press(getByTestId(`${removeSnackbarId}::Action`));
+      await fireEvent.press(getByTestId(`${removeSnackbarId}::Action`));
 
       await waitFor(() => {
         const restoredMenu = database.get_menu();
@@ -342,13 +342,13 @@ describe('Menu Screen', () => {
 
       const initialMenuLength = database.get_menu().length;
 
-      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
+      await fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
 
       await waitFor(() => {
         expect(getByTestId(removeSnackbarId)).toBeTruthy();
       });
 
-      fireEvent.press(getByTestId(`${removeSnackbarId}::Dismiss`));
+      await fireEvent.press(getByTestId(`${removeSnackbarId}::Dismiss`));
 
       await waitFor(() => {
         expect(queryByTestId(removeSnackbarId)).toBeNull();
@@ -364,7 +364,7 @@ describe('Menu Screen', () => {
 
       const { getByTestId } = await renderMenuAndWait();
 
-      fireEvent.press(getByTestId(`${screenId}::MenuItem::2::RemoveButton`));
+      await fireEvent.press(getByTestId(`${screenId}::MenuItem::2::RemoveButton`));
 
       await waitFor(() => {
         const updatedMenu = database.get_menu();
@@ -388,7 +388,7 @@ describe('Menu Screen', () => {
 
       const { getByTestId, queryByTestId } = await renderMenuAndWait();
 
-      fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
+      await fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
 
       await waitFor(() => {
         expect(database.get_menu().find(item => item.id === orphanMenuItem.id)).toBeUndefined();

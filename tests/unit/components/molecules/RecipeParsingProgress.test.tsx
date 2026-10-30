@@ -19,26 +19,26 @@ describe('RecipeParsingProgress', () => {
     testID: 'test-progress',
   };
 
-  test('displays progress counter', () => {
-    const { getByText } = render(<RecipeParsingProgress {...defaultProps} />);
+  test('displays progress counter', async () => {
+    const { getByText } = await render(<RecipeParsingProgress {...defaultProps} />);
 
     expect(getByText('3 / 10')).toBeTruthy();
   });
 
-  test('displays current recipe title', () => {
-    const { getByText } = render(<RecipeParsingProgress {...defaultProps} />);
+  test('displays current recipe title', async () => {
+    const { getByText } = await render(<RecipeParsingProgress {...defaultProps} />);
 
     expect(getByText('Current Recipe')).toBeTruthy();
   });
 
-  test('displays progress bar with testID', () => {
-    const { getByTestId } = render(<RecipeParsingProgress {...defaultProps} />);
+  test('displays progress bar with testID', async () => {
+    const { getByTestId } = await render(<RecipeParsingProgress {...defaultProps} />);
 
     expect(getByTestId('test-progress::ParsingProgressBar')).toBeTruthy();
   });
 
-  test('does not display current recipe title when null', () => {
-    const { queryByText } = render(
+  test('does not display current recipe title when null', async () => {
+    const { queryByText } = await render(
       <RecipeParsingProgress
         {...defaultProps}
         progress={{ ...defaultProgress, currentRecipeTitle: undefined }}
@@ -48,7 +48,7 @@ describe('RecipeParsingProgress', () => {
     expect(queryByText('Current Recipe')).toBeNull();
   });
 
-  test('displays failed recipes count when failures exist', () => {
+  test('displays failed recipes count when failures exist', async () => {
     const progressWithFailures: ParsingProgress = {
       ...defaultProgress,
       failedRecipes: [
@@ -57,29 +57,29 @@ describe('RecipeParsingProgress', () => {
       ],
     };
 
-    const { getByText } = render(
+    const { getByText } = await render(
       <RecipeParsingProgress {...defaultProps} progress={progressWithFailures} />
     );
 
     expect(getByText('bulkImport.selection.failedRecipes')).toBeTruthy();
   });
 
-  test('does not display failed recipes count when no failures', () => {
-    const { queryByText } = render(<RecipeParsingProgress {...defaultProps} />);
+  test('does not display failed recipes count when no failures', async () => {
+    const { queryByText } = await render(<RecipeParsingProgress {...defaultProps} />);
 
     expect(queryByText(/failed/i)).toBeNull();
   });
 
-  test('uses selectedCount when progress is null', () => {
-    const { getByText } = render(
+  test('uses selectedCount when progress is null', async () => {
+    const { getByText } = await render(
       <RecipeParsingProgress progress={null} selectedCount={5} testID='test' />
     );
 
     expect(getByText('0 / 5')).toBeTruthy();
   });
 
-  test('displays parsing title', () => {
-    const { getByText } = render(<RecipeParsingProgress {...defaultProps} />);
+  test('displays parsing title', async () => {
+    const { getByText } = await render(<RecipeParsingProgress {...defaultProps} />);
 
     expect(getByText('bulkImport.selection.parsingRecipes')).toBeTruthy();
   });

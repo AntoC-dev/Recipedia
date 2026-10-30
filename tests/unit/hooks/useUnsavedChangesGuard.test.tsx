@@ -20,17 +20,17 @@ beforeEach(() => {
 });
 
 describe('useUnsavedChangesGuard', () => {
-  test('does not arm the guard when there are no unsaved changes', () => {
-    renderHook(() => useUnsavedChangesGuard(false));
+  test('does not arm the guard when there are no unsaved changes', async () => {
+    await renderHook(() => useUnsavedChangesGuard(false));
 
     expect(isPreventRemoveArmed()).toBe(false);
   });
 
-  test('triggering removal without unsaved changes returns false and skips the dialog', () => {
-    const { result } = renderHook(() => useUnsavedChangesGuard(false));
+  test('triggering removal without unsaved changes returns false and skips the dialog', async () => {
+    const { result } = await renderHook(() => useUnsavedChangesGuard(false));
 
     let dispatched: boolean = false;
-    act(() => {
+    await act(() => {
       dispatched = triggerPreventRemove(firstAction);
     });
 
@@ -39,10 +39,10 @@ describe('useUnsavedChangesGuard', () => {
     expect(mockDispatch).not.toHaveBeenCalled();
   });
 
-  test('triggering removal with unsaved changes shows the dialog without dispatching', () => {
-    const { result } = renderHook(() => useUnsavedChangesGuard(true));
+  test('triggering removal with unsaved changes shows the dialog without dispatching', async () => {
+    const { result } = await renderHook(() => useUnsavedChangesGuard(true));
 
-    act(() => {
+    await act(() => {
       triggerPreventRemove(firstAction);
     });
 
@@ -50,13 +50,13 @@ describe('useUnsavedChangesGuard', () => {
     expect(mockDispatch).not.toHaveBeenCalled();
   });
 
-  test('confirmDiscard hides the dialog and dispatches the intercepted action', () => {
-    const { result } = renderHook(() => useUnsavedChangesGuard(true));
+  test('confirmDiscard hides the dialog and dispatches the intercepted action', async () => {
+    const { result } = await renderHook(() => useUnsavedChangesGuard(true));
 
-    act(() => {
+    await act(() => {
       triggerPreventRemove(firstAction);
     });
-    act(() => {
+    await act(() => {
       result.current.confirmDiscard();
     });
 
@@ -65,13 +65,13 @@ describe('useUnsavedChangesGuard', () => {
     expect(mockDispatch).toHaveBeenCalledWith(firstAction);
   });
 
-  test('cancelDiscard hides the dialog and dispatches nothing', () => {
-    const { result } = renderHook(() => useUnsavedChangesGuard(true));
+  test('cancelDiscard hides the dialog and dispatches nothing', async () => {
+    const { result } = await renderHook(() => useUnsavedChangesGuard(true));
 
-    act(() => {
+    await act(() => {
       triggerPreventRemove(firstAction);
     });
-    act(() => {
+    await act(() => {
       result.current.cancelDiscard();
     });
 
@@ -79,13 +79,13 @@ describe('useUnsavedChangesGuard', () => {
     expect(mockDispatch).not.toHaveBeenCalled();
   });
 
-  test('confirmDiscard dispatches when the dialog dismiss handler runs before it', () => {
-    const { result } = renderHook(() => useUnsavedChangesGuard(true));
+  test('confirmDiscard dispatches when the dialog dismiss handler runs before it', async () => {
+    const { result } = await renderHook(() => useUnsavedChangesGuard(true));
 
-    act(() => {
+    await act(() => {
       triggerPreventRemove(firstAction);
     });
-    act(() => {
+    await act(() => {
       result.current.dismissDialog();
       result.current.confirmDiscard();
     });
@@ -95,13 +95,13 @@ describe('useUnsavedChangesGuard', () => {
     expect(mockDispatch).toHaveBeenCalledWith(firstAction);
   });
 
-  test('cancelDiscard drops the pending action so a later confirm is inert', () => {
-    const { result } = renderHook(() => useUnsavedChangesGuard(true));
+  test('cancelDiscard drops the pending action so a later confirm is inert', async () => {
+    const { result } = await renderHook(() => useUnsavedChangesGuard(true));
 
-    act(() => {
+    await act(() => {
       triggerPreventRemove(firstAction);
     });
-    act(() => {
+    await act(() => {
       result.current.cancelDiscard();
       result.current.confirmDiscard();
     });
@@ -109,10 +109,10 @@ describe('useUnsavedChangesGuard', () => {
     expect(mockDispatch).not.toHaveBeenCalled();
   });
 
-  test('confirmDiscard with no pending action dispatches nothing', () => {
-    const { result } = renderHook(() => useUnsavedChangesGuard(true));
+  test('confirmDiscard with no pending action dispatches nothing', async () => {
+    const { result } = await renderHook(() => useUnsavedChangesGuard(true));
 
-    act(() => {
+    await act(() => {
       result.current.confirmDiscard();
     });
 
@@ -120,13 +120,13 @@ describe('useUnsavedChangesGuard', () => {
     expect(mockDispatch).not.toHaveBeenCalled();
   });
 
-  test('allowRemoval makes subsequent triggers dispatch immediately without showing the dialog', () => {
-    const { result } = renderHook(() => useUnsavedChangesGuard(true));
+  test('allowRemoval makes subsequent triggers dispatch immediately without showing the dialog', async () => {
+    const { result } = await renderHook(() => useUnsavedChangesGuard(true));
 
-    act(() => {
+    await act(() => {
       result.current.allowRemoval();
     });
-    act(() => {
+    await act(() => {
       triggerPreventRemove(firstAction);
     });
 
@@ -135,22 +135,22 @@ describe('useUnsavedChangesGuard', () => {
     expect(mockDispatch).toHaveBeenCalledWith(firstAction);
   });
 
-  test('cancelling then triggering again re-arms the dialog with the new action', () => {
-    const { result } = renderHook(() => useUnsavedChangesGuard(true));
+  test('cancelling then triggering again re-arms the dialog with the new action', async () => {
+    const { result } = await renderHook(() => useUnsavedChangesGuard(true));
 
-    act(() => {
+    await act(() => {
       triggerPreventRemove(firstAction);
     });
-    act(() => {
+    await act(() => {
       result.current.cancelDiscard();
     });
-    act(() => {
+    await act(() => {
       triggerPreventRemove(secondAction);
     });
 
     expect(result.current.isDiscardDialogVisible).toBe(true);
 
-    act(() => {
+    await act(() => {
       result.current.confirmDiscard();
     });
 
@@ -158,8 +158,8 @@ describe('useUnsavedChangesGuard', () => {
     expect(mockDispatch).toHaveBeenCalledWith(secondAction);
   });
 
-  test('flipping hasUnsavedChanges to false disarms the guard', () => {
-    const { rerender } = renderHook(
+  test('flipping hasUnsavedChanges to false disarms the guard', async () => {
+    const { rerender } = await renderHook(
       ({ hasUnsavedChanges }: { hasUnsavedChanges: boolean }) =>
         useUnsavedChangesGuard(hasUnsavedChanges),
       { initialProps: { hasUnsavedChanges: true } }
@@ -167,7 +167,7 @@ describe('useUnsavedChangesGuard', () => {
 
     expect(isPreventRemoveArmed()).toBe(true);
 
-    rerender({ hasUnsavedChanges: false });
+    await rerender({ hasUnsavedChanges: false });
 
     expect(isPreventRemoveArmed()).toBe(false);
   });

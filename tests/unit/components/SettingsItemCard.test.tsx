@@ -30,8 +30,8 @@ describe('SettingsItemCard Component', () => {
       onEdit: mockOnEdit,
       onDelete: mockOnDelete,
     };
-    test('renders without crashing', () => {
-      const { getByTestId, queryByTestId } = render(<SettingsItemCard {...defaultProps} />);
+    test('renders without crashing', async () => {
+      const { getByTestId, queryByTestId } = await render(<SettingsItemCard {...defaultProps} />);
 
       expect(queryByTestId(`${testIDProp}::10::TagName`)).toBeNull();
       expect(queryByTestId(`${testIDProp}::10::Unsupported`)).toBeNull();
@@ -56,19 +56,19 @@ describe('SettingsItemCard Component', () => {
       expect(getByTestId(`${testIDProp}::10::DeleteButton`)).toBeTruthy();
     });
 
-    test('edit button', () => {
-      const { getByTestId } = render(<SettingsItemCard {...defaultProps} />);
+    test('edit button', async () => {
+      const { getByTestId } = await render(<SettingsItemCard {...defaultProps} />);
 
-      fireEvent.press(getByTestId(`${testIDProp}::10::EditButton`));
+      await fireEvent.press(getByTestId(`${testIDProp}::10::EditButton`));
 
       expect(mockOnEdit).toHaveBeenCalledTimes(1);
       expect(mockOnEdit).toHaveBeenCalledWith(defaultProps.item);
     });
 
-    test('delete button', () => {
-      const { getByTestId } = render(<SettingsItemCard {...defaultProps} />);
+    test('delete button', async () => {
+      const { getByTestId } = await render(<SettingsItemCard {...defaultProps} />);
 
-      fireEvent.press(getByTestId(`${testIDProp}::10::DeleteButton`));
+      await fireEvent.press(getByTestId(`${testIDProp}::10::DeleteButton`));
 
       expect(mockOnDelete).toHaveBeenCalledTimes(1);
       expect(mockOnDelete).toHaveBeenCalledWith(defaultProps.item);
@@ -84,8 +84,8 @@ describe('SettingsItemCard Component', () => {
       onDelete: mockOnDelete,
     };
 
-    test('renders', () => {
-      const { getByTestId, queryByTestId } = render(<SettingsItemCard {...defaultProps} />);
+    test('renders', async () => {
+      const { getByTestId, queryByTestId } = await render(<SettingsItemCard {...defaultProps} />);
 
       expect(getByTestId(`${testIDProp}::14::TagName`).props.children).toEqual(
         defaultProps.item.name
@@ -106,19 +106,19 @@ describe('SettingsItemCard Component', () => {
       expect(queryByTestId(`${testIDProp}::14::DeleteButton`)).toBeTruthy();
     });
 
-    test('edit button', () => {
-      const { getByTestId } = render(<SettingsItemCard {...defaultProps} />);
+    test('edit button', async () => {
+      const { getByTestId } = await render(<SettingsItemCard {...defaultProps} />);
 
-      fireEvent.press(getByTestId(`${testIDProp}::14::EditButton`));
+      await fireEvent.press(getByTestId(`${testIDProp}::14::EditButton`));
 
       expect(mockOnEdit).toHaveBeenCalledTimes(1);
       expect(mockOnEdit).toHaveBeenCalledWith(defaultProps.item);
     });
 
-    test('delete button', () => {
-      const { getByTestId } = render(<SettingsItemCard {...defaultProps} />);
+    test('delete button', async () => {
+      const { getByTestId } = await render(<SettingsItemCard {...defaultProps} />);
 
-      fireEvent.press(getByTestId(`${testIDProp}::14::DeleteButton`));
+      await fireEvent.press(getByTestId(`${testIDProp}::14::DeleteButton`));
 
       expect(mockOnDelete).toHaveBeenCalledTimes(1);
       expect(mockOnDelete).toHaveBeenCalledWith(defaultProps.item);

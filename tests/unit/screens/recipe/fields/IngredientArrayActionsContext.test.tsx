@@ -18,24 +18,26 @@ function providerWrapper({ children }: { children: React.ReactNode }) {
 }
 
 describe('useIngredientArrayActions - no provider', () => {
-  test('returns a no-op applyPatch when no provider is mounted', () => {
-    const { result } = renderHook(() => useIngredientArrayActions());
+  test('returns a no-op applyPatch when no provider is mounted', async () => {
+    const { result } = await renderHook(() => useIngredientArrayActions());
 
     expect(() => result.current.applyPatch(replaceOnlyPatch)).not.toThrow();
   });
 });
 
 describe('IngredientArrayActionsContext', () => {
-  test('applyPatch is a no-op before any registrant has registered', () => {
-    const { result } = renderHook(() => useIngredientArrayActions(), { wrapper: providerWrapper });
+  test('applyPatch is a no-op before any registrant has registered', async () => {
+    const { result } = await renderHook(() => useIngredientArrayActions(), {
+      wrapper: providerWrapper,
+    });
 
     expect(() => result.current.applyPatch(replaceOnlyPatch)).not.toThrow();
   });
 
-  test('applyPatch forwards to the registered implementation', () => {
+  test('applyPatch forwards to the registered implementation', async () => {
     const mockApply = jest.fn<void, Parameters<ApplyIngredientEditPatch>>();
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useIngredientArrayActionsRegister(mockApply);
         return useIngredientArrayActions();
@@ -43,7 +45,7 @@ describe('IngredientArrayActionsContext', () => {
       { wrapper: providerWrapper }
     );
 
-    act(() => {
+    await act(() => {
       result.current.applyPatch(replaceOnlyPatch);
     });
 
@@ -51,11 +53,11 @@ describe('IngredientArrayActionsContext', () => {
     expect(mockApply).toHaveBeenCalledWith(replaceOnlyPatch);
   });
 
-  test('applyPatch receives all patch fields correctly', () => {
+  test('applyPatch receives all patch fields correctly', async () => {
     const received: Parameters<ApplyIngredientEditPatch>[0][] = [];
     const captureApply: ApplyIngredientEditPatch = patch => received.push(patch);
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useIngredientArrayActionsRegister(captureApply);
         return useIngredientArrayActions();
@@ -70,7 +72,7 @@ describe('IngredientArrayActionsContext', () => {
       row: { name: 'Flour', quantity: '100', unit: 'g' } as never,
     };
 
-    act(() => {
+    await act(() => {
       result.current.applyPatch(mergePatch);
     });
 
@@ -78,10 +80,10 @@ describe('IngredientArrayActionsContext', () => {
     expect(received[0]).toEqual(mergePatch);
   });
 
-  test('applyPatch falls back to no-op after the registrant unregisters', () => {
+  test('applyPatch falls back to no-op after the registrant unregisters', async () => {
     const mockApply = jest.fn<void, Parameters<ApplyIngredientEditPatch>>();
 
-    const { unmount } = renderHook(
+    const { unmount } = await renderHook(
       () => {
         useIngredientArrayActionsRegister(mockApply);
         return useIngredientArrayActions();
@@ -89,24 +91,24 @@ describe('IngredientArrayActionsContext', () => {
       { wrapper: providerWrapper }
     );
 
-    unmount();
+    await unmount();
 
-    const consumerHook = renderHook(() => useIngredientArrayActions(), {
+    const consumerHook = await renderHook(() => useIngredientArrayActions(), {
       wrapper: providerWrapper,
     });
 
-    act(() => {
+    await act(() => {
       consumerHook.result.current.applyPatch(replaceOnlyPatch);
     });
 
     expect(mockApply).not.toHaveBeenCalled();
   });
 
-  test('last registered implementation wins when two registrations occur', () => {
+  test('last registered implementation wins when two registrations occur', async () => {
     const firstApply = jest.fn<void, Parameters<ApplyIngredientEditPatch>>();
     const secondApply = jest.fn<void, Parameters<ApplyIngredientEditPatch>>();
 
-    const { result } = renderHook(
+    const { result } = await renderHook(
       () => {
         useIngredientArrayActionsRegister(firstApply);
         useIngredientArrayActionsRegister(secondApply);
@@ -115,7 +117,7 @@ describe('IngredientArrayActionsContext', () => {
       { wrapper: providerWrapper }
     );
 
-    act(() => {
+    await act(() => {
       result.current.applyPatch(replaceOnlyPatch);
     });
 

@@ -41,7 +41,7 @@ describe('useValidationWorkflow', () => {
     test('transitions to reviewing phase when unknown tags exist', async () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['Chicken'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -62,7 +62,7 @@ describe('useValidationWorkflow', () => {
     test('transitions to reviewing phase when unknown ingredients exist', async () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -80,7 +80,7 @@ describe('useValidationWorkflow', () => {
     test('transitions to reviewing when both tags and ingredients need validation', async () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -103,7 +103,7 @@ describe('useValidationWorkflow', () => {
     test('provides validation state with tags to validate', async () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag', 'AnotherTag'], ['Chicken'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -123,7 +123,7 @@ describe('useValidationWorkflow', () => {
     test('onTagValidated adds mapping', async () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['Chicken'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -137,7 +137,7 @@ describe('useValidationWorkflow', () => {
         expect(result.current.phase).toBe('reviewing');
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onTagValidated(
           { id: 1, name: 'NewTag' },
           { id: 10, name: 'Validated Tag' }
@@ -152,7 +152,7 @@ describe('useValidationWorkflow', () => {
     test('provides validation state with ingredients to validate', async () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient', 'AnotherIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -172,7 +172,7 @@ describe('useValidationWorkflow', () => {
     test('onIngredientValidated adds mapping', async () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -186,7 +186,7 @@ describe('useValidationWorkflow', () => {
         expect(result.current.phase).toBe('reviewing');
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('NewIngredient', {
           id: 10,
           name: 'Validated Ingredient',
@@ -204,7 +204,7 @@ describe('useValidationWorkflow', () => {
     test('transitions to importing and then complete on success', async () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -216,7 +216,7 @@ describe('useValidationWorkflow', () => {
 
       await waitFor(() => expect(result.current.phase).toBe('reviewing'));
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('NewIngredient', {
           id: 10,
           name: 'Validated',
@@ -226,7 +226,7 @@ describe('useValidationWorkflow', () => {
         });
       });
 
-      act(() => result.current.handlers.startImport());
+      await act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(result.current.phase).toBe('complete');
@@ -238,7 +238,7 @@ describe('useValidationWorkflow', () => {
     test('calls addMultipleRecipes with validated recipes', async () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -250,7 +250,7 @@ describe('useValidationWorkflow', () => {
 
       await waitFor(() => expect(result.current.phase).toBe('reviewing'));
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('NewIngredient', {
           id: 10,
           name: 'Validated',
@@ -260,7 +260,7 @@ describe('useValidationWorkflow', () => {
         });
       });
 
-      act(() => result.current.handlers.startImport());
+      await act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(mockAddMultipleRecipes).toHaveBeenCalled();
@@ -272,7 +272,7 @@ describe('useValidationWorkflow', () => {
 
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -284,7 +284,7 @@ describe('useValidationWorkflow', () => {
 
       await waitFor(() => expect(result.current.phase).toBe('reviewing'));
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('NewIngredient', {
           id: 10,
           name: 'Validated',
@@ -294,7 +294,7 @@ describe('useValidationWorkflow', () => {
         });
       });
 
-      act(() => result.current.handlers.startImport());
+      await act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(result.current.phase).toBe('error');
@@ -309,7 +309,7 @@ describe('useValidationWorkflow', () => {
         createMockRecipe('Recipe Without Match', [], ['AnotherIngredient']),
       ];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -323,7 +323,7 @@ describe('useValidationWorkflow', () => {
         expect(result.current.phase).toBe('reviewing');
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('NewIngredient', {
           id: 10,
           name: 'Validated',
@@ -333,7 +333,7 @@ describe('useValidationWorkflow', () => {
         });
       });
 
-      act(() => result.current.handlers.startImport());
+      await act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(result.current.phase).toBe('complete');
@@ -347,7 +347,7 @@ describe('useValidationWorkflow', () => {
         { ...createMockRecipe('Test Recipe', [], ['NewIngredient']), persons: 2 },
       ];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipesWithWrongPersons,
           mockAddMultipleRecipes,
@@ -359,7 +359,7 @@ describe('useValidationWorkflow', () => {
 
       await waitFor(() => expect(result.current.phase).toBe('reviewing'));
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('NewIngredient', {
           id: 10,
           name: 'Validated',
@@ -369,7 +369,7 @@ describe('useValidationWorkflow', () => {
         });
       });
 
-      act(() => result.current.handlers.startImport());
+      await act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(mockAddMultipleRecipes).toHaveBeenCalledWith(
@@ -388,7 +388,7 @@ describe('useValidationWorkflow', () => {
 
       const mockOnImportComplete = jest.fn().mockReturnValue(callbackPromise);
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -401,7 +401,7 @@ describe('useValidationWorkflow', () => {
 
       await waitFor(() => expect(result.current.phase).toBe('reviewing'));
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('NewIngredient', {
           id: 10,
           name: 'Validated',
@@ -411,7 +411,7 @@ describe('useValidationWorkflow', () => {
         });
       });
 
-      act(() => result.current.handlers.startImport());
+      await act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(mockAddMultipleRecipes).toHaveBeenCalled();
@@ -441,7 +441,7 @@ describe('useValidationWorkflow', () => {
 
       const mockOnImportComplete = jest.fn().mockResolvedValue(undefined);
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -454,7 +454,7 @@ describe('useValidationWorkflow', () => {
 
       await waitFor(() => expect(result.current.phase).toBe('reviewing'));
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('Ingredient1', {
           id: 10,
           name: 'Validated1',
@@ -471,7 +471,7 @@ describe('useValidationWorkflow', () => {
         });
       });
 
-      act(() => result.current.handlers.startImport());
+      await act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(result.current.phase).toBe('complete');
@@ -488,7 +488,7 @@ describe('useValidationWorkflow', () => {
     test('provides progress during reviewing phase', async () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag', 'AnotherTag'], ['Chicken'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -514,7 +514,7 @@ describe('useValidationWorkflow', () => {
 
       const recipes = [createMockRecipe('Test Recipe', ['Italian'], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -544,7 +544,7 @@ describe('useValidationWorkflow', () => {
 
       const recipes = [createMockRecipe('Test Recipe', [], ['Chicken'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -564,10 +564,10 @@ describe('useValidationWorkflow', () => {
   });
 
   describe('startImport null state guard', () => {
-    test('startImport does nothing when called before state is initialized', () => {
+    test('startImport does nothing when called before state is initialized', async () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -577,7 +577,7 @@ describe('useValidationWorkflow', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.handlers.startImport();
       });
 
@@ -588,7 +588,7 @@ describe('useValidationWorkflow', () => {
 
   describe('edge cases', () => {
     test('handles empty recipes array with error', async () => {
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           [],
           mockAddMultipleRecipes,
@@ -611,7 +611,7 @@ describe('useValidationWorkflow', () => {
         createMockRecipe('Recipe 2', ['Quick'], ['Onion']),
       ];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -625,7 +625,7 @@ describe('useValidationWorkflow', () => {
         expect(result.current.phase).toBe('reviewing');
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onTagValidated(
           { id: 0, name: 'Italian' },
           { id: 1, name: 'Italian' }
@@ -637,7 +637,7 @@ describe('useValidationWorkflow', () => {
         result.current.handlers.onTagValidated({ id: 2, name: 'Quick' }, { id: 3, name: 'Quick' });
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('Chicken', {
           id: 1,
           name: 'Chicken',
@@ -661,7 +661,7 @@ describe('useValidationWorkflow', () => {
         });
       });
 
-      act(() => result.current.handlers.startImport());
+      await act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(result.current.phase).toBe('complete');
@@ -673,7 +673,7 @@ describe('useValidationWorkflow', () => {
     test('handles recipes with only unknown tags', async () => {
       const recipes = [createMockRecipe('Recipe', ['UnknownTag1', 'UnknownTag2'], ['Chicken'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -695,7 +695,7 @@ describe('useValidationWorkflow', () => {
         createMockRecipe('Recipe', [], ['UnknownIngredient1', 'UnknownIngredient2']),
       ];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -715,7 +715,7 @@ describe('useValidationWorkflow', () => {
     test('recipe with no valid ingredients after validation goes to error', async () => {
       const recipes = [createMockRecipe('Recipe', [], ['UnknownIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -729,7 +729,7 @@ describe('useValidationWorkflow', () => {
         expect(result.current.phase).toBe('reviewing');
       });
 
-      act(() => result.current.handlers.startImport());
+      await act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(result.current.phase).toBe('error');
@@ -741,7 +741,7 @@ describe('useValidationWorkflow', () => {
     test('preserves existing mappings when adding new ones', async () => {
       const recipes = [createMockRecipe('Recipe', ['NewTag1', 'NewTag2'], ['Chicken'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -755,14 +755,14 @@ describe('useValidationWorkflow', () => {
         expect(result.current.phase).toBe('reviewing');
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onTagValidated(
           { id: 1, name: 'NewTag1' },
           { id: 10, name: 'Validated Tag 1' }
         );
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onTagValidated(
           { id: 2, name: 'NewTag2' },
           { id: 11, name: 'Validated Tag 2' }
@@ -772,10 +772,10 @@ describe('useValidationWorkflow', () => {
       expect(result.current.validationState?.tagMappings.size).toBe(2);
     });
 
-    test('startImport does nothing when validation state is null', () => {
+    test('startImport does nothing when validation state is null', async () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -785,7 +785,7 @@ describe('useValidationWorkflow', () => {
         )
       );
 
-      act(() => result.current.handlers.startImport());
+      await act(() => result.current.handlers.startImport());
 
       expect(result.current.phase).toBe('initializing');
       expect(mockAddMultipleRecipes).not.toHaveBeenCalled();
@@ -814,7 +814,7 @@ describe('useValidationWorkflow', () => {
         createMockRecipe('Normal Recipe', [], ['NewIngredient']),
       ];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -836,7 +836,7 @@ describe('useValidationWorkflow', () => {
       const skippedRecipe = createRecipeWithNoIngredientNames('Skipped Recipe');
       const recipes = [skippedRecipe, createMockRecipe('Normal Recipe', [], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -864,7 +864,7 @@ describe('useValidationWorkflow', () => {
         createMockRecipe('Normal Recipe', [], ['NewIngredient']),
       ];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -881,7 +881,7 @@ describe('useValidationWorkflow', () => {
         { timeout: 3000 }
       );
 
-      act(() => {
+      await act(() => {
         result.current.handlers.acknowledgeWarning();
       });
 
@@ -905,7 +905,7 @@ describe('useValidationWorkflow', () => {
         createMockRecipe('Normal Recipe', [], ['Chicken']),
       ];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -922,7 +922,7 @@ describe('useValidationWorkflow', () => {
         { timeout: 3000 }
       );
 
-      act(() => {
+      await act(() => {
         result.current.handlers.acknowledgeWarning();
       });
 
@@ -934,7 +934,7 @@ describe('useValidationWorkflow', () => {
     test('skippedRecipes is empty for a clean import', async () => {
       const recipes = [createMockRecipe('Normal Recipe', [], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -959,7 +959,7 @@ describe('useValidationWorkflow', () => {
         createMockRecipe('Recipe Without Match', [], ['AnotherIngredient']),
       ];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -973,7 +973,7 @@ describe('useValidationWorkflow', () => {
         expect(result.current.phase).toBe('reviewing');
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('NewIngredient', {
           id: 10,
           name: 'Validated',
@@ -983,7 +983,7 @@ describe('useValidationWorkflow', () => {
         });
       });
 
-      act(() => result.current.handlers.startImport());
+      await act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(result.current.phase).toBe('complete');
@@ -996,7 +996,7 @@ describe('useValidationWorkflow', () => {
     test('skippedRecipes is empty when all recipes have valid ingredients', async () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -1010,7 +1010,7 @@ describe('useValidationWorkflow', () => {
         expect(result.current.phase).toBe('reviewing');
       });
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('NewIngredient', {
           id: 10,
           name: 'Validated',
@@ -1020,7 +1020,7 @@ describe('useValidationWorkflow', () => {
         });
       });
 
-      act(() => result.current.handlers.startImport());
+      await act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(result.current.phase).toBe('complete');
@@ -1036,7 +1036,7 @@ describe('useValidationWorkflow', () => {
 
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -1048,7 +1048,7 @@ describe('useValidationWorkflow', () => {
 
       await waitFor(() => expect(result.current.phase).toBe('reviewing'));
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('NewIngredient', {
           id: 10,
           name: 'Validated',
@@ -1058,7 +1058,7 @@ describe('useValidationWorkflow', () => {
         });
       });
 
-      act(() => result.current.handlers.startImport());
+      await act(() => result.current.handlers.startImport());
 
       await waitFor(() => {
         expect(result.current.phase).toBe('error');
@@ -1069,10 +1069,10 @@ describe('useValidationWorkflow', () => {
   });
 
   describe('null state guards', () => {
-    test('onTagValidated returns early when called before state initializes', () => {
+    test('onTagValidated returns early when called before state initializes', async () => {
       const recipes = [createMockRecipe('Test Recipe', ['NewTag'], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -1082,17 +1082,17 @@ describe('useValidationWorkflow', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onTagValidated({ id: 1, name: 'NewTag' }, { id: 10, name: 'Tag' });
       });
 
       expect(result.current.validationState).toBeNull();
     });
 
-    test('onIngredientValidated returns early when called before state initializes', () => {
+    test('onIngredientValidated returns early when called before state initializes', async () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -1102,7 +1102,7 @@ describe('useValidationWorkflow', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.handlers.onIngredientValidated('NewIngredient', {
           id: 10,
           name: 'Validated',
@@ -1115,10 +1115,10 @@ describe('useValidationWorkflow', () => {
       expect(result.current.validationState).toBeNull();
     });
 
-    test('acknowledgeWarning does not trigger import when state is null', () => {
+    test('acknowledgeWarning does not trigger import when state is null', async () => {
       const recipes = [createMockRecipe('Test Recipe', [], ['NewIngredient'])];
 
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useValidationWorkflow(
           recipes,
           mockAddMultipleRecipes,
@@ -1128,7 +1128,7 @@ describe('useValidationWorkflow', () => {
         )
       );
 
-      act(() => {
+      await act(() => {
         result.current.handlers.acknowledgeWarning();
       });
 

@@ -26,49 +26,49 @@ describe('ImportSkippedWarning', () => {
     jest.clearAllMocks();
   });
 
-  test('renders warning title', () => {
-    const { getByTestId } = render(<ImportSkippedWarning {...defaultProps} />);
+  test('renders warning title', async () => {
+    const { getByTestId } = await render(<ImportSkippedWarning {...defaultProps} />);
 
     expect(getByTestId('test-warning::Title')).toBeTruthy();
   });
 
-  test('renders warning body', () => {
-    const { getByTestId } = render(<ImportSkippedWarning {...defaultProps} />);
+  test('renders warning body', async () => {
+    const { getByTestId } = await render(<ImportSkippedWarning {...defaultProps} />);
 
     expect(getByTestId('test-warning::Body')).toBeTruthy();
   });
 
-  test('renders SkippedRecipesList with correct testID', () => {
-    const { getByTestId } = render(<ImportSkippedWarning {...defaultProps} />);
+  test('renders SkippedRecipesList with correct testID', async () => {
+    const { getByTestId } = await render(<ImportSkippedWarning {...defaultProps} />);
 
     expect(getByTestId('test-warning::SkippedList')).toBeTruthy();
   });
 
-  test('renders SkippedRecipesList with skippedRecipes items', () => {
-    const { getByTestId } = render(<ImportSkippedWarning {...defaultProps} />);
+  test('renders SkippedRecipesList with skippedRecipes items', async () => {
+    const { getByTestId } = await render(<ImportSkippedWarning {...defaultProps} />);
 
     expect(getByTestId('test-warning::SkippedList::Item::0')).toBeTruthy();
   });
 
-  test('renders continue button', () => {
-    const { getByTestId } = render(<ImportSkippedWarning {...defaultProps} />);
+  test('renders continue button', async () => {
+    const { getByTestId } = await render(<ImportSkippedWarning {...defaultProps} />);
 
     expect(getByTestId('test-warning::ContinueButton')).toBeTruthy();
   });
 
-  test('calls onContinue when continue button is pressed', () => {
+  test('calls onContinue when continue button is pressed', async () => {
     const onContinue = jest.fn();
-    const { getByTestId } = render(
+    const { getByTestId } = await render(
       <ImportSkippedWarning {...defaultProps} onContinue={onContinue} />
     );
 
-    fireEvent.press(getByTestId('test-warning::ContinueButton'));
+    await fireEvent.press(getByTestId('test-warning::ContinueButton'));
 
     expect(onContinue).toHaveBeenCalledTimes(1);
   });
 
-  test('applies testID to root element', () => {
-    const { getByTestId } = render(<ImportSkippedWarning {...defaultProps} />);
+  test('applies testID to root element', async () => {
+    const { getByTestId } = await render(<ImportSkippedWarning {...defaultProps} />);
 
     expect(getByTestId('test-warning')).toBeTruthy();
   });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, render, RenderResult, waitFor } from '@testing-library/react-native';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testTags } from '@test-data/tagsDataset';
@@ -9,9 +9,6 @@ import { RecipePropType, ScrapedRecipeData } from '@customTypes/RecipeNavigation
 import { StackScreenParamList } from '@customTypes/ScreenTypes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { GetByQuery, QueryByQuery } from '@testing-library/react-native/build/queries/make-queries';
-import { TextMatch, TextMatchOptions } from '@testing-library/react-native/build/matches';
-import { CommonQueryOptions } from '@testing-library/react-native/build/queries/options';
 import { defaultValueNumber } from '@utils/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RecipeView } from '@screens/recipe/RecipeView';
@@ -22,8 +19,8 @@ import { RecipeAddScrape } from '@screens/recipe/RecipeAddScrape';
 
 export const defaultUri = '';
 
-export type GetByIdType = GetByQuery<TextMatch, CommonQueryOptions & TextMatchOptions>;
-export type QueryByIdType = QueryByQuery<TextMatch, CommonQueryOptions & TextMatchOptions>;
+export type GetByIdType = RenderResult['getByTestId'];
+export type QueryByIdType = RenderResult['queryByTestId'];
 
 export function checkAppbarButtons(
   prop: RecipePropType,
@@ -584,10 +581,10 @@ function makeNav<R extends RouteName>(): NativeStackNavigationProp<StackScreenPa
 }
 
 export async function renderRoute(prop: RecipePropType) {
-  let result: ReturnType<typeof render>;
+  let result: RenderResult;
   switch (prop.mode) {
     case 'readOnly':
-      result = render(
+      result = await render(
         <RecipeView
           route={makeRoute('RecipeView', { recipe: prop.recipe })}
           navigation={makeNav<'RecipeView'>()}
@@ -595,7 +592,7 @@ export async function renderRoute(prop: RecipePropType) {
       );
       break;
     case 'edit':
-      result = render(
+      result = await render(
         <RecipeEdit
           route={makeRoute('RecipeEdit', { recipe: prop.recipe })}
           navigation={makeNav<'RecipeEdit'>()}
@@ -603,7 +600,7 @@ export async function renderRoute(prop: RecipePropType) {
       );
       break;
     case 'addManually':
-      result = render(
+      result = await render(
         <RecipeAddManual
           route={makeRoute('RecipeAddManual', undefined as unknown as undefined)}
           navigation={makeNav<'RecipeAddManual'>()}
@@ -611,7 +608,7 @@ export async function renderRoute(prop: RecipePropType) {
       );
       break;
     case 'addFromPic':
-      result = render(
+      result = await render(
         <RecipeAddOcr
           route={makeRoute('RecipeAddOcr', { imgUri: prop.imgUri })}
           navigation={makeNav<'RecipeAddOcr'>()}
@@ -619,7 +616,7 @@ export async function renderRoute(prop: RecipePropType) {
       );
       break;
     case 'addFromScrape':
-      result = render(
+      result = await render(
         <RecipeAddScrape
           route={makeRoute('RecipeAddScrape', {
             scrapedData: prop.scrapedData as ScrapedRecipeData,
@@ -664,27 +661,31 @@ export async function teardownDb() {
 }
 
 export async function fillMinimalRecipe(getByTestId: GetByIdType, title: string) {
-  fireEvent.press(getByTestId('RecipeTitle::SetTextToEdit'), title);
-  fireEvent.press(getByTestId('RecipePersons::SetTextToEdit'), '4');
-  fireEvent.press(getByTestId('RecipeTime::SetTextToEdit'), '30');
+  await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', title);
+  await fireEvent(getByTestId('RecipePersons::SetTextToEdit'), 'press', '4');
+  await fireEvent(getByTestId('RecipeTime::SetTextToEdit'), 'press', '30');
 
-  fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+  await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
   await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
-  fireEvent.press(getByTestId('ModalImageSelect::Select'));
+  await fireEvent.press(getByTestId('ModalImageSelect::Select'));
   await waitFor(() => {
     expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('/path/to/cropped/img');
   });
 
-  fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
+  await fireEvent.press(getByTestId('RecipeIngredients::AddButton::RoundButton::OnPressFunction'));
   await waitFor(() => expect(getByTestId('RecipeIngredients::0::Row')).toBeTruthy());
-  fireEvent.press(getByTestId('RecipeIngredients::0::OnIngredientChange'), '100@@g--Spaghetti');
+  await fireEvent(
+    getByTestId('RecipeIngredients::0::OnIngredientChange'),
+    'press',
+    '100@@g--Spaghetti'
+  );
   await waitFor(() => {
     expect(getByTestId('RecipeIngredients::0::NameInput::Value').props.children).toBe('Spaghetti');
   });
 
-  fireEvent.press(getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction'));
+  await fireEvent.press(getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction'));
   await waitFor(() => expect(getByTestId('RecipePreparation::EditableStep::0::Step')).toBeTruthy());
-  fireEvent.changeText(
+  await fireEvent.changeText(
     getByTestId('RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'),
     'Cook pasta until al dente'
   );

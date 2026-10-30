@@ -24,31 +24,31 @@ describe('ProviderListItem', () => {
     jest.clearAllMocks();
   });
 
-  test('renders provider name', () => {
-    const { getByTestId } = render(<ProviderListItem {...defaultProps} />);
+  test('renders provider name', async () => {
+    const { getByTestId } = await render(<ProviderListItem {...defaultProps} />);
 
     expect(getByTestId('test-provider-item::Title').props.children).toBe('Test Provider');
   });
 
-  test('renders provider description from i18n', () => {
-    const { getByTestId } = render(<ProviderListItem {...defaultProps} />);
+  test('renders provider description from i18n', async () => {
+    const { getByTestId } = await render(<ProviderListItem {...defaultProps} />);
 
     expect(getByTestId('test-provider-item::Description').props.children).toBe(
       'bulkImport.provider.description'
     );
   });
 
-  test('renders logo with correct testID', () => {
-    const { getByTestId } = render(<ProviderListItem {...defaultProps} />);
+  test('renders logo with correct testID', async () => {
+    const { getByTestId } = await render(<ProviderListItem {...defaultProps} />);
 
     expect(getByTestId('test-provider-item::Logo')).toBeTruthy();
   });
 
-  test('calls onPress when pressed', () => {
+  test('calls onPress when pressed', async () => {
     const onPress = jest.fn();
-    const { getByTestId } = render(<ProviderListItem {...defaultProps} onPress={onPress} />);
+    const { getByTestId } = await render(<ProviderListItem {...defaultProps} onPress={onPress} />);
 
-    fireEvent.press(getByTestId('test-provider-item'));
+    await fireEvent.press(getByTestId('test-provider-item'));
 
     expect(onPress).toHaveBeenCalledTimes(1);
   });
