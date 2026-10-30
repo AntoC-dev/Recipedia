@@ -75,7 +75,7 @@
   "dependencies": {
     "@babel/core": "^7.29.0",
     "@expo/vector-icons": "^15.0.3",
-    "@hookform/resolvers": "5.9.1",
+    "@hookform/resolvers": "5.9.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/slider": "5.2.0",
     "@react-native-ml-kit/text-recognition": "~2.0.0",
@@ -108,7 +108,7 @@
     "numeric-quantity": "2.1.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-hook-form": "7.85.0",
+    "react-hook-form": "7.90.0",
     "react-i18next": "^15.5.1",
     "react-native": "0.86.3",
     "react-native-copilot": "3.3.3",
