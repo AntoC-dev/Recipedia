@@ -1,0 +1,27 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: "../focusField.yaml"
+    env:
+      TARGET_ID: "${SETTINGS_SCREEN}::SearchBar"
+    label: "Action - Focus settings search bar"
+
+- runFlow:
+    file: "../inputText.yaml"
+    env:
+      TARGET_ID: "${SETTINGS_SCREEN}::SearchBar"
+      VALUE: "${SEARCH_QUERY}"
+    label: "Action - Type search query: ${SEARCH_QUERY}"
+
+- waitForAnimationToEnd:
+    label: "Wait for list to filter"
+
+- runFlow:
+    file: "../dismissKeyboardVia.yaml"
+    env:
+      KEY: "Search"
+    label: "Dismiss keyboard (platform-specific)"
+
+- runFlow:
+    file: "../waitForKeyboardDismiss.yaml"
+    label: "Wait for keyboard to disappear"

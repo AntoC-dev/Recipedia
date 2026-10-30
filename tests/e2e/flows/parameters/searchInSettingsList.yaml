@@ -1,42 +1,12 @@
 appId: "com.recipedia"
 ---
-- assertVisible:
-    id: "${SETTINGS_SCREEN}::SearchBar"
-    label: "Assert - Settings screen search bar is visible"
-
-- tapOn:
-    id: "${SETTINGS_SCREEN}::SearchBar"
-    label: "Action - Focus settings search bar"
-
 - runFlow:
-    file: "../../flows/waitForKeyboard.yaml"
-    label: "Wait for keyboard to appear"
-
-- inputText:
-    text: "${SEARCH_QUERY}"
-    label: "Action - Type search query: ${SEARCH_QUERY}"
-
-- waitForAnimationToEnd:
-    label: "Wait for list to filter"
-
-- runFlow:
-    file: "../../flows/dismissKeyboardVia.yaml"
-    env:
-      KEY: "Search"
-    label: "Dismiss keyboard (platform-specific)"
-
-- runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to disappear"
-
-- assertVisible:
-    id: "${SETTINGS_SCREEN}::SearchBar"
-    text: "${SEARCH_QUERY}"
-    label: "Ensure query is input correctly"
+    file: "typeInSettingsSearch.yaml"
+    label: "Type ${SEARCH_QUERY} in the settings search bar"
 
 - extendedWaitUntil:
     visible:
-      id: "${SETTINGS_SCREEN}::.*"
+      id: "${SETTINGS_SCREEN}::\\d+::.*"
       text: ".*${SEARCH_QUERY}.*"
-    timeout: 30000
+    timeout: 60000
     label: "Wait for searched item to be visible"

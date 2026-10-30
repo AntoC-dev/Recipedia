@@ -32,7 +32,7 @@ appId: "com.recipedia"
     label: "Verify ingredient was not added after cancel"
 
 - runFlow:
-    file: "../searchInSettingsList.yaml"
+    file: "../typeInSettingsSearch.yaml"
     env:
       SETTINGS_SCREEN: "IngredientsSettings"
       SEARCH_QUERY: "Test Cancel"
