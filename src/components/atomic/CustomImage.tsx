@@ -68,6 +68,8 @@ export type CustomImageProps = {
   onLoadError?: () => void;
   /** Loading priority for the image (default: 'normal') */
   priority?: 'low' | 'normal' | 'high';
+  /** Whether to hide the placeholder icon shown when there is no image or it fails to load (default: false) */
+  hidePlaceholder?: boolean;
   /** Unique identifier for testing and accessibility */
   testID: string;
 };
@@ -88,6 +90,7 @@ export function CustomImage({
   onLoadSuccess,
   onLoadError,
   priority = 'normal',
+  hidePlaceholder = false,
   testID,
 }: CustomImageProps) {
   const { colors } = useTheme();
@@ -115,7 +118,7 @@ export function CustomImage({
       ]}
       testID={testID}
     >
-      {showPlaceholder && (
+      {showPlaceholder && !hidePlaceholder && (
         <Icon
           source={Icons.imageOff}
           size={size ? size * 0.4 : 24}

@@ -40,11 +40,10 @@ describe('RecipeImage Component', () => {
     if (expectImage && expectedImageSource.length > 0) {
       expect(image.props.source).toEqual([{ uri: expectedImageSource }]);
       expect(image.props.style.opacity).toBe(1);
-      expect(queryByTestId('RecipeImage::Placeholder')).toBeNull();
     } else {
       expect(image.props.style.opacity).toBe(0);
-      expect(queryByTestId('RecipeImage::Placeholder')).toBeTruthy();
     }
+    expect(queryByTestId('RecipeImage::Placeholder')).toBeNull();
   };
 
   const assertButtonStructure = (
@@ -120,8 +119,18 @@ describe('RecipeImage Component', () => {
     assertButtonStructure(getByTestId, queryByTestId, false);
 
     await simulateImageLoadError(getByTestId);
-    assertContainerStructure(getByTestId, queryByTestId, sampleImageUri, false);
+    expect(getByTestId('RecipeImage::Image').props.style.opacity).toBe(0);
+    expect(queryByTestId('RecipeImage::Placeholder')).toBeTruthy();
     assertButtonStructure(getByTestId, queryByTestId, false);
+  });
+
+  test('shows the placeholder without overlay button when there is no image', async () => {
+    const { queryByTestId } = await renderRecipeImage({
+      imgUri: emptyImageUri,
+      overlayButton: undefined,
+    });
+
+    expect(queryByTestId('RecipeImage::Placeholder')).toBeTruthy();
   });
 
   test('handles empty image URI correctly', async () => {

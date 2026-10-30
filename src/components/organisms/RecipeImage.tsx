@@ -68,6 +68,7 @@ export function RecipeImage({ imgUri, overlayButton }: RecipeImageProps) {
       <CustomImage
         testID={imageTestID}
         uri={imgUri}
+        hidePlaceholder={overlayButton !== undefined}
         onLoadError={() => {
           setValidUri(false);
         }}
