@@ -89,12 +89,6 @@ const recipeMargins = {
 export const recipeTextStyles = StyleSheet.create({
   containerSection: recipeMargins.padding,
   containerElement: recipeMargins.smallVerticalMargin,
-  containerTab: {
-    ...recipeMargins.padding,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: padding.medium,
-  },
   button: { ...recipeMargins.mediumVerticalMargin },
 });
 

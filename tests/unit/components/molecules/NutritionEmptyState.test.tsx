@@ -6,6 +6,7 @@ import {
 } from '@mocks/context/RecipeDialogsHarness';
 import { NutritionEmptyState } from '@components/molecules/NutritionEmptyState';
 import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
+import { Icons } from '@assets/Icons';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('@components/atomic/RoundButton', () => ({
@@ -36,6 +37,9 @@ describe('NutritionEmptyState', () => {
       expect(
         getByTestId(expectationTestId + 'AddButton::RoundButton::Label').props.children
       ).toEqual('recipe.roundButton.addManually');
+      expect(getByTestId(expectationTestId + 'AddButton::RoundButton::Icon')).toHaveTextContent(
+        Icons.plusIcon
+      );
     });
 
     test('calls onButtonPressed when add button is pressed', async () => {
@@ -121,8 +125,8 @@ describe('NutritionEmptyState', () => {
       expect(localMockOnButtonPressed).not.toHaveBeenCalled();
     });
 
-    test('does not render the add button', async () => {
-      const { queryByTestId } = await renderWithRecipeDialogs(
+    test('renders the add button beside the scan button', async () => {
+      const { getByTestId } = await renderWithRecipeDialogs(
         <NutritionEmptyState
           onButtonPressed={mockOnButtonPressed}
           withScan
@@ -131,8 +135,30 @@ describe('NutritionEmptyState', () => {
       );
 
       expect(
-        queryByTestId(expectationTestId + 'AddButton::RoundButton::OnPressFunction')
-      ).toBeNull();
+        getByTestId(expectationTestId + 'AddButton::RoundButton::OnPressFunction')
+      ).toBeTruthy();
+      expect(
+        getByTestId(expectationTestId + 'AddButton::RoundButton::Label').props.children
+      ).toEqual('recipe.roundButton.addManually');
+      expect(getByTestId(expectationTestId + 'AddButton::RoundButton::Icon')).toHaveTextContent(
+        Icons.pencilIcon
+      );
+    });
+
+    test('calls onButtonPressed when the add button is pressed', async () => {
+      const localMockOnButtonPressed = jest.fn();
+      const { getByTestId } = await renderWithRecipeDialogs(
+        <NutritionEmptyState
+          onButtonPressed={localMockOnButtonPressed}
+          withScan
+          parentTestId={defaultTestId}
+        />
+      );
+
+      await fireEvent.press(
+        getByTestId(expectationTestId + 'AddButton::RoundButton::OnPressFunction')
+      );
+      expect(localMockOnButtonPressed).toHaveBeenCalledTimes(1);
     });
   });
 });

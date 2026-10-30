@@ -9,7 +9,7 @@
  * @module screens/recipe/fields/IdentityFields
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useController, UseFormReturn } from 'react-hook-form';
 
 import { recipeStateType } from '@customTypes/ScreenTypes';
@@ -44,7 +44,9 @@ export interface TitleFieldProps {
 
 export function RecipeTitleField({ form, stackMode, t }: TitleFieldProps) {
   const { field } = useController({ control: form.control, name: 'recipeTitle' });
-  const { error, hasBeenEdited } = useInlineErrorFor('recipeTitle', t);
+  const [keepEditable, setKeepEditable] = useState(false);
+  if (field.value && !keepEditable) setKeepEditable(true);
+  const { error } = useInlineErrorFor('recipeTitle', t);
   return (
     <RecipeText
       {...buildRecipeTitleProps({
@@ -52,7 +54,8 @@ export function RecipeTitleField({ form, stackMode, t }: TitleFieldProps) {
         recipeTitle: field.value ?? '',
         setRecipeTitle: field.onChange,
         t,
-        forceEditable: hasBeenEdited,
+        forceEditable: keepEditable,
+        onManuallyFill: () => setKeepEditable(true),
       })}
       onBlur={field.onBlur}
       error={error}
@@ -71,6 +74,8 @@ export function RecipeDescriptionField({ form, stackMode, t }: DescriptionFieldP
     control: form.control,
     name: 'recipeDescription',
   });
+  const [keepEditable, setKeepEditable] = useState(false);
+  if (field.value && !keepEditable) setKeepEditable(true);
   // recipeDescription has no schema constraint, so it never errors — no inline
   // error gate is wired here.
   return (
@@ -80,6 +85,8 @@ export function RecipeDescriptionField({ form, stackMode, t }: DescriptionFieldP
         recipeDescription: field.value ?? '',
         setRecipeDescription: field.onChange,
         t,
+        forceEditable: keepEditable,
+        onManuallyFill: () => setKeepEditable(true),
       })}
       onBlur={field.onBlur}
     />

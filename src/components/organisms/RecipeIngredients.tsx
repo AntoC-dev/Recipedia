@@ -175,15 +175,14 @@ export function IngredientsTable({
         {children}
       </DataTable>
 
-      {withScan && onAddIngredient ? (
+      {onAddIngredient && withScan ? (
         <IngredientsOcrButtons
           testID={testID}
           addManuallyButtonLabel={addManuallyButtonLabel}
           onAddIngredient={onAddIngredient}
           withQuantities
         />
-      ) : null}
-      {!withScan && onAddIngredient ? (
+      ) : onAddIngredient ? (
         <RoundButton
           testID={`${testID}::AddButton`}
           icon={Icons.plusIcon}

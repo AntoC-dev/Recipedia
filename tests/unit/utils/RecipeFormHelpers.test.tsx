@@ -12,16 +12,12 @@ import {
   getServingsScaledFrom,
   getValidationButtonConfig,
   IMAGE_BUTTON_CONFIG,
-  RecipePropType,
   scaleRecipeForSave,
 } from '@utils/RecipeFormHelpers';
-import { OcrModalTarget } from '@utils/OCR';
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import {
   recipeColumnsNames,
-  ingredientTableElement,
   ingredientType,
-  preparationStepElement,
   recipeTableElement,
 } from '@customTypes/DatabaseElementTypes';
 import { defaultValueNumber } from '@utils/Constants';
@@ -306,11 +302,36 @@ describe('RecipeFormHelpers', () => {
       expect(result.addOrEditProps?.editType).toBe('editable');
     });
 
+    test('addOCR empty title without onManuallyFill falls back to editable input', () => {
+      const result = buildRecipeTitleProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTitle: '',
+        setRecipeTitle: jest.fn(),
+        t: mockT,
+      });
+      expect(result.addOrEditProps?.editType).toBe('editable');
+    });
+
+    test('addOCR empty title add props forward onManuallyFill as manuallyFill', () => {
+      const onManuallyFill = jest.fn();
+      const result = buildRecipeTitleProps({
+        stackMode: recipeStateType.addOCR,
+        recipeTitle: '',
+        setRecipeTitle: jest.fn(),
+        onManuallyFill,
+        t: mockT,
+      });
+      expect(result.addOrEditProps).toEqual(
+        expect.objectContaining({ editType: 'add', manuallyFill: onManuallyFill })
+      );
+    });
+
     test('returns add props for addOCR mode with empty title', () => {
       const result = buildRecipeTitleProps({
         stackMode: recipeStateType.addOCR,
         recipeTitle: '',
         setRecipeTitle: mockSetTitle,
+        onManuallyFill: jest.fn(),
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('add');
@@ -331,6 +352,7 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeTitle: '   ',
         setRecipeTitle: mockSetTitle,
+        onManuallyFill: jest.fn(),
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('add');
@@ -363,6 +385,7 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeTitle: '',
         setRecipeTitle: mockSetTitle,
+        onManuallyFill: jest.fn(),
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('add');
@@ -457,11 +480,47 @@ describe('RecipeFormHelpers', () => {
       expect(result.addOrEditProps).toBeUndefined();
     });
 
+    test('addOCR empty description without onManuallyFill falls back to editable input', () => {
+      const result = buildRecipeDescriptionProps({
+        stackMode: recipeStateType.addOCR,
+        recipeDescription: '',
+        setRecipeDescription: jest.fn(),
+        t: mockT,
+      });
+      expect(result.addOrEditProps?.editType).toBe('editable');
+    });
+
+    test('addOCR empty description add props forward onManuallyFill as manuallyFill', () => {
+      const onManuallyFill = jest.fn();
+      const result = buildRecipeDescriptionProps({
+        stackMode: recipeStateType.addOCR,
+        recipeDescription: '',
+        setRecipeDescription: jest.fn(),
+        onManuallyFill,
+        t: mockT,
+      });
+      expect(result.addOrEditProps).toEqual(
+        expect.objectContaining({ editType: 'add', manuallyFill: onManuallyFill })
+      );
+    });
+
+    test('forceEditable keeps an empty addOCR description editable', () => {
+      const result = buildRecipeDescriptionProps({
+        stackMode: recipeStateType.addOCR,
+        recipeDescription: '',
+        setRecipeDescription: jest.fn(),
+        forceEditable: true,
+        t: mockT,
+      });
+      expect(result.addOrEditProps?.editType).toBe('editable');
+    });
+
     test('returns add editType for addOCR mode with empty description', () => {
       const result = buildRecipeDescriptionProps({
         stackMode: recipeStateType.addOCR,
         recipeDescription: '',
         setRecipeDescription: mockSetDescription,
+        onManuallyFill: jest.fn(),
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('add');
@@ -472,6 +531,7 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeDescription: '',
         setRecipeDescription: mockSetDescription,
+        onManuallyFill: jest.fn(),
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('add');
@@ -483,6 +543,7 @@ describe('RecipeFormHelpers', () => {
         stackMode: recipeStateType.addOCR,
         recipeDescription: '   ',
         setRecipeDescription: mockSetDescription,
+        onManuallyFill: jest.fn(),
         t: mockT,
       });
       expect(result.addOrEditProps?.editType).toBe('add');
@@ -960,14 +1021,23 @@ describe('withScan wiring', () => {
     [
       'title',
       stackMode =>
-        buildRecipeTitleProps({ stackMode, recipeTitle: 'Title', setRecipeTitle: jest.fn(), t })
-          .addOrEditProps?.withScan,
+        buildRecipeTitleProps({
+          stackMode,
+          recipeTitle: 'Title',
+          setRecipeTitle: jest.fn(),
+          t,
+        }).addOrEditProps?.withScan,
     ],
     [
       'empty title',
       stackMode =>
-        buildRecipeTitleProps({ stackMode, recipeTitle: '', setRecipeTitle: jest.fn(), t })
-          .addOrEditProps?.withScan,
+        buildRecipeTitleProps({
+          stackMode,
+          recipeTitle: '',
+          setRecipeTitle: jest.fn(),
+          onManuallyFill: jest.fn(),
+          t,
+        }).addOrEditProps?.withScan,
     ],
     [
       'description',
@@ -986,6 +1056,7 @@ describe('withScan wiring', () => {
           stackMode,
           recipeDescription: '',
           setRecipeDescription: jest.fn(),
+          onManuallyFill: jest.fn(),
           t,
         }).addOrEditProps?.withScan,
     ],

@@ -19,6 +19,11 @@ appId: "com.recipedia"
     label: "OCR button label for the title is rendered"
 
 - assertVisible:
+    id: "RecipeTitle::ManuallyFill::RoundButton::Label"
+    text: "Add manually"
+    label: "Manual fill button label for the title is rendered"
+
+- assertVisible:
     id: "RecipeDescription::Text"
     text: "Description:"
     label: "Intro text for the description is rendered"
@@ -31,6 +36,11 @@ appId: "com.recipedia"
     id: "RecipeDescription::OpenModal::RoundButton::Label"
     text: "Scan"
     label: "OCR button label for the description is rendered"
+
+- assertVisible:
+    id: "RecipeDescription::ManuallyFill::RoundButton::Label"
+    text: "Add manually"
+    label: "Manual fill button label for the description is rendered"
 
 - scrollUntilVisible:
     element:

@@ -16,13 +16,12 @@ export function NutritionEmptyState({
       <Text testID={testId + '::ParentTestId'}>{parentTestId}</Text>
       {withScan ? (
         <MockScanButton testID={testId + '::OnOCRNutrition'} field={recipeColumnsNames.nutrition} />
-      ) : (
-        <Button
-          testID={testId + '::OnAddNutrition'}
-          onPress={onButtonPressed}
-          title='Mock Add Nutrition'
-        />
-      )}
+      ) : null}
+      <Button
+        testID={testId + '::OnAddNutrition'}
+        onPress={onButtonPressed}
+        title='Mock Add Nutrition'
+      />
     </View>
   );
 }

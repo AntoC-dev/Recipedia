@@ -2,16 +2,16 @@ import React from 'react';
 import { View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { useI18n } from '@utils/i18n';
-import { recipeTextStyles } from '@styles/recipeComponents';
+import { recipeButtonStyles, recipeTextStyles } from '@styles/recipeComponents';
 import { Icons } from '@assets/Icons';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { ScanButton } from '@components/molecules/ScanButton';
 import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 
 export type NutritionEmptyStateProps = {
-  /** Called by the "add manually" button, shown when `withScan` is not set */
+  /** Called by the "add manually" button */
   onButtonPressed: () => void;
-  /** Renders the OCR scan button instead of the "add manually" button */
+  /** Renders the OCR scan button beside the "add manually" button */
   withScan?: boolean;
   parentTestId?: string;
 };
@@ -34,21 +34,22 @@ export function NutritionEmptyState({
       >
         {t('recipe.nutrition.titleSimple')}
       </Text>
-      {withScan ? (
-        <ScanButton
-          testID={testId + '::OCRButton'}
-          field={recipeColumnsNames.nutrition}
-          style={recipeTextStyles.button}
-        />
-      ) : (
+      <View style={recipeButtonStyles.roundButtonsContainer}>
+        {withScan ? (
+          <ScanButton
+            testID={testId + '::OCRButton'}
+            field={recipeColumnsNames.nutrition}
+            style={recipeButtonStyles.roundButton}
+          />
+        ) : null}
         <RoundButton
           testID={testId + '::AddButton'}
-          icon={Icons.plusIcon}
+          icon={withScan ? Icons.pencilIcon : Icons.plusIcon}
           onPressFunction={onButtonPressed}
           label={t('recipe.roundButton.addManually')}
-          style={recipeTextStyles.button}
+          style={recipeButtonStyles.roundButton}
         />
-      )}
+      </View>
     </View>
   );
 }

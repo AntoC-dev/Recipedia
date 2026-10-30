@@ -1,4 +1,3 @@
-import React from 'react';
 import { act, fireEvent } from '@testing-library/react-native';
 
 import { recipeStateType } from '@customTypes/ScreenTypes';
@@ -120,7 +119,7 @@ describe('RecipeTitleField', () => {
   });
 
   test('keeps the title editable in addOCR mode after the scanned value is erased so the inline error surfaces', async () => {
-    const { getByTestId, queryByTestId } = await renderWithForm(
+    const { getByTestId } = await renderWithForm(
       RecipeTitleField,
       f => ({
         form: f,
@@ -200,6 +199,30 @@ describe('RecipeTitleField', () => {
     expect(queryByTestId('RecipeTitle::TextEditable')).toBeNull();
   });
 
+  test('shows the editable title input after tapping add manually in addOCR mode', async () => {
+    const { getByTestId, queryByTestId } = await renderWithForm(RecipeTitleField, form => ({
+      form,
+      stackMode: recipeStateType.addOCR,
+      t,
+    }));
+    await fireEvent.press(getByTestId('RecipeTitle::ManuallyFill'));
+    expect(getByTestId('RecipeTitle::TextEditable')).toBeTruthy();
+    expect(queryByTestId('RecipeTitle::ManuallyFill')).toBeNull();
+  });
+
+  test('keeps the title editable in addOCR mode after typing then clearing', async () => {
+    const { getByTestId, queryByTestId } = await renderWithForm(RecipeTitleField, form => ({
+      form,
+      stackMode: recipeStateType.addOCR,
+      t,
+    }));
+    await fireEvent.press(getByTestId('RecipeTitle::ManuallyFill'));
+    await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', 'Pancakes');
+    await fireEvent(getByTestId('RecipeTitle::SetTextToEdit'), 'press', '');
+    expect(getByTestId('RecipeTitle::TextEditable')).toBeTruthy();
+    expect(queryByTestId('RecipeTitle::ManuallyFill')).toBeNull();
+  });
+
   test('opens the OCR modal for the title when the scan button is pressed in addOCR mode', async () => {
     const { getByTestId } = await renderWithForm(RecipeTitleField, form => ({
       form,
@@ -248,6 +271,47 @@ describe('RecipeDescriptionField', () => {
       { recipeDescription: 'Fluffy' }
     );
     expect(getByTestId('RecipeDescription::TextEditable').props.children).toBe('Fluffy');
+  });
+
+  test('shows the editable description input after tapping add manually in addOCR mode', async () => {
+    const { getByTestId, queryByTestId } = await renderWithForm(RecipeDescriptionField, form => ({
+      form,
+      stackMode: recipeStateType.addOCR,
+      t,
+    }));
+    await fireEvent.press(getByTestId('RecipeDescription::ManuallyFill'));
+    expect(getByTestId('RecipeDescription::TextEditable')).toBeTruthy();
+    expect(queryByTestId('RecipeDescription::ManuallyFill')).toBeNull();
+  });
+
+  test('keeps the description editable in addOCR mode after typing then clearing', async () => {
+    const { getByTestId, queryByTestId } = await renderWithForm(RecipeDescriptionField, form => ({
+      form,
+      stackMode: recipeStateType.addOCR,
+      t,
+    }));
+    await fireEvent.press(getByTestId('RecipeDescription::ManuallyFill'));
+    await fireEvent(getByTestId('RecipeDescription::SetTextToEdit'), 'press', 'Fluffy');
+    await fireEvent(getByTestId('RecipeDescription::SetTextToEdit'), 'press', '');
+    expect(getByTestId('RecipeDescription::TextEditable')).toBeTruthy();
+    expect(queryByTestId('RecipeDescription::ManuallyFill')).toBeNull();
+  });
+
+  test('keeps the description editable in addOCR mode after the scanned value is erased', async () => {
+    const { getByTestId, queryByTestId } = await renderWithForm(
+      RecipeDescriptionField,
+      f => ({
+        form: f,
+        stackMode: recipeStateType.addOCR,
+        t,
+      }),
+      { recipeDescription: 'Scanned description' }
+    );
+    await act(async () => {
+      await fireEvent(getByTestId('RecipeDescription::SetTextToEdit'), 'press', '');
+    });
+    expect(getByTestId('RecipeDescription::TextEditable')).toBeTruthy();
+    expect(queryByTestId('RecipeDescription::ManuallyFill')).toBeNull();
   });
 
   test('onBlur does not produce an error since description is optional', async () => {

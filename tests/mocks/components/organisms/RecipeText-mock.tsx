@@ -24,6 +24,13 @@ export function recipeTextMock(recipeTextProp: RecipeTextProps) {
               <BlurButton testID={testID} onBlur={onBlur} />
             </View>
           ) : null}
+          {addOrEditProps.editType === 'add' ? (
+            <Button
+              testID={testID + '::ManuallyFill'}
+              title='Add manually'
+              onPress={addOrEditProps.manuallyFill}
+            />
+          ) : null}
           {addOrEditProps.withScan ? (
             <MockScanButton testID={testID + '::OpenModal'} field={addOrEditProps.scanField} />
           ) : null}

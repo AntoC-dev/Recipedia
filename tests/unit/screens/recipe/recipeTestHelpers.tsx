@@ -505,7 +505,7 @@ export function checkNutrition(
     case 'addFromPic':
       expect(getByTestId(nutritionEmptyStateTestId)).toBeTruthy();
       expect(getByTestId(nutritionEmptyStateTestId + '::OnOCRNutrition')).toBeTruthy();
-      expect(queryByTestId(nutritionEmptyStateTestId + '::OnAddNutrition')).toBeNull();
+      expect(getByTestId(nutritionEmptyStateTestId + '::OnAddNutrition')).toBeTruthy();
       expect(queryByTestId(nutritionTableTestId)).toBeNull();
       break;
   }

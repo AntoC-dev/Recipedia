@@ -182,7 +182,7 @@ export function buildRecipeImageProps({
  * Handles mode-specific behavior:
  * - readOnly: Displays title as headline
  * - edit/addManual: Editable text input
- * - addOCR with empty title: Shows OCR button, unless `forceEditable` is set
+ * - addOCR with empty title: Shows Scan and "add manually" buttons, unless `forceEditable` is set
  * - addOCR with a title: Editable input; its Scan button (`scanField`) shows in OCR mode only
  *
  * @param stackMode - Current recipe screen mode
@@ -191,13 +191,15 @@ export function buildRecipeImageProps({
  * @param t - Translation function
  * @param forceEditable - Keeps the editable input mounted in addOCR mode even
  *        when the title is empty, so a field that was filled then cleared still
- *        surfaces its inline error instead of reverting to the OCR button.
+ *        surfaces its inline error instead of reverting to the Scan / "add manually" buttons.
+ * @param onManuallyFill - Called by the "add manually" button to reveal the input; without it the addOCR empty state falls back to the editable input
  * @returns Props object for RecipeText component
  */
 export interface RecipeTitlePropsInput extends FieldInputT {
   recipeTitle: string;
   setRecipeTitle: (value: string) => void;
   forceEditable?: boolean;
+  onManuallyFill?: () => void;
 }
 
 export function buildRecipeTitleProps({
@@ -206,6 +208,7 @@ export function buildRecipeTitleProps({
   setRecipeTitle,
   t,
   forceEditable = false,
+  onManuallyFill,
 }: RecipeTitlePropsInput): RecipeTextProps {
   const titleTestID = 'RecipeTitle';
   const titleRootText: TextProp = {
@@ -223,6 +226,7 @@ export function buildRecipeTitleProps({
   if (
     stackMode === recipeStateType.addOCR &&
     !forceEditable &&
+    onManuallyFill !== undefined &&
     (!recipeTitle || recipeTitle.trim().length === 0)
   ) {
     return {
@@ -231,8 +235,9 @@ export function buildRecipeTitleProps({
       addOrEditProps: {
         editType: 'add',
         testID: titleTestID,
+        manuallyFill: onManuallyFill,
         scanField: recipeColumnsNames.title,
-        withScan: stackMode === recipeStateType.addOCR,
+        withScan: true,
       },
     };
   }
@@ -257,18 +262,22 @@ export function buildRecipeTitleProps({
  * Handles mode-specific behavior:
  * - readOnly: Displays description as paragraph
  * - edit/addManual: Editable text input
- * - addOCR with empty description: Shows OCR button
+ * - addOCR with empty description: Shows Scan and "add manually" buttons, unless `forceEditable` is set
  * - addOCR with a description: Editable input; its Scan button (`scanField`) shows in OCR mode only
  *
  * @param stackMode - Current recipe screen mode
  * @param recipeDescription - Current description value
  * @param setRecipeDescription - Setter function for description
  * @param t - Translation function
+ * @param forceEditable - Keeps the editable input mounted in addOCR mode even when empty
+ * @param onManuallyFill - Called by the "add manually" button to reveal the input; without it the addOCR empty state falls back to the editable input
  * @returns Props object for RecipeText component
  */
 export interface RecipeDescriptionPropsInput extends FieldInputT {
   recipeDescription: string;
   setRecipeDescription: (value: string) => void;
+  forceEditable?: boolean;
+  onManuallyFill?: () => void;
 }
 
 export function buildRecipeDescriptionProps({
@@ -276,6 +285,8 @@ export function buildRecipeDescriptionProps({
   recipeDescription,
   setRecipeDescription,
   t,
+  forceEditable = false,
+  onManuallyFill,
 }: RecipeDescriptionPropsInput): RecipeTextProps {
   const descriptionTestID = 'RecipeDescription';
   const descriptionRootText: TextProp = {
@@ -289,6 +300,8 @@ export function buildRecipeDescriptionProps({
 
   if (
     stackMode === recipeStateType.addOCR &&
+    !forceEditable &&
+    onManuallyFill !== undefined &&
     (!recipeDescription || recipeDescription.trim().length === 0)
   ) {
     return {
@@ -297,8 +310,9 @@ export function buildRecipeDescriptionProps({
       addOrEditProps: {
         editType: 'add',
         testID: descriptionTestID,
+        manuallyFill: onManuallyFill,
         scanField: recipeColumnsNames.description,
-        withScan: stackMode === recipeStateType.addOCR,
+        withScan: true,
       },
     };
   }
@@ -408,7 +422,7 @@ export function buildRecipePersonsProps({
         testID: personTestID,
         prefixText: t('personPrefixOCR'),
         scanField: recipeColumnsNames.persons,
-        withScan: stackMode === recipeStateType.addOCR,
+        withScan: true,
         manuallyFill: () => setRecipePersons(0),
       },
     };
@@ -475,7 +489,7 @@ export function buildRecipeTimeProps({
         testID: timeTestID,
         prefixText: t('timePrefixOCR'),
         scanField: recipeColumnsNames.time,
-        withScan: stackMode === recipeStateType.addOCR,
+        withScan: true,
         manuallyFill: () => setRecipeTime(0),
       },
     };

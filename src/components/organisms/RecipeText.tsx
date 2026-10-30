@@ -11,7 +11,8 @@
  * - OCR integration for adding content via image scanning
  * - Renders a Scan button (`scanField`) when `withScan` is set
  * - Discriminated union props for type-safe editing configurations
- * - Responsive styling based on edit mode and text style
+ * - Add mode shows Scan and "add manually" buttons; the latter reveals the input via `manuallyFill`
+ * - Responsive styling based on text style
  * - Material Design typography integration
  * - Comprehensive test ID structure for automation
  *
@@ -41,7 +42,8 @@
  *     editType: 'add',
  *     testID: 'recipe-instructions',
  *     scanField: recipeColumnsNames.preparation,
- *     withScan: true
+ *     withScan: true,
+ *     manuallyFill: revealInput
  *   }}
  *   testID="recipe-instructions"
  * />
@@ -53,7 +55,10 @@ import React from 'react';
 import { ScanButton } from '@components/molecules/ScanButton';
 import type { OcrModalTarget } from '@utils/OCR';
 import { HelperText, Text } from 'react-native-paper';
-import { recipeTextStyles } from '@styles/recipeComponents';
+import { recipeButtonStyles, recipeTextStyles } from '@styles/recipeComponents';
+import { RoundButton } from '@components/atomic/RoundButton';
+import { Icons } from '@assets/Icons';
+import { useI18n } from '@utils/i18n';
 import { VariantProp } from 'react-native-paper/lib/typescript/components/Typography/types';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
 
@@ -68,6 +73,8 @@ export type TextProp = {
 /** Props for add mode with modal functionality */
 export type RecipeTextAddProps = {
   editType: 'add';
+  /** Called by the "add manually" button to reveal the editable input */
+  manuallyFill: () => void;
 };
 
 /** Props for inline editing mode */
@@ -115,11 +122,6 @@ export type RecipeTextProps = {
  * @returns JSX element representing formatted text with optional editing capabilities
  */
 export function RecipeText({ rootText, testID, addOrEditProps, error, onBlur }: RecipeTextProps) {
-  const containerStyle =
-    addOrEditProps?.editType === 'add'
-      ? recipeTextStyles.containerTab
-      : recipeTextStyles.containerSection;
-
   let variant: VariantProp<never>;
   switch (rootText.style) {
     case 'headline':
@@ -134,7 +136,7 @@ export function RecipeText({ rootText, testID, addOrEditProps, error, onBlur }: 
   }
 
   return (
-    <View style={containerStyle}>
+    <View style={recipeTextStyles.containerSection}>
       <Text
         testID={testID + '::Text'}
         variant={variant}
@@ -162,31 +164,52 @@ export function RecipeText({ rootText, testID, addOrEditProps, error, onBlur }: 
 function RecipeTextEditablePart(
   addOrEditProps: RecipeTextAddOrEditProps & { onBlur?: () => void }
 ) {
+  const { t } = useI18n();
+
   return (
     <View>
-      {addOrEditProps.editType === 'editable' ? (
-        <CustomTextInput
-          testID={addOrEditProps.testID}
-          style={recipeTextStyles.containerElement}
-          value={addOrEditProps.textEditable ?? ''}
-          multiline={true}
-          // Commit on every keystroke AND on blur. The keystroke write keeps
-          // the form value live so a Save tap with an unfocused-but-typed
-          // input still persists the latest text (`Keyboard.dismiss` cannot
-          // guarantee a synchronous blur over the RN bridge). Per-field
-          // `useController` bounds the re-render cascade to this one field
-          // wrapper — sibling fields are unaffected.
-          onChangeText={newText => addOrEditProps.setTextToEdit(newText)}
-          onEndEditing={newText => addOrEditProps.setTextToEdit(newText)}
-          onBlur={addOrEditProps.onBlur}
-        />
-      ) : null}
-      {addOrEditProps.withScan ? (
-        <ScanButton
-          testID={addOrEditProps.testID + '::OpenModal'}
-          field={addOrEditProps.scanField}
-        />
-      ) : null}
+      {addOrEditProps.editType === 'add' ? (
+        <View style={recipeButtonStyles.roundButtonsContainer}>
+          {addOrEditProps.withScan ? (
+            <ScanButton
+              testID={addOrEditProps.testID + '::OpenModal'}
+              field={addOrEditProps.scanField}
+              style={recipeButtonStyles.roundButton}
+            />
+          ) : null}
+          <RoundButton
+            testID={addOrEditProps.testID + '::ManuallyFill'}
+            icon={Icons.pencilIcon}
+            onPressFunction={addOrEditProps.manuallyFill}
+            label={t('recipe.roundButton.addManually')}
+            style={recipeButtonStyles.roundButton}
+          />
+        </View>
+      ) : (
+        <>
+          <CustomTextInput
+            testID={addOrEditProps.testID}
+            style={recipeTextStyles.containerElement}
+            value={addOrEditProps.textEditable ?? ''}
+            multiline={true}
+            // Commit on every keystroke AND on blur. The keystroke write keeps
+            // the form value live so a Save tap with an unfocused-but-typed
+            // input still persists the latest text (`Keyboard.dismiss` cannot
+            // guarantee a synchronous blur over the RN bridge). Per-field
+            // `useController` bounds the re-render cascade to this one field
+            // wrapper — sibling fields are unaffected.
+            onChangeText={newText => addOrEditProps.setTextToEdit(newText)}
+            onEndEditing={newText => addOrEditProps.setTextToEdit(newText)}
+            onBlur={addOrEditProps.onBlur}
+          />
+          {addOrEditProps.withScan ? (
+            <ScanButton
+              testID={addOrEditProps.testID + '::OpenModal'}
+              field={addOrEditProps.scanField}
+            />
+          ) : null}
+        </>
+      )}
     </View>
   );
 }
