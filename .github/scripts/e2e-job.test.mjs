@@ -27,11 +27,21 @@ const writeExecutable = (path, body) => {
   chmodSync(path, 0o755);
 };
 
-const runJob = ({ platform, job, failingSuites = [], installExit = 0 }) => {
+const runJob = ({
+  platform,
+  job,
+  failingSuites = [],
+  installExit = 0,
+  manifest = [],
+  xcrunBody = 'exit 0',
+  env = {},
+}) => {
   const workDir = mkdtempSync(join(tmpdir(), 'e2e-job-'));
   const scriptsDir = join(workDir, 'scripts');
   mkdirSync(scriptsDir, { recursive: true });
   copyFileSync(join(SCRIPTS_DIR, 'run-e2e-job.sh'), join(scriptsDir, 'run-e2e-job.sh'));
+  writeFile(join(workDir, '.github', 'e2e-suites.json'), JSON.stringify(manifest));
+  writeExecutable(join(workDir, 'bin', 'xcrun'), `echo "xcrun $*" >> calls.txt\n${xcrunBody}`);
   for (const stubbedPlatform of ['android', 'ios']) {
     writeExecutable(
       join(scriptsDir, `run-e2e-${stubbedPlatform}.sh`),
@@ -50,6 +60,7 @@ exit 0`
       ...process.env,
       FAILING_SUITES: failingSuites.join(' '),
       PATH: `${join(workDir, 'bin')}:${process.env.PATH}`,
+      ...env,
     },
     encoding: 'utf8',
   });
@@ -111,6 +122,65 @@ test('every suite of a job shares one rerun deadline set when the job started', 
   assert.ok(deadlines[0] >= startedAt + 9000 && deadlines[0] <= startedAt + 9002);
 });
 
+const photoManifest = [{ name: 'ocr-fields', usesPhotos: true }, { name: 'search' }];
+const runPhotoJob = overrides =>
+  runJob({ platform: 'ios', job: 'ocr-fields', manifest: photoManifest, ...overrides });
+const warmedUp = calls => calls.some(call => call.startsWith('xcrun simctl addmedia booted '));
+const ranSuite = (calls, suite) => calls.some(call => call.startsWith(`ios ${suite} `));
+
+test('an iOS job with a photo suite warms up the Photos library before running any suite', () => {
+  const { result, calls } = runPhotoJob();
+  const warmUpIndex = calls.findIndex(call => call.startsWith('xcrun simctl addmedia booted '));
+
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.ok(warmUpIndex !== -1, calls.join('\n'));
+  assert.ok(warmUpIndex < calls.findIndex(call => call.startsWith('ios ocr-fields')));
+});
+
+test('a grouped iOS job holding a photo suite warms up the Photos library', () => {
+  const { calls } = runPhotoJob({ job: 'search+ocr-fields' });
+
+  assert.ok(warmedUp(calls));
+});
+
+test('a failed Photos warm-up still runs every suite of the job', () => {
+  const { result, calls } = runPhotoJob({ xcrunBody: 'exit 5' });
+
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stdout, /Photos library warm-up failed/);
+  assert.ok(ranSuite(calls, 'ocr-fields'));
+});
+
+test('a hung Photos warm-up is stopped at its timeout and the suites still run', () => {
+  const { result, calls } = runPhotoJob({
+    xcrunBody: 'exec sleep 30',
+    env: { E2E_PHOTOS_WARM_UP_TIMEOUT: '1' },
+  });
+
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stdout, /warm-up stopped after 1s/);
+  assert.ok(ranSuite(calls, 'ocr-fields'));
+});
+
+test('a failed install stops the Photos warm-up and fails the job', () => {
+  const { result, calls } = runPhotoJob({ installExit: 4, xcrunBody: 'exec sleep 30' });
+
+  assert.equal(result.status, 4);
+  assert.ok(!calls.some(call => call.startsWith('ios ')));
+});
+
+test('an iOS job without a photo suite skips the Photos warm-up', () => {
+  const { calls } = runPhotoJob({ job: 'search' });
+
+  assert.ok(!warmedUp(calls));
+});
+
+test('an Android job with a photo suite skips the Photos warm-up', () => {
+  const { calls } = runPhotoJob({ platform: 'android' });
+
+  assert.ok(!warmedUp(calls));
+});
+
 test('missing arguments are rejected with the usage', () => {
   const { result, calls } = runJob({ platform: 'ios', job: '' });
 
@@ -162,9 +232,18 @@ test('a grouped job nests each prepared suite log under the job directory', () =
   const jobDir = join(workDir, 'maestro_logs_app-init+locale-fr');
 
   assert.equal(result.status, 0, result.stdout + result.stderr);
-  assert.equal(readFileSync(join(jobDir, 'app-init', '1 - Init', 'maestro.log'), 'utf8'), 'init log\n');
-  assert.equal(readFileSync(join(jobDir, 'app-init', 'recipedia-app-logs.txt'), 'utf8'), 'app log\n');
-  assert.equal(readFileSync(join(jobDir, 'locale-fr', '1 - Fr', 'maestro.log'), 'utf8'), 'fr log\n');
+  assert.equal(
+    readFileSync(join(jobDir, 'app-init', '1 - Init', 'maestro.log'), 'utf8'),
+    'init log\n'
+  );
+  assert.equal(
+    readFileSync(join(jobDir, 'app-init', 'recipedia-app-logs.txt'), 'utf8'),
+    'app log\n'
+  );
+  assert.equal(
+    readFileSync(join(jobDir, 'locale-fr', '1 - Fr', 'maestro.log'), 'utf8'),
+    'fr log\n'
+  );
   assert.ok(!existsSync(join(workDir, 'maestro_logs_app-init')));
   assert.ok(!existsSync(join(workDir, 'maestro_logs_locale-fr')));
 });
