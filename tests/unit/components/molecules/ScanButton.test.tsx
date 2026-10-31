@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent } from '@testing-library/react-native';
-import { ScanButton } from '@components/molecules/ScanButton';
+import { getScanLabelKey, ScanButton } from '@components/molecules/ScanButton';
 import { Icons } from '@assets/Icons';
 import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 import {
@@ -55,6 +55,15 @@ describe('ScanButton', () => {
     await fireEvent.press(getByTestId(buttonId));
 
     expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(field);
+  });
+
+  test.each([
+    [recipeColumnsNames.title, 'recipe.roundButton.scan'],
+    [recipeColumnsNames.description, 'recipe.roundButton.scan'],
+    ['ingredientNames' as const, 'recipe.roundButton.scanNames'],
+    ['ingredientQuantities' as const, 'recipe.roundButton.scanQuantities'],
+  ])('getScanLabelKey maps %s to %s', (field, expectedKey) => {
+    expect(getScanLabelKey(field)).toBe(expectedKey);
   });
 
   test('forwards the style to the button container', async () => {

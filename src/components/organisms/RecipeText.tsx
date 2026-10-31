@@ -9,7 +9,8 @@
  * - Three text style variants: headline, title, paragraph
  * - Dual interaction modes: inline editing and modal addition
  * - OCR integration for adding content via image scanning
- * - Renders a Scan button (`scanField`) when `withScan` is set
+ * - When `withScan` is set, renders a Scan button in add mode and a trailing scan icon inside the
+ *   input in editable mode, both targeting `scanField`
  * - Discriminated union props for type-safe editing configurations
  * - Add mode shows Scan and "add manually" buttons; the latter reveals the input via `manuallyFill`
  * - Responsive styling based on text style
@@ -52,9 +53,10 @@
 
 import { View } from 'react-native';
 import React from 'react';
-import { ScanButton } from '@components/molecules/ScanButton';
+import { getScanLabelKey, ScanButton } from '@components/molecules/ScanButton';
+import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import type { OcrModalTarget } from '@utils/OCR';
-import { HelperText, Text } from 'react-native-paper';
+import { HelperText, Text, TextInput, useTheme } from 'react-native-paper';
 import { recipeButtonStyles, recipeTextStyles } from '@styles/recipeComponents';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { Icons } from '@assets/Icons';
@@ -95,7 +97,7 @@ export type RecipeTextAddOrEditProps = {
   testID: string;
   /** Field the Scan button targets */
   scanField: OcrModalTarget;
-  /** Renders the Scan button targeting `scanField` (OCR mode) */
+  /** Renders the Scan button (add mode) or trailing input icon (editable mode) for `scanField` */
   withScan?: boolean;
 } & (RecipeTextAddProps | RecipeTextEditProps);
 
@@ -185,31 +187,57 @@ function RecipeTextEditablePart(
             style={recipeButtonStyles.roundButton}
           />
         </View>
+      ) : addOrEditProps.withScan ? (
+        <RecipeTextScanInput {...addOrEditProps} />
       ) : (
-        <>
-          <CustomTextInput
-            testID={addOrEditProps.testID}
-            style={recipeTextStyles.containerElement}
-            value={addOrEditProps.textEditable ?? ''}
-            multiline={true}
-            // Commit on every keystroke AND on blur. The keystroke write keeps
-            // the form value live so a Save tap with an unfocused-but-typed
-            // input still persists the latest text (`Keyboard.dismiss` cannot
-            // guarantee a synchronous blur over the RN bridge). Per-field
-            // `useController` bounds the re-render cascade to this one field
-            // wrapper — sibling fields are unaffected.
-            onChangeText={newText => addOrEditProps.setTextToEdit(newText)}
-            onEndEditing={newText => addOrEditProps.setTextToEdit(newText)}
-            onBlur={addOrEditProps.onBlur}
-          />
-          {addOrEditProps.withScan ? (
-            <ScanButton
-              testID={addOrEditProps.testID + '::OpenModal'}
-              field={addOrEditProps.scanField}
-            />
-          ) : null}
-        </>
+        <RecipeTextInput {...addOrEditProps} />
       )}
     </View>
+  );
+}
+
+type RecipeTextInputProps = RecipeTextAddOrEditProps &
+  RecipeTextEditProps & { onBlur?: () => void; right?: React.ReactNode };
+
+function RecipeTextInput(inputProps: RecipeTextInputProps) {
+  return (
+    <CustomTextInput
+      testID={inputProps.testID}
+      style={recipeTextStyles.containerElement}
+      value={inputProps.textEditable ?? ''}
+      multiline={true}
+      // Commit on every keystroke AND on blur. The keystroke write keeps
+      // the form value live so a Save tap with an unfocused-but-typed
+      // input still persists the latest text (`Keyboard.dismiss` cannot
+      // guarantee a synchronous blur over the RN bridge). Per-field
+      // `useController` bounds the re-render cascade to this one field
+      // wrapper — sibling fields are unaffected.
+      onChangeText={newText => inputProps.setTextToEdit(newText)}
+      onEndEditing={newText => inputProps.setTextToEdit(newText)}
+      onBlur={inputProps.onBlur}
+      right={inputProps.right}
+    />
+  );
+}
+
+function RecipeTextScanInput(inputProps: RecipeTextInputProps) {
+  const { t } = useI18n();
+  const { openImageModal } = useRecipeDialogs();
+  const { colors } = useTheme();
+
+  return (
+    <RecipeTextInput
+      {...inputProps}
+      right={
+        <TextInput.Icon
+          testID={inputProps.testID + '::OpenModal::IconButton'}
+          icon={Icons.scanImageIcon}
+          color={colors.primary}
+          onPress={() => openImageModal(inputProps.scanField)}
+          accessibilityLabel={t(getScanLabelKey(inputProps.scanField))}
+          forceTextInputFocus={false}
+        />
+      }
+    />
   );
 }

@@ -27,8 +27,13 @@ export type ScanButtonProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-/** Maps an OCR target to its scan label translation key. */
-function getScanLabelKey(field: OcrModalTarget): string {
+/**
+ * Maps an OCR target to its scan label translation key
+ *
+ * @param field - OCR modal target the scan control opens
+ * @returns The i18n key of the scan label for that target
+ */
+export function getScanLabelKey(field: OcrModalTarget): string {
   switch (field) {
     case 'ingredientNames':
       return 'recipe.roundButton.scanNames';

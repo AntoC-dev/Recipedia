@@ -1,4 +1,4 @@
-import { fireEvent } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import {
   IMAGE_MODAL_TARGET_TEST_ID,
   renderWithRecipeDialogs,
@@ -251,8 +251,8 @@ describe('RecipeText Component', () => {
     expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(recipeColumnsNames.title);
   });
 
-  test('renders scan button below input in editable mode when withScan is set', async () => {
-    const { getByTestId } = await renderRecipeText({
+  test('renders the scan icon inside the input in editable mode when withScan is set', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeText({
       addOrEditProps: {
         testID: 'test-recipe-text',
         scanField: recipeColumnsNames.title,
@@ -264,32 +264,46 @@ describe('RecipeText Component', () => {
     });
 
     expect(getByTestId('test-recipe-text::CustomTextInput').props.value).toBe('filled');
-    expect(getByTestId('test-recipe-text::OpenModal::RoundButton::Icon').props.children).toBe(
-      'line-scan'
+    expect(getByTestId('test-recipe-text::Right')).toContainElement(
+      getByTestId('test-recipe-text::OpenModal::IconButton')
     );
-    expect(getByTestId('test-recipe-text::OpenModal::RoundButton::Label').props.children).toBe(
-      'recipe.roundButton.scan'
+    expect(getByTestId('test-recipe-text::OpenModal::IconButton::Color')).toHaveTextContent(
+      '#6200ee'
     );
+    expect(getByTestId('test-recipe-text::OpenModal::IconButton::Icon')).toHaveTextContent(
+      Icons.scanImageIcon
+    );
+    expect(
+      getByTestId('test-recipe-text::OpenModal::IconButton::AccessibilityLabel')
+    ).toHaveTextContent('recipe.roundButton.scan');
+    expect(
+      getByTestId('test-recipe-text::OpenModal::IconButton::ForceTextInputFocus')
+    ).toHaveTextContent('false');
+    expect(queryByTestId('test-recipe-text::OpenModal::RoundButton')).toBeNull();
   });
 
-  test('opens the OCR modal for the title when scan button of editable mode is pressed', async () => {
-    const { getByTestId } = await renderRecipeText({
-      addOrEditProps: {
-        testID: 'test-recipe-text',
-        scanField: recipeColumnsNames.title,
-        editType: 'editable',
-        textEditable: 'filled',
-        setTextToEdit: mockSetTextToEdit,
-        withScan: true,
-      },
-    });
+  test.each([recipeColumnsNames.title, recipeColumnsNames.description])(
+    'opens the OCR modal for %s when the scan icon of editable mode is pressed',
+    async scanField => {
+      const { getByTestId } = await renderRecipeText({
+        addOrEditProps: {
+          testID: 'test-recipe-text',
+          scanField,
+          editType: 'editable',
+          textEditable: 'filled',
+          setTextToEdit: mockSetTextToEdit,
+          withScan: true,
+        },
+      });
+      expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent('none');
 
-    await fireEvent.press(getByTestId('test-recipe-text::OpenModal::RoundButton::OnPressFunction'));
+      await fireEvent.press(getByTestId('test-recipe-text::OpenModal::IconButton'));
 
-    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(recipeColumnsNames.title);
-  });
+      expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(scanField);
+    }
+  );
 
-  test('hides the scan button in editable mode without withScan', async () => {
+  test('hides the scan icon in editable mode without withScan', async () => {
     const { queryByTestId } = await renderWithRecipeDialogs(
       <RecipeText
         rootText={titleText}
@@ -304,7 +318,26 @@ describe('RecipeText Component', () => {
       />
     );
 
-    expect(queryByTestId('test-recipe-text::OpenModal::RoundButton::OnPressFunction')).toBeNull();
+    expect(queryByTestId('test-recipe-text::OpenModal::IconButton')).toBeNull();
+    expect(queryByTestId('test-recipe-text::OpenModal::RoundButton')).toBeNull();
+  });
+
+  test('renders the editable input without a RecipeDialogsProvider when withScan is unset', async () => {
+    const { getByTestId } = await render(
+      <RecipeText
+        rootText={titleText}
+        testID='test-recipe-text'
+        addOrEditProps={{
+          testID: 'test-recipe-text',
+          scanField: recipeColumnsNames.title,
+          editType: 'editable',
+          textEditable: 'filled',
+          setTextToEdit: mockSetTextToEdit,
+        }}
+      />
+    );
+
+    expect(getByTestId('test-recipe-text::CustomTextInput').props.value).toBe('filled');
   });
 
   test('applies correct container styles based on edit type', async () => {

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Text } from 'react-native';
 import { fireEvent, render } from '@testing-library/react-native';
 import { CustomTextInput, CustomTextInputProps } from '@components/atomic/CustomTextInput';
 
@@ -17,6 +18,22 @@ describe('CustomTextInput', () => {
     expect(input.props.value).toEqual('test@example.com');
     // expect(input.props.label).toEqual('Email');
     expect(getAllByText('Email').length).toBeGreaterThan(0);
+  });
+
+  test('forwards the right element to the input', async () => {
+    const { getByTestId } = await render(
+      <CustomTextInput {...baseProps} right={<Text testID='right-element'>trailing</Text>} />
+    );
+
+    expect(getByTestId('custom-input::CustomTextInput::Right')).toContainElement(
+      getByTestId('right-element')
+    );
+  });
+
+  test('renders no right element by default', async () => {
+    const { queryByTestId } = await render(<CustomTextInput {...baseProps} />);
+
+    expect(queryByTestId('custom-input::CustomTextInput::Right')).toBeNull();
   });
 
   test('fires onChangeText when text changes', async () => {

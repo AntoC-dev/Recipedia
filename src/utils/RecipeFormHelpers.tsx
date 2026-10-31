@@ -183,7 +183,7 @@ export function buildRecipeImageProps({
  * - readOnly: Displays title as headline
  * - edit/addManual: Editable text input
  * - addOCR with empty title: Shows Scan and "add manually" buttons, unless `forceEditable` is set
- * - addOCR with a title: Editable input; its Scan button (`scanField`) shows in OCR mode only
+ * - addOCR with a title: Editable input with a trailing scan icon (`scanField`) in OCR mode only
  *
  * @param stackMode - Current recipe screen mode
  * @param recipeTitle - Current title value
@@ -263,7 +263,7 @@ export function buildRecipeTitleProps({
  * - readOnly: Displays description as paragraph
  * - edit/addManual: Editable text input
  * - addOCR with empty description: Shows Scan and "add manually" buttons, unless `forceEditable` is set
- * - addOCR with a description: Editable input; its Scan button (`scanField`) shows in OCR mode only
+ * - addOCR with a description: Editable input with a trailing scan icon (`scanField`) in OCR mode only
  *
  * @param stackMode - Current recipe screen mode
  * @param recipeDescription - Current description value

@@ -208,6 +208,10 @@ const TextInputIcon: React.FC<any> = props => (
   <TouchableOpacity testID={props.testID} onPress={props.onPress}>
     <RNText testID={props.testID + '::Icon'}>{props.icon}</RNText>
     <RNText testID={props.testID + '::Color'}>{props.color}</RNText>
+    <RNText testID={props.testID + '::AccessibilityLabel'}>{props.accessibilityLabel}</RNText>
+    <RNText testID={props.testID + '::ForceTextInputFocus'}>
+      {String(props.forceTextInputFocus)}
+    </RNText>
   </TouchableOpacity>
 );
 TextInputIcon.displayName = 'TextInput.Icon';
