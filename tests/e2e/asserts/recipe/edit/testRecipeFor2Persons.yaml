@@ -14,7 +14,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::PrefixText"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to persons section"
 
@@ -45,7 +45,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
 
 - assertVisible:
@@ -57,7 +57,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::1::QuantityInput"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to end of ingredients section"
 

@@ -5,7 +5,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::PrefixText"
     direction: DOWN
-    speed: 40
+    speed: 20
     timeout: 30000
     label: "Scroll to ingredient section"
 

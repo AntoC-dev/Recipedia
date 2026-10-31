@@ -53,13 +53,38 @@ tags:
     element:
       id: "RecipeImage"
     direction: UP
-    speed: 95
+    speed: 20
     centerElement: true
     label: "Action - Scroll back to top"
 
 - runFlow:
     file: "../../asserts/recipe/edit/chocolateCakeFor4Persons.yaml"
     label: "Assert - Verify edit mode: 4 persons, scaled quantities"
+
+- runFlow:
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::3::QuantityInput"
+    label: "Action - Focus Butter quantity, left at screen centre by the assert"
+
+- repeat:
+    times: 8
+    commands:
+      - runFlow:
+          file: "../../flows/toolbarPrevious.yaml"
+          label: "Action - Previous toward persons: name/quantity of Butter, Sugar, Cocoa Powder, Flour (a swipe from the centre input cannot scroll the form)"
+
+- assertVisible:
+    id: "RecipePersons::NumericTextInput"
+    label: "Assert - Persons input is on screen"
+
+- runFlow:
+    file: "../../flows/waitForKeyboard.yaml"
+    label: "Assert - Keyboard is on screen"
+
+- runFlow:
+    file: "../../flows/toolbarDone.yaml"
+    label: "Action - Close the keyboard with the persons input on screen"
 
 - runFlow:
     file: "../../flows/recipe/editing/changePersonsFrom4To2.yaml"
@@ -69,7 +94,7 @@ tags:
     element:
       id: "RecipeImage::RoundButton"
     direction: UP
-    speed: 85
+    speed: 20
     timeout: 120000
     label: "Action - Scroll back to top"
 
@@ -105,7 +130,7 @@ tags:
     element:
       id: "RecipeImage"
     direction: UP
-    speed: 95
+    speed: 20
     centerElement: true
     label: "Action - Scroll back to top"
 

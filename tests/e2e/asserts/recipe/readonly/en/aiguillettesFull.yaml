@@ -19,7 +19,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::0::Chip"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to tags"
 
@@ -47,7 +47,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::0::IngredientName"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to Chicken Breast ingredient"
 
@@ -65,7 +65,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::1::IngredientName"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to Onions ingredient"
 
@@ -83,7 +83,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::2::IngredientName"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to Avocado ingredient"
 
@@ -101,7 +101,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTime::Text"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to preparation time"
 
@@ -115,7 +115,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to first preparation step"
 
 - assertVisible:
@@ -133,7 +133,7 @@ appId: "com.recipedia"
       id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
     direction: DOWN
     centerElement: true
-    speed: 30
+    speed: 20
     label: "Scroll to second preparation step"
 
 - assertVisible:
@@ -150,7 +150,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to third preparation step"
 

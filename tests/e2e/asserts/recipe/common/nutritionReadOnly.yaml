@@ -5,7 +5,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to nutrition section"
 
@@ -26,7 +26,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKj::Value"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll so that enegy parts are displayed"
 
@@ -45,7 +45,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fat::Text"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to fat text"
 
@@ -58,7 +58,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::SaturatedFat::Text"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to saturated fat text"
 
@@ -71,7 +71,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Carbohydrates::Text"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to carbohydrates text"
 
@@ -84,7 +84,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Sugars::Text"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to sugars text"
 
@@ -97,7 +97,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::Fiber::Text"
     direction: DOWN
-    speed: 40
+    speed: 20
     label: "Scroll to fiber text"
 
 - assertVisible:

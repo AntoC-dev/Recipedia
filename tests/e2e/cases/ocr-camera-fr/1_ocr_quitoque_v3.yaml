@@ -27,7 +27,7 @@ tags:
     element:
       id: "RecipeImage::RoundButton"
     direction: UP
-    speed: 85
+    speed: 20
     timeout: 120000
     centerElement: true
     label: "Scroll back to top after OCR"
@@ -36,25 +36,12 @@ tags:
     file: "../../asserts/recipe/ocr/curryPoisChiche.yaml"
     label: "Assert - Verify OCR extracted recipe data"
 
-- scrollUntilVisible:
-    element:
-      id: "RecipeImage"
-    direction: UP
-    speed: 85
-    timeout: 120000
-    centerElement: true
-    label: "Scroll back to top so the recipe image is tappable"
-
-- waitForAnimationToEnd:
-    label: "Wait for scroll animation to end"
-
-- tapOn:
-    id: "RecipeImage"
-    label: "Tap on recipe image (non-input) to dismiss any keyboard left open by assert scrolls"
-
 - runFlow:
-    file: "../../flows/waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to dismiss"
+    file: "../../flows/toolbarDone.yaml"
+    when:
+      visible:
+        id: "keyboard.toolbar.done"
+    label: "Close the keyboard a swipe of the assert opened on a step input"
 
 - tapOn:
     id: "Recipe::BottomActionButton"

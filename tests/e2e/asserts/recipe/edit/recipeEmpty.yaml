@@ -29,7 +29,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTags::HeaderText"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to tags section"
 
@@ -60,7 +60,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::NumericTextInput"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to person section"
 
@@ -81,7 +81,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::PrefixText"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to ingredients section"
 
@@ -126,7 +126,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeTime::PrefixText"
     direction: DOWN
-    speed: 40
+    speed: 20
     centerElement: true
     label: "Scroll to time section"
 
@@ -148,7 +148,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePreparation::AddButton::RoundButton"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to preparation add button"
 
@@ -190,7 +190,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeImage"
     direction: UP
-    speed: 95
+    speed: 20
     centerElement: true
 
 - waitForAnimationToEnd

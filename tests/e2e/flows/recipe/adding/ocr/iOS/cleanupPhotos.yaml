@@ -2,18 +2,14 @@ appId: "com.recipedia"
 ---
 - repeat:
     while:
-      visible:
-        id: "PXGGridLayout-Info"
+      notVisible:
+        text: "No Photos or Videos"
     commands:
-      - runFlow:
-          when:
-            visible:
-              text: "Continue"
-          commands:
-            - tapOn:
-                text: "Continue"
-                label: "Close the what's new screen"
-          label: "Dismiss what's new screen if it appeared late"
+      - extendedWaitUntil:
+          visible:
+            id: "PXGGridLayout-Info"
+          timeout: 30000
+          label: "Wait for the photo grid before deleting, never trust a single visibility check"
 
       - tapOn:
           text: "Select"
@@ -25,12 +21,11 @@ appId: "com.recipedia"
           timeout: 30000
           label: "Wait for select mode"
 
-      - tapOn:
-          id: "PXGGridLayout-Info"
-          below:
-            id: "PXCuratedLibraryUIView"
-          index: 0
-          label: "Select the first photo fully below the library header"
+      - swipe:
+          start: "10%,22%"
+          end: "90%,50%"
+          duration: 1500
+          label: "Drag across the grid to select the photos of the first rows at once (a longer vertical drag scrolls instead)"
 
       - extendedWaitUntil:
           visible:
@@ -45,16 +40,16 @@ appId: "com.recipedia"
 
       - extendedWaitUntil:
           visible:
-            text: "Delete Photo"
+            text: "Delete (\\d+ )?Photos?"
           timeout: 30000
           label: "Wait for the deletion confirmation to appear"
 
       - tapOn:
-          text: "Delete Photo"
+          text: "Delete (\\d+ )?Photos?"
           label: "Confirm the deletion"
 
       - extendedWaitUntil:
           notVisible:
-            text: "Delete Photo"
+            text: "Delete (\\d+ )?Photos?"
           timeout: 30000
           label: "Wait for the deletion confirmation to close"

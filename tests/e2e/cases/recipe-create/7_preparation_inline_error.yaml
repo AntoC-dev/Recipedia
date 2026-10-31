@@ -11,7 +11,7 @@ tags:
     element:
       id: 'RecipePreparation::AddButton::RoundButton'
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: 'Action - Scroll to preparation section'
 

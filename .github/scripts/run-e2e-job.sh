@@ -22,8 +22,34 @@ fi
 # The run step times out at 200 min; leave room for a rerun to finish (run-e2e-ios.sh).
 export E2E_RERUN_DEADLINE=$(( $(date +%s) + 9000 ))
 
+# The first `simctl addmedia` on a fresh simulator can outlast Maestro's hardcoded 5 min addMedia
+# timeout, which retry cannot catch. Absorb it here, overlapped with the install. Each photo case
+# deletes the warm-up photo in its own cleanup.
+WARM_UP_PHOTO=tests/assets/pouletSatay/title.jpg
+WARM_UP_TIMEOUT=${E2E_PHOTOS_WARM_UP_TIMEOUT:-900}
+WARM_UP_PID=""
+if [ "$PLATFORM" = ios ] && jq -e --arg job "$JOB" \
+  'any(.[]; .usesPhotos and ([.name] | inside($job | split("+"))))' \
+  .github/e2e-suites.json > /dev/null; then
+  xcrun simctl spawn booted defaults write com.apple.mobileslideshow LastWhatsNewShown -int 9999 \
+    || echo "::warning::Could not disable the Photos what's new screen"
+  echo "📸 Warming up the simulator Photos library..."
+  WARM_UP_START=$(date +%s)
+  perl -e 'alarm shift; exec @ARGV' "$WARM_UP_TIMEOUT" xcrun simctl addmedia booted "$WARM_UP_PHOTO" &
+  WARM_UP_PID=$!
+  trap 'kill "$WARM_UP_PID" 2>/dev/null' EXIT
+fi
+
 # Once per job: every flow's clearState resets the app, and install:android deletes the APK.
 npm run "install:${PLATFORM}" || exit $?
+
+if [ -n "$WARM_UP_PID" ]; then
+  WARM_UP_EXIT=0
+  wait "$WARM_UP_PID" || WARM_UP_EXIT=$?
+  [ "$WARM_UP_EXIT" -eq 142 ] && echo "::warning::Photos library warm-up stopped after ${WARM_UP_TIMEOUT}s"
+  [ "$WARM_UP_EXIT" -ne 0 ] && [ "$WARM_UP_EXIT" -ne 142 ] && echo "::warning::Photos library warm-up failed"
+  echo "📸 Photos library warm-up took $(( $(date +%s) - WARM_UP_START ))s"
+fi
 
 JOB_EXIT=0
 for SUITE in ${JOB//+/ }; do

@@ -5,7 +5,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::Title"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to nutrition section"
 
@@ -26,7 +26,7 @@ appId: "com.recipedia"
     element:
       id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::Value"
     direction: DOWN
-    speed: 60
+    speed: 20
     centerElement: true
     label: "Scroll to energy section"
 

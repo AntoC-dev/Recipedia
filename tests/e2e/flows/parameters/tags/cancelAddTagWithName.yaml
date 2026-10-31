@@ -28,7 +28,7 @@ appId: "com.recipedia"
     label: "Cancel after entering tag name"
 
 - runFlow:
-    file: "../searchInSettingsList.yaml"
+    file: "../typeInSettingsSearch.yaml"
     env:
       SETTINGS_SCREEN: "TagsSettings"
       SEARCH_QUERY: "Test Cancel"

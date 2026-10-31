@@ -8,40 +8,13 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      text: "Library|Continue"
+      text: "Library"
     timeout: 30000
-    label: "Wait for Photos library or its what's new screen"
+    label: "Wait for Photos library"
 
 - runFlow:
-    when:
-      visible:
-        text: "Continue"
-    commands:
-      - tapOn:
-          text: "Continue"
-          label: "Close the what's new screen"
-      - extendedWaitUntil:
-          visible:
-            text: "Library"
-          timeout: 30000
-          label: "Wait for Photos library"
-
-- extendedWaitUntil:
-    visible:
-      id: "PXGGridLayout-Info"
-    timeout: 60000
-    optional: true
-    label: "Let the library grid populate before checking for photos"
-
-- runFlow:
-    when:
-      visible:
-        id: "PXGGridLayout-Info"
-    commands:
-      - runFlow:
-          file: "cleanupPhotos.yaml"
-          label: "Delete all photos from library"
-    label: "Clean up photos if any exist"
+    file: "cleanupPhotos.yaml"
+    label: "Delete all photos from library"
 
 - stopApp:
     appId: "com.apple.mobileslideshow"

@@ -9,7 +9,7 @@ appId: "com.recipedia"
     element:
       id: "RecipePersons::Text"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to ingredients section"
 
@@ -22,7 +22,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::0::IngredientName"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to Flour ingredient"
 
@@ -40,7 +40,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::1::IngredientName"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to Cocoa Powder ingredient"
 
@@ -58,7 +58,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::2::IngredientName"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to Sugar ingredient"
 
@@ -76,7 +76,7 @@ appId: "com.recipedia"
     element:
       id: "RecipeIngredients::3::IngredientName"
     direction: DOWN
-    speed: 30
+    speed: 20
     centerElement: true
     label: "Scroll to Butter ingredient"
 

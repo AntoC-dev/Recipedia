@@ -45,7 +45,7 @@ env:
     element:
       id: "RecipeImage"
     direction: UP
-    speed: 90
+    speed: 20
     label: "Scroll to top of recipe before asserting ingredient"
 
 - runFlow:
@@ -86,7 +86,7 @@ env:
     element:
       id: "RecipeImage"
     direction: UP
-    speed: 80
+    speed: 20
     label: "Scroll to top of recipe before asserting ingredient"
 
 - runFlow:
@@ -125,7 +125,7 @@ env:
     element:
       id: "RecipeImage"
     direction: UP
-    speed: 90
+    speed: 20
     label: "Scroll to top of recipe before asserting ingredient"
 
 - runFlow:
