@@ -126,6 +126,9 @@ const photoManifest = [{ name: 'ocr-fields', usesPhotos: true }, { name: 'search
 const runPhotoJob = overrides =>
   runJob({ platform: 'ios', job: 'ocr-fields', manifest: photoManifest, ...overrides });
 const warmedUp = calls => calls.some(call => call.startsWith('xcrun simctl addmedia booted '));
+const DISABLE_WHATS_NEW =
+  'xcrun simctl spawn booted defaults write com.apple.mobileslideshow LastWhatsNewShown -int 9999';
+const disabledWhatsNew = calls => calls.includes(DISABLE_WHATS_NEW);
 const ranSuite = (calls, suite) => calls.some(call => call.startsWith(`ios ${suite} `));
 
 test('an iOS job with a photo suite warms up the Photos library before running any suite', () => {
@@ -135,6 +138,14 @@ test('an iOS job with a photo suite warms up the Photos library before running a
   assert.equal(result.status, 0, result.stdout + result.stderr);
   assert.ok(warmUpIndex !== -1, calls.join('\n'));
   assert.ok(warmUpIndex < calls.findIndex(call => call.startsWith('ios ocr-fields')));
+});
+
+test('an iOS job with a photo suite disables the Photos what is new screen before any suite', () => {
+  const { calls } = runPhotoJob();
+  const disableIndex = calls.indexOf(DISABLE_WHATS_NEW);
+
+  assert.ok(disableIndex !== -1, calls.join('\n'));
+  assert.ok(disableIndex < calls.findIndex(call => call.startsWith('ios ocr-fields')));
 });
 
 test('a grouped iOS job holding a photo suite warms up the Photos library', () => {
@@ -169,16 +180,18 @@ test('a failed install stops the Photos warm-up and fails the job', () => {
   assert.ok(!calls.some(call => call.startsWith('ios ')));
 });
 
-test('an iOS job without a photo suite skips the Photos warm-up', () => {
+test('an iOS job without a photo suite leaves the Photos app untouched', () => {
   const { calls } = runPhotoJob({ job: 'search' });
 
   assert.ok(!warmedUp(calls));
+  assert.ok(!disabledWhatsNew(calls));
 });
 
-test('an Android job with a photo suite skips the Photos warm-up', () => {
+test('an Android job with a photo suite leaves the Photos app untouched', () => {
   const { calls } = runPhotoJob({ platform: 'android' });
 
   assert.ok(!warmedUp(calls));
+  assert.ok(!disabledWhatsNew(calls));
 });
 
 test('missing arguments are rejected with the usage', () => {

@@ -8,23 +8,9 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      text: "Library|Continue"
+      text: "Library"
     timeout: 30000
-    label: "Wait for Photos library or its what's new screen"
-
-- runFlow:
-    when:
-      visible:
-        text: "Continue"
-    commands:
-      - tapOn:
-          text: "Continue"
-          label: "Close the what's new screen"
-      - extendedWaitUntil:
-          visible:
-            text: "Library"
-          timeout: 30000
-          label: "Wait for Photos library"
+    label: "Wait for Photos library"
 
 - runFlow:
     file: "cleanupPhotos.yaml"

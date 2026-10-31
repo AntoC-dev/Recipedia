@@ -31,6 +31,8 @@ WARM_UP_PID=""
 if [ "$PLATFORM" = ios ] && jq -e --arg job "$JOB" \
   'any(.[]; .usesPhotos and ([.name] | inside($job | split("+"))))' \
   .github/e2e-suites.json > /dev/null; then
+  xcrun simctl spawn booted defaults write com.apple.mobileslideshow LastWhatsNewShown -int 9999 \
+    || echo "::warning::Could not disable the Photos what's new screen"
   echo "📸 Warming up the simulator Photos library..."
   WARM_UP_START=$(date +%s)
   perl -e 'alarm shift; exec @ARGV' "$WARM_UP_TIMEOUT" xcrun simctl addmedia booted "$WARM_UP_PHOTO" &

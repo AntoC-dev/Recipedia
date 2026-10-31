@@ -11,16 +11,6 @@ appId: "com.recipedia"
           timeout: 30000
           label: "Wait for the photo grid before deleting, never trust a single visibility check"
 
-      - runFlow:
-          when:
-            visible:
-              text: "Continue"
-          commands:
-            - tapOn:
-                text: "Continue"
-                label: "Close the what's new screen"
-          label: "Dismiss what's new screen if it appeared late"
-
       - tapOn:
           text: "Select"
           label: "Enter select mode"

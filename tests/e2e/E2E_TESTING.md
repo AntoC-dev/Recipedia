@@ -503,6 +503,15 @@ exiftool -overwrite_original -DateTimeOriginal="2025:03:18 21:31:05" \
 **No mid-flow cleanup.** Only `checkIfCleanIsNeeded.yaml` (case start) deletes
 photos: on iOS that opens Photos, CI kills the backgrounded app, form lost.
 
+**iOS Photos "What's New".** On a fresh simulator, Photos slides a "What's New"
+sheet over the grid seconds after its first launch, so the cleanup can't see it.
+Flows don't handle it: `run-e2e-job.sh` disables it for `usesPhotos` suites.
+Locally, run once per simulator:
+
+```bash
+xcrun simctl spawn booted defaults write com.apple.mobileslideshow LastWhatsNewShown -int 9999
+```
+
 **Android count wait.** `android/addMedia.yaml` increments
 `output.galleryPhotoCount` (reset in `checkIfCleanIsNeeded.yaml`);
 `android/waitAndVerifyGalleryReady.yaml` waits for `icon_thumbnail` index
