@@ -116,7 +116,7 @@ export const recipeTextRenderStyles = StyleSheet.create({
  */
 export const recipeButtonStyles = StyleSheet.create({
   roundButtonsContainer: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'center',
     flexDirection: 'row',
     marginVertical: padding.medium,

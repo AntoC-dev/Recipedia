@@ -105,8 +105,6 @@ export interface IngredientsTableProps {
   withScan?: boolean;
   /** Caption rendered under the add-ingredient round button. */
   addIngredientButtonLabel: string;
-  /** Caption of the manual add button shown next to the scan buttons. */
-  addManuallyButtonLabel: string;
   onAddIngredient?: () => void;
   /** Optional error rendered below the table (e.g. empty-array message). */
   error?: string;
@@ -119,7 +117,6 @@ export function IngredientsTable({
   children,
   withScan,
   addIngredientButtonLabel,
-  addManuallyButtonLabel,
   onAddIngredient,
   error,
 }: IngredientsTableProps) {
@@ -178,7 +175,7 @@ export function IngredientsTable({
       {onAddIngredient && withScan ? (
         <IngredientsOcrButtons
           testID={testID}
-          addManuallyButtonLabel={addManuallyButtonLabel}
+          addButtonLabel={addIngredientButtonLabel}
           onAddIngredient={onAddIngredient}
           withQuantities
         />
@@ -381,20 +378,24 @@ export function IngredientRow({
 
 /**
  * OCR button row for `addOCR` mode: scan ingredient names, optionally scan
- * quantities for existing names, and add a manual row. The names scan button is
+ * quantities for existing names, and add a row. The names scan button is
  * always rendered; the quantities one requires `withQuantities`.
  */
 export interface IngredientsOcrButtonsProps {
   testID: string;
-  addManuallyButtonLabel: string;
+  /** Caption of the add button */
+  addButtonLabel: string;
   onAddIngredient: () => void;
-  /** Renders the scan-quantities button next to the scan-names one */
+  /**
+   * Rows exist: renders the scan-quantities button and swaps the "add manually"
+   * pencil for a plus add button
+   */
   withQuantities?: boolean;
 }
 
 export function IngredientsOcrButtons({
   testID,
-  addManuallyButtonLabel,
+  addButtonLabel,
   onAddIngredient,
   withQuantities,
 }: IngredientsOcrButtonsProps) {
@@ -415,9 +416,9 @@ export function IngredientsOcrButtons({
       <RoundButton
         testID={`${testID}::AddButton`}
         style={recipeButtonStyles.roundButton}
-        icon={Icons.pencilIcon}
+        icon={withQuantities ? Icons.plusIcon : Icons.pencilIcon}
         onPressFunction={onAddIngredient}
-        label={addManuallyButtonLabel}
+        label={addButtonLabel}
       />
     </View>
   );
@@ -449,7 +450,7 @@ export function IngredientsAddEmpty({
       </Text>
       <IngredientsOcrButtons
         testID={testID}
-        addManuallyButtonLabel={addManuallyButtonLabel}
+        addButtonLabel={addManuallyButtonLabel}
         onAddIngredient={onAddIngredient}
       />
       {error ? (

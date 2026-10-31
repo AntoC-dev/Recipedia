@@ -585,7 +585,7 @@ describe('RecipeIngredientsField', () => {
         getByTestId('RecipeIngredients::OpenModalQuantities::RoundButton::Icon').props.children
       ).toBe('line-scan');
       expect(getByTestId('RecipeIngredients::AddButton::RoundButton::Label').props.children).toBe(
-        'recipe.roundButton.addManually'
+        'recipe.roundButton.newIngredient'
       );
       await fireEvent.press(
         getByTestId('RecipeIngredients::OpenModalQuantities::RoundButton::OnPressFunction')

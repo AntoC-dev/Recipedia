@@ -44,7 +44,6 @@ export function ingredientsTableMock({
   children,
   withScan,
   addIngredientButtonLabel,
-  addManuallyButtonLabel,
   onAddIngredient,
   error,
 }: IngredientsTableProps) {
@@ -58,7 +57,7 @@ export function ingredientsTableMock({
       {withScan && onAddIngredient
         ? ingredientsOcrButtonsMock({
             testID,
-            addManuallyButtonLabel,
+            addButtonLabel: addIngredientButtonLabel,
             onAddIngredient,
             withQuantities: true,
           })
@@ -179,7 +178,7 @@ export function ingredientsAddEmptyMock({
 
 export function ingredientsOcrButtonsMock({
   testID,
-  addManuallyButtonLabel,
+  addButtonLabel,
   onAddIngredient,
   withQuantities,
 }: IngredientsOcrButtonsProps) {
@@ -205,8 +204,10 @@ export function ingredientsOcrButtonsMock({
         onPress={onAddIngredient}
         title='Add Ingredient'
       />
-      <Text testID={`${testID}::AddButton::RoundButton::Icon`}>pencil</Text>
-      <Text testID={`${testID}::AddButton::RoundButton::Label`}>{addManuallyButtonLabel}</Text>
+      <Text testID={`${testID}::AddButton::RoundButton::Icon`}>
+        {withQuantities ? 'plus' : 'pencil'}
+      </Text>
+      <Text testID={`${testID}::AddButton::RoundButton::Label`}>{addButtonLabel}</Text>
     </View>
   );
 }

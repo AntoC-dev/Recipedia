@@ -83,7 +83,6 @@ describe('IngredientsTable', () => {
         prefixText='Ingredients :'
         columnTitles={columnTitles}
         addIngredientButtonLabel='New ingredient'
-        addManuallyButtonLabel='Add manually'
         onAddIngredient={onAddIngredient}
       >
         {childMarker()}
@@ -106,7 +105,6 @@ describe('IngredientsTable', () => {
       <IngredientsTable
         testID={TEST_ID}
         addIngredientButtonLabel='New ingredient'
-        addManuallyButtonLabel='Add manually'
         prefixText='Ingredients :'
         columnTitles={columnTitles}
         withScan
@@ -119,11 +117,9 @@ describe('IngredientsTable', () => {
     expect(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::Label`)).toBeTruthy();
     expect(getByTestId(`${TEST_ID}::OpenModalQuantities::RoundButton::Label`)).toBeTruthy();
     expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Label`).props.children).toEqual(
-      'Add manually'
+      'New ingredient'
     );
-    expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Icon`).props.children).toEqual(
-      'pencil'
-    );
+    expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Icon`).props.children).toEqual('plus');
     await fireEvent.press(getByTestId(`${TEST_ID}::AddButton::RoundButton::OnPressFunction`));
     expect(onAddIngredient).toHaveBeenCalledTimes(1);
   });
@@ -133,7 +129,6 @@ describe('IngredientsTable', () => {
       <IngredientsTable
         testID={TEST_ID}
         addIngredientButtonLabel='New ingredient'
-        addManuallyButtonLabel='Add manually'
         prefixText='Ingredients :'
         columnTitles={columnTitles}
         error='boom'
@@ -366,6 +361,9 @@ describe('IngredientsAddEmpty', () => {
     expect(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::Label`).props.children).toEqual(
       'recipe.roundButton.scanNames'
     );
+    expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Icon`).props.children).toEqual(
+      'pencil'
+    );
     expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Label`).props.children).toEqual(
       'Add manually'
     );
@@ -411,7 +409,7 @@ describe('IngredientsOcrButtons', () => {
     const { getByTestId } = await renderWithRecipeDialogs(
       <IngredientsOcrButtons
         testID={TEST_ID}
-        addManuallyButtonLabel='Add manually'
+        addButtonLabel='New ingredient'
         onAddIngredient={onAddIngredient}
         withQuantities
       />
@@ -427,8 +425,9 @@ describe('IngredientsOcrButtons', () => {
       getByTestId(`${TEST_ID}::OpenModalQuantities::RoundButton::Label`).props.children
     ).toEqual('recipe.roundButton.scanQuantities');
     expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Label`).props.children).toEqual(
-      'Add manually'
+      'New ingredient'
     );
+    expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Icon`).props.children).toEqual('plus');
 
     await fireEvent.press(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::OnPressFunction`));
     expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent('ingredientNames');
@@ -440,18 +439,23 @@ describe('IngredientsOcrButtons', () => {
     expect(onAddIngredient).toHaveBeenCalledTimes(1);
   });
 
-  it('omits the quantities button without withQuantities', async () => {
+  it('omits the quantities button and shows the pencil add button without withQuantities', async () => {
     const { queryByTestId, getByTestId } = await renderWithRecipeDialogs(
       <IngredientsOcrButtons
         testID={TEST_ID}
-        addManuallyButtonLabel='Add manually'
+        addButtonLabel='Add manually'
         onAddIngredient={jest.fn()}
       />
     );
 
     expect(queryByTestId(`${TEST_ID}::OpenModalQuantities::RoundButton::Label`)).toBeNull();
     expect(getByTestId(`${TEST_ID}::OpenModalNames::RoundButton::Label`)).toBeTruthy();
-    expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Label`)).toBeTruthy();
+    expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Label`).props.children).toEqual(
+      'Add manually'
+    );
+    expect(getByTestId(`${TEST_ID}::AddButton::RoundButton::Icon`).props.children).toEqual(
+      'pencil'
+    );
   });
 });
 

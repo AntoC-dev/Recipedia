@@ -50,7 +50,10 @@ import { useI18n } from '@utils/i18n';
 /** Props for add/edit modes; the Scan button renders only when `withScan` is set */
 export type RecipeTagsAddOrEditProps = {
   type: 'addOrEdit';
-  /** Renders the Scan button targeting the tags field (OCR mode) */
+  /**
+   * Renders the Scan button targeting the tags field (OCR mode); the add button
+   * becomes "add manually" while no tag exists and no tag input is open
+   */
   withScan?: boolean;
   /** Random tag suggestions to display to user */
   randomTags: string;
@@ -90,6 +93,11 @@ export function RecipeTags(tagsProps: RecipeTagProps) {
   const { t } = useI18n();
   const { colors } = useTheme();
   const tagsTestID = 'RecipeTags';
+  const isAddManually =
+    tagsProps.type === 'addOrEdit' &&
+    !!tagsProps.withScan &&
+    tagsProps.tagsList.length === 0 &&
+    newTags.length === 0;
 
   return (
     <View style={recipeTagsStyles.containerSection}>
@@ -151,8 +159,10 @@ export function RecipeTags(tagsProps: RecipeTagProps) {
               <View style={recipeButtonStyles.roundButton}>
                 <RoundButton
                   testID={tagsTestID}
-                  icon={Icons.plusIcon}
-                  label={t('recipe.roundButton.newTag')}
+                  icon={isAddManually ? Icons.pencilIcon : Icons.plusIcon}
+                  label={t(
+                    isAddManually ? 'recipe.roundButton.addManually' : 'recipe.roundButton.newTag'
+                  )}
                   onPressFunction={() => {
                     setNewTags(prev => [...prev, tagsAddedCounter]);
                     setTagsAddedCounter(prev => prev + 1);

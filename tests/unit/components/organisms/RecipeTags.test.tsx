@@ -86,6 +86,15 @@ describe('RecipeTags Component', () => {
       await dbInstance.closeAndReset();
     });
     describe('edit mode', () => {
+      it('keeps the plus new-tag button when the tags list is empty', async () => {
+        const { getByTestId } = await renderRecipeTags({ ...defaultProps, tagsList: [] });
+
+        expect(getByTestId('RecipeTags::RoundButton::Icon').props.children).toEqual('plus');
+        expect(getByTestId('RecipeTags::RoundButton::Label').props.children).toEqual(
+          'recipe.roundButton.newTag'
+        );
+      });
+
       it('renders header and description texts with the add button', async () => {
         const { getByTestId, queryByTestId } = await renderRecipeTags(defaultProps);
 
@@ -251,6 +260,35 @@ describe('RecipeTags Component', () => {
         expect(getByTestId('RecipeTags::OpenModal::RoundButton::Label').props.children).toEqual(
           'recipe.roundButton.scan'
         );
+        expect(getByTestId('RecipeTags::RoundButton::Label').props.children).toEqual(
+          'recipe.roundButton.newTag'
+        );
+      });
+
+      it('renders a pencil add-manually button when the tags list is empty', async () => {
+        const { getByTestId } = await renderRecipeTags({
+          ...defaultProps,
+          tagsList: [],
+          withScan: true,
+        });
+
+        expect(getByTestId('RecipeTags::RoundButton::Icon').props.children).toEqual('pencil');
+        expect(getByTestId('RecipeTags::RoundButton::Label').props.children).toEqual(
+          'recipe.roundButton.addManually'
+        );
+        expect(getByTestId('RecipeTags::OpenModal::RoundButton::OnPressFunction')).toBeTruthy();
+      });
+
+      it('switches back to the plus new-tag button once a manual tag input is open', async () => {
+        const { getByTestId } = await renderRecipeTags({
+          ...defaultProps,
+          tagsList: [],
+          withScan: true,
+        });
+
+        await fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
+
+        expect(getByTestId('RecipeTags::RoundButton::Icon').props.children).toEqual('plus');
         expect(getByTestId('RecipeTags::RoundButton::Label').props.children).toEqual(
           'recipe.roundButton.newTag'
         );

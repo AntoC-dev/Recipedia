@@ -155,7 +155,6 @@ function EditableIngredientsField({ form, stackMode, t }: IngredientsFieldProps)
         }}
         withScan={stackMode === recipeStateType.addOCR}
         addIngredientButtonLabel={t('recipe.roundButton.newIngredient')}
-        addManuallyButtonLabel={t('recipe.roundButton.addManually')}
         onAddIngredient={handleAddIngredient}
         error={rootErrorMessage}
       >
