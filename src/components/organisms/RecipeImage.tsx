@@ -49,7 +49,7 @@ export type ImageButtonConfig = {
 export type RecipeImageProps = {
   /** URI or path to the recipe image */
   imgUri: string;
-  /** Optional overlay button; its label is shown below the button whether or not an image is displayed */
+  /** Optional overlay button; its label is shown below the button only when no image is displayed */
   overlayButton?: ImageButtonConfig;
 };
 
@@ -76,14 +76,22 @@ export function RecipeImage({ imgUri, overlayButton }: RecipeImageProps) {
       />
       {overlayButton ? (
         <View style={validUri ? styles.topRightButtonContainer : styles.centerButtonContainer}>
-          <ImageOverlayButton testID={imageTestID} config={overlayButton} />
+          <ImageOverlayButton testID={imageTestID} config={overlayButton} hideLabel={validUri} />
         </View>
       ) : null}
     </View>
   );
 }
 
-function ImageOverlayButton({ testID, config }: { testID: string; config: ImageButtonConfig }) {
+function ImageOverlayButton({
+  testID,
+  config,
+  hideLabel,
+}: {
+  testID: string;
+  config: ImageButtonConfig;
+  hideLabel: boolean;
+}) {
   const { t } = useI18n();
   const { openImageModal } = useRecipeDialogs();
   return (
@@ -92,6 +100,7 @@ function ImageOverlayButton({ testID, config }: { testID: string; config: ImageB
       icon={config.icon}
       onPressFunction={() => openImageModal(recipeColumnsNames.image)}
       label={t(config.labelKey)}
+      hideLabel={hideLabel}
     />
   );
 }

@@ -193,26 +193,27 @@ describe('RecipeImage Component', () => {
     assertButtonStructure(getByTestId, queryByTestId);
   });
 
-  test('shows the translated button label before and after the image loads', async () => {
+  test('shows the translated button label when there is no image', async () => {
     const { getByTestId } = await renderRecipeImage({ imgUri: emptyImageUri });
 
     expect(getByTestId('RecipeImage::RoundButton::Label').props.children).toEqual(
       'recipe.roundButton.photo'
     );
+    expect(getByTestId('RecipeImage::RoundButton::HideLabel').props.children).toEqual('false');
+  });
+
+  test('hides the button label once the image loads', async () => {
+    const { getByTestId } = await renderRecipeImage({ imgUri: emptyImageUri });
 
     await simulateImageLoadSuccess(getByTestId);
 
-    expect(getByTestId('RecipeImage::RoundButton::Label').props.children).toEqual(
-      'recipe.roundButton.photo'
-    );
+    expect(getByTestId('RecipeImage::RoundButton::HideLabel').props.children).toEqual('true');
   });
 
-  test('shows the translated button label when an image uri is provided', async () => {
+  test('hides the button label when an image uri is provided', async () => {
     const { getByTestId } = await renderRecipeImage();
 
-    expect(getByTestId('RecipeImage::RoundButton::Label').props.children).toEqual(
-      'recipe.roundButton.photo'
-    );
+    expect(getByTestId('RecipeImage::RoundButton::HideLabel').props.children).toEqual('true');
   });
 
   test('handles rapid image load state changes without errors', async () => {

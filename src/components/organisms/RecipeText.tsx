@@ -53,16 +53,16 @@
 
 import { View } from 'react-native';
 import React from 'react';
-import { getScanLabelKey, ScanButton } from '@components/molecules/ScanButton';
-import { useRecipeDialogs } from '@context/RecipeDialogsContext';
+import { ScanButton } from '@components/molecules/ScanButton';
+import { RecipeTextInput } from '@components/molecules/RecipeTextInput';
+import { RecipeTextScanInput } from '@components/molecules/RecipeTextScanInput';
 import type { OcrModalTarget } from '@utils/OCR';
-import { HelperText, Text, TextInput, useTheme } from 'react-native-paper';
+import { HelperText, Text } from 'react-native-paper';
 import { recipeButtonStyles, recipeTextStyles } from '@styles/recipeComponents';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { Icons } from '@assets/Icons';
 import { useI18n } from '@utils/i18n';
 import { VariantProp } from 'react-native-paper/lib/typescript/components/Typography/types';
-import { CustomTextInput } from '@components/atomic/CustomTextInput';
 
 /** Text configuration with style and content */
 export type TextProp = {
@@ -193,51 +193,5 @@ function RecipeTextEditablePart(
         <RecipeTextInput {...addOrEditProps} />
       )}
     </View>
-  );
-}
-
-type RecipeTextInputProps = RecipeTextAddOrEditProps &
-  RecipeTextEditProps & { onBlur?: () => void; right?: React.ReactNode };
-
-function RecipeTextInput(inputProps: RecipeTextInputProps) {
-  return (
-    <CustomTextInput
-      testID={inputProps.testID}
-      style={recipeTextStyles.containerElement}
-      value={inputProps.textEditable ?? ''}
-      multiline={true}
-      // Commit on every keystroke AND on blur. The keystroke write keeps
-      // the form value live so a Save tap with an unfocused-but-typed
-      // input still persists the latest text (`Keyboard.dismiss` cannot
-      // guarantee a synchronous blur over the RN bridge). Per-field
-      // `useController` bounds the re-render cascade to this one field
-      // wrapper — sibling fields are unaffected.
-      onChangeText={newText => inputProps.setTextToEdit(newText)}
-      onEndEditing={newText => inputProps.setTextToEdit(newText)}
-      onBlur={inputProps.onBlur}
-      right={inputProps.right}
-    />
-  );
-}
-
-function RecipeTextScanInput(inputProps: RecipeTextInputProps) {
-  const { t } = useI18n();
-  const { openImageModal } = useRecipeDialogs();
-  const { colors } = useTheme();
-
-  return (
-    <RecipeTextInput
-      {...inputProps}
-      right={
-        <TextInput.Icon
-          testID={inputProps.testID + '::OpenModal::IconButton'}
-          icon={Icons.scanImageIcon}
-          color={colors.primary}
-          onPress={() => openImageModal(inputProps.scanField)}
-          accessibilityLabel={t(getScanLabelKey(inputProps.scanField))}
-          forceTextInputFocus={false}
-        />
-      }
-    />
   );
 }

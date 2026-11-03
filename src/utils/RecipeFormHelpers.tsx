@@ -382,7 +382,7 @@ export function buildRecipeTagsProps({
  * - readOnly: Displays formatted person count
  * - edit/addManual: Editable number input
  * - addOCR with default value: Shows OCR button with manual fill option
- * - addOCR with a value: Editable number input; its Scan button (`scanField`) shows in OCR mode only
+ * - addOCR with a value: Editable number input with a trailing scan icon (`scanField`)
  *
  * @param stackMode - Current recipe screen mode
  * @param recipePersons - Current person count
@@ -420,7 +420,7 @@ export function buildRecipePersonsProps({
       numberProps: {
         editType: 'add',
         testID: personTestID,
-        prefixText: t('personPrefixOCR'),
+        prefixText: t('personPrefix'),
         scanField: recipeColumnsNames.persons,
         withScan: true,
         manuallyFill: () => setRecipePersons(0),
@@ -434,7 +434,7 @@ export function buildRecipePersonsProps({
       editType: 'editable',
       testID: personTestID,
       textEditable: recipePersons,
-      prefixText: t('personPrefixEdit'),
+      prefixText: t('personPrefix'),
       suffixText: t('personSuffixEdit'),
       setTextToEdit: setRecipePersons,
       scanField: recipeColumnsNames.persons,
@@ -450,7 +450,7 @@ export function buildRecipePersonsProps({
  * - readOnly: Displays formatted time in minutes
  * - edit/addManual: Editable number input
  * - addOCR with default value: Shows OCR button with manual fill option
- * - addOCR with a value: Editable number input; its Scan button (`scanField`) shows in OCR mode only
+ * - addOCR with a value: Editable number input with a trailing scan icon (`scanField`)
  *
  * @param stackMode - Current recipe screen mode
  * @param recipeTime - Current time in minutes
@@ -487,7 +487,7 @@ export function buildRecipeTimeProps({
       numberProps: {
         editType: 'add',
         testID: timeTestID,
-        prefixText: t('timePrefixOCR'),
+        prefixText: t('timePrefix'),
         scanField: recipeColumnsNames.time,
         withScan: true,
         manuallyFill: () => setRecipeTime(0),
@@ -501,7 +501,7 @@ export function buildRecipeTimeProps({
       editType: 'editable',
       testID: timeTestID,
       textEditable: recipeTime,
-      prefixText: t('timePrefixEdit'),
+      prefixText: t('timePrefix'),
       suffixText: t('timeSuffixEdit'),
       setTextToEdit: setRecipeTime,
       scanField: recipeColumnsNames.time,

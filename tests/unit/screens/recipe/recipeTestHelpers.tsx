@@ -297,7 +297,7 @@ export function checkPersons(
       break;
     case 'edit':
       expect(queryByTestId('RecipePersons::Text')).toBeNull();
-      expect(getByTestId('RecipePersons::PrefixText').props.children).toEqual('personPrefixEdit');
+      expect(getByTestId('RecipePersons::PrefixText').props.children).toEqual('personPrefix');
       expect(getByTestId('RecipePersons::SuffixText').props.children).toEqual('personSuffixEdit');
       expect(getByTestId('RecipePersons::TextEditable').props.children).toEqual(
         prop.recipe.persons
@@ -307,7 +307,7 @@ export function checkPersons(
       break;
     case 'addManually':
       expect(queryByTestId('RecipePersons::Text')).toBeNull();
-      expect(getByTestId('RecipePersons::PrefixText').props.children).toEqual('personPrefixEdit');
+      expect(getByTestId('RecipePersons::PrefixText').props.children).toEqual('personPrefix');
       expect(getByTestId('RecipePersons::SuffixText').props.children).toEqual('personSuffixEdit');
       expect(getByTestId('RecipePersons::TextEditable').props.children).toEqual(newValueExpected);
       expect(getByTestId('RecipePersons::SetTextToEdit').props.children).toBeTruthy();
@@ -315,8 +315,8 @@ export function checkPersons(
       break;
     case 'addFromPic':
       expect(queryByTestId('RecipePersons::Text')).toBeNull();
+      expect(getByTestId('RecipePersons::PrefixText').props.children).toEqual('personPrefix');
       if (newValueExpected === defaultValueNumber) {
-        expect(getByTestId('RecipePersons::PrefixText').props.children).toEqual('personPrefixOCR');
         expect(getByTestId('RecipePersons::SuffixText').props.children).toBeUndefined();
         if (prop.imgUri === defaultUri) {
           expect(getByTestId('RecipePersons::OpenModal').props.children).toBeTruthy();
@@ -324,7 +324,6 @@ export function checkPersons(
           expect(queryByTestId('RecipePersons::OpenModal')).toBeNull();
         }
       } else {
-        expect(getByTestId('RecipePersons::PrefixText').props.children).toEqual('personPrefixEdit');
         expect(getByTestId('RecipePersons::SuffixText').props.children).toEqual('personSuffixEdit');
         expect(getByTestId('RecipePersons::TextEditable').props.children).toEqual(newValueExpected);
         expect(getByTestId('RecipePersons::SetTextToEdit').props.children).toBeTruthy();
@@ -353,7 +352,7 @@ export function checkTime(
       break;
     case 'edit':
       expect(queryByTestId('RecipeTime::Text')).toBeNull();
-      expect(getByTestId('RecipeTime::PrefixText').props.children).toEqual('timePrefixEdit');
+      expect(getByTestId('RecipeTime::PrefixText').props.children).toEqual('timePrefix');
       expect(getByTestId('RecipeTime::SuffixText').props.children).toEqual('min');
       expect(getByTestId('RecipeTime::TextEditable').props.children).toEqual(prop.recipe.time);
       expect(getByTestId('RecipeTime::SetTextToEdit').props.children).toBeTruthy();
@@ -361,7 +360,7 @@ export function checkTime(
       break;
     case 'addManually':
       expect(queryByTestId('RecipeTime::Text')).toBeNull();
-      expect(getByTestId('RecipeTime::PrefixText').props.children).toEqual('timePrefixEdit');
+      expect(getByTestId('RecipeTime::PrefixText').props.children).toEqual('timePrefix');
       expect(getByTestId('RecipeTime::SuffixText').props.children).toEqual('min');
       expect(getByTestId('RecipeTime::TextEditable').props.children).toEqual(newValueExpected);
       expect(getByTestId('RecipeTime::SetTextToEdit').props.children).toBeTruthy();
@@ -369,14 +368,12 @@ export function checkTime(
       break;
     case 'addFromPic':
       expect(queryByTestId('RecipeTime::Text')).toBeNull();
+      expect(getByTestId('RecipeTime::PrefixText').props.children).toEqual('timePrefix');
+      expect(getByTestId('RecipeTime::OpenModal').props.children).toBeTruthy();
       if (prop.imgUri === defaultUri) {
-        expect(getByTestId('RecipeTime::PrefixText').props.children).toEqual('timePrefixOCR');
         expect(getByTestId('RecipeTime::SuffixText').props.children).toBeUndefined();
-        expect(getByTestId('RecipeTime::OpenModal').props.children).toBeTruthy();
       } else {
-        expect(getByTestId('RecipeTime::PrefixText').props.children).toEqual('timePrefixEdit ');
-        expect(getByTestId('RecipeTime::SuffixText').props.children).toEqual(' min');
-        expect(queryByTestId('RecipeTime::OpenModal')).toBeNull();
+        expect(getByTestId('RecipeTime::SuffixText').props.children).toEqual('min');
       }
       break;
   }

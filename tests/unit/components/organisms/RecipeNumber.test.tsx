@@ -3,7 +3,11 @@ import {
   IMAGE_MODAL_TARGET_TEST_ID,
   renderWithRecipeDialogs,
 } from '@mocks/context/RecipeDialogsHarness';
-import { RecipeNumber, RecipeNumberProps } from '@components/organisms/RecipeNumber';
+import {
+  RecipeNumber,
+  RecipeNumberAddOrEditProps,
+  RecipeNumberProps,
+} from '@components/organisms/RecipeNumber';
 import React from 'react';
 import { defaultValueNumber } from '@utils/Constants';
 import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
@@ -54,6 +58,15 @@ describe('RecipeNumber Component', () => {
     },
   };
 
+  const editableWithScan = (scanField: 'persons' | 'time'): RecipeNumberProps => ({
+    ...defaultEditProps,
+    numberProps: {
+      ...(defaultEditProps.numberProps as RecipeNumberAddOrEditProps),
+      scanField: recipeColumnsNames[scanField],
+      withScan: true,
+    },
+  });
+
   const renderRecipeNumber = (props: RecipeNumberProps = defaultProps) => {
     return renderWithRecipeDialogs(<RecipeNumber {...props} />);
   };
@@ -93,9 +106,7 @@ describe('RecipeNumber Component', () => {
         expect(getByTestId(componentProps.testID + '::PrefixText').props.children).toBe(
           componentProps.numberProps.prefixText
         );
-        expect(getByTestId(componentProps.testID + '::SuffixText').props.children).toBe(
-          componentProps.numberProps.suffixText
-        );
+        expect(queryByTestId(componentProps.testID + '::SuffixText')).toBeNull();
         expect(
           getByTestId(componentProps.testID + '::OpenModal::RoundButton::Icon').props.children
         ).toBe('line-scan');
@@ -117,50 +128,68 @@ describe('RecipeNumber Component', () => {
     jest.clearAllMocks();
   });
 
-  describe('editable mode scan button', () => {
-    const editableWithScan: RecipeNumberProps = {
-      testID: defaultTestId,
-      numberProps: {
-        testID: defaultTestId,
-        scanField: recipeColumnsNames.time,
-        editType: 'editable',
-        prefixText: 'Serves',
-        suffixText: 'people',
-        textEditable: 4,
-        setTextToEdit: mockSetTextToEdit,
-        withScan: true,
-      },
-    };
+  describe('editable mode scan icon', () => {
+    test.each(['persons', 'time'] as const)(
+      'renders an inline icon button for %s and no round scan button',
+      async scanField => {
+        const { getByTestId, queryByTestId } = await renderRecipeNumber(
+          editableWithScan(scanField)
+        );
 
-    test('renders scan button below input when withScan is set', async () => {
-      const { getByTestId, queryByTestId } = await renderRecipeNumber(editableWithScan);
+        expect(getByTestId(defaultTestId + '::NumericTextInput')).toBeTruthy();
+        expect(getByTestId(defaultTestId + '::OpenModal::IconButton')).toBeTruthy();
+        expect(queryByTestId(defaultTestId + '::OpenModal::RoundButton::Icon')).toBeNull();
+        expect(queryByTestId(defaultTestId + '::ManuallyFill::RoundButton::Icon')).toBeNull();
+      }
+    );
 
-      expect(getByTestId(defaultTestId + '::NumericTextInput')).toBeTruthy();
-      expect(getByTestId(defaultTestId + '::OpenModal::RoundButton::Icon').props.children).toBe(
-        'line-scan'
-      );
-      expect(getByTestId(defaultTestId + '::OpenModal::RoundButton::Label').props.children).toBe(
-        'recipe.roundButton.scan'
-      );
-      expect(queryByTestId(defaultTestId + '::ManuallyFill::RoundButton::Icon')).toBeNull();
-    });
-
-    test('opens the OCR modal for its field when scan button is pressed', async () => {
-      const { getByTestId } = await renderRecipeNumber(editableWithScan);
-
-      await fireEvent.press(
-        getByTestId(defaultTestId + '::OpenModal::RoundButton::OnPressFunction')
-      );
-
-      expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(recipeColumnsNames.time);
-    });
-
-    test('does not render scan button without withScan', async () => {
+    test('does not render the scan icon without withScan', async () => {
       const { queryByTestId } = await renderWithRecipeDialogs(
         <RecipeNumber {...defaultEditProps} />
       );
 
-      expect(queryByTestId(defaultTestId + '::OpenModal::RoundButton::OnPressFunction')).toBeNull();
+      expect(queryByTestId(defaultTestId + '::OpenModal::IconButton')).toBeNull();
+    });
+  });
+
+  describe('header layout', () => {
+    test.each([
+      ['editable', defaultEditProps],
+      ['OCR editable', editableWithScan('time')],
+    ])('renders the prefix text as a title outside the input row in %s mode', async (_, props) => {
+      const { getByTestId } = await renderRecipeNumber(props);
+
+      const prefix = getByTestId(defaultTestId + '::PrefixText');
+      expect(prefix.props.variant).toBe('headlineSmall');
+      expect(prefix.parent).not.toBe(getByTestId(defaultTestId + '::SuffixText').parent);
+    });
+
+    test.each([
+      ['editable', defaultEditProps],
+      ['OCR editable', editableWithScan('time')],
+    ])(
+      'aligns the input row with the title and uses its vertical margin in %s mode',
+      async (_, props) => {
+        const { getByTestId } = await renderRecipeNumber(props);
+
+        const inputRow = getByTestId(defaultTestId + '::SuffixText').parent!;
+        expect(inputRow).toHaveStyle({ marginVertical: 3 });
+        expect(inputRow).not.toHaveStyle({ paddingHorizontal: 7 });
+        expect(getByTestId(defaultTestId + '::PrefixText')).toHaveStyle({ marginVertical: 3 });
+      }
+    );
+
+    test('renders the same title variant in add mode', async () => {
+      const { getByTestId } = await renderRecipeNumber(defaultAddProps);
+
+      expect(getByTestId(defaultTestId + '::PrefixText').props.variant).toBe('headlineSmall');
+    });
+
+    test('keeps the read-only mode as a single inline sentence', async () => {
+      const { getByTestId, queryByTestId } = await renderRecipeNumber();
+
+      expect(getByTestId(defaultTestId + '::Text').props.variant).toBe('headlineMedium');
+      expect(queryByTestId(defaultTestId + '::PrefixText')).toBeNull();
     });
   });
 

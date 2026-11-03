@@ -8,7 +8,9 @@
  * Key Features:
  * - Three distinct modes: read-only, editable, and dual-input (add)
  * - OCR integration for extracting numbers from images
- * - Renders a Scan button (`scanField`) when `withScan` is set
+ * - Editable modes show the prefix text as a section title on its own line above the input
+ * - Renders a Scan button (`scanField`) in add mode and a trailing scan icon inside the numeric
+ *   input in editable mode when `withScan` is set
  * - Manual input fallback with numeric keyboard
  * - Customizable prefix and suffix text
  * - Theme-aware typography scaling
@@ -57,12 +59,11 @@ import { View } from 'react-native';
 import React from 'react';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { ScanButton } from '@components/molecules/ScanButton';
+import { RecipeNumberInput } from '@components/molecules/RecipeNumberInput';
+import { RecipeNumberScanInput } from '@components/molecules/RecipeNumberScanInput';
 import { Icons } from '@assets/Icons';
 import { recipeButtonStyles, recipeNumberStyles, recipeTextStyles } from '@styles/recipeComponents';
 import { HelperText, Text } from 'react-native-paper';
-import { VariantProp } from 'react-native-paper/lib/typescript/components/Typography/types';
-import { NumericTextInput } from '@components/atomic/NumericTextInput';
-import { defaultValueNumber } from '@utils/Constants';
 import { useI18n } from '@utils/i18n';
 import type { OcrModalTarget } from '@utils/OCR';
 
@@ -88,7 +89,7 @@ export type RecipeNumberAddOrEditProps = {
   testID: string;
   /** Field the Scan button targets */
   scanField: OcrModalTarget;
-  /** Renders the Scan button targeting `scanField` (OCR mode) */
+  /** Renders the Scan button (add mode) or trailing input scan icon (editable mode) for `scanField` */
   withScan?: boolean;
   /** Optional text to display before the number */
   prefixText?: string;
@@ -144,6 +145,9 @@ export function RecipeNumber({ testID, numberProps, error, onBlur }: RecipeNumbe
 /**
  * Internal component for rendering editable portions of RecipeNumber
  *
+ * The prefix text is a section title on its own line; the numeric input and its suffix (or the
+ * Scan / Add manually buttons in add mode) render below it.
+ *
  * @param addOrEditProps - The add/edit configuration props
  * @returns JSX element representing the editable numeric input interface
  */
@@ -151,58 +155,48 @@ function RecipeNumberEditablePart(
   addOrEditProps: RecipeNumberAddOrEditProps & { onBlur?: () => void }
 ) {
   const { t } = useI18n();
-  const view = addOrEditProps.editType === 'editable' ? recipeNumberStyles.editableView : undefined;
-  const prefixVariant: VariantProp<never> =
-    addOrEditProps.editType === 'editable' ? 'titleMedium' : 'headlineSmall';
   return (
-    <>
-      <View style={view}>
-        <Text testID={addOrEditProps.testID + '::PrefixText'} variant={prefixVariant}>
-          {addOrEditProps.prefixText}
-        </Text>
-        {addOrEditProps.editType === 'editable' ? (
-          <NumericTextInput
-            testID={addOrEditProps.testID + '::NumericTextInput'}
-            value={addOrEditProps.textEditable ?? defaultValueNumber}
-            onChangeValue={addOrEditProps.setTextToEdit}
-            keyboardType='numeric'
-            onBlur={addOrEditProps.onBlur}
-          />
-        ) : (
-          <View
-            style={[
-              recipeButtonStyles.roundButtonsContainer,
-              recipeNumberStyles.roundButtonsMargin,
-            ]}
-          >
-            {addOrEditProps.withScan ? (
-              <View style={recipeButtonStyles.roundButton}>
-                <ScanButton
-                  testID={addOrEditProps.testID + '::OpenModal'}
-                  field={addOrEditProps.scanField}
-                />
-              </View>
-            ) : null}
+    <View>
+      <Text
+        testID={addOrEditProps.testID + '::PrefixText'}
+        variant={'headlineSmall'}
+        style={recipeTextStyles.containerElement}
+      >
+        {addOrEditProps.prefixText}
+      </Text>
+      {addOrEditProps.editType === 'editable' ? (
+        <View style={recipeNumberStyles.editableView}>
+          {addOrEditProps.withScan ? (
+            <RecipeNumberScanInput {...addOrEditProps} />
+          ) : (
+            <RecipeNumberInput {...addOrEditProps} />
+          )}
+          <Text testID={addOrEditProps.testID + '::SuffixText'} variant={'titleMedium'}>
+            {addOrEditProps.suffixText}
+          </Text>
+        </View>
+      ) : (
+        <View
+          style={[recipeButtonStyles.roundButtonsContainer, recipeNumberStyles.roundButtonsMargin]}
+        >
+          {addOrEditProps.withScan ? (
             <View style={recipeButtonStyles.roundButton}>
-              <RoundButton
-                testID={addOrEditProps.testID + '::ManuallyFill'}
-                icon={Icons.pencilIcon}
-                onPressFunction={addOrEditProps.manuallyFill}
-                label={t('recipe.roundButton.addManually')}
+              <ScanButton
+                testID={addOrEditProps.testID + '::OpenModal'}
+                field={addOrEditProps.scanField}
               />
             </View>
+          ) : null}
+          <View style={recipeButtonStyles.roundButton}>
+            <RoundButton
+              testID={addOrEditProps.testID + '::ManuallyFill'}
+              icon={Icons.pencilIcon}
+              onPressFunction={addOrEditProps.manuallyFill}
+              label={t('recipe.roundButton.addManually')}
+            />
           </View>
-        )}
-        <Text testID={addOrEditProps.testID + '::SuffixText'} variant={'titleMedium'}>
-          {addOrEditProps.suffixText}
-        </Text>
-      </View>
-      {addOrEditProps.editType === 'editable' && addOrEditProps.withScan ? (
-        <ScanButton
-          testID={addOrEditProps.testID + '::OpenModal'}
-          field={addOrEditProps.scanField}
-        />
-      ) : null}
-    </>
+        </View>
+      )}
+    </View>
   );
 }

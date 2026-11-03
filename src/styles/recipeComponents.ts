@@ -50,11 +50,10 @@
  *   </View>
  * </View>
  *
- * // Number input with controls
+ * // Number input with suffix
  * <View style={recipeNumberStyles.editableView}>
- *   <Button onPress={decrease}>-</Button>
- *   <TextInput value={count.toString()} />
- *   <Button onPress={increase}>+</Button>
+ *   <NumericTextInput value={count} onChangeValue={setCount} />
+ *   <Text>min</Text>
  * </View>
  * ```
  */
@@ -145,7 +144,12 @@ export const recipeTagsStyles = StyleSheet.create({
  * Used for quantity, serving size, and timing inputs
  */
 export const recipeNumberStyles = StyleSheet.create({
-  editableView: { flexDirection: 'row', alignItems: 'center', gap: padding.medium },
+  editableView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: padding.medium,
+    marginVertical: padding.verySmall,
+  },
   /** Extra top margin composed onto `recipeButtonStyles.roundButtonsContainer` for this screen's layout. */
   roundButtonsMargin: { marginTop: padding.large },
 });

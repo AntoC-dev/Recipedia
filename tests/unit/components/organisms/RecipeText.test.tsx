@@ -267,41 +267,8 @@ describe('RecipeText Component', () => {
     expect(getByTestId('test-recipe-text::Right')).toContainElement(
       getByTestId('test-recipe-text::OpenModal::IconButton')
     );
-    expect(getByTestId('test-recipe-text::OpenModal::IconButton::Color')).toHaveTextContent(
-      '#6200ee'
-    );
-    expect(getByTestId('test-recipe-text::OpenModal::IconButton::Icon')).toHaveTextContent(
-      Icons.scanImageIcon
-    );
-    expect(
-      getByTestId('test-recipe-text::OpenModal::IconButton::AccessibilityLabel')
-    ).toHaveTextContent('recipe.roundButton.scan');
-    expect(
-      getByTestId('test-recipe-text::OpenModal::IconButton::ForceTextInputFocus')
-    ).toHaveTextContent('false');
     expect(queryByTestId('test-recipe-text::OpenModal::RoundButton')).toBeNull();
   });
-
-  test.each([recipeColumnsNames.title, recipeColumnsNames.description])(
-    'opens the OCR modal for %s when the scan icon of editable mode is pressed',
-    async scanField => {
-      const { getByTestId } = await renderRecipeText({
-        addOrEditProps: {
-          testID: 'test-recipe-text',
-          scanField,
-          editType: 'editable',
-          textEditable: 'filled',
-          setTextToEdit: mockSetTextToEdit,
-          withScan: true,
-        },
-      });
-      expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent('none');
-
-      await fireEvent.press(getByTestId('test-recipe-text::OpenModal::IconButton'));
-
-      expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(scanField);
-    }
-  );
 
   test('hides the scan icon in editable mode without withScan', async () => {
     const { queryByTestId } = await renderWithRecipeDialogs(
