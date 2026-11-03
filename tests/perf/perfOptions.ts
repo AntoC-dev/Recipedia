@@ -8,7 +8,7 @@
  * V8 inline-cache warmup) so early-run variance stops inflating the measured
  * stdev and slackening the CI-lower-bound regression gate. Opt in per heavy
  * scenario only: add this when a scenario's measured mean exceeds ~50ms, and
- * leave lighter scenarios on reassure's default `warmupRuns: 1` — warming a
+ * leave lighter scenarios on the default `warmupRuns: 2` set in `tests/setup-perf.js` — warming a
  * stable sub-50ms render costs CI time for no variance it needs discounting.
  */
 export const HEAVY_WARMUP = { warmupRuns: 3 };
