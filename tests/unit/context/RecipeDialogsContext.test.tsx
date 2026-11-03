@@ -1,4 +1,5 @@
 import React from 'react';
+import { Keyboard } from 'react-native';
 import { act, renderHook } from '@testing-library/react-native';
 import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
@@ -309,6 +310,19 @@ describe('RecipeDialogsContext', () => {
       });
 
       expect(result.current.imageModalTarget).toBe(recipeColumnsNames.title);
+    });
+
+    test('openImageModal dismisses the keyboard so a focused input commits before the scan', async () => {
+      const dismissSpy = jest.spyOn(Keyboard, 'dismiss').mockImplementation(() => {});
+      const wrapper = createDialogsWrapper();
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
+
+      await act(() => {
+        result.current.openImageModal(recipeColumnsNames.persons);
+      });
+
+      expect(dismissSpy).toHaveBeenCalledTimes(1);
+      dismissSpy.mockRestore();
     });
 
     test('openImageModal accepts ingredient scan targets', async () => {

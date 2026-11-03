@@ -15,6 +15,7 @@
  */
 
 import React, { createContext, ReactNode, useContext, useState } from 'react';
+import { Keyboard } from 'react-native';
 import { SimilarityDialogProps } from '@components/dialogs/SimilarityDialog';
 import { IngredientValidationProps, TagValidationProps } from '@components/dialogs/ValidationQueue';
 import { getMissingFieldsErrorContent } from '@utils/RecipeFormHelpers';
@@ -96,7 +97,10 @@ export interface RecipeDialogsContextType {
 
   /** Field the image-select modal currently targets, or `null` when it is closed */
   imageModalTarget: OcrModalTarget | null;
-  /** Opens the image-select modal targeting the given field */
+  /**
+   * Opens the image-select modal targeting the given field, dismissing the keyboard first so a
+   * focused input commits its text instead of overwriting the scan result on a later blur
+   */
   openImageModal: (field: OcrModalTarget) => void;
   /** Closes the image-select modal and clears its target */
   closeImageModal: () => void;
@@ -169,6 +173,7 @@ export function RecipeDialogsProvider({ children }: { children: ReactNode }) {
   };
 
   const openImageModal = (field: OcrModalTarget) => {
+    Keyboard.dismiss();
     setImageModalTarget(field);
   };
 

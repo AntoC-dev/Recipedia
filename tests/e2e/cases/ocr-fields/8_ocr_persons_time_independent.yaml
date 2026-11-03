@@ -29,11 +29,11 @@ tags:
     label: "Action - Pick the persons and time picture"
 
 - extendedWaitUntil:
-    notVisible:
+    visible:
       id: "RecipePersons::NumericTextInput"
-      text: "4"
+      text: "2"
     timeout: 60000
-    label: "Assert - Persons scan replaces the default persons count"
+    label: "Assert - Persons scan replaces the default count with the first row of the card"
 
 - runFlow:
     file: "../../flows/replaceAndDone.yaml"
@@ -71,6 +71,46 @@ tags:
     timeout: 60000
     label: "Assert - Time scan fills the time"
 
+- runFlow:
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeTime::NumericTextInput"
+    label: "Action - Focus the time input"
+
+- runFlow:
+    file: "../../flows/replaceFocused.yaml"
+    env:
+      TARGET_ID: "RecipeTime::NumericTextInput"
+      VALUE: "40"
+    label: "Action - Type 40 minutes without committing with the toolbar Done"
+
+- tapOn:
+    id: "RecipeTime::OpenModal::IconButton"
+    label: "Action - Scan time through the inline icon while the input is focused"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/addAndSelectMostRecent.yaml"
+    env:
+      RECIPE_NAME: quitoqueV1
+      FIELD_NAME: personsAndTime
+    label: "Action - Pick the persons and time picture"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTime::NumericTextInput"
+      text: "25"
+    timeout: 60000
+    label: "Assert - Time scan replaces the typed time with the first row of the card"
+
+- tapOn:
+    id: "RecipeTime::PrefixText"
+    label: "Action - Tap the time label so a still-focused input would blur"
+
+- assertVisible:
+    id: "RecipeTime::NumericTextInput"
+    text: "25"
+    label: "Assert - Leaving the input keeps the scanned time"
+
 - scrollUntilVisible:
     element:
       id: "RecipePersons::NumericTextInput"
@@ -79,3 +119,12 @@ tags:
     speed: 20
     centerElement: true
     label: "Assert - Time scan keeps the typed persons count"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::NumericTextInput"
+      text: "25"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Assert - Scrolling back keeps the scanned time"
