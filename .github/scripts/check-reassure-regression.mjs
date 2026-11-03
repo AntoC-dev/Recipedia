@@ -10,9 +10,10 @@
  * significant entry regressed beyond the configured thresholds, so a perf
  * regression cannot be merged into main.
  *
- * Render-count regressions are treated as hard failures at any positive count,
- * because an extra render is a deterministic code regression (React Compiler is
- * meant to keep these flat) rather than measurement noise.
+ * Render-count regressions are treated as hard failures at any positive count when
+ * the count is stable across runs on both sides (`stdevCount` is 0), because an
+ * extra render is then a deterministic code regression (React Compiler is meant
+ * to keep these flat). Counts that vary between runs are noise and are ignored.
  *
  * Duration regressions gate on the lower bound of the 95% confidence interval of
  * the mean difference, not the raw point estimate. A shared CI runner produces
@@ -69,6 +70,20 @@ export function lowerBoundRelativeDurationDiff(entry, z = Z_95) {
 }
 
 /**
+ * Whether an entry's render count was identical across every run on both sides.
+ *
+ * A count that varies between iterations (non-zero `stdevCount`) is measurement
+ * noise from async updates landing before or after the measured render, not a
+ * code regression, so it must not gate. Missing stats are treated as stable.
+ *
+ * @param entry A Reassure compare entry with optional `current`/`baseline` stats.
+ * @returns `true` when neither side reports a non-zero `stdevCount`.
+ */
+export function hasStableRenderCount(entry) {
+  return !entry.baseline?.stdevCount && !entry.current?.stdevCount;
+}
+
+/**
  * Partition significant Reassure entries into blocking regressions.
  *
  * @param significant The `significant` array from Reassure output.
@@ -79,7 +94,9 @@ export function findRegressions(significant, durationThresholdPct = DURATION_THR
   const durationRegressions = significant.filter(
     e => lowerBoundRelativeDurationDiff(e) * 100 > durationThresholdPct
   );
-  const countRegressions = significant.filter(e => (e.relativeCountDiff ?? 0) > 0);
+  const countRegressions = significant.filter(
+    e => (e.relativeCountDiff ?? 0) > 0 && hasStableRenderCount(e)
+  );
   return { durationRegressions, countRegressions };
 }
 

@@ -5,10 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { averageFps, toBenchmark } from './flashlight-benchmark.mjs';
-import {
-  findRegressions,
-  lowerBoundRelativeDurationDiff,
-} from './check-reassure-regression.mjs';
+import { findRegressions, lowerBoundRelativeDurationDiff } from './check-reassure-regression.mjs';
 import { measureBundleBytes } from './check-bundle-size.mjs';
 
 test('averageFps pools fps across iterations and measures', () => {
@@ -69,6 +66,42 @@ test('findRegressions passes a noisy blip whose point estimate exceeds the thres
 test('findRegressions flags any positive render-count growth', () => {
   const { countRegressions } = findRegressions([{ name: 'a', relativeCountDiff: 0.01 }], 15);
   assert.equal(countRegressions.length, 1);
+});
+
+test('findRegressions flags a render-count growth when both sides are deterministic', () => {
+  const { countRegressions } = findRegressions([
+    {
+      name: 'a',
+      relativeCountDiff: 0.5,
+      baseline: { meanCount: 2, stdevCount: 0 },
+      current: { meanCount: 3, stdevCount: 0 },
+    },
+  ]);
+  assert.equal(countRegressions.length, 1);
+});
+
+test('findRegressions ignores a render-count growth when the current side varies between runs', () => {
+  const { countRegressions } = findRegressions([
+    {
+      name: 'a',
+      relativeCountDiff: 0.13,
+      baseline: { meanCount: 2, stdevCount: 0 },
+      current: { meanCount: 2.26, stdevCount: 0.44 },
+    },
+  ]);
+  assert.equal(countRegressions.length, 0);
+});
+
+test('findRegressions ignores a render-count growth when the baseline side varies between runs', () => {
+  const { countRegressions } = findRegressions([
+    {
+      name: 'a',
+      relativeCountDiff: 0.1,
+      baseline: { meanCount: 2.5, stdevCount: 0.5 },
+      current: { meanCount: 3, stdevCount: 0 },
+    },
+  ]);
+  assert.equal(countRegressions.length, 0);
 });
 
 test('findRegressions passes a clean entry', () => {
