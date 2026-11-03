@@ -111,6 +111,7 @@ export function PreparationSection({
   withScan,
 }: PreparationSectionProps) {
   const { t } = useI18n();
+  const addManually = withScan && isEmpty;
   return (
     <View style={recipeTextRenderStyles.containerSection}>
       <Text
@@ -131,11 +132,9 @@ export function PreparationSection({
         ) : null}
         <RoundButton
           testID={`${TEST_ID}::AddButton`}
-          icon={withScan && isEmpty ? Icons.pencilIcon : Icons.plusIcon}
+          icon={addManually ? Icons.pencilIcon : Icons.plusIcon}
           onPressFunction={onAddStep}
-          label={t(
-            withScan && isEmpty ? 'recipe.roundButton.addManually' : 'recipe.roundButton.newStep'
-          )}
+          label={t(addManually ? 'recipe.roundButton.addManually' : 'recipe.roundButton.newStep')}
           style={recipeButtonStyles.roundButton}
         />
       </View>

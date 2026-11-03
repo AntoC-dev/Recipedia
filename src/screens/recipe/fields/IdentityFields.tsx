@@ -44,7 +44,7 @@ export interface TitleFieldProps {
 
 export function RecipeTitleField({ form, stackMode, t }: TitleFieldProps) {
   const { field } = useController({ control: form.control, name: 'recipeTitle' });
-  const [keepEditable, setKeepEditable] = useState(false);
+  const [keepEditable, setKeepEditable] = useState(() => !!field.value);
   if (field.value && !keepEditable) setKeepEditable(true);
   const { error } = useInlineErrorFor('recipeTitle', t);
   return (
@@ -74,7 +74,7 @@ export function RecipeDescriptionField({ form, stackMode, t }: DescriptionFieldP
     control: form.control,
     name: 'recipeDescription',
   });
-  const [keepEditable, setKeepEditable] = useState(false);
+  const [keepEditable, setKeepEditable] = useState(() => !!field.value);
   if (field.value && !keepEditable) setKeepEditable(true);
   // recipeDescription has no schema constraint, so it never errors — no inline
   // error gate is wired here.

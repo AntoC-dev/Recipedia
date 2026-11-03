@@ -20,3 +20,11 @@ export function MockScanButton({ testID, field }: { testID: string; field: OcrMo
   const { openImageModal } = useRecipeDialogs();
   return <Button testID={testID} title='Scan' onPress={() => openImageModal(field)} />;
 }
+
+export function WithScanEcho({ testID, withScan }: { testID: string; withScan?: boolean }) {
+  return <Text testID={testID + '::WithScan'}>{String(!!withScan)}</Text>;
+}
+
+export function ManuallyFillButton({ testID, onPress }: { testID: string; onPress: () => void }) {
+  return <Button testID={testID + '::ManuallyFill'} title='Add manually' onPress={onPress} />;
+}

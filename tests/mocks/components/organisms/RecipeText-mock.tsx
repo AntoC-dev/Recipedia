@@ -1,7 +1,13 @@
 import React from 'react';
 import { Button, Text, View } from 'react-native';
 import { RecipeTextProps } from '@components/organisms/RecipeText';
-import { BlurButton, ErrorEcho, MockScanButton } from './_recipeFieldMockHelpers';
+import {
+  BlurButton,
+  ErrorEcho,
+  ManuallyFillButton,
+  MockScanButton,
+  WithScanEcho,
+} from './_recipeFieldMockHelpers';
 
 export function recipeTextMock(recipeTextProp: RecipeTextProps) {
   const { rootText, addOrEditProps, error, onBlur } = recipeTextProp;
@@ -12,7 +18,7 @@ export function recipeTextMock(recipeTextProp: RecipeTextProps) {
       {addOrEditProps ? (
         <View>
           <Text testID={testID + '::ScanField'}>{addOrEditProps.scanField}</Text>
-          <Text testID={testID + '::WithScan'}>{String(!!addOrEditProps.withScan)}</Text>
+          <WithScanEcho testID={testID} withScan={addOrEditProps.withScan} />
           {addOrEditProps.editType === 'editable' ? (
             <View>
               <Text testID={testID + '::TextEditable'}>{addOrEditProps.textEditable}</Text>
@@ -25,11 +31,7 @@ export function recipeTextMock(recipeTextProp: RecipeTextProps) {
             </View>
           ) : null}
           {addOrEditProps.editType === 'add' ? (
-            <Button
-              testID={testID + '::ManuallyFill'}
-              title='Add manually'
-              onPress={addOrEditProps.manuallyFill}
-            />
+            <ManuallyFillButton testID={testID} onPress={addOrEditProps.manuallyFill} />
           ) : null}
           {addOrEditProps.withScan ? (
             <MockScanButton testID={testID + '::OpenModal'} field={addOrEditProps.scanField} />

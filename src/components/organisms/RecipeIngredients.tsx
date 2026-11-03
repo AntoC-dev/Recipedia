@@ -172,21 +172,23 @@ export function IngredientsTable({
         {children}
       </DataTable>
 
-      {onAddIngredient && withScan ? (
-        <IngredientsOcrButtons
-          testID={testID}
-          addButtonLabel={addIngredientButtonLabel}
-          onAddIngredient={onAddIngredient}
-          withQuantities
-        />
-      ) : onAddIngredient ? (
-        <RoundButton
-          testID={`${testID}::AddButton`}
-          icon={Icons.plusIcon}
-          onPressFunction={onAddIngredient}
-          label={addIngredientButtonLabel}
-          style={cellStyles.addButton}
-        />
+      {onAddIngredient ? (
+        withScan ? (
+          <IngredientsOcrButtons
+            testID={testID}
+            addButtonLabel={addIngredientButtonLabel}
+            onAddIngredient={onAddIngredient}
+            withQuantities
+          />
+        ) : (
+          <RoundButton
+            testID={`${testID}::AddButton`}
+            icon={Icons.plusIcon}
+            onPressFunction={onAddIngredient}
+            label={addIngredientButtonLabel}
+            style={cellStyles.addButton}
+          />
+        )
       ) : null}
 
       {error ? (

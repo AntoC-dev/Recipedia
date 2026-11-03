@@ -7,7 +7,7 @@ import {
   IngredientsTableProps,
   RecipeIngredientsProps,
 } from '@components/organisms/RecipeIngredients';
-import { ErrorEcho, MockScanButton } from './_recipeFieldMockHelpers';
+import { ErrorEcho, MockScanButton, WithScanEcho } from './_recipeFieldMockHelpers';
 
 function formatNumericQuantity(quantity: string | number | undefined): string {
   if (quantity === undefined || quantity === '') return '';
@@ -53,16 +53,9 @@ export function ingredientsTableMock({
       <Text testID={`${testID}::ColumnTitle3`}>{columnTitles.column3}</Text>
       <Text testID={`${testID}::ColumnTitle1`}>{columnTitles.column1}</Text>
       <Text testID={`${testID}::ColumnTitle2`}>{columnTitles.column2}</Text>
+      <WithScanEcho testID={testID} withScan={withScan} />
       {children}
-      {withScan && onAddIngredient
-        ? ingredientsOcrButtonsMock({
-            testID,
-            addButtonLabel: addIngredientButtonLabel,
-            onAddIngredient,
-            withQuantities: true,
-          })
-        : null}
-      {!withScan && onAddIngredient ? (
+      {onAddIngredient && !withScan ? (
         <>
           <Button
             testID={`${testID}::AddButton::RoundButton::OnPressFunction`}
@@ -74,6 +67,13 @@ export function ingredientsTableMock({
             {addIngredientButtonLabel}
           </Text>
         </>
+      ) : onAddIngredient ? (
+        ingredientsOcrButtonsMock({
+          testID,
+          addButtonLabel: addIngredientButtonLabel,
+          onAddIngredient,
+          withQuantities: true,
+        })
       ) : null}
       <ErrorEcho testID={testID} error={error} />
     </View>

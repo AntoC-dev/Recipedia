@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Text, View } from 'react-native';
 import { NutritionEmptyStateProps } from '@components/molecules/NutritionEmptyState';
 import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
-import { MockScanButton } from '@mocks/components/organisms/_recipeFieldMockHelpers';
+import { MockScanButton, WithScanEcho } from '@mocks/components/organisms/_recipeFieldMockHelpers';
 
 export function NutritionEmptyState({
   onButtonPressed,
@@ -14,6 +14,7 @@ export function NutritionEmptyState({
   return (
     <View testID={testId}>
       <Text testID={testId + '::ParentTestId'}>{parentTestId}</Text>
+      <WithScanEcho testID={testId} withScan={withScan} />
       {withScan ? (
         <MockScanButton testID={testId + '::OnOCRNutrition'} field={recipeColumnsNames.nutrition} />
       ) : null}

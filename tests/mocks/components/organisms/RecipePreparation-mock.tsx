@@ -6,7 +6,7 @@ import {
   RecipePreparationProps,
 } from '@components/organisms/RecipePreparation';
 import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
-import { MockScanButton } from './_recipeFieldMockHelpers';
+import { MockScanButton, WithScanEcho } from './_recipeFieldMockHelpers';
 
 const testID = 'RecipePreparation';
 
@@ -39,7 +39,7 @@ export function preparationSectionMock({
     <View testID={testID}>
       <Text testID={`${testID}::PrefixText`}>{prefixText}</Text>
       {children}
-      <Text testID={`${testID}::WithScan`}>{String(!!withScan)}</Text>
+      <WithScanEcho testID={testID} withScan={withScan} />
       {withScan ? (
         <>
           <MockScanButton
