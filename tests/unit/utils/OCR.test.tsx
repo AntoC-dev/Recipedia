@@ -1112,6 +1112,24 @@ describe('OCR Utility Functions', () => {
         );
         expect(result).toEqual({ recipePersons: 2 });
       });
+      test('extractFieldFromImage returns nothing when no persons nor time can be read', async () => {
+        mockRecognize.mockResolvedValue({
+          text: 'Bon appétit',
+          blocks: [createBlock('Bon appétit')],
+        });
+
+        const result = await extractFieldFromImage(
+          uriForOCR,
+          recipeColumnsNames.persons,
+          baseState,
+          mockWarn
+        );
+
+        expect(result).toEqual({});
+        expect(mockWarn).toHaveBeenCalledWith(
+          expect.stringContaining('Could not parse persons/time field')
+        );
+      });
       test('warns and returns nothing when recognition fails before any value is read', async () => {
         mockRecognize.mockRejectedValue(new Error('recognition unavailable'));
 

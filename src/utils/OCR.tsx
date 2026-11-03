@@ -1262,7 +1262,7 @@ export async function extractFieldFromImage(
           value = isPersons ? row.person : row.time;
         }
       }
-      if (value === undefined) {
+      if (value === undefined || value === defaultValueNumber) {
         warn('Could not parse persons/time field');
         return {};
       }
