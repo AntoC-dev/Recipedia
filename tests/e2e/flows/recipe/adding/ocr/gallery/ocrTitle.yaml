@@ -1,32 +1,13 @@
 appId: "com.recipedia"
 ---
 - tapOn:
-    id: "RecipeTitle::OpenModal::RoundButton"
+    id: "RecipeTitle::OpenModal::(RoundButton|IconButton)"
     label: "Tap on OCR button of recipe title"
 
 - runFlow:
-    file: ../android/addMedia.yaml
+    file: addAndSelectMostRecent.yaml
     env:
       FIELD_NAME: title
-    when:
-      platform: Android
-- runFlow:
-    file: ../iOS/addMedia.yaml
-    env:
-      FIELD_NAME: title
-    when:
-      platform: iOS
-
-- runFlow:
-    file: ../android/selectMostRecentFromModal.yaml
-    label: "Select title from modal for OCR"
-    when:
-      platform: Android
-- runFlow:
-    file: ../iOS/selectMostRecentFromModal.yaml
-    label: "Select title from modal for OCR"
-    when:
-      platform: iOS
 
 - extendedWaitUntil:
     visible:

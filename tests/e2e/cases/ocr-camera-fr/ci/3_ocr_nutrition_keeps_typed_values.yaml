@@ -1,0 +1,17 @@
+name: "3 - OCR Nutrition Keeps Typed Values Flow"
+appId: "com.recipedia"
+tags:
+  - ocr
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/recipe/adding/ocr/checkIfCleanIsNeeded.yaml"
+          label: "Setup - Check if clean is needed"
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../3_ocr_nutrition_keeps_typed_values.yaml"
+          label: "Run 3 - OCR Nutrition Keeps Typed Values Flow"

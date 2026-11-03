@@ -2,15 +2,8 @@ appId: "com.recipedia"
 ---
 - assertVisible:
     id: "Recipe::AppBar::BackButton"
+    text: "Back"
     label: "Back button is displayed"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          text: "Back"
-          label: "Back button icon is displayed on iOS"
 
 - assertVisible:
     id: "Recipe::BottomActionButton-text"
@@ -25,6 +18,10 @@ appId: "com.recipedia"
     id: "RecipeImage::RoundButton::Label"
     text: "Photo"
     label: "Image button label is rendered"
+
+- assertNotVisible:
+    id: "RecipeImage::Placeholder"
+    label: "Placeholder icon is hidden behind the image button"
 
 - assertVisible:
     id: "RecipeImage"

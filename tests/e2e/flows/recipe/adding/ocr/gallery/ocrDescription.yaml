@@ -2,39 +2,20 @@ appId: "com.recipedia"
 ---
 - scrollUntilVisible:
     element:
-      id: "RecipeDescription::OpenModal::RoundButton"
+      id: "RecipeDescription::OpenModal::(RoundButton|IconButton)"
     direction: DOWN
     speed: 20
     centerElement: true
     label: "Scroll to description section"
 
 - tapOn:
-    id: "RecipeDescription::OpenModal::RoundButton"
+    id: "RecipeDescription::OpenModal::(RoundButton|IconButton)"
     label: "Tap on OCR button of recipe description"
 
 - runFlow:
-    file: ../android/addMedia.yaml
+    file: addAndSelectMostRecent.yaml
     env:
       FIELD_NAME: description
-    when:
-      platform: Android
-- runFlow:
-    file: ../iOS/addMedia.yaml
-    env:
-      FIELD_NAME: description
-    when:
-      platform: iOS
-
-- runFlow:
-    file: ../android/selectMostRecentFromModal.yaml
-    label: "Select description from modal for OCR"
-    when:
-      platform: Android
-- runFlow:
-    file: ../iOS/selectMostRecentFromModal.yaml
-    label: "Select description from modal for OCR"
-    when:
-      platform: iOS
 
 - extendedWaitUntil:
     visible:

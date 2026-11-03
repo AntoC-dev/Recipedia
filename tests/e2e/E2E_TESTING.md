@@ -522,8 +522,9 @@ blocks until `simctl addmedia` finishes.
 Per field: OCR button → `{android,iOS}/addMedia.yaml` (env `FIELD_NAME`; the
 path is picked by `RECIPE_NAME`/`FIELD_NAME` conditionals since `addMedia` does
 not interpolate) → `{android,iOS}/selectMostRecentFromModal.yaml`, which taps
-`Modal::List#${output.modalImageCounter}` and increments it. The counter starts
-at 0 (`gallery/addRecipeFromGallery.yaml`) or 1
+`Modal::List#${output.modalImageCounter}` and increments it. On the gallery path
+`gallery/ocrImage.yaml` picks `Modal::List#0` and sets the counter to 1 itself,
+so callers need no seed; the camera path starts it at 1
 (`camera/addRecipeFromCamera.yaml`, whose `ocrImage.yaml` skips the FAB gallery
 button).
 

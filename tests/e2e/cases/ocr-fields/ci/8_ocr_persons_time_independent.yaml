@@ -1,4 +1,4 @@
-name: "6 - OCR Scan After Manual Flow"
+name: "8 - OCR Persons And Time Independent Flow"
 appId: "com.recipedia"
 tags:
   - ocr
@@ -13,5 +13,5 @@ tags:
           file: "../../../flows/setupTest.yaml"
           label: "Setup - Launch app and wait for ready"
       - runFlow:
-          file: "../6_ocr_scan_after_manual.yaml"
-          label: "Run 6 - OCR Scan After Manual Flow"
+          file: "../8_ocr_persons_time_independent.yaml"
+          label: "Run 8 - OCR Persons And Time Independent Flow"

@@ -1,0 +1,157 @@
+name: "6 - OCR Manual Entry Flow"
+appId: "com.recipedia"
+tags:
+  - ocr
+---
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrImage.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+    label: "Setup - Open recipe screen in OCR mode with HelloFresh image"
+
+- tapOn:
+    id: "RecipeTitle::ManuallyFill::RoundButton"
+    label: "Action - Fill the title manually"
+
+- assertVisible:
+    id: "RecipeTitle::CustomTextInput"
+    label: "Assert - Title input is shown after manual entry"
+
+- assertVisible:
+    id: "RecipeTitle::OpenModal::IconButton"
+    label: "Assert - Title scan icon is inside the input"
+
+- assertNotVisible:
+    id: "RecipeTitle::ManuallyFill::RoundButton"
+    label: "Assert - Add manually button is gone for the title"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::ManuallyFill::RoundButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to description"
+
+- tapOn:
+    id: "RecipeDescription::ManuallyFill::RoundButton"
+    label: "Action - Fill the description manually"
+
+- assertVisible:
+    id: "RecipeDescription::CustomTextInput"
+    label: "Assert - Description input is shown after manual entry"
+
+- assertVisible:
+    id: "RecipeDescription::OpenModal::IconButton"
+    label: "Assert - Description scan icon is inside the input"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::RoundButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to tags"
+
+- tapOn:
+    id: "RecipeTags::RoundButton"
+    label: "Action - Open a tag input"
+
+- assertVisible:
+    id: "RecipeTags::RoundButton::Label"
+    text: "New tag"
+    label: "Assert - Tags button switches to new tag once an input is open"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::AddButton::RoundButton::Label"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to ingredients"
+
+- tapOn:
+    id: "RecipeIngredients::AddButton::RoundButton"
+    label: "Action - Add an ingredient row"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeIngredients::AddButton::RoundButton::Label"
+      text: "New ingredient"
+    timeout: 5000
+    label: "Assert - Ingredients button switches to new ingredient"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::OpenModalNames::RoundButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Assert - Scan names button stays visible after manual add"
+
+- assertVisible:
+    id: "RecipeIngredients::OpenModalQuantities::RoundButton"
+    label: "Assert - Scan quantities button visible after manual add"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::ManuallyFill::RoundButton"
+    direction: DOWN
+    speed: 30
+    centerElement: true
+    label: "Action - Scroll to time"
+
+- tapOn:
+    id: "RecipeTime::ManuallyFill::RoundButton"
+    label: "Action - Fill time manually"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTime::NumericTextInput"
+    timeout: 5000
+    label: "Assert - Time numeric input shown"
+
+- assertVisible:
+    id: "RecipeTime::OpenModal::IconButton"
+    label: "Assert - Time scan icon stays visible after manual fill"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::AddButton::RoundButton::Label"
+    direction: DOWN
+    speed: 30
+    centerElement: true
+    label: "Action - Scroll to preparation"
+
+- tapOn:
+    id: "RecipePreparation::AddButton::RoundButton"
+    label: "Action - Add a preparation step"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipePreparation::AddButton::RoundButton::Label"
+      text: "New step"
+    timeout: 5000
+    label: "Assert - Preparation button switches to new step"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::OpenModal::RoundButton"
+    direction: DOWN
+    speed: 30
+    centerElement: true
+    label: "Assert - Preparation scan button stays visible after manual add"
+
+- runFlow:
+    file: "../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
+    label: "Action - Scroll to nutrition"
+
+- tapOn:
+    id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
+    label: "Action - Fill nutrition manually"
+
+- assertVisible:
+    id: "Recipe::RecipeNutrition::NutritionTable"
+    label: "Assert - Nutrition table is shown after manual entry"

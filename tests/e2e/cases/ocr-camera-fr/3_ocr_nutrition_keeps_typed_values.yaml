@@ -1,0 +1,83 @@
+name: "3 - OCR Nutrition Keeps Typed Values Flow"
+appId: "com.recipedia"
+tags:
+  - ocr
+---
+- runFlow:
+    file: "../../flows/parameters/language/switchToFrench.yaml"
+    label: "Setup - Switch to French for nutrition OCR"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Setup - Navigate to Home screen"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrImage.yaml"
+    env:
+      RECIPE_NAME: quitoqueV2
+    label: "Setup - Open recipe screen in OCR mode with Quitoque image"
+
+- runFlow:
+    file: "../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
+    label: "Action - Scroll to nutrition"
+
+- tapOn:
+    id: "Recipe::RecipeNutrition::NutritionEmptyState::AddButton::RoundButton"
+    label: "Action - Fill nutrition manually"
+
+- runFlow:
+    file: "../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
+    label: "Action - Scroll to the portion weight"
+
+- runFlow:
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
+    label: "Action - Focus the portion weight input"
+
+- runFlow:
+    file: "../../flows/inputAndDone.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
+      VALUE: "200"
+    label: "Action - Type the portion weight manually"
+
+- runFlow:
+    file: "../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::OpenModal::RoundButton"
+    label: "Action - Scroll to the nutrition scan button"
+
+- tapOn:
+    id: "Recipe::RecipeNutrition::OpenModal::RoundButton"
+    label: "Action - Scan nutrition over the typed value"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/addAndSelectMostRecent.yaml"
+    env:
+      RECIPE_NAME: quitoqueV2
+      FIELD_NAME: nutrition
+    label: "Action - Pick the nutrition picture"
+
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
+      text: "218.*"
+    direction: UP
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Assert - Scanned values are merged into the table"
+
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionTable::EditForm::PortionWeightNumericTextInput"
+      text: "200"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Assert - Typed portion weight survives the scan"

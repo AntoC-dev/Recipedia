@@ -1,0 +1,65 @@
+name: "7 - OCR Rescan Filled Fields Flow"
+appId: "com.recipedia"
+tags:
+  - ocr
+---
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrImage.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+    label: "Setup - Open recipe screen in OCR mode with HelloFresh image"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrTitle.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+    label: "Action - OCR the title so the input is filled"
+
+- runFlow:
+    file: "../../flows/replaceAndDone.yaml"
+    env:
+      TARGET_ID: "RecipeTitle::CustomTextInput"
+      VALUE: "Typed title"
+    label: "Action - Replace the OCRed title with a typed one"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrTitle.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+    label: "Action - Rescan the title through the inline icon"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTitle::CustomTextInput"
+      text: "Aiguillettes de poulet façon teriyaki.*"
+    timeout: 60000
+    label: "Assert - Rescanning the title replaces the typed value"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrPreparation.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+    label: "Action - OCR the preparation steps"
+
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionEmptyState::Title"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    label: "Action - Scroll past the filled steps so the preparation scan button sits mid-screen"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrPreparation.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+    label: "Action - Rescan the preparation steps"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::4::TextInputTitle::CustomTextInput"
+      text: "Cuire le riz"
+    direction: UP
+    speed: 20
+    timeout: 120000
+    label: "Assert - Rescanning appends a second copy of the steps"

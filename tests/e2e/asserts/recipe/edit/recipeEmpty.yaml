@@ -65,7 +65,7 @@ appId: "com.recipedia"
     label: "Scroll to person section"
 
 - assertVisible:
-    text: "This recipe is for : "
+    text: "Servings:"
     label: "Person text sentence begin is displayed"
 
 - assertVisible:
@@ -74,7 +74,7 @@ appId: "com.recipedia"
     label: "Person TextInput is displayed with the default text"
 
 - assertVisible:
-    text: " persons"
+    text: "persons"
     label: "Person text sentence end is displayed"
 
 - scrollUntilVisible:
@@ -132,7 +132,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeTime::PrefixText"
-    text: "Time to prepare the recipe :"
+    text: "Prep time:"
     label: "Time to prepare text is displayed"
 
 - assertVisible:

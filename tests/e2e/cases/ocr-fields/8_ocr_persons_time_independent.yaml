@@ -1,0 +1,81 @@
+name: "8 - OCR Persons And Time Independent Flow"
+appId: "com.recipedia"
+tags:
+  - ocr
+---
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrImage.yaml"
+    env:
+      RECIPE_NAME: quitoqueV1
+    label: "Setup - Open recipe screen in OCR mode with Quitoque image"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::OpenModal::IconButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to the persons scan icon"
+
+- tapOn:
+    id: "RecipePersons::OpenModal::IconButton"
+    label: "Action - Scan persons through the inline icon"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/addAndSelectMostRecent.yaml"
+    env:
+      RECIPE_NAME: quitoqueV1
+      FIELD_NAME: personsAndTime
+    label: "Action - Pick the persons and time picture"
+
+- extendedWaitUntil:
+    notVisible:
+      id: "RecipePersons::NumericTextInput"
+      text: "4"
+    timeout: 60000
+    label: "Assert - Persons scan replaces the default persons count"
+
+- runFlow:
+    file: "../../flows/replaceAndDone.yaml"
+    env:
+      TARGET_ID: "RecipePersons::NumericTextInput"
+      VALUE: "7"
+    label: "Action - Type 7 persons manually"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeTime::OpenModal::RoundButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to the time scan button"
+
+- assertNotVisible:
+    id: "RecipeTime::NumericTextInput"
+    label: "Assert - Persons scan leaves the time empty"
+
+- tapOn:
+    id: "RecipeTime::OpenModal::RoundButton"
+    label: "Action - Scan time"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/addAndSelectMostRecent.yaml"
+    env:
+      RECIPE_NAME: quitoqueV1
+      FIELD_NAME: personsAndTime
+    label: "Action - Pick the persons and time picture"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTime::NumericTextInput"
+    timeout: 60000
+    label: "Assert - Time scan fills the time"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::NumericTextInput"
+      text: "7"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Assert - Time scan keeps the typed persons count"

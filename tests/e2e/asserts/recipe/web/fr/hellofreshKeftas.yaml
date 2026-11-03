@@ -102,7 +102,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePersons::PrefixText"
-    text: "Cette recette est pour : "
+    text: "Portions :"
     label: "Intro text for the number of persons is rendered (French)"
 
 - assertVisible:
@@ -112,7 +112,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePersons::SuffixText"
-    text: " personnes"
+    text: "personnes"
     label: "Outro text for the number of persons is rendered (French)"
 
 - scrollUntilVisible:
