@@ -1052,7 +1052,7 @@ describe('OCR Utility Functions', () => {
         );
         expect(result).toEqual({ recipeTime: 25 });
       });
-      test('extractFieldFromImage returns time and persons if the values are  availables (even with an array)', async () => {
+      test('extractFieldFromImage returns only the scanned field when time and persons are both available (even with an array)', async () => {
         mockRecognize.mockResolvedValue(mockResultPersonsTimes);
 
         let result = await extractFieldFromImage(
@@ -1061,7 +1061,7 @@ describe('OCR Utility Functions', () => {
           baseState,
           mockWarn
         );
-        expect(result).toEqual({ recipeTime: 25, recipePersons: 2 });
+        expect(result).toEqual({ recipeTime: 25 });
 
         result = await extractFieldFromImage(
           uriForOCR,
@@ -1069,9 +1069,9 @@ describe('OCR Utility Functions', () => {
           baseState,
           mockWarn
         );
-        expect(result).toEqual({ recipeTime: 25, recipePersons: 2 });
+        expect(result).toEqual({ recipePersons: 2 });
       });
-      test('extractFieldFromImage returns time and person if it is the only value available', async () => {
+      test('extractFieldFromImage returns only the scanned field when a single time and person row is available', async () => {
         mockRecognize.mockResolvedValue(mockResultPersonTime);
 
         let result = await extractFieldFromImage(
@@ -1080,7 +1080,7 @@ describe('OCR Utility Functions', () => {
           baseState,
           mockWarn
         );
-        expect(result).toEqual({ recipeTime: 25, recipePersons: 2 });
+        expect(result).toEqual({ recipeTime: 25 });
 
         result = await extractFieldFromImage(
           uriForOCR,
@@ -1088,7 +1088,7 @@ describe('OCR Utility Functions', () => {
           baseState,
           mockWarn
         );
-        expect(result).toEqual({ recipeTime: 25, recipePersons: 2 });
+        expect(result).toEqual({ recipePersons: 2 });
       });
       test('extractFieldFromImage returns person if it is the only value available (even with an array)', async () => {
         mockRecognize.mockResolvedValue(mockResultPersons);

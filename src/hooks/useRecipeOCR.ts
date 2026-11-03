@@ -12,7 +12,6 @@ import { useState, Dispatch, SetStateAction } from 'react';
 import {
   FormIngredientElement,
   ingredientTableElement,
-  nutritionTableElement,
   preparationStepElement,
   tagTableElement,
 } from '@customTypes/DatabaseElementTypes';
@@ -33,11 +32,12 @@ import {
 import { useTags } from '@hooks/useTags';
 import { useIngredients } from '@hooks/useIngredients';
 import { defaultValueNumber } from '@utils/Constants';
-import { emptyNutrition } from '@utils/NutritionUtils';
+import { mergeScannedNutrition } from '@utils/NutritionUtils';
 import { parseQuantity } from '@utils/Quantity';
 import { ocrLogger } from '@utils/logger';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useFormContext } from 'react-hook-form';
+import type { nutritionObject } from '@customTypes/OCRTypes';
 import { makeFormSetter } from '@utils/recipeFormSetters';
 import type { RecipeFormInput } from '@schemas/recipeFormSchema';
 import { useRecipeTags } from '@hooks/useRecipeTags';
@@ -249,14 +249,9 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
     });
   };
 
-  const writeNutrition = (partial: Partial<nutritionTableElement>) => {
-    const newNutrition = emptyNutrition();
-    for (const [key, value] of Object.entries(partial)) {
-      if (value !== undefined) {
-        newNutrition[key as keyof nutritionTableElement] = value;
-      }
-    }
-    form.setValue('recipeNutrition', newNutrition, ocrWriteOptions);
+  const writeNutrition = (scanned: nutritionObject) => {
+    const merged = mergeScannedNutrition(form.getValues('recipeNutrition'), scanned);
+    form.setValue('recipeNutrition', merged, ocrWriteOptions);
   };
 
   /**

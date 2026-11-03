@@ -1249,27 +1249,25 @@ export async function extractFieldFromImage(
         return {};
       }
     case recipeColumnsNames.persons:
-    case recipeColumnsNames.time:
+    case recipeColumnsNames.time: {
+      const isPersons = field === recipeColumnsNames.persons;
+      let value: number | undefined;
       if (typeof ocrResult === 'number') {
-        return field === recipeColumnsNames.persons
-          ? { recipePersons: ocrResult }
-          : { recipeTime: ocrResult };
-      }
-      if (Array.isArray(ocrResult) && ocrResult.length > 0) {
+        value = ocrResult;
+      } else if (Array.isArray(ocrResult) && ocrResult.length > 0) {
         if (isArrayOfNumber(ocrResult)) {
-          return field === recipeColumnsNames.persons
-            ? { recipePersons: ocrResult[0] as number }
-            : { recipeTime: ocrResult[0] as number };
-        } else if (isArrayOfType(ocrResult, keysPersonsAndTimeObject) && ocrResult.length > 0) {
-          const valueToTake = ocrResult[0] as personAndTimeObject;
-          return {
-            recipePersons: valueToTake.person as number,
-            recipeTime: valueToTake.time as number,
-          };
+          value = ocrResult[0] as number;
+        } else if (isArrayOfType(ocrResult, keysPersonsAndTimeObject)) {
+          const row = ocrResult[0] as personAndTimeObject;
+          value = isPersons ? row.person : row.time;
         }
       }
-      warn('Could not parse persons/time field');
-      return {};
+      if (value === undefined) {
+        warn('Could not parse persons/time field');
+        return {};
+      }
+      return isPersons ? { recipePersons: value } : { recipeTime: value };
+    }
     case recipeColumnsNames.ingredients:
       if (
         Array.isArray(ocrResult) &&
