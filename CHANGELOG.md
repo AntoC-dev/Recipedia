@@ -1,3 +1,10 @@
+## [2.55.1](https://github.com/AntoC-dev/Recipedia/compare/v2.55.0...v2.55.1) (2026-11-04)
+
+### Bug Fixes
+
+* **perf:** ignore render-count growth when counts vary between runs ([832d409](https://github.com/AntoC-dev/Recipedia/commit/832d409898b2ed60b113181cb883932d78a6a7fa)), closes [#691](https://github.com/AntoC-dev/Recipedia/issues/691)
+* **perf:** make Reassure render counts deterministic under RNTL 14 ([#696](https://github.com/AntoC-dev/Recipedia/issues/696)) ([4173a0a](https://github.com/AntoC-dev/Recipedia/commit/4173a0a291a6d47f730fc7da400cae187eb217da)), closes [#691](https://github.com/AntoC-dev/Recipedia/issues/691)
+
 ## [2.55.0](https://github.com/AntoC-dev/Recipedia/compare/v2.54.5...v2.55.0) (2026-10-26)
 
 ### Features
