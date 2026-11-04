@@ -88,6 +88,11 @@ export default {
     errorUnsupportedPlatform: 'This feature is only available on Android',
   },
 
+  autocomplete: {
+    suggestionAvailable: '{{count}} suggestion available',
+    suggestionsAvailable: '{{count}} suggestions available',
+  },
+
   authDialog: {
     title: 'Sign in to {{host}}',
     username: 'Email or username',

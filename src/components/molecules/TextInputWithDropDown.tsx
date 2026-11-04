@@ -34,8 +34,10 @@
  * ```
  */
 
-import { Keyboard, StyleProp, TextStyle, View, ViewStyle } from 'react-native';
+import { AccessibilityInfo, Keyboard, StyleProp, TextStyle, View, ViewStyle } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
+import { useI18n } from '@utils/i18n';
+import { uiLogger } from '@utils/logger';
 import { CustomTextInput } from '@components/atomic/CustomTextInput';
 import { AutocompleteBubble } from '@components/molecules/AutocompleteBubble';
 
@@ -144,6 +146,7 @@ export function TextInputWithDropDown({
   onBlur,
   renderLayout,
 }: TextInputWithDropDownType) {
+  const { t } = useI18n();
   const prevValueRef = useRef(value);
 
   const [textInput, setTextInput] = useState(value ?? '');
@@ -159,16 +162,34 @@ export function TextInputWithDropDown({
 
   const filteredItems = showDropdown ? filterSuggestions(referenceTextArray, textInput) : [];
   const shouldShowDropdown = filteredItems.length > 0;
+  /**
+   * Shows the suggestion list for `text` and, when the list goes from hidden to visible,
+   * announces the suggestion count to screen readers (once per opening, not per keystroke).
+   *
+   * @param text - Text the suggestions are filtered against
+   */
+  function openDropdown(text: string) {
+    setShowDropdown(true);
+    const count = filterSuggestions(referenceTextArray, text).length;
+    if (!shouldShowDropdown && count > 0) {
+      uiLogger.debug('Autocomplete opened, announcing suggestions', { testID, count });
+      AccessibilityInfo.announceForAccessibility(
+        count === 1
+          ? t('autocomplete.suggestionAvailable', { count })
+          : t('autocomplete.suggestionsAvailable', { count })
+      );
+    }
+  }
 
   function handleFocus() {
     isSelectingRef.current = false;
-    setShowDropdown(true);
+    openDropdown(textInput);
     onFocus?.();
   }
 
   function handleChangeText(text: string) {
     setTextInput(text);
-    setShowDropdown(true);
+    openDropdown(text);
     onChangeText?.(text);
   }
 
@@ -213,6 +234,8 @@ export function TextInputWithDropDown({
       right={right}
       autoCorrect={false}
       spellCheck={false}
+      accessibilityRole='combobox'
+      accessibilityState={{ expanded: shouldShowDropdown }}
     />
   );
 
