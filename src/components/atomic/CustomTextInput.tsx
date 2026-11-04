@@ -35,7 +35,14 @@
 
 import React, { useRef, useState } from 'react';
 import { useResetOnChange } from '@hooks/useResetOnChange';
-import { LayoutChangeEvent, StyleProp, TextStyle, ViewStyle } from 'react-native';
+import {
+  AccessibilityRole,
+  AccessibilityState,
+  LayoutChangeEvent,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
+} from 'react-native';
 import { TextInput, useTheme } from 'react-native-paper';
 import { getDatasetType } from '@utils/DatasetLoader';
 import { padding } from '@styles/spacing';
@@ -91,6 +98,10 @@ export type CustomTextInputProps = {
   autoCorrect?: boolean;
   /** Whether to enable spell check (default: true) */
   spellCheck?: boolean;
+  /** Accessibility role exposed to assistive technologies (e.g. 'combobox') */
+  accessibilityRole?: AccessibilityRole;
+  /** Accessibility state exposed to assistive technologies (e.g. `{ expanded }`) */
+  accessibilityState?: AccessibilityState;
 };
 
 /** Flag to disable the autocorrect and spell check for test purpose */
@@ -123,6 +134,8 @@ export function CustomTextInput({
   right,
   autoCorrect,
   spellCheck,
+  accessibilityRole,
+  accessibilityState,
 }: CustomTextInputProps) {
   const [displayValue, setDisplayValue] = useState(value ?? '');
   const lastCommittedValueRef = useRef<string | null>(null);
@@ -185,6 +198,8 @@ export function CustomTextInput({
       autoCorrect={disableAutoCorrect ? false : autoCorrect}
       spellCheck={disableAutoCorrect ? false : spellCheck}
       accessible={false}
+      accessibilityRole={accessibilityRole}
+      accessibilityState={accessibilityState}
     />
   );
 }

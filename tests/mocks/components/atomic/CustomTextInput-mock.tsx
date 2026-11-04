@@ -15,6 +15,8 @@ export function CustomTextInputMock({
   onEndEditing,
   onBlur,
   onLayout,
+  accessibilityRole,
+  accessibilityState,
 }: CustomTextInputProps) {
   const [displayValue, setDisplayValue] = useState(value ?? '');
   const [prevValue, setPrevValue] = useState(value);
@@ -49,6 +51,12 @@ export function CustomTextInputMock({
         onLayout={onLayout}
       />
       {label !== undefined && <Text testID={testID + '::Label'}>{label}</Text>}
+      {accessibilityRole !== undefined && (
+        <Text testID={testID + '::accessibilityRole'}>{accessibilityRole}</Text>
+      )}
+      {accessibilityState !== undefined && (
+        <Text testID={testID + '::accessibilityState'}>{JSON.stringify(accessibilityState)}</Text>
+      )}
       {error !== undefined && <Text testID={testID + '::error'}>{String(error)}</Text>}
     </>
   );

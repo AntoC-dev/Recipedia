@@ -177,6 +177,8 @@ const TextInputComponent = React.forwardRef<any, any>((props, _ref) => {
     scrollEnabled: props.scrollEnabled,
     keyboardType: props.keyboardType,
     secureTextEntry: props.secureTextEntry,
+    accessibilityRole: props.accessibilityRole,
+    accessibilityState: props.accessibilityState,
   };
 
   return (
