@@ -14,6 +14,13 @@ appId: "com.recipedia"
     id: "RecipeTitle::OpenModal::RoundButton::Label"
     text: "Scanner"
     label: "Title scan button label is displayed in French"
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::OpenModal::RoundButton::Label"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll down to the description buttons"
 - assertVisible:
     id: "RecipeDescription::OpenModal::RoundButton::Label"
     text: "Scanner"

@@ -33,6 +33,14 @@ appId: "com.recipedia"
 
 - runFlow:
     when:
+      true: ${output.isTime}
+    commands:
+      - runFlow:
+          file: "ocrPersons.yaml"
+          label: "OCR persons from the persons and time picture"
+
+- runFlow:
+    when:
       true: ${output.isNutritionToOCR}
     commands:
       - runFlow:

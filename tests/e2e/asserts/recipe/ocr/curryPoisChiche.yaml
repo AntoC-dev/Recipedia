@@ -79,7 +79,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeTags::RoundButton::Label"
-    text: "New tag"
+    text: "Add manually"
     label: "Add button label for the tag is rendered"
 
 - scrollUntilVisible:
@@ -170,8 +170,8 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeIngredients::AddButton::RoundButton::Label"
-    text: "Add manually"
-    label: "Label of the scan quantities bubtton is displayed"
+    text: "New ingredient"
+    label: "Label of the ingredients add button is displayed"
 
 - assertVisible:
     id: "RecipeIngredients::OpenModalQuantities::RoundButton"

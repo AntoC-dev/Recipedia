@@ -129,9 +129,17 @@ tags:
 
 - extendedWaitUntil:
     visible:
+      id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+    timeout: 5000
+    label: "Assert - First preparation step is added"
+
+- scrollUntilVisible:
+    element:
       id: "RecipePreparation::AddButton::RoundButton::Label"
       text: "New step"
-    timeout: 5000
+    direction: DOWN
+    speed: 30
+    centerElement: true
     label: "Assert - Preparation button switches to new step"
 
 - scrollUntilVisible:
