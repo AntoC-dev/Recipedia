@@ -36,7 +36,11 @@ baseline.
 - Tests: `tests/perf/*.perf.tsx`, via `measureRenders()`
 - CI: `build-test.yml` → `reassure-performance` job posts a sticky PR comment,
   then **`check-reassure-regression.mjs` blocks merge** on any significant
-  render-count regression or duration regression > 15%
+  render-count regression (only when the count is stable across runs, i.e.
+  `stdevCount` is 0 on both sides) or duration regression > 15%
+- `tests/setup-perf.js` configures Reassure to flush pending async updates after
+  render and before cleanup, and sets `warmupRuns: 2`, so render counts stay
+  deterministic under RNTL 14
 - Config: `reassure.config.js`
 
 ```bash
