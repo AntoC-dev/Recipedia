@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793268153366,
+  "lastUpdate": 1793876513344,
   "repoUrl": "https://github.com/AntoC-dev/Recipedia",
   "entries": {
     "Screen FPS": [
@@ -626,6 +626,63 @@ window.BENCHMARK_DATA = {
           {
             "name": "06_parameters",
             "value": 57.8,
+            "unit": "fps"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "semantic-release-bot",
+            "username": "semantic-release-bot",
+            "email": "semantic-release-bot@martynus.net"
+          },
+          "committer": {
+            "name": "semantic-release-bot",
+            "username": "semantic-release-bot",
+            "email": "semantic-release-bot@martynus.net"
+          },
+          "id": "882c95b6fe35d6edb36d10809092bdb734a8387d",
+          "message": "chore(release): 2.55.1 [skip ci]\n\n## [2.55.1](https://github.com/AntoC-dev/Recipedia/compare/v2.55.0...v2.55.1) (2026-11-04)\n\n### Bug Fixes\n\n* **perf:** ignore render-count growth when counts vary between runs ([832d409](https://github.com/AntoC-dev/Recipedia/commit/832d409898b2ed60b113181cb883932d78a6a7fa)), closes [#691](https://github.com/AntoC-dev/Recipedia/issues/691)\n* **perf:** make Reassure render counts deterministic under RNTL 14 ([#696](https://github.com/AntoC-dev/Recipedia/issues/696)) ([4173a0a](https://github.com/AntoC-dev/Recipedia/commit/4173a0a291a6d47f730fc7da400cae187eb217da)), closes [#691](https://github.com/AntoC-dev/Recipedia/issues/691)",
+          "timestamp": "2026-11-04T19:56:40Z",
+          "url": "https://github.com/AntoC-dev/Recipedia/commit/882c95b6fe35d6edb36d10809092bdb734a8387d"
+        },
+        "date": 1793876512130,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "00_seed",
+            "value": 59.6,
+            "unit": "fps"
+          },
+          {
+            "name": "01_app_start",
+            "value": 59.8,
+            "unit": "fps"
+          },
+          {
+            "name": "02_home",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "03_search",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "04_recipe_view",
+            "value": 59.4,
+            "unit": "fps"
+          },
+          {
+            "name": "05_shopping",
+            "value": 59.4,
+            "unit": "fps"
+          },
+          {
+            "name": "06_parameters",
+            "value": 56.4,
             "unit": "fps"
           }
         ]
