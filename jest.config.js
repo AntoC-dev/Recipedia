@@ -8,7 +8,7 @@ module.exports = {
         '<rootDir>/tests/integration/**/*.test.{js,jsx,ts,tsx}',
     ],
     modulePathIgnorePatterns: ['<rootDir>/.claude/worktrees/'],
-    maxWorkers: process.env.CI ? '100%' : '50%',
+    maxWorkers: process.env.CI ? '100%' : Math.max(1, require('os').cpus().length - 1),
     testTimeout: 10000,
     workerIdleMemoryLimit: '512MB',
     clearMocks: true,
