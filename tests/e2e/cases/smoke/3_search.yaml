@@ -7,6 +7,12 @@ tags:
     id: "BottomTabs::Search"
     label: "Navigate to Search screen"
 
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::SearchBar"
+    timeout: 30000
+    label: "Wait for Search screen"
+
 - tapOn:
     id: "SearchScreen::SearchBar"
     label: "Focus search bar to open the suggestion dropdown"

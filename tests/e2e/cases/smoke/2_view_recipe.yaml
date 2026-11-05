@@ -7,7 +7,11 @@ tags:
     id: "BottomTabs::Search"
     label: "Navigate to Search screen"
 
-- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::SearchBar"
+    timeout: 30000
+    label: "Wait for Search screen"
 
 - assertVisible:
     id: "SearchScreen::RecipeCards::1::Cover"

@@ -59,63 +59,63 @@ appId: "com.recipedia"
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "cacahuètes grillées"
-      INGREDIENT_QUANTITY_AND_UNIT: "100"
+      INGREDIENT_QUANTITY_AND_UNIT: "200"
     label: "Assert cacahuètes grillées ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "concentré de tomates"
-      INGREDIENT_QUANTITY_AND_UNIT: "35"
+      INGREDIENT_QUANTITY_AND_UNIT: "70"
     label: "Assert concentré de tomates ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "Filet de poulet"
-      INGREDIENT_QUANTITY_AND_UNIT: "2"
+      INGREDIENT_QUANTITY_AND_UNIT: "4"
     label: "Assert flet de poulet ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "gingembre"
-      INGREDIENT_QUANTITY_AND_UNIT: "1"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
     label: "Assert gingembre ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "(gousse d'ail|goussed'ail)"
-      INGREDIENT_QUANTITY_AND_UNIT: "1"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
     label: "Assert gousse d'ail ingredient (optional space tolerates iOS vs Android ML Kit spacing)"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "lait de coco"
-      INGREDIENT_QUANTITY_AND_UNIT: "200"
+      INGREDIENT_QUANTITY_AND_UNIT: "400"
     label: "Assert lait de coco ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "oignon jaune"
-      INGREDIENT_QUANTITY_AND_UNIT: "1"
+      INGREDIENT_QUANTITY_AND_UNIT: "2"
     label: "Assert lait de coco ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "oignon nouveau"
-      INGREDIENT_QUANTITY_AND_UNIT: "0[.]5"
+      INGREDIENT_QUANTITY_AND_UNIT: "1"
     label: "Assert oignon nouveau ingredient"
 
 - runFlow:
     file: "../../common/assertIngredient.yaml"
     env:
       INGREDIENT_NAME: "riz basmati  Bio"
-      INGREDIENT_QUANTITY_AND_UNIT: "150"
+      INGREDIENT_QUANTITY_AND_UNIT: "300"
     label: "Assert riz basmati  Bio ingredient"
 
 - scrollUntilVisible:
