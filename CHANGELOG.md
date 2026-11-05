@@ -1,3 +1,15 @@
+## [2.56.1](https://github.com/AntoC-dev/Recipedia/compare/v2.56.0...v2.56.1) (2026-11-05)
+
+### Bug Fixes
+
+* **recipe-scraper:** pin w3lib<2.6 to unbreak iOS bundle validation ([f9959e8](https://github.com/AntoC-dev/Recipedia/commit/f9959e89d3a0f42ad1de22c5b07923269c4c1b1f))
+
+### Performance Improvements
+
+* **test:** load reassure setup only for Reassure runs ([8430e99](https://github.com/AntoC-dev/Recipedia/commit/8430e99381bedd7f90f37296258c799059600106))
+* **test:** speed up local unit tests and quality CI; pin w3lib for iOS ([#699](https://github.com/AntoC-dev/Recipedia/issues/699)) ([15b0560](https://github.com/AntoC-dev/Recipedia/commit/15b0560ac475a91be19b3380b17edf80914e082c)), closes [#597](https://github.com/AntoC-dev/Recipedia/issues/597)
+* **test:** use cpus-1 jest workers locally ([861bcdd](https://github.com/AntoC-dev/Recipedia/commit/861bcddaafc2652c38a9e3a0ef6513d29d757b17))
+
 ## [2.56.0](https://github.com/AntoC-dev/Recipedia/compare/v2.55.1...v2.56.0) (2026-11-05)
 
 ### Features
