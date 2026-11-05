@@ -1,5 +1,5 @@
 import React, { act } from 'react';
-import { Keyboard, View } from 'react-native';
+import { AccessibilityInfo, Keyboard, View } from 'react-native';
 import { fireEvent, render, waitFor, within, RenderResult } from '@testing-library/react-native';
 import {
   TextInputWithDropDown,
@@ -479,5 +479,102 @@ describe('TextInputWithDropDown Component', () => {
       await typeText(getByTestId, 'xyz');
       expect(queryByTestId(listId)).toBeNull();
     });
+  });
+});
+
+describe('TextInputWithDropDown accessibility', () => {
+  const reference = ['Pasta', 'Pastis', 'Salmon'];
+  const roleId = 'TextInputWithDropDown::accessibilityRole';
+  const stateId = 'TextInputWithDropDown::accessibilityState';
+
+  function renderDropdown() {
+    return render(
+      <TextInputWithDropDown testID='TextInputWithDropDown' referenceTextArray={reference} />
+    );
+  }
+
+  beforeEach(() => {
+    jest.spyOn(AccessibilityInfo, 'announceForAccessibility').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test('exposes the input as a combobox', async () => {
+    const { getByTestId } = await renderDropdown();
+
+    expect(getByTestId(roleId).props.children).toBe('combobox');
+  });
+
+  test('marks the combobox collapsed while no suggestion is shown', async () => {
+    const { getByTestId } = await renderDropdown();
+
+    expect(getByTestId(stateId).props.children).toBe(JSON.stringify({ expanded: false }));
+  });
+
+  test('marks the combobox expanded while suggestions are shown', async () => {
+    const { getByTestId } = await renderDropdown();
+
+    await typeText(getByTestId, 'past');
+
+    expect(getByTestId(stateId).props.children).toBe(JSON.stringify({ expanded: true }));
+  });
+
+  test('announces the plural suggestion count when the list opens', async () => {
+    const { getByTestId } = await renderDropdown();
+
+    await typeText(getByTestId, 'past');
+
+    expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledWith(
+      'autocomplete.suggestionsAvailable'
+    );
+  });
+
+  test('announces the singular suggestion count when one suggestion matches', async () => {
+    const { getByTestId } = await renderDropdown();
+
+    await typeText(getByTestId, 'salm');
+
+    expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledWith(
+      'autocomplete.suggestionAvailable'
+    );
+  });
+
+  test('announces the suggestions when focusing opens the list', async () => {
+    const { getByTestId } = await renderDropdown();
+
+    await fireEvent(getByTestId(inputId), 'focus');
+
+    expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledWith(
+      'autocomplete.suggestionsAvailable'
+    );
+  });
+
+  test('does not re-announce while typing narrows the open list', async () => {
+    const { getByTestId } = await renderDropdown();
+
+    await typeText(getByTestId, 'pas');
+    await typeText(getByTestId, 'pasti');
+
+    expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledTimes(1);
+  });
+
+  test('announces again when the list reopens', async () => {
+    const { getByTestId } = await renderDropdown();
+
+    await typeText(getByTestId, 'pas');
+    await typeText(getByTestId, 'xyz');
+    await typeText(getByTestId, 'sal');
+
+    expect(AccessibilityInfo.announceForAccessibility).toHaveBeenCalledTimes(2);
+  });
+
+  test('does not announce when no suggestion matches', async () => {
+    const { getByTestId } = await renderDropdown();
+
+    await typeText(getByTestId, 'xyz');
+
+    expect(AccessibilityInfo.announceForAccessibility).not.toHaveBeenCalled();
   });
 });

@@ -61,6 +61,26 @@ describe('CustomTextInput', () => {
     expect(input.props.editable).toBe(false);
   });
 
+  test('exposes no accessibility role by default', async () => {
+    const { getByTestId } = await render(<CustomTextInput {...baseProps} />);
+
+    expect(getByTestId('custom-input::CustomTextInput').props.accessibilityRole).toBeUndefined();
+  });
+
+  test('forwards the accessibility role and state to the input', async () => {
+    const { getByTestId } = await render(
+      <CustomTextInput
+        {...baseProps}
+        accessibilityRole='combobox'
+        accessibilityState={{ expanded: true }}
+      />
+    );
+    const input = getByTestId('custom-input::CustomTextInput');
+
+    expect(input.props.accessibilityRole).toBe('combobox');
+    expect(input.props.accessibilityState).toEqual({ expanded: true });
+  });
+
   test('passes multiline prop to the underlying input', async () => {
     const { getByTestId } = await render(
       <CustomTextInput {...baseProps} multiline value={'abc\ndef'} />
