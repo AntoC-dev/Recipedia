@@ -267,10 +267,11 @@ lever is `tapOn`'s element-relative `point`: `"95%,50%"` puts the caret past the
 end, `"2%,50%"` at the start (used by
 `flows/parameters/tags/insertTextAtCursorBeginning.yaml`). `replaceText.yaml`
 taps at 95% before erasing, so one `eraseText` is enough, then waits for the
-field to read empty. Never hand-roll `tapOn` + `eraseText` on a field holding
-more than a character or two, and never add a second erase to force a field
-clear — a field that comes back non-empty is being re-rendered from state
-mid-erase; fix that instead.
+field to read empty. `eraseText` only removes 50 characters unless given
+`charactersToErase`; `replaceFocused.yaml` passes 100 for long OCRed titles.
+Never hand-roll `tapOn` + `eraseText` on a field holding more than a character
+or two, and never add a second erase to force a field clear — a field that comes
+back non-empty is being re-rendered from state mid-erase; fix that instead.
 
 Fields that start non-empty: persons (seeded from `defaultPersons`, `4` out of
 the box), time and persons in OCR mode (`manuallyFill` seeds `0`), and

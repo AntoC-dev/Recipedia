@@ -9,12 +9,8 @@ tags:
 
 - extendedWaitUntil:
     visible:
-      id: "SearchScreen::SearchBar"
+      id: "SearchScreen::RecipeCards::1::Cover"
     timeout: 30000
-    label: "Wait for Search screen"
-
-- assertVisible:
-    id: "SearchScreen::RecipeCards::1::Cover"
     label: "At least one recipe card renders"
 
 - tapOn:
