@@ -51,7 +51,7 @@ fi
 bash "$(dirname "${BASH_SOURCE[0]}")/split-app-log-by-launch.sh" "app-stream-${SUITE}.txt" "$LOG_DIR/app-logs" ios
 
 # Lossy: anything outside this list is dropped. Unfiltered these overflow the merge job disk.
-KEEP_PROCESSES='Recipedia|SpringBoard|runningboardd|assertiond|testmanagerd|maestro-driver-iosUITests-Runner|CoreSimulator|mediaserverd|kernel|ReportCrash|osanalyticshelper|symptomsd'
+KEEP_PROCESSES='Recipedia|SpringBoard|runningboardd|assertiond|testmanagerd|maestro-driver-iosUITests-Runner|CoreSimulator|mediaserverd|kernel|ReportCrash|osanalyticshelper|symptomsd|CoreSimulatorBridge|assetsd|photolibraryd|photoanalysisd|mediaanalysisd'
 echo "📋 Filtering simulator syslogs down to the processes E2E triage reads..."
 # perl, not grep: BSD grep -E runs this alternation ~6x slower on multi-GB syslogs.
 find "$LOG_DIR" -name device-simulator.log -type f | while IFS= read -r sim_log; do
