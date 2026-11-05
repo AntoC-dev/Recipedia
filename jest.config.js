@@ -63,6 +63,6 @@ module.exports = {
     setupFilesAfterEnv: [
         '<rootDir>/tests/setup-community-mocks.js',
         '<rootDir>/tests/setup.js',
-        '<rootDir>/tests/setup-perf.js',
+        ...(process.env.REASSURE_OUTPUT_FILE ? ['<rootDir>/tests/setup-perf.js'] : []),
     ],
 };

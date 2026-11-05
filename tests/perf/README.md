@@ -40,7 +40,9 @@ baseline.
   `stdevCount` is 0 on both sides) or duration regression > 15%
 - `tests/setup-perf.js` configures Reassure to flush pending async updates after
   render and before cleanup, and sets `warmupRuns: 2`, so render counts stay
-  deterministic under RNTL 14
+  deterministic under RNTL 14. `jest.config.js` loads it only when the Reassure
+  CLI sets `REASSURE_OUTPUT_FILE`, so unit and integration runs skip the
+  `reassure`/`mathjs` import
 - Config: `reassure.config.js`
 
 ```bash
