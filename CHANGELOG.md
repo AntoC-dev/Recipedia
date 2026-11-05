@@ -1,3 +1,11 @@
+## [2.56.0](https://github.com/AntoC-dev/Recipedia/compare/v2.55.1...v2.56.0) (2026-11-05)
+
+### Features
+
+* **a11y:** combobox semantics and suggestion announcement for autocomplete ([#697](https://github.com/AntoC-dev/Recipedia/issues/697)) ([50d6845](https://github.com/AntoC-dev/Recipedia/commit/50d6845c2a9a9ceecb5ae1bc3f37e47436237a94)), closes [#621](https://github.com/AntoC-dev/Recipedia/issues/621)
+* **CustomTextInput:** forward accessibility role and state ([41f9d83](https://github.com/AntoC-dev/Recipedia/commit/41f9d8354478b2601d24412f685661d7845a3bdd)), closes [#621](https://github.com/AntoC-dev/Recipedia/issues/621)
+* **TextInputWithDropDown:** expose combobox and announce suggestions ([045e06d](https://github.com/AntoC-dev/Recipedia/commit/045e06d13a2067284a223114a28c086472ceb7a0)), closes [#621](https://github.com/AntoC-dev/Recipedia/issues/621)
+
 ## [2.55.1](https://github.com/AntoC-dev/Recipedia/compare/v2.55.0...v2.55.1) (2026-11-04)
 
 ### Bug Fixes
