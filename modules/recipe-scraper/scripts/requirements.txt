@@ -26,3 +26,6 @@ extruct>=0.17.0,<0.18.0
 # lxml_html_clean is a transitive dep of extruct. 0.4.5+ requires lxml>=6.1.1, which
 # Pyodide does not ship as WASM. Pin to <0.4.5 to stay compatible with Pyodide's lxml 6.0.2.
 lxml_html_clean<0.4.5
+# w3lib is a transitive dep of extruct. 2.6.0 requires frostwork, a native extension with no
+# Pyodide wheel, so the iOS bundle validation fails. Pin to <2.6 until Pyodide ships frostwork.
+w3lib<2.6
