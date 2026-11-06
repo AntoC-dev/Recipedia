@@ -106,7 +106,8 @@ tags:
       id: "RecipeImage"
     direction: UP
     centerElement: true
-    speed: 20
+    speed: 90
+    timeout: 60000
     label: "Action - Scroll back to top"
 
 - runFlow:
