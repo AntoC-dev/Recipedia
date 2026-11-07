@@ -1,13 +1,10 @@
 import { ScrapedRecipe, ScraperResult } from '@app/modules/recipe-scraper';
 import { hellofreshKeftasRecipe } from '@test-data/scraperMocks/hellofresh';
 
-export const mockScrapeRecipe = jest.fn<Promise<ScraperResult<ScrapedRecipe>>, [string]>();
-export const mockScrapeRecipeFromHtml = jest.fn<
-  Promise<ScraperResult<ScrapedRecipe>>,
-  [string, string]
->();
+export const mockScrapeRecipe = jest.fn<Promise<ScraperResult>, [string]>();
+export const mockScrapeRecipeFromHtml = jest.fn<Promise<ScraperResult>, [string, string]>();
 export const mockScrapeRecipeAuthenticated = jest.fn<
-  Promise<ScraperResult<ScrapedRecipe>>,
+  Promise<ScraperResult>,
   [string, string, string]
 >();
 export const mockGetSupportedHosts = jest.fn<Promise<ScraperResult<string[]>>, []>();

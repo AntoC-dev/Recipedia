@@ -28,7 +28,7 @@ import { useState } from 'react';
 import { Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { isScraperSuccess, ScraperErrorTypes, useScraper } from '@app/modules/recipe-scraper';
-import type { ScrapedRecipe, ScraperError, ScraperResult } from '@app/modules/recipe-scraper';
+import type { ScraperError, ScraperResult } from '@app/modules/recipe-scraper';
 import { detectAuthRequired } from '@app/modules/recipe-scraper/src/authDetection';
 import { downloadImageToCache } from '@utils/FileGestion';
 import { serializeError, uiLogger } from '@utils/logger';
@@ -123,7 +123,7 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
   const clearError = () => setError(undefined);
 
   const processScrapedData = async (
-    scraperResult: ScraperResult<ScrapedRecipe>,
+    scraperResult: ScraperResult,
     url: string,
     logPrefix: string,
     html?: string

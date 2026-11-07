@@ -19,12 +19,12 @@ jest.mock('@utils/FileGestion', () => ({
 const mockFetchHtml = fetchHtml as jest.Mock;
 const mockDownload = downloadImageToCache as jest.Mock;
 
-const successResult = (data: ScrapedRecipe): ScraperResult<ScrapedRecipe> => ({
+const successResult = (data: ScrapedRecipe): ScraperResult => ({
   success: true,
   data,
 });
 
-const errorResult = (message: string): ScraperResult<ScrapedRecipe> => ({
+const errorResult = (message: string): ScraperResult => ({
   success: false,
   error: { type: 'Error', message },
 });
