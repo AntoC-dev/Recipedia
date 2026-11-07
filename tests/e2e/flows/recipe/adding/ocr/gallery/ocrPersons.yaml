@@ -9,6 +9,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to the persons scan icon"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePersons::OpenModal::IconButton"
     label: "Tap on icon to OCR persons from the persons and time picture"

@@ -52,6 +52,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Action - Scroll to ingredients skip chip"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "BulkImportValidation::Ingredient::.*::SkipChip"
     label: "Action - Ignore one of the ingredients"

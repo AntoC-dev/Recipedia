@@ -8,6 +8,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredient to delete"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::8::DeleteButton"
     label: "Delete the 'conserve' line as it is not an ingredient to keep"

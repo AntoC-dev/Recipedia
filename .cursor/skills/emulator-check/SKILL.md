@@ -39,14 +39,4 @@ transient red boxes. Red box right after edits → re-read file before assuming 
 
 ## Dev build
 
-- Reload / launch dev build only when user grants it for session.
-- User's Metro running → use it only if it serves the checkout under test (`lsof -p <pid> -a -d cwd`); a Metro from
-  another checkout shows other code. Else start Metro from current checkout/worktree on free port (never kill another
-  session's Metro): `npx expo start --dev-client --port <port> --offline` (background), wait until `/status` returns
-  `packager-status:running`, then open dev-client link:
-  - Android: `adb reverse tcp:<port> tcp:<port>`, then `adb shell am start -a android.intent.action.VIEW -d
-    "exp+recipedia://expo-development-client/?url=http%3A%2F%2Flocalhost%3A<port>"`.
-  - iOS: same URL via `xcrun simctl openurl booted`.
-  - First bundle takes a while: wait for `Bundled` in Metro log before running flows.
-- Android `Can't find service: package` / broken pipe → system server restarting; poll `adb shell service check package`
-  until `found`, relaunch.
+Follow `.claude/docs/device-dev-build.md` (pick free device, Android preferred; own Metro; hard rules).

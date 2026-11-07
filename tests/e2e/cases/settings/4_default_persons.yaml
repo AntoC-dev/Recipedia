@@ -48,6 +48,8 @@ tags:
     centerElement: true
     label: "Action - Scroll to Pesto Pasta recipe"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::RecipeCards::8::.*"
     label: "Action - Open Pesto Pasta recipe"
@@ -87,6 +89,8 @@ tags:
     speed: 60
     centerElement: true
     label: "Scroll to recipe card"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::RecipeCards::8::.*"

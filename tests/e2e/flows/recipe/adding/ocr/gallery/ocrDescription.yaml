@@ -8,6 +8,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to description section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeDescription::OpenModal::(RoundButton|IconButton)"
     label: "Tap on OCR button of recipe description"

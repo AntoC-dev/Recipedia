@@ -7,6 +7,8 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::OpenModal::RoundButton"
     label: "Tap on OCR button of recipe preparation"

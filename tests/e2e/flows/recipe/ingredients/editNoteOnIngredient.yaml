@@ -9,6 +9,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredient note button"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::${INDEX}::NoteButton"
     label: "Tap note button to open edit dialog"

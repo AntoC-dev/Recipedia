@@ -9,6 +9,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredients section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Press new ingredient button"

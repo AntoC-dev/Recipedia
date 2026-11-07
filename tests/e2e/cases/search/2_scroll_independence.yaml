@@ -43,6 +43,8 @@ tags:
     speed: 40
     label: "Action - Scroll back to top of the screen"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::SearchBar-clear-icon"
     label: "Action - Tap clear icon: clears text and exits search mode back to cards"

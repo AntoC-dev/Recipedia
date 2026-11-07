@@ -114,6 +114,8 @@ tags:
     speed: 20
     label: "Action - Scroll to october item"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "IngredientsSettings::ItemDialog::EditModal::SeasonalityCalendar::1"
     label: "Action - Remove october from seasonality"

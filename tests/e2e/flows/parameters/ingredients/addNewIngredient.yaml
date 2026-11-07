@@ -41,6 +41,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Action - Scroll to legumes item"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion::ingredientTypes.legumes"
     label: "Select legumes type"
@@ -58,6 +60,8 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
     label: "Action - Scroll up to ensure type accordion is visible"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "IngredientsSettings::ItemDialog::AddModal::TypeAccordion"

@@ -33,6 +33,8 @@ tags:
     centerElement: true
     label: "Action - Scroll to description"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeDescription::ManuallyFill::RoundButton"
     label: "Action - Fill the description manually"
@@ -53,6 +55,8 @@ tags:
     centerElement: true
     label: "Action - Scroll to tags"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeTags::RoundButton"
     label: "Action - Open a tag input"
@@ -69,6 +73,8 @@ tags:
     speed: 20
     centerElement: true
     label: "Action - Scroll to ingredients"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
@@ -101,6 +107,8 @@ tags:
     centerElement: true
     label: "Action - Scroll to time"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeTime::ManuallyFill::RoundButton"
     label: "Action - Fill time manually"
@@ -122,6 +130,8 @@ tags:
     speed: 30
     centerElement: true
     label: "Action - Scroll to preparation"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipePreparation::AddButton::RoundButton"

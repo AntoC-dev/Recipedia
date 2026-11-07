@@ -27,6 +27,8 @@ tags:
     centerElement: true
     label: "Action - Scroll to ingredients section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Action - Add ingredient to recipe"
@@ -133,6 +135,8 @@ tags:
     centerElement: true
     label: "Action - Scroll to Fish item"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion::ingredientTypes.fish"
     label: "Action - Select Fish type"
@@ -150,6 +154,8 @@ tags:
     speed: 20
     centerElement: true
     label: "Action - Scroll up to ensure type accordion is visible"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::TypeAccordion"
@@ -185,6 +191,8 @@ tags:
     speed: 20
     centerElement: true
     label: "Action - Scroll to february item"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::2"

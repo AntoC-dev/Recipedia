@@ -8,6 +8,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to first pending tag"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "BulkImportValidation::Tag::.*::AddNewChip"
     label: "Tap Add New on pending tag"

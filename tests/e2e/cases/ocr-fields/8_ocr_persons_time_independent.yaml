@@ -17,6 +17,8 @@ tags:
     centerElement: true
     label: "Action - Scroll to the persons scan icon"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePersons::OpenModal::IconButton"
     label: "Action - Scan persons through the inline icon"
