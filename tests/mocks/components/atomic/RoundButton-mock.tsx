@@ -16,6 +16,11 @@ export function roundButtonMock(roundButtonProps: RoundButtonProps) {
       <Text testID={roundButtonProps.testID + '::RoundButton::Label'}>
         {roundButtonProps.label}
       </Text>
+      {roundButtonProps.hideLabel !== undefined && (
+        <Text testID={roundButtonProps.testID + '::RoundButton::HideLabel'}>
+          {String(roundButtonProps.hideLabel)}
+        </Text>
+      )}
       {roundButtonProps.style !== undefined && (
         <Text testID={roundButtonProps.testID + '::RoundButton::Style'}>
           {JSON.stringify(roundButtonProps.style)}

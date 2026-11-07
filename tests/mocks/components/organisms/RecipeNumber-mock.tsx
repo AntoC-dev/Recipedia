@@ -1,7 +1,13 @@
 import React from 'react';
 import { Button, Text, View } from 'react-native';
 import { RecipeNumberProps } from '@components/organisms/RecipeNumber';
-import { BlurButton, ErrorEcho } from './_recipeFieldMockHelpers';
+import {
+  BlurButton,
+  ErrorEcho,
+  ManuallyFillButton,
+  MockScanButton,
+  WithScanEcho,
+} from './_recipeFieldMockHelpers';
 
 export function recipeNumberMock(recipeNumberProp: RecipeNumberProps) {
   const { testID, numberProps, error, onBlur } = recipeNumberProp;
@@ -14,13 +20,9 @@ export function recipeNumberMock(recipeNumberProp: RecipeNumberProps) {
           <View>
             <Text testID={testID + '::PrefixText'}>{numberProps.prefixText}</Text>
             <Text testID={testID + '::SuffixText'}>{numberProps.suffixText}</Text>
-            {numberProps.editType === 'add' ? (
-              <Button
-                testID={testID + '::OpenModal'}
-                title='Open Modal'
-                onPress={() => numberProps.openModal()}
-              />
-            ) : (
+            <Text testID={testID + '::ScanField'}>{numberProps.scanField}</Text>
+            <WithScanEcho testID={testID} withScan={numberProps.withScan} />
+            {numberProps.editType === 'editable' ? (
               <View>
                 <Text testID={testID + '::TextEditable'}>{numberProps.textEditable}</Text>
                 <Button
@@ -30,7 +32,12 @@ export function recipeNumberMock(recipeNumberProp: RecipeNumberProps) {
                 />
                 <BlurButton testID={testID} onBlur={onBlur} />
               </View>
+            ) : (
+              <ManuallyFillButton testID={testID} onPress={numberProps.manuallyFill} />
             )}
+            {numberProps.withScan ? (
+              <MockScanButton testID={testID + '::OpenModal'} field={numberProps.scanField} />
+            ) : null}
           </View>
         )}
       </View>

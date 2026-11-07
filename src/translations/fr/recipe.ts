@@ -48,13 +48,11 @@ export default {
 
   timeReadOnlyBeforePerson: 'Préparation (',
   timeReadOnlyAfterPerson: ' min)',
-  timePrefixOCR: 'Temps de préparation (minutes) :',
-  timePrefixEdit: 'Temps de préparation :',
+  timePrefix: 'Temps de préparation :',
   timeSuffixEdit: 'min',
 
-  personPrefixOCR: 'Pour combien de personnes ?',
-  personPrefixEdit: 'Cette recette est pour : ',
-  personSuffixEdit: ' personnes',
+  personPrefix: 'Portions :',
+  personSuffixEdit: 'personnes',
 
   validateReadOnly: 'Ajouter au menu',
   validateEdit: 'Valider les modifications',

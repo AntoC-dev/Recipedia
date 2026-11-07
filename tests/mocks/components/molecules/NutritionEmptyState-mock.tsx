@@ -1,26 +1,28 @@
 import React from 'react';
 import { Button, Text, View } from 'react-native';
 import { NutritionEmptyStateProps } from '@components/molecules/NutritionEmptyState';
+import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
+import { MockScanButton, WithScanEcho } from '@mocks/components/organisms/_recipeFieldMockHelpers';
 
 export function NutritionEmptyState({
   onButtonPressed,
-  mode,
+  withScan,
   parentTestId = 'NutritionEmptyState',
 }: NutritionEmptyStateProps) {
   const testId = parentTestId + '::NutritionEmptyState';
-  const isOCRMode = mode === 'ocr';
 
   return (
     <View testID={testId}>
       <Text testID={testId + '::ParentTestId'}>{parentTestId}</Text>
-      <Text testID={testId + '::Mode'}>{mode}</Text>
-      {onButtonPressed && (
-        <Button
-          testID={testId + (isOCRMode ? '::OnOCRNutrition' : '::OnAddNutrition')}
-          onPress={onButtonPressed}
-          title={isOCRMode ? 'Mock OCR Nutrition' : 'Mock Add Nutrition'}
-        />
-      )}
+      <WithScanEcho testID={testId} withScan={withScan} />
+      {withScan ? (
+        <MockScanButton testID={testId + '::OnOCRNutrition'} field={recipeColumnsNames.nutrition} />
+      ) : null}
+      <Button
+        testID={testId + '::OnAddNutrition'}
+        onPress={onButtonPressed}
+        title='Mock Add Nutrition'
+      />
     </View>
   );
 }

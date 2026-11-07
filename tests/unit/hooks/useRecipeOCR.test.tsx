@@ -310,6 +310,51 @@ describe('useRecipeOCR', () => {
       expect(result.current.form.form.getValues('recipeNutrition')?.protein).toBe(10);
     });
 
+    test('nutrition scan updates only found keys and keeps user-typed values for the others', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({
+        recipeNutrition: {
+          energyKcal: 200,
+          protein: 10,
+        },
+      });
+
+      const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
+
+      const { result } = await renderHook(
+        () => ({
+          ocr: useTestRecipeOCR(),
+          form: useRecipeForm(),
+        }),
+        { wrapper }
+      );
+
+      const userTypedNutrition = {
+        energyKcal: 150,
+        energyKj: 628,
+        fat: 5,
+        saturatedFat: 1,
+        carbohydrates: 20,
+        sugars: 3,
+        fiber: 2,
+        protein: 8,
+        salt: 0.5,
+        portionWeight: 250,
+      };
+      await act(async () => {
+        result.current.form.form.setValue('recipeNutrition', userTypedNutrition);
+      });
+
+      await act(async () => {
+        await result.current.ocr.fillOneField('image.jpg', recipeColumnsNames.nutrition);
+      });
+
+      expect(result.current.form.form.getValues('recipeNutrition')).toEqual({
+        ...userTypedNutrition,
+        energyKcal: 200,
+        protein: 10,
+      });
+    });
+
     test('adds tag directly when exact match found in database', async () => {
       mockExtractFieldFromImage.mockResolvedValue({
         recipeTags: [{ name: 'Italian' }],

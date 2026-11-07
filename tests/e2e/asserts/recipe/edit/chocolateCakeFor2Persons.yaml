@@ -21,7 +21,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePersons::SuffixText"
-    text: " persons"
+    text: "persons"
     label: "Outro text for the number of persons is rendered"
 
 - scrollUntilVisible:

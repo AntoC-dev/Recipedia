@@ -68,6 +68,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll back up to ${CATEGORY} accordion header"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::${output.accordionIndex}"
     label: "Collapse ${CATEGORY} accordion"

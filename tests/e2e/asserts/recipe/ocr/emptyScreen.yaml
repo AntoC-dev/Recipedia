@@ -19,9 +19,30 @@ appId: "com.recipedia"
     label: "OCR button label for the title is rendered"
 
 - assertVisible:
+    id: "RecipeTitle::ManuallyFill::RoundButton::Label"
+    text: "Add manually"
+    label: "Manual fill button label for the title is rendered"
+
+- assertVisible:
+    id: "RecipeTitle::ManuallyFill::RoundButton"
+    label: "Manual fill pencil button for the title is rendered"
+
+- assertNotVisible:
+    id: "RecipeTitle::OpenModal::IconButton"
+    label: "Inline scan icon is not rendered while the title input is hidden"
+
+- assertVisible:
     id: "RecipeDescription::Text"
     text: "Description:"
     label: "Intro text for the description is rendered"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::ManuallyFill::RoundButton::Label"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll down to the description buttons"
 
 - assertVisible:
     id: "RecipeDescription::OpenModal::RoundButton"
@@ -31,6 +52,19 @@ appId: "com.recipedia"
     id: "RecipeDescription::OpenModal::RoundButton::Label"
     text: "Scan"
     label: "OCR button label for the description is rendered"
+
+- assertVisible:
+    id: "RecipeDescription::ManuallyFill::RoundButton::Label"
+    text: "Add manually"
+    label: "Manual fill button label for the description is rendered"
+
+- assertVisible:
+    id: "RecipeDescription::ManuallyFill::RoundButton"
+    label: "Manual fill pencil button for the description is rendered"
+
+- assertNotVisible:
+    id: "RecipeDescription::OpenModal::IconButton"
+    label: "Inline scan icon is not rendered while the description input is hidden"
 
 - scrollUntilVisible:
     element:
@@ -81,7 +115,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeTags::RoundButton::Label"
-    text: "New tag"
+    text: "Add manually"
     label: "Add button label for the tag is rendered"
 
 - scrollUntilVisible:
@@ -94,7 +128,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePersons::PrefixText"
-    text: "This recipe is for : "
+    text: "Servings:"
     label: "Intro text for the number of persons is rendered"
 
 - assertVisible:
@@ -103,8 +137,12 @@ appId: "com.recipedia"
     label: "Number of persons is rendered"
 
 - assertVisible:
+    id: "RecipePersons::OpenModal::IconButton"
+    label: "Inline scan icon of the number of persons is rendered"
+
+- assertVisible:
     id: "RecipePersons::SuffixText"
-    text: " persons"
+    text: "persons"
     label: "Outro text for the number of persons is rendered"
 
 - scrollUntilVisible:
@@ -146,7 +184,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeTime::PrefixText"
-    text: "Prep time (minutes):"
+    text: "Prep time:"
     label: "Intro text for the time to prepare is rendered"
 
 - assertVisible:
@@ -162,6 +200,18 @@ appId: "com.recipedia"
     id: "RecipeTime::ManuallyFill::RoundButton::Label"
     text: "Add manually"
     label: "Manual fill button label for the time is rendered"
+
+- assertVisible:
+    id: "RecipeTime::ManuallyFill::RoundButton"
+    label: "Manual fill pencil button for the time is rendered"
+
+- assertNotVisible:
+    id: "RecipeTime::SuffixText"
+    label: "Time suffix is not rendered while the input is hidden"
+
+- assertNotVisible:
+    id: "RecipeTime::OpenModal::IconButton"
+    label: "Inline scan icon is not rendered while the time input is hidden"
 
 - scrollUntilVisible:
     element:

@@ -15,6 +15,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Classic Pancakes recipe"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::RecipeCards::3::Classic Pancakes"
     label: "Open Classic Pancakes recipe"

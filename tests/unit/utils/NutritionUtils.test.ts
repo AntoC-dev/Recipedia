@@ -1,9 +1,12 @@
+import { defaultValueNumber } from '@utils/Constants';
 import {
   cleanIngredientName,
   extractFirstInteger,
   extractNumericValue,
   isAllDigits,
+  emptyNutrition,
   kcalToKj,
+  mergeScannedNutrition,
   namesMatch,
   normalizeKey,
 } from '@utils/NutritionUtils';
@@ -235,6 +238,70 @@ describe('NutritionUtils', () => {
 
     it('strips parentheticals mid-string', () => {
       expect(cleanIngredientName('Olive (brand) Oil')).toBe('Olive Oil');
+    });
+  });
+
+  describe('mergeScannedNutrition', () => {
+    const userTypedNutrition = {
+      energyKcal: 150,
+      energyKj: 628,
+      fat: 5,
+      saturatedFat: 1,
+      carbohydrates: 20,
+      sugars: 3,
+      fiber: 2,
+      protein: 8,
+      salt: 0.5,
+      portionWeight: 250,
+    };
+
+    it('falls back to sentinels for keys the scan missed when no nutrition exists', () => {
+      expect(mergeScannedNutrition(undefined, { energyKcal: 200, protein: 10 })).toEqual({
+        ...emptyNutrition(),
+        energyKcal: 200,
+        protein: 10,
+      });
+    });
+
+    it('overwrites only found keys and keeps the existing values for the others', () => {
+      expect(mergeScannedNutrition(userTypedNutrition, { energyKcal: 200, protein: 10 })).toEqual({
+        ...userTypedNutrition,
+        energyKcal: 200,
+        protein: 10,
+      });
+    });
+
+    it('treats a found zero as a value to apply', () => {
+      expect(mergeScannedNutrition(userTypedNutrition, { sugars: 0 }).sugars).toBe(0);
+    });
+
+    it('ignores keys explicitly set to undefined', () => {
+      expect(mergeScannedNutrition(userTypedNutrition, { fat: undefined })).toEqual(
+        userTypedNutrition
+      );
+    });
+
+    it('keeps the existing id', () => {
+      const withId = { ...userTypedNutrition, id: 7 };
+
+      expect(mergeScannedNutrition(withId, { salt: 1.2 })).toEqual({ ...withId, salt: 1.2 });
+    });
+
+    it('keeps sentinels of a partially filled table when the scan misses them', () => {
+      const partiallyFilled = { ...emptyNutrition(), fat: 5 };
+
+      const merged = mergeScannedNutrition(partiallyFilled, { protein: 10 });
+
+      expect(merged).toEqual({ ...partiallyFilled, protein: 10 });
+      expect(merged.energyKcal).toBe(defaultValueNumber);
+    });
+
+    it('does not mutate the current nutrition', () => {
+      const current = { ...userTypedNutrition };
+
+      mergeScannedNutrition(current, { fat: 9 });
+
+      expect(current).toEqual(userTypedNutrition);
     });
   });
 });

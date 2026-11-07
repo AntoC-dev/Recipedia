@@ -14,10 +14,25 @@ appId: "com.recipedia"
     id: "RecipeTitle::OpenModal::RoundButton::Label"
     text: "Scanner"
     label: "Title scan button label is displayed in French"
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::OpenModal::RoundButton::Label"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll down to the description buttons"
 - assertVisible:
     id: "RecipeDescription::OpenModal::RoundButton::Label"
     text: "Scanner"
     label: "Description scan button label is displayed in French"
+- assertVisible:
+    id: "RecipeTitle::ManuallyFill::RoundButton::Label"
+    text: "Ajouter manuellement"
+    label: "Title manual fill button label is displayed in French"
+- assertVisible:
+    id: "RecipeDescription::ManuallyFill::RoundButton::Label"
+    text: "Ajouter manuellement"
+    label: "Description manual fill button label is displayed in French"
 
 - scrollUntilVisible:
     element:
@@ -41,8 +56,8 @@ appId: "com.recipedia"
     label: "Tags scan button label is displayed in French"
 - assertVisible:
     id: "RecipeTags::RoundButton::Label"
-    text: "Nouvelle étiquette"
-    label: "Add tag button label is displayed in French"
+    text: "Ajouter manuellement"
+    label: "Add tag manually button label is displayed in French"
 
 - scrollUntilVisible:
     element:
@@ -54,12 +69,15 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePersons::PrefixText"
-    text: "Cette recette est pour : "
+    text: "Portions :"
     label: "Intro text for the recipe persons is displayed in French"
 - assertVisible:
     id: "RecipePersons::SuffixText"
-    text: " personnes"
+    text: "personnes"
     label: "Outro text for the recipe persons is displayed in French"
+- assertVisible:
+    id: "RecipePersons::OpenModal::IconButton"
+    label: "Inline scan icon of the recipe persons is displayed"
 - assertVisible:
     id: "RecipeIngredients::PrefixText"
     text: "Ingrédients : "
@@ -83,7 +101,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipeTime::PrefixText"
-    text: "Temps de préparation (minutes) :"
+    text: "Temps de préparation :"
     label: "Intro text for the recipe time is displayed in French"
 - assertVisible:
     id: "RecipeTime::OpenModal::RoundButton::Label"

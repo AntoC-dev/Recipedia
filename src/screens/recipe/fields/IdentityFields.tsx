@@ -9,11 +9,10 @@
  * @module screens/recipe/fields/IdentityFields
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useController, UseFormReturn } from 'react-hook-form';
 
 import { recipeStateType } from '@customTypes/ScreenTypes';
-import { OcrModalTarget } from '@utils/OCR';
 import { RecipeImage } from '@components/organisms/RecipeImage';
 import { RecipeText } from '@components/organisms/RecipeText';
 import {
@@ -30,37 +29,33 @@ type T = (key: string) => string;
 export interface ImageFieldProps {
   form: Form;
   stackMode: recipeStateType;
-  openModalForField: (field: OcrModalTarget) => void;
 }
 
-export function RecipeImageField({ form, stackMode, openModalForField }: ImageFieldProps) {
+export function RecipeImageField({ form, stackMode }: ImageFieldProps) {
   const { field } = useController({ control: form.control, name: 'recipeImage' });
-  return (
-    <RecipeImage
-      {...buildRecipeImageProps({ stackMode, recipeImage: field.value ?? '', openModalForField })}
-    />
-  );
+  return <RecipeImage {...buildRecipeImageProps({ stackMode, recipeImage: field.value ?? '' })} />;
 }
 
 export interface TitleFieldProps {
   form: Form;
   stackMode: recipeStateType;
-  openModalForField: (field: OcrModalTarget) => void;
   t: T;
 }
 
-export function RecipeTitleField({ form, stackMode, openModalForField, t }: TitleFieldProps) {
+export function RecipeTitleField({ form, stackMode, t }: TitleFieldProps) {
   const { field } = useController({ control: form.control, name: 'recipeTitle' });
-  const { error, hasBeenEdited } = useInlineErrorFor('recipeTitle', t);
+  const [keepEditable, setKeepEditable] = useState(() => !!field.value);
+  if (field.value && !keepEditable) setKeepEditable(true);
+  const { error } = useInlineErrorFor('recipeTitle', t);
   return (
     <RecipeText
       {...buildRecipeTitleProps({
         stackMode,
         recipeTitle: field.value ?? '',
         setRecipeTitle: field.onChange,
-        openModalForField,
         t,
-        forceEditable: hasBeenEdited,
+        forceEditable: keepEditable,
+        onManuallyFill: () => setKeepEditable(true),
       })}
       onBlur={field.onBlur}
       error={error}
@@ -71,20 +66,16 @@ export function RecipeTitleField({ form, stackMode, openModalForField, t }: Titl
 export interface DescriptionFieldProps {
   form: Form;
   stackMode: recipeStateType;
-  openModalForField: (field: OcrModalTarget) => void;
   t: T;
 }
 
-export function RecipeDescriptionField({
-  form,
-  stackMode,
-  openModalForField,
-  t,
-}: DescriptionFieldProps) {
+export function RecipeDescriptionField({ form, stackMode, t }: DescriptionFieldProps) {
   const { field } = useController({
     control: form.control,
     name: 'recipeDescription',
   });
+  const [keepEditable, setKeepEditable] = useState(() => !!field.value);
+  if (field.value && !keepEditable) setKeepEditable(true);
   // recipeDescription has no schema constraint, so it never errors — no inline
   // error gate is wired here.
   return (
@@ -93,8 +84,9 @@ export function RecipeDescriptionField({
         stackMode,
         recipeDescription: field.value ?? '',
         setRecipeDescription: field.onChange,
-        openModalForField,
         t,
+        forceEditable: keepEditable,
+        onManuallyFill: () => setKeepEditable(true),
       })}
       onBlur={field.onBlur}
     />

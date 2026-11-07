@@ -38,6 +38,34 @@ describe('RoundButton', () => {
     expect(getByTestId(buttonId + '::Label')).toHaveTextContent('Add recipe');
   });
 
+  test('does not render the visible label when hideLabel is set', async () => {
+    const { queryByTestId } = await render(
+      <RoundButton
+        icon='plus'
+        testID={testID}
+        label='Add recipe'
+        hideLabel
+        onPressFunction={jest.fn()}
+      />
+    );
+
+    expect(queryByTestId(buttonId + '::Label')).toBeNull();
+  });
+
+  test('keeps the accessibility label when hideLabel is set', async () => {
+    const { getByTestId } = await render(
+      <RoundButton
+        icon='plus'
+        testID={testID}
+        label='Add recipe'
+        hideLabel
+        onPressFunction={jest.fn()}
+      />
+    );
+
+    expect(getByTestId(buttonId).props.accessibilityLabel).toBe('Add recipe');
+  });
+
   test('exposes the label as the button accessibility label', async () => {
     const { getByTestId } = await render(
       <RoundButton icon='plus' testID={testID} label='Add recipe' onPressFunction={jest.fn()} />

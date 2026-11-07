@@ -1,10 +1,15 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
+import {
+  IMAGE_MODAL_TARGET_TEST_ID,
+  renderWithRecipeDialogs,
+} from '@mocks/context/RecipeDialogsHarness';
 import { RecipeTags, RecipeTagProps } from '@components/organisms/RecipeTags';
 import React from 'react';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testRecipes } from '@test-data/recipesDataset';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
+import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 
 jest.mock('@components/atomic/RoundButton', () => ({
   RoundButton: require('@mocks/components/atomic/RoundButton-mock').roundButtonMock,
@@ -22,7 +27,7 @@ describe('RecipeTags Component', () => {
   const sampleTags = testTags.map(tag => tag.name).sort();
 
   const renderRecipeTags = async (props: RecipeTagProps) => {
-    const result = await render(<RecipeTags {...props} />);
+    const result = await renderWithRecipeDialogs(<RecipeTags {...props} />);
 
     await waitFor(() => {
       expect(result.getByTestId('RecipeTags::PropType')).toBeTruthy();
@@ -57,7 +62,6 @@ describe('RecipeTags Component', () => {
 
     const defaultProps: RecipeTagProps = {
       type: 'addOrEdit',
-      editType: 'edit',
       tagsList: new Array<string>(
         sampleTags[sampleTags.length - 1]!,
         sampleTags[sampleTags.length - 2]!,
@@ -82,8 +86,19 @@ describe('RecipeTags Component', () => {
       await dbInstance.closeAndReset();
     });
     describe('edit mode', () => {
+      it('keeps the plus new-tag button when the tags list is empty', async () => {
+        const { getByTestId } = await renderRecipeTags({ ...defaultProps, tagsList: [] });
+
+        expect(getByTestId('RecipeTags::RoundButton::Icon').props.children).toEqual('plus');
+        expect(getByTestId('RecipeTags::RoundButton::Label').props.children).toEqual(
+          'recipe.roundButton.newTag'
+        );
+      });
+
       it('renders header and description texts with the add button', async () => {
-        const { getByTestId } = await renderRecipeTags(defaultProps);
+        const { getByTestId, queryByTestId } = await renderRecipeTags(defaultProps);
+
+        expect(queryByTestId('RecipeTags::OpenModal::RoundButton::OnPressFunction')).toBeNull();
 
         expect(getByTestId('RecipeTags::ElementText').props.children).toContain(randomTags);
 
@@ -218,14 +233,9 @@ describe('RecipeTags Component', () => {
         expect(getByTestId('RecipeTags::List::1::TextInputWithDropdown::OnValidate')).toBeTruthy();
       });
     });
-    describe('add mode', () => {
-      it('renders header and description texts with the add button', async () => {
-        const props: RecipeTagProps = {
-          ...defaultProps,
-          editType: 'add',
-          openModal: jest.fn(),
-        };
-        const { getByTestId } = await renderRecipeTags(props);
+    describe('OCR mode', () => {
+      it('renders header and description texts with the add and scan buttons', async () => {
+        const { getByTestId } = await renderRecipeTags({ ...defaultProps, withScan: true });
 
         expect(getByTestId('RecipeTags::ElementText').props.children).toContain(randomTags);
 
@@ -254,6 +264,43 @@ describe('RecipeTags Component', () => {
           'recipe.roundButton.newTag'
         );
       });
+
+      it('renders a pencil add-manually button when the tags list is empty', async () => {
+        const { getByTestId } = await renderRecipeTags({
+          ...defaultProps,
+          tagsList: [],
+          withScan: true,
+        });
+
+        expect(getByTestId('RecipeTags::RoundButton::Icon').props.children).toEqual('pencil');
+        expect(getByTestId('RecipeTags::RoundButton::Label').props.children).toEqual(
+          'recipe.roundButton.addManually'
+        );
+        expect(getByTestId('RecipeTags::OpenModal::RoundButton::OnPressFunction')).toBeTruthy();
+      });
+
+      it('switches back to the plus new-tag button once a manual tag input is open', async () => {
+        const { getByTestId } = await renderRecipeTags({
+          ...defaultProps,
+          tagsList: [],
+          withScan: true,
+        });
+
+        await fireEvent.press(getByTestId('RecipeTags::RoundButton::OnPressFunction'));
+
+        expect(getByTestId('RecipeTags::RoundButton::Icon').props.children).toEqual('plus');
+        expect(getByTestId('RecipeTags::RoundButton::Label').props.children).toEqual(
+          'recipe.roundButton.newTag'
+        );
+      });
+
+      it('opens the OCR modal for tags when the scan button is pressed', async () => {
+        const { getByTestId } = await renderRecipeTags({ ...defaultProps, withScan: true });
+
+        await fireEvent.press(getByTestId('RecipeTags::OpenModal::RoundButton::OnPressFunction'));
+
+        expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(recipeColumnsNames.tags);
+      });
     });
   });
   describe('tag sorting', () => {
@@ -269,7 +316,6 @@ describe('RecipeTags Component', () => {
 
       const props: RecipeTagProps = {
         type: 'addOrEdit',
-        editType: 'edit',
         tagsList: [],
         randomTags: '',
         addNewTag: jest.fn(),

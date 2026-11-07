@@ -18,6 +18,8 @@ tags:
     centerElement: true
     label: "Action - Scroll to find Pesto Pasta"
 
+- waitForAnimationToEnd
+
 - tapOn:
     text: "Pesto Pasta"
     label: "Action - Open Pesto Pasta recipe"
@@ -63,6 +65,8 @@ tags:
     timeout: 120000
     centerElement: true
     label: "Action - Scroll back to top to find image"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Recipe::AppBar::Cancel"
@@ -120,6 +124,8 @@ tags:
     speed: 20
     centerElement: true
     label: "Action - Scroll back to top"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Recipe::AppBar::BackButton"

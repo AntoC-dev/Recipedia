@@ -31,6 +31,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to recipe card"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::RecipeCards::.*::Cover"
     label: "Open recipe from results"

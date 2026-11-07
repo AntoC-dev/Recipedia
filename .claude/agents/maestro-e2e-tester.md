@@ -13,7 +13,9 @@ Your primary responsibilities:
 
 **Test Structure Understanding:**
 
-- Work with the established structure: `tests/e2e/{suite}.yaml` suite configs run cases in `cases/{feature}/` (CI retry wrappers in `cases/{feature}/ci/`), which compose reusable `flows/{feature}/` (actions) and `asserts/{screen}/` (validations, `en/`/`fr/` variants); see `tests/e2e/E2E_TESTING.md`
+- Work with the established structure: `tests/e2e/{suite}.yaml` suite configs run cases in `cases/{feature}/` (CI retry
+  wrappers in `cases/{feature}/ci/`), which compose reusable `flows/{feature}/` (actions) and `asserts/{screen}/`
+  (validations, `en/`/`fr/` variants); see `tests/e2e/E2E_TESTING.md`
 - Each test suite contains multiple test cases separated into 'flows' (actions) and 'asserts' (validations)
 - Create modular, reusable flow components that can be combined across different test suites
 - Maintain clear separation between user actions and assertions for better readability
@@ -62,8 +64,8 @@ When writing or refactoring tests:
 Every new or edited flow MUST be validated live against the running app via the
 `maestro` MCP tools before you consider it done. Never ship a flow you only
 reasoned about on paper — reading source and screenshots is not enough to know a
-selector resolves. If no emulator/simulator is connected, ask the user to boot
-one (do not fabricate a pass).
+selector resolves. Get a free device per @.claude/docs/device-dev-build.md; none free → report
+"not validated" (never fabricate a pass).
 
 Workflow — `list_devices` → `inspect_screen` → `run`:
 
@@ -92,21 +94,10 @@ Workflow — `list_devices` → `inspect_screen` → `run`:
 - `tapOn` the wrapper `id` (it is the clickable node); `assertVisible` the `-text`
   child for the label. Map `a11y` → `text:`; never pass `a11y` as a selector key.
 
-## CRITICAL — never reload or launch the app yourself
+## Device dev build
 
-The local target is a **dev build**. `launchApp` / relaunch / cold-start drops to
-the Expo dev-client launcher ("npx expo start / Connect"), NOT the app — it breaks
-the run and loses state.
+Pick a free device, bootstrap Metro and never reload after: follow `.claude/docs/device-dev-build.md`.
+Committed test YAML may keep `launchApp` for CI; just don't run it locally.
 
-- Do NOT run `launchApp`, restart, reload, or `adb`-relaunch the app via MCP or
-  shell during local validation.
-- When a step needs a fresh app state or a reload (committed-DB check, onboarding
-  reset, cache clear), STOP and ASK THE USER to run/reload the app (they use the
-  dev-build fast-reload themselves), then wait for their confirmation.
-- After they confirm, re-`inspect_screen` before continuing — never assume the
-  reload happened or what screen it landed on.
-- The committed test YAML MAY keep `launchApp` for CI (the release test build
-  handles it correctly) — keep it in the file, but hand the reload to the user
-  when validating locally.
-
-If a test scenario is genuinely ambiguous, make a reasonable assumption based on the existing test patterns and proceed. Only ask when the required information is impossible to infer from the codebase.
+If a test scenario is genuinely ambiguous, make a reasonable assumption based on the existing test patterns and proceed.
+Only ask when the required information is impossible to infer from the codebase.

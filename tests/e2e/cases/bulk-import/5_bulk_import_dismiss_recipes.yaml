@@ -92,6 +92,8 @@ tags:
     centerElement: true
     label: "Verification - Scroll to Dismissed recipes item"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Parameters::Section::Import::DismissedRecipes::Item"
     label: "Verification - Open Dismissed recipes settings"

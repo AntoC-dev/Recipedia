@@ -85,6 +85,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Action - Scroll to may seasonality"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeValidation::ValidationQueue::Ingredient::ItemDialog::AddModal::SeasonalityCalendar::5"
     label: "Select may for seasonality"

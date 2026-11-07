@@ -22,6 +22,9 @@ if [ ${#EXISTING[@]} -eq 0 ]; then
   exit 0
 fi
 
+e2e_typed_text_filter redact "${EXISTING[@]}"
+echo "🔒 Redacted typed text in ${EXISTING[*]}"
+
 VARIANTS=()
 GREP_PATTERNS=()
 for name in $E2E_SECRET_ENV_VARS; do

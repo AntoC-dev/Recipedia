@@ -12,6 +12,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ${INGREDIENT_NAME} item"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "ShoppingScreen::SectionList::${INGREDIENT_NAME}"
     label: "Mark ${INGREDIENT_NAME} as purchased"

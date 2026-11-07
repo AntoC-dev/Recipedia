@@ -50,11 +50,10 @@
  *   </View>
  * </View>
  *
- * // Number input with controls
+ * // Number input with suffix
  * <View style={recipeNumberStyles.editableView}>
- *   <Button onPress={decrease}>-</Button>
- *   <TextInput value={count.toString()} />
- *   <Button onPress={increase}>+</Button>
+ *   <NumericTextInput value={count} onChangeValue={setCount} />
+ *   <Text>min</Text>
  * </View>
  * ```
  */
@@ -89,12 +88,6 @@ const recipeMargins = {
 export const recipeTextStyles = StyleSheet.create({
   containerSection: recipeMargins.padding,
   containerElement: recipeMargins.smallVerticalMargin,
-  containerTab: {
-    ...recipeMargins.padding,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: padding.medium,
-  },
   button: { ...recipeMargins.mediumVerticalMargin },
 });
 
@@ -112,7 +105,6 @@ export const recipeTextRenderStyles = StyleSheet.create({
   secondColumn: { flex: 2, textAlign: 'center', width: '100%' },
   thirdColumn: { flex: 3, flexWrap: 'wrap', textAlign: 'center', width: '100%' },
   columnContentStyle: recipeMargins.mediumVerticalMargin,
-  roundButtonPadding: { ...recipeMargins.mediumVerticalMargin },
 });
 
 /**
@@ -123,7 +115,7 @@ export const recipeTextRenderStyles = StyleSheet.create({
  */
 export const recipeButtonStyles = StyleSheet.create({
   roundButtonsContainer: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'center',
     flexDirection: 'row',
     marginVertical: padding.medium,
@@ -152,7 +144,12 @@ export const recipeTagsStyles = StyleSheet.create({
  * Used for quantity, serving size, and timing inputs
  */
 export const recipeNumberStyles = StyleSheet.create({
-  editableView: { flexDirection: 'row', alignItems: 'center', gap: padding.medium },
+  editableView: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: padding.medium,
+    marginVertical: padding.verySmall,
+  },
   /** Extra top margin composed onto `recipeButtonStyles.roundButtonsContainer` for this screen's layout. */
   roundButtonsMargin: { marginTop: padding.large },
 });

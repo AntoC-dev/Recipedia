@@ -12,7 +12,6 @@ import React from 'react';
 import { useController, UseFormReturn } from 'react-hook-form';
 
 import { recipeStateType } from '@customTypes/ScreenTypes';
-import { OcrModalTarget } from '@utils/OCR';
 import { RecipeTags } from '@components/organisms/RecipeTags';
 import { buildRecipeTagsProps } from '@utils/RecipeFormHelpers';
 import { RecipeFormInput } from '@schemas/recipeFormSchema';
@@ -25,7 +24,6 @@ export interface TagsFieldProps {
   randomTags: string[];
   addTag: (newTag: string) => void;
   removeTag: (tagName: string) => void;
-  openModalForField: (field: OcrModalTarget) => void;
 }
 
 export function RecipeTagsField({
@@ -34,7 +32,6 @@ export function RecipeTagsField({
   randomTags,
   addTag,
   removeTag,
-  openModalForField,
 }: TagsFieldProps) {
   const { field } = useController({ control: form.control, name: 'recipeTags' });
   return (
@@ -45,7 +42,6 @@ export function RecipeTagsField({
         randomTags,
         addTag,
         removeTag,
-        openModalForField,
       })}
     />
   );

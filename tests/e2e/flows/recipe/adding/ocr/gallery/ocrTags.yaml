@@ -8,6 +8,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to tags section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeTags::OpenModal::RoundButton"
     label: "Tap on OCR button of recipe tags"

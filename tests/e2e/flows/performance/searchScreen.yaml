@@ -37,6 +37,8 @@ appId: "com.recipedia"
     speed: 95
     label: "Scroll back to SearchBar"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::FiltersToggleButtons"
     label: "Open filter page"
@@ -59,6 +61,8 @@ appId: "com.recipedia"
     speed: 40
     centerElement: true
     label: "Scroll to Tags accordion"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::2"
@@ -93,6 +97,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to first ingredient-type accordion"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::3"
     label: "Expand first ingredient-type accordion"
@@ -115,6 +121,8 @@ appId: "com.recipedia"
     direction: UP
     speed: 40
     label: "Scroll to search bar"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FiltersToggleButtons"

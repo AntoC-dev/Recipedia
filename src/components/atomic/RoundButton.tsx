@@ -34,6 +34,8 @@ export type RoundButtonProps = {
   testID: string;
   /** Text label rendered below the button, also used as the button's accessibility label */
   label: string;
+  /** Hides the visible label while keeping it as the button's accessibility label */
+  hideLabel?: boolean;
   /** Custom styles for the button container */
   style?: StyleProp<ViewStyle>;
 };
@@ -44,7 +46,14 @@ export type RoundButtonProps = {
  * @param props - The component props
  * @returns JSX element representing a circular FAB button
  */
-export function RoundButton({ icon, onPressFunction, testID, label, style }: RoundButtonProps) {
+export function RoundButton({
+  icon,
+  onPressFunction,
+  testID,
+  label,
+  hideLabel = false,
+  style,
+}: RoundButtonProps) {
   const roundButtonTestId = testID + '::RoundButton';
 
   return (
@@ -58,9 +67,11 @@ export function RoundButton({ icon, onPressFunction, testID, label, style }: Rou
         accessibilityLabel={label}
         onPress={onPressFunction}
       />
-      <Text testID={roundButtonTestId + '::Label'} variant='titleMedium' style={styles.label}>
-        {label}
-      </Text>
+      {hideLabel ? null : (
+        <Text testID={roundButtonTestId + '::Label'} variant='titleMedium' style={styles.label}>
+          {label}
+        </Text>
+      )}
     </View>
   );
 }

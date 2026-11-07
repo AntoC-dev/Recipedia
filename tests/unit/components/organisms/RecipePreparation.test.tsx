@@ -1,12 +1,16 @@
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent } from '@testing-library/react-native';
+import {
+  IMAGE_MODAL_TARGET_TEST_ID,
+  renderWithRecipeDialogs,
+} from '@mocks/context/RecipeDialogsHarness';
 import React from 'react';
-import { preparationStepElement } from '@customTypes/DatabaseElementTypes';
+import { preparationStepElement, recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 import {
   RecipePreparation,
   EditableStep,
-  PreparationEmptyAdd,
   PreparationSection,
 } from '@components/organisms/RecipePreparation';
+import { recipeButtonStyles } from '@styles/recipeComponents';
 
 jest.mock('@expo/vector-icons', () => require('@mocks/deps/expo-vector-icons-mock'));
 jest.mock('@components/atomic/RoundButton', () => ({
@@ -25,7 +29,9 @@ const sampleSteps: preparationStepElement[] = [
 
 describe('RecipePreparation (read-only)', () => {
   it('renders each step as numbered title + description', async () => {
-    const { getByTestId } = await render(<RecipePreparation steps={sampleSteps} />);
+    const { getByTestId } = await renderWithRecipeDialogs(
+      <RecipePreparation steps={sampleSteps} />
+    );
 
     sampleSteps.forEach((step, index) => {
       const title = getByTestId(`RecipePreparation::ReadOnlyStep::${index}::SectionTitle`);
@@ -36,12 +42,14 @@ describe('RecipePreparation (read-only)', () => {
   });
 
   it('renders nothing when steps are empty', async () => {
-    const { queryByTestId } = await render(<RecipePreparation steps={[]} />);
+    const { queryByTestId } = await renderWithRecipeDialogs(<RecipePreparation steps={[]} />);
     expect(queryByTestId('RecipePreparation::ReadOnlyStep::0::SectionTitle')).toBeNull();
   });
 
   it('does not render a prefix text', async () => {
-    const { queryByTestId } = await render(<RecipePreparation steps={sampleSteps} />);
+    const { queryByTestId } = await renderWithRecipeDialogs(
+      <RecipePreparation steps={sampleSteps} />
+    );
     expect(queryByTestId('RecipePreparation::PrefixText')).toBeNull();
   });
 });
@@ -49,7 +57,7 @@ describe('RecipePreparation (read-only)', () => {
 describe('PreparationSection', () => {
   it('renders prefix, children, and add button', async () => {
     const onAddStep = jest.fn();
-    const { getByTestId, getByText } = await render(
+    const { getByTestId, getByText } = await renderWithRecipeDialogs(
       <PreparationSection prefixText='Preparation :' onAddStep={onAddStep}>
         <React.Fragment>{getChildText()}</React.Fragment>
       </PreparationSection>
@@ -67,7 +75,7 @@ describe('PreparationSection', () => {
 
   it('fires onAddStep when add button pressed', async () => {
     const onAddStep = jest.fn();
-    const { getByTestId } = await render(
+    const { getByTestId } = await renderWithRecipeDialogs(
       <PreparationSection prefixText='Preparation :' onAddStep={onAddStep}>
         {null}
       </PreparationSection>
@@ -80,10 +88,29 @@ describe('PreparationSection', () => {
   });
 });
 
-describe('PreparationEmptyAdd', () => {
-  it('renders OCR + add buttons with the right icons and labels', async () => {
-    const { getByTestId } = await render(
-      <PreparationEmptyAdd prefixText='Preparation :' openModal={jest.fn()} onAddStep={jest.fn()} />
+describe('PreparationSection layout', () => {
+  it.each([false, true])(
+    'gives the add button the round button style (withScan: %s)',
+    async withScan => {
+      const { getByTestId } = await renderWithRecipeDialogs(
+        <PreparationSection prefixText='Preparation :' onAddStep={jest.fn()} withScan={withScan}>
+          {null}
+        </PreparationSection>
+      );
+
+      expect(
+        JSON.parse(getByTestId('RecipePreparation::AddButton::RoundButton::Style').props.children)
+      ).toEqual(recipeButtonStyles.roundButton);
+    }
+  );
+});
+
+describe('PreparationSection when withScan is set', () => {
+  it('renders scan and add buttons with the right icons and labels', async () => {
+    const { getByTestId } = await renderWithRecipeDialogs(
+      <PreparationSection prefixText='Preparation :' onAddStep={jest.fn()} withScan>
+        {null}
+      </PreparationSection>
     );
 
     expect(getByTestId('RecipePreparation::OpenModal::RoundButton::Icon').props.children).toEqual(
@@ -93,6 +120,72 @@ describe('PreparationEmptyAdd', () => {
       'recipe.roundButton.scan'
     );
     expect(getByTestId('RecipePreparation::AddButton::RoundButton::Icon').props.children).toEqual(
+      'plus'
+    );
+    expect(getByTestId('RecipePreparation::AddButton::RoundButton::Label').props.children).toEqual(
+      'recipe.roundButton.newStep'
+    );
+  });
+
+  it('fires the OCR modal opener and onAddStep independently', async () => {
+    const onAddStep = jest.fn();
+    const { getByTestId } = await renderWithRecipeDialogs(
+      <PreparationSection prefixText='Preparation :' onAddStep={onAddStep} withScan>
+        {null}
+      </PreparationSection>
+    );
+
+    await fireEvent.press(
+      getByTestId('RecipePreparation::OpenModal::RoundButton::OnPressFunction')
+    );
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(
+      recipeColumnsNames.preparation
+    );
+    expect(onAddStep).not.toHaveBeenCalled();
+    await fireEvent.press(
+      getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction')
+    );
+    expect(onAddStep).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not render the scan button without withScan', async () => {
+    const { queryByTestId } = await renderWithRecipeDialogs(
+      <PreparationSection prefixText='Preparation :' onAddStep={jest.fn()}>
+        {null}
+      </PreparationSection>
+    );
+    expect(queryByTestId('RecipePreparation::OpenModal::RoundButton::Icon')).toBeNull();
+  });
+});
+
+describe('PreparationSection empty state', () => {
+  it('keeps the plus new-step button when empty without withScan', async () => {
+    const { getByTestId, queryByTestId } = await renderWithRecipeDialogs(
+      <PreparationSection prefixText='Preparation :' onAddStep={jest.fn()} isEmpty>
+        {null}
+      </PreparationSection>
+    );
+
+    expect(getByTestId('RecipePreparation::AddButton::RoundButton::Icon').props.children).toEqual(
+      'plus'
+    );
+    expect(getByTestId('RecipePreparation::AddButton::RoundButton::Label').props.children).toEqual(
+      'recipe.roundButton.newStep'
+    );
+    expect(queryByTestId('RecipePreparation::OpenModal::RoundButton::Icon')).toBeNull();
+  });
+
+  it('renders scan and pencil add-manually buttons when withScan is set', async () => {
+    const { getByTestId } = await renderWithRecipeDialogs(
+      <PreparationSection prefixText='Preparation :' onAddStep={jest.fn()} isEmpty withScan>
+        {null}
+      </PreparationSection>
+    );
+
+    expect(getByTestId('RecipePreparation::OpenModal::RoundButton::Icon').props.children).toEqual(
+      'line-scan'
+    );
+    expect(getByTestId('RecipePreparation::AddButton::RoundButton::Icon').props.children).toEqual(
       'pencil'
     );
     expect(getByTestId('RecipePreparation::AddButton::RoundButton::Label').props.children).toEqual(
@@ -100,17 +193,20 @@ describe('PreparationEmptyAdd', () => {
     );
   });
 
-  it('fires openModal and onAddStep callbacks independently', async () => {
-    const openModal = jest.fn();
+  it('fires the OCR modal opener and onAddStep callbacks independently', async () => {
     const onAddStep = jest.fn();
-    const { getByTestId } = await render(
-      <PreparationEmptyAdd prefixText='Preparation :' openModal={openModal} onAddStep={onAddStep} />
+    const { getByTestId } = await renderWithRecipeDialogs(
+      <PreparationSection prefixText='Preparation :' onAddStep={onAddStep} isEmpty withScan>
+        {null}
+      </PreparationSection>
     );
 
     await fireEvent.press(
       getByTestId('RecipePreparation::OpenModal::RoundButton::OnPressFunction')
     );
-    expect(openModal).toHaveBeenCalledTimes(1);
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(
+      recipeColumnsNames.preparation
+    );
     expect(onAddStep).not.toHaveBeenCalled();
 
     await fireEvent.press(
@@ -118,11 +214,26 @@ describe('PreparationEmptyAdd', () => {
     );
     expect(onAddStep).toHaveBeenCalledTimes(1);
   });
+
+  it('keeps the plus new-step button when isEmpty is false', async () => {
+    const { getByTestId } = await renderWithRecipeDialogs(
+      <PreparationSection prefixText='Preparation :' onAddStep={jest.fn()} isEmpty={false} withScan>
+        {null}
+      </PreparationSection>
+    );
+
+    expect(getByTestId('RecipePreparation::AddButton::RoundButton::Icon').props.children).toEqual(
+      'plus'
+    );
+    expect(getByTestId('RecipePreparation::AddButton::RoundButton::Label').props.children).toEqual(
+      'recipe.roundButton.newStep'
+    );
+  });
 });
 
 describe('EditableStep', () => {
   it('renders title + description from props', async () => {
-    const { getByTestId } = await render(
+    const { getByTestId } = await renderWithRecipeDialogs(
       <EditableStep
         index={0}
         title='My title'
@@ -146,7 +257,7 @@ describe('EditableStep', () => {
   it('live-changes title on keystroke and commits on blur', async () => {
     const onTitleChange = jest.fn();
     const onTitleCommit = jest.fn();
-    const { getByTestId } = await render(
+    const { getByTestId } = await renderWithRecipeDialogs(
       <EditableStep
         index={0}
         title='Original'
@@ -172,7 +283,7 @@ describe('EditableStep', () => {
   it('live-changes description on keystroke and commits on blur', async () => {
     const onDescriptionChange = jest.fn();
     const onDescriptionCommit = jest.fn();
-    const { getByTestId } = await render(
+    const { getByTestId } = await renderWithRecipeDialogs(
       <EditableStep
         index={0}
         title=''
@@ -196,7 +307,7 @@ describe('EditableStep', () => {
   });
 
   it('does not render a description error helper when descriptionError is undefined', async () => {
-    const { queryByTestId, getByTestId } = await render(
+    const { queryByTestId, getByTestId } = await renderWithRecipeDialogs(
       <EditableStep
         index={0}
         title=''
@@ -215,7 +326,7 @@ describe('EditableStep', () => {
   });
 
   it('renders the description error helper and flags the input when descriptionError is set', async () => {
-    const { getByTestId } = await render(
+    const { getByTestId } = await renderWithRecipeDialogs(
       <EditableStep
         index={2}
         title='A title'

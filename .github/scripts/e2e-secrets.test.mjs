@@ -257,8 +257,15 @@ test('the credential gate honours a multi-suite allow list', () => {
   assert.match(withheld.stdout, /count=0/);
 });
 
-test('variants collapse to one pattern when every escaping is identical', () => {
-  assert.equal(sourcedSnippet('e2e_secret_variants "abcdef123456"').stdout, 'abcdef123456\n');
+test('variants collapse to the value and its typed tail when every escaping is identical', () => {
+  assert.equal(
+    sourcedSnippet('e2e_secret_variants "abcdef123456"').stdout,
+    'abcdef123456\nbcdef123456\n'
+  );
+});
+
+test('variants skip a typed tail too short to match safely', () => {
+  assert.equal(sourcedSnippet('e2e_secret_variants "abcdef"').stdout, 'abcdef\n');
 });
 
 test('variants emit each distinct escaping exactly once', () => {
@@ -540,4 +547,188 @@ test('preparation tolerates a missing directory', () => {
   const result = runScript('prepare-maestro-logs.sh', [join(tmpdir(), 'absent-prepare')]);
 
   assert.equal(result.status, 0, result.stderr);
+});
+
+const PASSWORD_HEAD = PASSWORD[0];
+const PASSWORD_TAIL = PASSWORD.slice(1);
+const syslogHeader = '2026-11-05 03:44:27.868578+0000  localhost';
+const xctestHeader = '2026-11-05 03:44:27.865978+0000 maestro-driver-iosUITests-Runner[10794:38186]';
+const logcatHeader = '11-04 21:30:22.348';
+
+const iosSimulatorLog = [
+  `${syslogHeader} testmanagerd[10129]: [com.apple.dt.xctest:Default] Typing ${PASSWORD_HEAD}`,
+  `${syslogHeader} Recipedia[16629]: (UIKitCore) [com.apple.UIKit:KeyboardUI] Keyboard receives keyEvent type: 4; subtype: 0`,
+  `${syslogHeader} testmanagerd[10129]: [com.apple.dt.xctest:Default] Typing complete, replying to client.`,
+  `${syslogHeader} testmanagerd[10129]: [com.apple.dt.xctest:Default] Typing ${PASSWORD_TAIL}`,
+  `${syslogHeader} Recipedia[16629]: (UIKitCore) [com.apple.UIKit:KeyboardUI] Keyboard inserts text`,
+  '',
+].join('\n');
+
+const redactedIosSimulatorLog = [
+  `${syslogHeader} testmanagerd[10129]: [com.apple.dt.xctest:Default] Typing ***REDACTED***`,
+  `${syslogHeader} Recipedia[16629]: (UIKitCore) [com.apple.UIKit:KeyboardUI] Keyboard receives keyEvent type: 4; subtype: 0`,
+  `${syslogHeader} testmanagerd[10129]: [com.apple.dt.xctest:Default] Typing complete, replying to client.`,
+  `${syslogHeader} testmanagerd[10129]: [com.apple.dt.xctest:Default] Typing ***REDACTED***`,
+  `${syslogHeader} Recipedia[16629]: (UIKitCore) [com.apple.UIKit:KeyboardUI] Keyboard inserts text`,
+  '',
+].join('\n');
+
+const iosXctestLog = [
+  `${xctestHeader} [TextInputHelper] first character: ${PASSWORD_HEAD}`,
+  `${xctestHeader} [TextInputHelper] remaining text: ${PASSWORD_TAIL}`,
+  `${xctestHeader} [InputTextRouteHandler] Text input duration took 4.335993`,
+  `    t =    12.30s Type '${PASSWORD}' into SecureTextField`,
+  '',
+].join('\n');
+
+const redactedIosXctestLog = [
+  `${xctestHeader} [TextInputHelper] first character: ***REDACTED***`,
+  `${xctestHeader} [TextInputHelper] remaining text: ***REDACTED***`,
+  `${xctestHeader} [InputTextRouteHandler] Text input duration took 4.335993`,
+  "    t =    12.30s Type '***REDACTED***' into SecureTextField",
+  '',
+].join('\n');
+
+const androidLogcat = [
+  `${logcatHeader} D/UiDevice( 4857): Pressing keycodes [44] with modifier 0.`,
+  `${logcatHeader} D/UiDevice( 4857): Pressing keycodes [11] with modifier 1.`,
+  `${logcatHeader} I/Maestro ( 4872): Skipping invisible child: android.view.accessibility.AccessibilityNodeInfo@1ee92b; boundsInParent: Rect(0, 0 - 479, 68); text: ${PASSWORD.slice(0, 4)}; className: android.widget.EditText`,
+  `${logcatHeader} I/GoogleInputMethodService( 1669): GoogleInputMethodService.onKeyDown():2444 Received KEYCODE_BACK. isAllViewsInvisible=false`,
+  '',
+].join('\n');
+
+const redactedAndroidLogcat = [
+  `${logcatHeader} D/UiDevice( 4857): Pressing keycodes [***REDACTED***].`,
+  `${logcatHeader} D/UiDevice( 4857): Pressing keycodes [***REDACTED***].`,
+  `${logcatHeader} I/GoogleInputMethodService( 1669): GoogleInputMethodService.onKeyDown():2444 Received KEYCODE_BACK. isAllViewsInvisible=false`,
+  '',
+].join('\n');
+
+const maestroLog = '03:44:27.227 [ INFO] maestro.Maestro.inputText: Inputting text: https://www.hellofresh.fr/recipes/x\n';
+const redactedMaestroLog = '03:44:27.227 [ INFO] maestro.Maestro.inputText: Inputting text: ***REDACTED***\n';
+
+const typedTextTree = () =>
+  makeTree({
+    'flow/logs/device-simulator.log': iosSimulatorLog,
+    'flow/logs/device-xctest.log': iosXctestLog,
+    'flow/logs/device-logcat.txt': androidLogcat,
+    'flow/logs/maestro.log': maestroLog,
+  });
+
+const readTree = dir => ({
+  simulator: readFileSync(join(dir, 'flow/logs/device-simulator.log'), 'utf8'),
+  xctest: readFileSync(join(dir, 'flow/logs/device-xctest.log'), 'utf8'),
+  logcat: readFileSync(join(dir, 'flow/logs/device-logcat.txt'), 'utf8'),
+  maestro: readFileSync(join(dir, 'flow/logs/maestro.log'), 'utf8'),
+});
+
+for (const [label, env] of [
+  ['with credentials configured', credentials],
+  ['without credentials configured', noCredentials],
+]) {
+  test(`redaction blanks every typed-text payload ${label}`, () => {
+    const dir = typedTextTree();
+
+    const result = runScript('redact-maestro-secrets.sh', [dir], env);
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.deepEqual(readTree(dir), {
+      simulator: redactedIosSimulatorLog,
+      xctest: redactedIosXctestLog,
+      logcat: redactedAndroidLogcat,
+      maestro: redactedMaestroLog,
+    });
+  });
+
+  test(`the guard fails on a typed-text payload ${label}`, () => {
+    const dir = makeTree({ 'flow/logs/device-xctest.log': iosXctestLog });
+
+    const result = runScript('check-artifact-secrets.sh', [dir], env);
+
+    assert.equal(result.status, 1);
+    assert.match(result.stdout, /Typed text leaks/);
+    assert.match(result.stdout, /device-xctest\.log \(3 line\(s\)\)/);
+  });
+}
+
+test('typed-text redaction is idempotent', () => {
+  const dir = typedTextTree();
+
+  runScript('redact-maestro-secrets.sh', [dir]);
+  const once = readTree(dir);
+  runScript('redact-maestro-secrets.sh', [dir]);
+
+  assert.deepEqual(readTree(dir), once);
+});
+
+test('the guard passes once typed text has been redacted', () => {
+  const dir = typedTextTree();
+
+  runScript('redact-maestro-secrets.sh', [dir]);
+
+  const result = runScript('check-artifact-secrets.sh', [dir]);
+  assert.equal(result.status, 0, result.stdout);
+});
+
+test('the guard fails on each Android typed-text line shape', () => {
+  for (const line of androidLogcat.split('\n').slice(0, 3)) {
+    const dir = makeTree({ 'device-logcat.txt': `${line}\n` });
+
+    assert.equal(runScript('check-artifact-secrets.sh', [dir], noCredentials).status, 1, line);
+  }
+});
+
+test('the guard never prints a typed-text payload', () => {
+  const dir = typedTextTree();
+
+  const result = runScript('check-artifact-secrets.sh', [dir]);
+
+  const output = `${result.stdout}${result.stderr}`;
+  assert.ok(!output.includes(PASSWORD_TAIL));
+  assert.ok(!output.includes(PASSWORD.slice(0, 4)));
+});
+
+test('redaction clears the tail the iOS driver logs apart from the first character', () => {
+  const dir = makeTree({ 'xctest_runner.log': `unknown shape ${PASSWORD_TAIL}\n` });
+
+  runScript('redact-maestro-secrets.sh', [dir]);
+
+  assert.equal(
+    readFileSync(join(dir, 'xctest_runner.log'), 'utf8'),
+    'unknown shape ***REDACTED***\n'
+  );
+});
+
+test('the guard fails on the tail the iOS driver logs apart from the first character', () => {
+  const dir = makeTree({ 'xctest_runner.log': `unknown shape ${PASSWORD_TAIL}\n` });
+
+  const result = runScript('check-artifact-secrets.sh', [dir]);
+
+  assert.equal(result.status, 1);
+  assert.match(result.stdout, /QUITOQUE_PASSWORD leaks/);
+});
+
+test('typed-text redaction leaves screenshots untouched', () => {
+  const png = Buffer.concat([
+    Buffer.from([0x89, 0x50, 0x4e, 0x47]),
+    Buffer.from('] Typing frame\n', 'latin1'),
+    Buffer.from([0x00, 0xff]),
+  ]);
+  const dir = makeTree({ 'screenshot.png': png });
+
+  runScript('redact-maestro-secrets.sh', [dir], noCredentials);
+
+  assert.deepEqual(readFileSync(join(dir, 'screenshot.png')), png);
+});
+
+test('preparation leaves no typed text for the guard to find', () => {
+  const dir = makeTree({
+    '.maestro/tests/sess/logs/device-simulator.log': iosSimulatorLog,
+    '.maestro/tests/sess/logs/device-xctest.log': iosXctestLog,
+    '.maestro/tests/sess/logs/device-logcat.txt': androidLogcat,
+  });
+
+  runScript('prepare-maestro-logs.sh', [dir]);
+
+  assert.equal(runScript('check-artifact-secrets.sh', [dir]).status, 0);
 });

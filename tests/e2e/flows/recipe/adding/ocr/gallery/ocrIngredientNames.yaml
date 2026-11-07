@@ -16,6 +16,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredient names OCR button"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::OpenModalNames::RoundButton"
     label: "Tap on ingredient names OCR button"

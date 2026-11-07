@@ -1,11 +1,19 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import {
+  IMAGE_MODAL_TARGET_TEST_ID,
+  renderWithRecipeDialogs,
+} from '@mocks/context/RecipeDialogsHarness';
+import {
   RecipeText,
   RecipeTextAddProps,
   RecipeTextEditProps,
   TextProp,
 } from '@components/organisms/RecipeText';
 import React from 'react';
+import { StyleSheet } from 'react-native';
+import { recipeTextStyles } from '@styles/recipeComponents';
+import { recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
+import { Icons } from '@assets/Icons';
 
 jest.mock('@components/atomic/CustomTextInput', () => ({
   CustomTextInput: require('@mocks/components/atomic/CustomTextInput-mock').CustomTextInputMock,
@@ -16,7 +24,6 @@ jest.mock('@components/atomic/RoundButton', () => ({
 
 describe('RecipeText Component', () => {
   const mockSetTextToEdit = jest.fn();
-  const mockOpenModal = jest.fn();
 
   const headlineText: TextProp = {
     style: 'headline',
@@ -40,7 +47,7 @@ describe('RecipeText Component', () => {
       ...overrideProps,
     };
 
-    return render(<RecipeText {...defaultProps} />);
+    return renderWithRecipeDialogs(<RecipeText {...defaultProps} />);
   };
 
   const assertBasicStructure = (
@@ -116,6 +123,7 @@ describe('RecipeText Component', () => {
     const { getByTestId, queryByTestId } = await renderRecipeText({
       addOrEditProps: {
         testID: 'test-recipe-text',
+        scanField: recipeColumnsNames.title,
         ...editableProps,
       },
     });
@@ -129,18 +137,62 @@ describe('RecipeText Component', () => {
   test('renders in add mode with modal button', async () => {
     const addProps: RecipeTextAddProps = {
       editType: 'add',
-      openModal: mockOpenModal,
+      manuallyFill: jest.fn(),
     };
 
     const { getByTestId, queryByTestId } = await renderRecipeText({
       addOrEditProps: {
         testID: 'test-recipe-text',
+        withScan: true,
+        scanField: recipeColumnsNames.title,
         ...addProps,
       },
     });
 
     assertBasicStructure(getByTestId);
     assertAddMode(getByTestId, queryByTestId);
+  });
+
+  test('add mode renders the add manually button next to scan and calls manuallyFill', async () => {
+    const manuallyFill = jest.fn();
+    const { getByTestId } = await renderRecipeText({
+      addOrEditProps: {
+        testID: 'test-recipe-text',
+        withScan: true,
+        scanField: recipeColumnsNames.title,
+        editType: 'add',
+        manuallyFill,
+      },
+    });
+
+    expect(getByTestId('test-recipe-text::OpenModal::RoundButton::OnPressFunction')).toBeTruthy();
+    expect(getByTestId('test-recipe-text::ManuallyFill::RoundButton::Label').props.children).toBe(
+      'recipe.roundButton.addManually'
+    );
+    expect(getByTestId('test-recipe-text::ManuallyFill::RoundButton::Icon').props.children).toBe(
+      Icons.pencilIcon
+    );
+    await fireEvent.press(
+      getByTestId('test-recipe-text::ManuallyFill::RoundButton::OnPressFunction')
+    );
+    expect(manuallyFill).toHaveBeenCalledTimes(1);
+  });
+
+  test('editable mode does not render the add manually button', async () => {
+    const { queryByTestId } = await renderRecipeText({
+      addOrEditProps: {
+        testID: 'test-recipe-text',
+        withScan: true,
+        scanField: recipeColumnsNames.title,
+        editType: 'editable',
+        textEditable: 'x',
+        setTextToEdit: mockSetTextToEdit,
+      },
+    });
+
+    expect(
+      queryByTestId('test-recipe-text::ManuallyFill::RoundButton::OnPressFunction')
+    ).toBeNull();
   });
 
   test('handles text editing interactions correctly', async () => {
@@ -153,6 +205,7 @@ describe('RecipeText Component', () => {
     const { getByTestId } = await renderRecipeText({
       addOrEditProps: {
         testID: 'test-recipe-text',
+        scanField: recipeColumnsNames.title,
         ...editableProps,
       },
     });
@@ -175,26 +228,83 @@ describe('RecipeText Component', () => {
   test('handles modal opening interaction correctly', async () => {
     const addProps: RecipeTextAddProps = {
       editType: 'add',
-      openModal: mockOpenModal,
+      manuallyFill: jest.fn(),
     };
 
     const { getByTestId } = await renderRecipeText({
       addOrEditProps: {
+        withScan: true,
         testID: 'test-recipe-text',
+        scanField: recipeColumnsNames.title,
         ...addProps,
       },
     });
 
-    expect(mockOpenModal).not.toHaveBeenCalled();
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent('none');
 
     const modalButton = getByTestId('test-recipe-text::OpenModal::RoundButton::OnPressFunction');
     await fireEvent.press(modalButton);
 
-    expect(mockOpenModal).toHaveBeenCalledTimes(1);
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(recipeColumnsNames.title);
 
     await fireEvent.press(modalButton);
-    await fireEvent.press(modalButton);
-    expect(mockOpenModal).toHaveBeenCalledTimes(3);
+    expect(getByTestId(IMAGE_MODAL_TARGET_TEST_ID)).toHaveTextContent(recipeColumnsNames.title);
+  });
+
+  test('renders the scan icon inside the input in editable mode when withScan is set', async () => {
+    const { getByTestId, queryByTestId } = await renderRecipeText({
+      addOrEditProps: {
+        testID: 'test-recipe-text',
+        scanField: recipeColumnsNames.title,
+        editType: 'editable',
+        textEditable: 'filled',
+        setTextToEdit: mockSetTextToEdit,
+        withScan: true,
+      },
+    });
+
+    expect(getByTestId('test-recipe-text::CustomTextInput').props.value).toBe('filled');
+    expect(getByTestId('test-recipe-text::Right')).toContainElement(
+      getByTestId('test-recipe-text::OpenModal::IconButton')
+    );
+    expect(queryByTestId('test-recipe-text::OpenModal::RoundButton')).toBeNull();
+  });
+
+  test('hides the scan icon in editable mode without withScan', async () => {
+    const { queryByTestId } = await renderWithRecipeDialogs(
+      <RecipeText
+        rootText={titleText}
+        testID='test-recipe-text'
+        addOrEditProps={{
+          testID: 'test-recipe-text',
+          scanField: recipeColumnsNames.title,
+          editType: 'editable',
+          textEditable: 'filled',
+          setTextToEdit: mockSetTextToEdit,
+        }}
+      />
+    );
+
+    expect(queryByTestId('test-recipe-text::OpenModal::IconButton')).toBeNull();
+    expect(queryByTestId('test-recipe-text::OpenModal::RoundButton')).toBeNull();
+  });
+
+  test('renders the editable input without a RecipeDialogsProvider when withScan is unset', async () => {
+    const { getByTestId } = await render(
+      <RecipeText
+        rootText={titleText}
+        testID='test-recipe-text'
+        addOrEditProps={{
+          testID: 'test-recipe-text',
+          scanField: recipeColumnsNames.title,
+          editType: 'editable',
+          textEditable: 'filled',
+          setTextToEdit: mockSetTextToEdit,
+        }}
+      />
+    );
+
+    expect(getByTestId('test-recipe-text::CustomTextInput').props.value).toBe('filled');
   });
 
   test('applies correct container styles based on edit type', async () => {
@@ -202,8 +312,10 @@ describe('RecipeText Component', () => {
       const { getByTestId } = await renderRecipeText({
         addOrEditProps: {
           testID: 'test-recipe-text',
+          scanField: recipeColumnsNames.title,
           editType: 'add',
-          openModal: mockOpenModal,
+          manuallyFill: jest.fn(),
+          withScan: true,
         },
       });
 
@@ -214,6 +326,7 @@ describe('RecipeText Component', () => {
       const { getByTestId } = await renderRecipeText({
         addOrEditProps: {
           testID: 'test-recipe-text',
+          scanField: recipeColumnsNames.title,
           editType: 'editable',
           textEditable: 'test',
           setTextToEdit: mockSetTextToEdit,
@@ -222,6 +335,22 @@ describe('RecipeText Component', () => {
 
       assertBasicStructure(getByTestId);
     }
+  });
+
+  test('add mode container stacks label above buttons using the section style', async () => {
+    const { getByTestId } = await renderRecipeText({
+      addOrEditProps: {
+        testID: 'test-recipe-text',
+        scanField: recipeColumnsNames.title,
+        editType: 'add',
+        manuallyFill: jest.fn(),
+        withScan: true,
+      },
+    });
+
+    const container = getByTestId('test-recipe-text::Text').parent;
+
+    expect(StyleSheet.flatten(container?.props.style)).toEqual(recipeTextStyles.containerSection);
   });
 
   test('handles different text styles and content correctly', async () => {
@@ -249,6 +378,7 @@ describe('RecipeText Component', () => {
       testID: customTestId,
       addOrEditProps: {
         testID: customTestId,
+        scanField: recipeColumnsNames.title,
         editType: 'editable',
         textEditable: 'test',
         setTextToEdit: mockSetTextToEdit,
@@ -291,6 +421,7 @@ describe('RecipeText Component', () => {
     const { getByTestId, queryByTestId, rerender } = await renderRecipeText({
       addOrEditProps: {
         testID: 'test-recipe-text',
+        scanField: recipeColumnsNames.title,
         editType: 'editable',
         textEditable: 'initial text',
         setTextToEdit: mockSetTextToEdit,
@@ -305,8 +436,10 @@ describe('RecipeText Component', () => {
         testID='test-recipe-text'
         addOrEditProps={{
           testID: 'test-recipe-text',
+          scanField: recipeColumnsNames.title,
           editType: 'add',
-          openModal: mockOpenModal,
+          manuallyFill: jest.fn(),
+          withScan: true,
         }}
       />
     );
@@ -328,6 +461,7 @@ describe('RecipeText Component', () => {
     } = await renderRecipeText({
       addOrEditProps: {
         testID: 'test-recipe-text',
+        scanField: recipeColumnsNames.title,
         editType: 'editable',
         textEditable: 'editable content',
         setTextToEdit: mockSetTextToEdit,
@@ -342,8 +476,10 @@ describe('RecipeText Component', () => {
       {
         addOrEditProps: {
           testID: 'test-recipe-text',
+          scanField: recipeColumnsNames.title,
           editType: 'add',
-          openModal: mockOpenModal,
+          manuallyFill: jest.fn(),
+          withScan: true,
         },
       }
     );
@@ -355,6 +491,7 @@ describe('RecipeText Component', () => {
     const { getByTestId } = await renderRecipeText({
       addOrEditProps: {
         testID: 'test-recipe-text',
+        scanField: recipeColumnsNames.title,
         editType: 'editable',
         textEditable: 'test text',
         setTextToEdit: mockSetTextToEdit,
@@ -382,6 +519,7 @@ describe('RecipeText Component', () => {
         rootText: titleText,
         addOrEditProps: {
           testID: 'test-recipe-text',
+          scanField: recipeColumnsNames.title,
           editType: 'editable' as const,
           textEditable: 'editable title',
           setTextToEdit: mockSetTextToEdit,
@@ -391,8 +529,10 @@ describe('RecipeText Component', () => {
         rootText: headlineText,
         addOrEditProps: {
           testID: 'test-recipe-text',
+          scanField: recipeColumnsNames.title,
           editType: 'add' as const,
-          openModal: mockOpenModal,
+          manuallyFill: jest.fn(),
+          withScan: true,
         },
       },
       { rootText: headlineText, addOrEditProps: undefined },
@@ -416,6 +556,7 @@ describe('RecipeText Component', () => {
       const { queryByTestId } = await renderRecipeText({
         addOrEditProps: {
           testID: 'test-recipe-text',
+          scanField: recipeColumnsNames.title,
           editType: 'editable',
           textEditable: 'value',
           setTextToEdit: mockSetTextToEdit,
@@ -428,6 +569,7 @@ describe('RecipeText Component', () => {
       const { getByTestId } = await renderRecipeText({
         addOrEditProps: {
           testID: 'test-recipe-text',
+          scanField: recipeColumnsNames.title,
           editType: 'editable',
           textEditable: '',
           setTextToEdit: mockSetTextToEdit,
@@ -443,8 +585,10 @@ describe('RecipeText Component', () => {
       const { getByTestId } = await renderRecipeText({
         addOrEditProps: {
           testID: 'test-recipe-text',
+          scanField: recipeColumnsNames.title,
           editType: 'add',
-          openModal: mockOpenModal,
+          manuallyFill: jest.fn(),
+          withScan: true,
         },
         error: 'Required',
       });
@@ -461,6 +605,7 @@ describe('RecipeText Component', () => {
       const { getByTestId } = await renderRecipeText({
         addOrEditProps: {
           testID: 'test-recipe-text',
+          scanField: recipeColumnsNames.title,
           editType: 'editable',
           textEditable: '',
           setTextToEdit: mockSetTextToEdit,

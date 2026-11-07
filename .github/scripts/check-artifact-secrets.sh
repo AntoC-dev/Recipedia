@@ -18,6 +18,14 @@ for target_dir in "${TARGET_DIRS[@]}"; do
     continue
   fi
 
+  TYPED_STATUS=0
+  TYPED_REPORT=$(e2e_typed_text_filter check "$target_dir") || TYPED_STATUS=$?
+  if [ "$TYPED_STATUS" -ne 0 ]; then
+    LEAKED=1
+    echo "::error::Typed text leaks into $target_dir"
+    echo "$TYPED_REPORT"
+  fi
+
   for name in $E2E_SECRET_ENV_VARS; do
     GREP_PATTERNS=()
     while IFS= read -r variant; do
