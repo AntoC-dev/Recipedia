@@ -11,3 +11,4 @@ executionOrder:
   flowsOrder:
     - "1 - OCR Quitoque V3 Camera Flow"
     - "2 - OCR Quitoque V2 French Flow"
+    - "3 - OCR Nutrition Keeps Typed Values Flow"

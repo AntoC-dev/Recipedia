@@ -8,3 +8,7 @@ appId: "com.recipedia"
     id: "RecipeImage::RoundButton"
     label: "OCR image button is rendered"
 
+- assertNotVisible:
+    id: "RecipeImage::RoundButton::Label"
+    label: "OCR image button label is hidden over the loaded picture"
+

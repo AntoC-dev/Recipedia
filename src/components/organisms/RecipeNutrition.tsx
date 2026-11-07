@@ -11,6 +11,7 @@
  * - Read-only, edit, add, and OCR modes support
  * - Empty state handling when no nutrition data available
  * - OCR integration for scanning nutrition facts from images
+ * - When `withScan` is set (OCR mode), a Scan button stays below the table once nutrition exists
  *
  * @example
  * ```typescript
@@ -32,8 +33,7 @@
  * // OCR mode
  * <RecipeNutrition
  *   nutrition={recipe.nutrition}
- *   mode="ocr"
- *   openModal={() => openNutritionOCRModal()}
+ *   mode={recipeStateType.addOCR}
  *   onNutritionChange={(updatedNutrition) => setNutrition(updatedNutrition)}
  *   parentTestId="recipe"
  * />
@@ -43,12 +43,12 @@ import React, { useState } from 'react';
 import { useResetOnChange } from '@hooks/useResetOnChange';
 import { View } from 'react-native';
 import { HelperText } from 'react-native-paper';
-import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
+import { nutritionTableElement, recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 import { NutritionTable } from '@components/molecules/NutritionTable';
 import { NutritionEmptyState } from '@components/molecules/NutritionEmptyState';
 import { recipeStateType } from '@customTypes/ScreenTypes';
-import { recipeLogger } from '@utils/logger';
 import { emptyNutrition } from '@utils/NutritionUtils';
+import { ScanButton } from '@components/molecules/ScanButton';
 
 export interface RecipeNutritionProps {
   /** Current nutrition data (undefined when no nutrition available) */
@@ -57,8 +57,8 @@ export interface RecipeNutritionProps {
   mode: recipeStateType;
   /** Callback fired when nutrition data changes in edit mode */
   onNutritionChange?: (nutrition: nutritionTableElement | undefined) => void;
-  /** Function to open the OCR scanning modal (required when mode is 'ocr') */
-  openModal?: () => void;
+  /** Renders the OCR scan buttons for the nutrition field (OCR mode) */
+  withScan?: boolean;
   /** Test ID of parent for component testing */
   parentTestId: string;
   /** Optional i18n key or message for an inline field-level error */
@@ -69,7 +69,7 @@ export function RecipeNutrition({
   nutrition,
   mode,
   onNutritionChange,
-  openModal,
+  withScan,
   parentTestId,
   error,
 }: RecipeNutritionProps) {
@@ -103,14 +103,6 @@ export function RecipeNutrition({
     onNutritionChange?.(undefined);
   };
 
-  const handleOCRModal = () => {
-    if (mode === recipeStateType.addOCR) {
-      openModal?.();
-    } else {
-      recipeLogger.warn('handleOCRModal called in wrong mode', mode);
-    }
-  };
-
   const handleAddNutrition = () => {
     handleNutritionUpdate({});
   };
@@ -129,8 +121,8 @@ export function RecipeNutrition({
     return (
       <View>
         <NutritionEmptyState
-          mode={mode === recipeStateType.addOCR ? 'ocr' : 'add'}
-          onButtonPressed={mode === recipeStateType.addOCR ? handleOCRModal : handleAddNutrition}
+          withScan={withScan}
+          onButtonPressed={handleAddNutrition}
           parentTestId={testId}
         />
         {errorHelper}
@@ -152,6 +144,9 @@ export function RecipeNutrition({
         showRemoveButton={isEditing}
         parentTestId={testId}
       />
+      {withScan ? (
+        <ScanButton testID={testId + '::OpenModal'} field={recipeColumnsNames.nutrition} />
+      ) : null}
       {errorHelper}
     </View>
   );

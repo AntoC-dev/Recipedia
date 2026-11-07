@@ -1,4 +1,4 @@
-import { Text, TextInput, TextInputEndEditingEvent, TextStyle } from 'react-native';
+import { Text, TextInput, TextInputEndEditingEvent, TextStyle, View } from 'react-native';
 import React, { useState } from 'react';
 import { CustomTextInputProps } from '@components/atomic/CustomTextInput';
 
@@ -17,6 +17,7 @@ export function CustomTextInputMock({
   onLayout,
   accessibilityRole,
   accessibilityState,
+  right,
 }: CustomTextInputProps) {
   const [displayValue, setDisplayValue] = useState(value ?? '');
   const [prevValue, setPrevValue] = useState(value);
@@ -50,6 +51,7 @@ export function CustomTextInputMock({
         onBlur={onBlur}
         onLayout={onLayout}
       />
+      {right ? <View testID={testID + '::Right'}>{right}</View> : null}
       {label !== undefined && <Text testID={testID + '::Label'}>{label}</Text>}
       {accessibilityRole !== undefined && (
         <Text testID={testID + '::accessibilityRole'}>{accessibilityRole}</Text>

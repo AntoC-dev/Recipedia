@@ -19,30 +19,64 @@ e2e_secret_variants() {
     return 0
   fi
 
-  SECRET_VALUE="$value" perl -e '
+  SECRET_VALUE="$value" SECRET_MIN_LENGTH="$E2E_SECRET_MIN_LENGTH" perl -e '
+    sub escapings {
+      my ($raw) = @_;
+
+      my $url = $raw;
+      $url =~ s/([^A-Za-z0-9\-._~])/sprintf("%%%02X", ord($1))/ge;
+
+      # commands.json stores the value JSON-escaped, report.xml stores it XML-escaped.
+      my $json = $raw;
+      $json =~ s/(["\\])/\\$1/g;
+      $json =~ s/([\x00-\x1f])/sprintf("\\u%04x", ord($1))/ge;
+
+      my $xml = $raw;
+      $xml =~ s/&/&amp;/g;
+      $xml =~ s/</&lt;/g;
+      $xml =~ s/>/&gt;/g;
+      $xml =~ s/"/&quot;/g;
+      $xml =~ s/'"'"'/&apos;/g;
+
+      return ($raw, $url, $json, $xml);
+    }
+
     my $raw = $ENV{SECRET_VALUE};
-
-    my $url = $raw;
-    $url =~ s/([^A-Za-z0-9\-._~])/sprintf("%%%02X", ord($1))/ge;
-
-    # commands.json stores the value JSON-escaped, report.xml stores it XML-escaped.
-    my $json = $raw;
-    $json =~ s/(["\\])/\\$1/g;
-    $json =~ s/([\x00-\x1f])/sprintf("\\u%04x", ord($1))/ge;
-
-    my $xml = $raw;
-    $xml =~ s/&/&amp;/g;
-    $xml =~ s/</&lt;/g;
-    $xml =~ s/>/&gt;/g;
-    $xml =~ s/"/&quot;/g;
-    $xml =~ s/'"'"'/&apos;/g;
+    my @pieces = ($raw);
+    # The iOS driver types the first character apart from the rest, which is logged on its own.
+    my $tail = substr($raw, 1);
+    push @pieces, $tail if length($tail) >= $ENV{SECRET_MIN_LENGTH};
 
     my %seen;
-    for my $variant ($raw, $url, $json, $xml) {
+    for my $variant (map { escapings($_) } @pieces) {
       next if $variant eq q{} || $seen{$variant}++;
       print "$variant\n";
     }
   '
+}
+
+# Runs typed-text-filter.pl in MODE (redact|check) over the files under PATHS holding one of its
+# markers: device logs run to GBs, so only those are read. Returns non-zero if a file can't be scanned.
+e2e_typed_text_filter() {
+  local mode="$1"
+  shift
+  local filter
+  filter="$(dirname "${BASH_SOURCE[0]}")/typed-text-filter.pl"
+
+  local list
+  local status=0
+  list=$(LC_ALL=C grep -rlF --exclude='*.png' --exclude='*.jpg' --exclude='*.mp4' \
+    -f <(perl "$filter" markers) -- "$@") || status=$?
+  [ "$status" -le 1 ] || return "$status"
+  [ -n "$list" ] || return 0
+
+  local files=()
+  local file
+  while IFS= read -r file; do
+    files+=("$file")
+  done <<< "$list"
+
+  LC_ALL=C perl "$filter" "$mode" "${files[@]}"
 }
 
 maestro_credential_args() {

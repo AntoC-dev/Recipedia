@@ -7,6 +7,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to tags's adding button"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeTags::RoundButton"
     label: "Add a new tag"

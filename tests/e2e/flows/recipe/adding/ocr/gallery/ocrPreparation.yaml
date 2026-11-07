@@ -7,6 +7,8 @@ appId: "com.recipedia"
     speed: 20
     centerElement: true
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipePreparation::OpenModal::RoundButton"
     label: "Tap on OCR button of recipe preparation"
@@ -37,6 +39,6 @@ appId: "com.recipedia"
 
 - extendedWaitUntil:
     visible:
-      id: "RecipePreparation::EditableStep::0::Step"
+      id: "RecipePreparation::EditableStep::.*::Step"
     timeout: 120000
     label: "Wait for first preparation step to be populated by OCR"

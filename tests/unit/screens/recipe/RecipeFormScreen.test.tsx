@@ -37,7 +37,7 @@ jest.mock('@components/organisms/RecipeIngredients', () => {
     IngredientsTable: mocks.ingredientsTableMock,
     IngredientRow: mocks.ingredientRowMock,
     IngredientsAddEmpty: mocks.ingredientsAddEmptyMock,
-    IngredientsAddTail: mocks.ingredientsAddTailMock,
+    IngredientsOcrButtons: mocks.ingredientsOcrButtonsMock,
   };
 });
 jest.mock('@components/organisms/RecipePreparation', () => {
@@ -45,7 +45,6 @@ jest.mock('@components/organisms/RecipePreparation', () => {
   return {
     RecipePreparation: mocks.recipePreparationMock,
     PreparationSection: mocks.preparationSectionMock,
-    PreparationEmptyAdd: mocks.preparationEmptyAddMock,
     EditableStep: mocks.editableStepMock,
   };
 });

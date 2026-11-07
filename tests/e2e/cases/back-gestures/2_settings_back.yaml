@@ -17,6 +17,8 @@ tags:
     centerElement: true
     label: "Action - Scroll to the top of Parameters"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "Parameters::Section::RecipeDefaults::Persons::Item"
     label: "Action - Open Default Persons settings"
@@ -56,6 +58,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Action - Scroll to Data Management section"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Parameters::Section::Data::Ingredients::Item"
@@ -140,6 +144,8 @@ tags:
     speed: 40
     centerElement: true
     label: "Action - Scroll to the Dismissed recipes item"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "Parameters::Section::Import::DismissedRecipes::Item"

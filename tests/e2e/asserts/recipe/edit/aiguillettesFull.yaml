@@ -214,7 +214,7 @@ appId: "com.recipedia"
     label: "Scroll to time section"
 
 - assertVisible:
-    text: "Time to prepare the recipe :"
+    text: "Prep time:"
     label: "Time to prepare text is displayed"
 
 - assertVisible:
@@ -379,7 +379,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePersons::SuffixText"
-    text: " persons"
+    text: "persons"
     label: "Person text sentence end is displayed"
 
 - assertVisible:
@@ -389,7 +389,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePersons::PrefixText"
-    text: "This recipe is for : "
+    text: "Servings:"
     label: "Person text sentence begin is displayed"
 
 - scrollUntilVisible:
@@ -523,5 +523,5 @@ appId: "com.recipedia"
     label: "Camera button for changing the image is displayed"
 
 - runFlow:
-    file: "../common/buttonsAddingManually.yaml"
+    file: "../common/buttonsAddingManuallyWithImage.yaml"
     label: "Assert adding manually mode buttons are displayed"

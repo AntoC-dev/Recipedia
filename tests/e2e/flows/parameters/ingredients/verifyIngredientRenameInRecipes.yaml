@@ -27,6 +27,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to recipe card"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::RecipeCards::2::Cover"
     label: "Open Taco recipe from the card"

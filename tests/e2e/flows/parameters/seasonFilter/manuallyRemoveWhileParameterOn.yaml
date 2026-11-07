@@ -30,6 +30,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to season accordion"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::0"
     label: "Expand season filter accordion"
@@ -43,6 +45,8 @@ appId: "com.recipedia"
     speed: 50
     centerElement: true
     label: "Scroll to first season filter item"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::0::Item::0"
@@ -70,6 +74,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to season accordion"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::0"
     label: "Expand season filter accordion"
@@ -83,6 +89,8 @@ appId: "com.recipedia"
     speed: 50
     centerElement: true
     label: "Scroll to first season filter item"
+
+- waitForAnimationToEnd
 
 - tapOn:
     id: "SearchScreen::FilterAccordion::Accordion::0::Item::0"

@@ -14,6 +14,7 @@ export const customImageMock = () => ({
     onLoadSuccess,
     onLoadError,
     priority,
+    hidePlaceholder,
   }: CustomImageProps) {
     return (
       <View testID={testID}>
@@ -24,6 +25,7 @@ export const customImageMock = () => ({
         <Text testID={testID + '::Circular'}>{circular?.toString()}</Text>
         <Text testID={testID + '::BorderRadius'}>{borderRadius?.toString()}</Text>
         <Text testID={testID + '::Priority'}>{priority}</Text>
+        <Text testID={testID + '::HidePlaceholder'}>{hidePlaceholder?.toString()}</Text>
         {onLoadSuccess !== undefined && (
           <Button
             testID={testID + '::OnLoadSuccess'}

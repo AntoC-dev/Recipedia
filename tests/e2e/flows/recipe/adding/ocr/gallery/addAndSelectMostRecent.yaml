@@ -1,0 +1,27 @@
+appId: "com.recipedia"
+---
+- runFlow:
+    file: ../android/addMedia.yaml
+    env:
+      RECIPE_NAME: ${RECIPE_NAME}
+      FIELD_NAME: ${FIELD_NAME}
+    when:
+      platform: Android
+- runFlow:
+    file: ../iOS/addMedia.yaml
+    env:
+      RECIPE_NAME: ${RECIPE_NAME}
+      FIELD_NAME: ${FIELD_NAME}
+    when:
+      platform: iOS
+
+- runFlow:
+    file: ../android/selectMostRecentFromModal.yaml
+    label: "Select ${FIELD_NAME} from modal for OCR"
+    when:
+      platform: Android
+- runFlow:
+    file: ../iOS/selectMostRecentFromModal.yaml
+    label: "Select ${FIELD_NAME} from modal for OCR"
+    when:
+      platform: iOS

@@ -43,8 +43,7 @@ export default {
 
   timeReadOnlyBeforePerson: 'Preparation (',
   timeReadOnlyAfterPerson: ' min)',
-  timePrefixOCR: 'Prep time (minutes):',
-  timePrefixEdit: 'Time to prepare the recipe :',
+  timePrefix: 'Prep time:',
   timeSuffixEdit: 'min',
 
   preparationReadOnly: 'Preparation :',
@@ -52,9 +51,8 @@ export default {
   preparationOCRStepTitle: 'Title of step',
   preparationOCRStepContent: 'Content of step',
 
-  personPrefixOCR: 'How many serving (people) ?',
-  personPrefixEdit: 'This recipe is for : ',
-  personSuffixEdit: ' persons',
+  personPrefix: 'Servings:',
+  personSuffixEdit: 'persons',
 
   validateReadOnly: 'Add to the menu',
   validateEdit: 'Validate the recipe with these modifications',

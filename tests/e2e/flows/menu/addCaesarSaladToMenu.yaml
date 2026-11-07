@@ -14,6 +14,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to Caesar Salad recipe"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "SearchScreen::RecipeCards::4::Caesar Salad"
     label: "Open Caesar Salad recipe"

@@ -9,6 +9,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to ingredient (index ${INDEX}) delete button"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::${INDEX}::DeleteButton"
     label: "Tap delete button to remove ingredient"

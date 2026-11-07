@@ -27,12 +27,18 @@ const keptLines = [
   `${header('maestro-driver-iosUITests-Runner')} tap at 10,20`,
   `${header('kernel')} memorystatus: killing Recipedia`,
   `${header('testmanagerd')} binary ÿþ payload`,
+  `${header('CoreSimulatorBridge')} addmedia request received`,
+  `${header('assetsd')} importing asset`,
+  `${header('photolibraryd')} library ready`,
+  `${header('photoanalysisd')} analysis queued`,
+  `${header('mediaanalysisd')} analysis started`,
 ];
 
 const droppedLines = [
   `${header('backboardd')} touch event`,
   `${header('XSpringBoard')} lookalike process`,
   `${header('SpringBoardFoundation')} prefix lookalike`,
+  `${header('assetsdHelper')} suffix lookalike`,
   '2026-10-20 09:03:30.090898+0000  localhost Recipedia: no pid',
 ];
 

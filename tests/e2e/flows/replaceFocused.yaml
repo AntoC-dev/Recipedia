@@ -1,6 +1,7 @@
 appId: "com.recipedia"
 ---
 - eraseText:
+    charactersToErase: 100
     label: "Clear ${TARGET_ID} before typing ${VALUE}"
 
 - extendedWaitUntil:

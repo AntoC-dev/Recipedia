@@ -46,11 +46,11 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePersons::PrefixText"
-    text: "Cette recette est pour : "
+    text: "Portions :"
     label: "Intro text for the recipe persons is displayed in French"
 - assertVisible:
     id: "RecipePersons::SuffixText"
-    text: " personnes"
+    text: "personnes"
     label: "Outro text for the recipe persons is displayed in French"
 
 - scrollUntilVisible:

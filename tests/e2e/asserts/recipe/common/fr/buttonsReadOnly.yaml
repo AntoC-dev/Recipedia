@@ -2,15 +2,8 @@ appId: "com.recipedia"
 ---
 - assertVisible:
     id: "Recipe::AppBar::BackButton"
+    text: "Back"
     label: "Back button is displayed"
-
-- runFlow:
-    when:
-      platform: iOS
-    commands:
-      - assertVisible:
-          text: "Back"
-          label: "Back button icon is displayed on iOS"
 
 - assertVisible:
     id: "Recipe::BottomActionButton-text"

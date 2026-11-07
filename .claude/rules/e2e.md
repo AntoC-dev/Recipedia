@@ -11,7 +11,7 @@ CI artifacts: `maestro-logs-android-<job>` / `maestro-logs-ios-<job>` — job = 
 (one `<suite>/` folder each)
 
 - `maestro.log` — flow execution log
-- `android-app-logs.txt` — logcat
-- `ios-app-logs.txt` — iOS sim log
+- `recipedia-app-logs.txt` — app logs (logcat on Android, sim log on iOS)
+- `xctest_runner_*.log` — iOS XCTest driver log
 
 Use the `e2e-ci-debugger` agent or `/e2e-debug` skill for CI failure triage (Claude Code only).

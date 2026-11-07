@@ -7,6 +7,8 @@ appId: "com.recipedia"
     centerElement: true
     label: "Scroll to the ${SECTION} add button"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "${SECTION}::AddButton::RoundButton"
     waitToSettleTimeoutMs: 0

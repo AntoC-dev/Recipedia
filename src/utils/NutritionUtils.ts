@@ -6,6 +6,7 @@
 
 import { nutritionTableElement } from '@customTypes/DatabaseElementTypes';
 import { defaultValueNumber } from '@utils/Constants';
+import type { nutritionObject } from '@customTypes/OCRTypes';
 
 const KCAL_TO_KJ_FACTOR = 4.184;
 
@@ -30,6 +31,31 @@ export function emptyNutrition(): nutritionTableElement {
     salt: defaultValueNumber,
     portionWeight: defaultValueNumber,
   };
+}
+
+/**
+ * Merges an OCR nutrition scan into the nutrition already on the form.
+ *
+ * Only the keys the scan found (value not `undefined`, a found `0` included)
+ * overwrite the current value; every other key keeps what the user already
+ * entered. When no nutrition exists yet, missing keys fall back to the
+ * {@link emptyNutrition} sentinel.
+ *
+ * @param current - Nutrition currently on the form, if any
+ * @param scanned - Partial nutrition returned by the OCR parser
+ * @returns A new nutrition object combining both
+ */
+export function mergeScannedNutrition(
+  current: nutritionTableElement | undefined,
+  scanned: nutritionObject
+): nutritionTableElement {
+  const merged = { ...(current ?? emptyNutrition()) };
+  for (const [key, value] of Object.entries(scanned)) {
+    if (value !== undefined) {
+      merged[key as keyof nutritionObject] = value;
+    }
+  }
+  return merged;
 }
 
 /**

@@ -150,6 +150,24 @@ describe('CustomImage component behavior', () => {
     expect(image).toHaveStyle({ opacity: 0 });
   });
 
+  it('hides placeholder when hidePlaceholder is set and no uri is provided', async () => {
+    const { queryByTestId } = await render(<CustomImage hidePlaceholder testID={ID} />);
+
+    expect(queryByTestId('Test::Placeholder')).toBeNull();
+  });
+
+  it('hides placeholder when hidePlaceholder is set and image fails to load', async () => {
+    const { getByTestId, queryByTestId } = await render(
+      <CustomImage uri={dummyUri} hidePlaceholder testID={ID} />
+    );
+
+    await act(() => {
+      getByTestId('Test::Image').props.onError({ nativeEvent: { error: 'error' } });
+    });
+
+    expect(queryByTestId('Test::Placeholder')).toBeNull();
+  });
+
   it('keeps decoded bitmaps in memory so scrolling back does not re-decode', async () => {
     const { getByTestId } = await render(<CustomImage uri={dummyUri} testID={ID} />);
 

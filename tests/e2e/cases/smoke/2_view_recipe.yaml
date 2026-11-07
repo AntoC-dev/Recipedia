@@ -7,10 +7,10 @@ tags:
     id: "BottomTabs::Search"
     label: "Navigate to Search screen"
 
-- waitForAnimationToEnd
-
-- assertVisible:
-    id: "SearchScreen::RecipeCards::1::Cover"
+- extendedWaitUntil:
+    visible:
+      id: "SearchScreen::RecipeCards::1::Cover"
+    timeout: 30000
     label: "At least one recipe card renders"
 
 - tapOn:

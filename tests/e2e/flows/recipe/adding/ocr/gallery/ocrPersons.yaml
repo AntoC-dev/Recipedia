@@ -1,0 +1,35 @@
+appId: "com.recipedia"
+---
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePersons::OpenModal::IconButton"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll to the persons scan icon"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipePersons::OpenModal::IconButton"
+    label: "Tap on icon to OCR persons from the persons and time picture"
+
+- runFlow:
+    file: ../android/selectMostRecentFromModal.yaml
+    label: "Select persons picture from modal for OCR"
+    when:
+      platform: Android
+
+- runFlow:
+    file: ../iOS/selectMostRecentFromModal.yaml
+    label: "Select persons picture from modal for OCR"
+    when:
+      platform: iOS
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipePersons::NumericTextInput"
+      text: "2"
+    timeout: 30000
+    label: "Wait for persons to be populated by OCR"

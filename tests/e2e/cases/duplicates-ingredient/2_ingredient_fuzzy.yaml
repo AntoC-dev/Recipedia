@@ -27,6 +27,8 @@ tags:
     centerElement: true
     label: "Action - Scroll to ingredients section"
 
+- waitForAnimationToEnd
+
 - tapOn:
     id: "RecipeIngredients::AddButton::RoundButton"
     label: "Action - Add ingredient to recipe"
