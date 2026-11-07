@@ -157,6 +157,24 @@ describe('useRecipeScraper', () => {
       expect(result.current.error).toBe('urlDialog.errorScraping');
     });
 
+    test('returns translated error when the scraper engine is unavailable', async () => {
+      mockScrapeRecipeFromHtmlError('Pyodide failed', 'ScraperUnavailable');
+
+      const { result } = await renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      let scrapeResult: ScrapeResult | undefined;
+      await act(async () => {
+        scrapeResult = await result.current.scrapeAndPrepare('https://example.com');
+      });
+
+      expect(scrapeResult?.success).toBe(false);
+      if (scrapeResult && !scrapeResult.success) {
+        expect(scrapeResult.error).toBe('urlDialog.errorScraperUnavailable');
+      }
+    });
+
     test('returns translated error for NoSchemaFoundInWildMode', async () => {
       mockScrapeRecipeFromHtmlError('No schema found', 'NoSchemaFoundInWildMode');
 

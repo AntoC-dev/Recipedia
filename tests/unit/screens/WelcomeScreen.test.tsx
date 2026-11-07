@@ -5,6 +5,7 @@ import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
+import { mockUseScraper } from '@mocks/modules/recipe-scraper-mock';
 
 jest.mock('@components/atomic/CustomImage', () =>
   require('@mocks/components/atomic/CustomImage-mock').customImageMock()
@@ -127,6 +128,16 @@ describe('WelcomeScreen Component', () => {
     expect(getByTestId('WelcomeScreen::Card::FeaturesList::0::Icon')).toBeTruthy();
     expect(getByTestId('WelcomeScreen::Card::FeaturesList::1::Icon')).toBeTruthy();
     expect(getByTestId('WelcomeScreen::Card::FeaturesList::2::Icon')).toBeTruthy();
+  });
+
+  test('does not start the recipe scraper engine', async () => {
+    const { getByTestId } = await renderWelcomeScreen();
+
+    await waitFor(() => {
+      expect(getByTestId('WelcomeScreen::SkipButton')).toBeTruthy();
+    });
+
+    expect(mockUseScraper).not.toHaveBeenCalled();
   });
 
   test('handles missing expo config gracefully', async () => {

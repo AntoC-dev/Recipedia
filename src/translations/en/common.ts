@@ -86,6 +86,8 @@ export default {
     errorAuthFailed: 'Authentication failed. Please check your credentials.',
     errorUnsupportedAuth: 'Authentication is not supported for this site',
     errorUnsupportedPlatform: 'This feature is only available on Android',
+    errorScraperUnavailable:
+      'Web recipe import engine could not be loaded. You can still add recipes manually.',
   },
 
   autocomplete: {

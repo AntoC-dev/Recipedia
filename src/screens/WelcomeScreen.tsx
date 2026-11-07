@@ -46,7 +46,6 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useResetOnChange } from '@hooks/useResetOnChange';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Button, Card, Dialog, IconButton, Portal, Text, useTheme } from 'react-native-paper';
@@ -61,7 +60,6 @@ import Constants from 'expo-constants';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
 import { useRecipes } from '@hooks/useRecipes';
 import { loadFirstLaunchDataset } from '@utils/datasetInitializer';
-import { useScraper } from '@app/modules/recipe-scraper';
 
 /**
  * Props for the WelcomeScreen component
@@ -83,7 +81,6 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   const { colors, fonts } = useTheme();
   const { t } = useI18n();
   const { recipes } = useRecipes();
-  const { initError: scraperInitError } = useScraper();
   const isDataLoaded = recipes.length > 0;
   const [initErrors, setInitErrors] = useState<string[]>([]);
   const [datasetFailed, setDatasetFailed] = useState(false);
@@ -119,16 +116,6 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
     }, 0);
     return () => clearTimeout(id);
   }, [isDataLoaded]);
-
-  useResetOnChange([scraperInitError], () => {
-    if (scraperInitError) {
-      setInitErrors(prev => {
-        const msg = t('welcome.pyodideError');
-        if (prev.includes(msg)) return prev;
-        return [...prev, msg];
-      });
-    }
-  });
 
   useEffect(() => {
     if (canProceed && pendingAction) {

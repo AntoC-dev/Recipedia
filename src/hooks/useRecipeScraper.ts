@@ -57,6 +57,7 @@ const SCRAPER_ERROR_I18N_KEYS: Record<string, string> = {
   [ScraperErrorTypes.AuthenticationFailed]: 'urlDialog.errorAuthFailed',
   [ScraperErrorTypes.UnsupportedAuthSite]: 'urlDialog.errorUnsupportedAuth',
   [ScraperErrorTypes.UnsupportedPlatform]: 'urlDialog.errorUnsupportedPlatform',
+  [ScraperErrorTypes.ScraperUnavailable]: 'urlDialog.errorScraperUnavailable',
 };
 
 const DEFAULT_SCRAPER_ERROR_I18N_KEY = 'urlDialog.errorScraping';

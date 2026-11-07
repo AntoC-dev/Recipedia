@@ -11,8 +11,6 @@ export default {
     },
     startTour: 'Explorer',
     skip: 'Commencer',
-    pyodideError:
-      "Le moteur d'import de recettes web n'a pas pu être chargé. Vous pouvez toujours ajouter des recettes manuellement.",
     datasetError: {
       title: 'Problème de Chargement',
       message:

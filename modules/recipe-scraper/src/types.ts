@@ -134,6 +134,7 @@ export const ScraperErrorTypes = {
     URLError: 'URLError',
     Timeout: 'timeout',
     UnsupportedPlatform: 'UnsupportedPlatform',
+    ScraperUnavailable: 'ScraperUnavailable',
 } as const;
 
 export type ScraperErrorType = (typeof ScraperErrorTypes)[keyof typeof ScraperErrorTypes] | string;

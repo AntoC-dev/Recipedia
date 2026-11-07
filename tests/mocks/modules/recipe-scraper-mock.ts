@@ -18,7 +18,6 @@ export const mockIsPythonReady = jest.fn<Promise<boolean>, []>();
 export const mockUseScraper = jest.fn(() => ({
   scrapeRecipeFromHtml: mockScrapeRecipeFromHtml,
   scrapeRecipeAuthenticated: mockScrapeRecipeAuthenticated,
-  initError: null as string | null,
 }));
 
 export const recipeScraperMock = {
@@ -38,6 +37,7 @@ export const recipeScraperMock = {
     URLError: 'URLError',
     Timeout: 'timeout',
     UnsupportedPlatform: 'UnsupportedPlatform',
+    ScraperUnavailable: 'ScraperUnavailable',
   },
 };
 
@@ -108,7 +108,6 @@ export function resetRecipeScraperMocks() {
   mockUseScraper.mockReturnValue({
     scrapeRecipeFromHtml: mockScrapeRecipeFromHtml,
     scrapeRecipeAuthenticated: mockScrapeRecipeAuthenticated,
-    initError: null,
   });
 }
 
