@@ -28,13 +28,11 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useResetOnChange } from '@hooks/useResetOnChange';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import { StyleSheet, View } from 'react-native';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { useReducedMotion } from '@hooks/useReducedMotion';
-import { useRecipeScraper } from '@hooks/useRecipeScraper';
 import { CopilotStepData } from '@customTypes/TutorialTypes';
 import { useI18n } from '@utils/i18n';
 import { TUTORIAL_DEMO_INTERVAL, TUTORIAL_STEPS } from '@utils/Constants';
@@ -44,8 +42,7 @@ import { StackScreenNavigation } from '@customTypes/ScreenTypes';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { FAB, Portal, useTheme } from 'react-native-paper';
 import { padding, radius } from '@styles/spacing';
-import { UrlInputDialog } from '@components/dialogs/UrlInputDialog';
-import { AuthenticationDialog } from '@components/dialogs/AuthenticationDialog';
+import { UrlRecipeImport } from '@components/organisms/UrlRecipeImport';
 
 const MAIN_FAB_SIZE = 56;
 const ACTION_BUTTON_SIZE = 40;
@@ -92,20 +89,9 @@ function VerticalBottomButtons() {
 
   const [open, setOpen] = useState(false);
   const [urlDialogVisible, setUrlDialogVisible] = useState(false);
-  const [authDialogVisible, setAuthDialogVisible] = useState(false);
   const demoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isFocused = useIsFocused();
   const reducedMotion = useReducedMotion();
-
-  const {
-    scrapeAndPrepare,
-    scrapeWithAuth,
-    isLoading: isScrapingLoading,
-    error: scrapingError,
-    clearError,
-    authRequired,
-    clearAuthRequired,
-  } = useRecipeScraper();
 
   const stepOrder = TUTORIAL_STEPS.Home.order;
 
@@ -156,13 +142,6 @@ function VerticalBottomButtons() {
     };
   }, [isFocused, copilotData, copilotEvents, currentStep, reducedMotion, stepOrder]);
 
-  useResetOnChange([authRequired], () => {
-    if (authRequired) {
-      setUrlDialogVisible(false);
-      setAuthDialogVisible(true);
-    }
-  });
-
   async function takePhotoAndOpenNewRecipe() {
     openRecipeWithUri(await takePhoto(colors));
   }
@@ -180,43 +159,6 @@ function VerticalBottomButtons() {
   function handleOpenUrlDialog() {
     setOpen(false);
     setUrlDialogVisible(true);
-  }
-
-  function handleCloseUrlDialog() {
-    setUrlDialogVisible(false);
-    clearError();
-  }
-
-  async function handleUrlSubmit(url: string) {
-    const result = await scrapeAndPrepare(url);
-    if (result.success) {
-      setUrlDialogVisible(false);
-      navigate('RecipeAddScrape', {
-        scrapedData: result.data,
-        sourceUrl: result.sourceUrl,
-      });
-    }
-  }
-
-  function handleCloseAuthDialog() {
-    setAuthDialogVisible(false);
-    clearAuthRequired();
-    clearError();
-  }
-
-  async function handleAuthSubmit(username: string, password: string) {
-    if (!authRequired) {
-      return;
-    }
-
-    const result = await scrapeWithAuth(authRequired.url, username, password);
-    if (result.success) {
-      setAuthDialogVisible(false);
-      navigate('RecipeAddScrape', {
-        scrapedData: result.data,
-        sourceUrl: result.sourceUrl,
-      });
-    }
   }
 
   return (
@@ -281,22 +223,10 @@ function VerticalBottomButtons() {
               color={colors.onPrimaryContainer}
             />
           </Portal>
-          <UrlInputDialog
+          <UrlRecipeImport
             testId={testID}
             isVisible={urlDialogVisible}
-            onClose={handleCloseUrlDialog}
-            onSubmit={url => void handleUrlSubmit(url)}
-            isLoading={isScrapingLoading}
-            error={scrapingError}
-          />
-          <AuthenticationDialog
-            testId={testID}
-            isVisible={authDialogVisible}
-            host={authRequired?.host ?? ''}
-            onClose={handleCloseAuthDialog}
-            onSubmit={(username, password) => void handleAuthSubmit(username, password)}
-            isLoading={isScrapingLoading}
-            error={scrapingError}
+            onClose={() => setUrlDialogVisible(false)}
           />
         </>
       )}

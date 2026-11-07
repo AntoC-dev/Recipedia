@@ -10,16 +10,6 @@ import {
 } from '@mocks/deps/react-native-copilot-mock';
 import { mockUseReducedMotion } from '@mocks/hooks/useReducedMotion-mock';
 import { TUTORIAL_DEMO_INTERVAL } from '@utils/Constants';
-import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
-import {
-  createEmptyScrapedRecipe,
-  mockScrapeRecipeAuthenticated,
-  mockScrapeRecipeAuthenticatedError,
-  mockScrapeRecipeAuthenticatedSuccess,
-  mockScrapeRecipeFromHtmlError,
-  mockScrapeRecipeFromHtmlSuccess,
-} from '@mocks/modules/recipe-scraper-mock';
-import { mockFetchHtmlSuccess } from '@mocks/deps/fetch-mock';
 import { pickImage } from '@utils/ImagePicker';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import { padding } from '@styles/spacing';
@@ -34,17 +24,16 @@ jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
 );
 
-jest.mock(
-  '@app/modules/recipe-scraper',
-  () => require('@mocks/modules/recipe-scraper-mock').recipeScraperMock
-);
+jest.mock('@components/organisms/UrlRecipeImport', () => ({
+  UrlRecipeImport: require('@mocks/components/organisms/UrlRecipeImport-mock').urlRecipeImportMock,
+}));
 
 jest.mock('react-i18next', () => require('@mocks/utils/i18n-mock').i18nMock());
 
 async function renderWithProvider(component: React.ReactElement, tabBarHeight?: number) {
   return render(
     <BottomTabBarHeightContext.Provider value={tabBarHeight}>
-      <DefaultPersonsProvider>{component}</DefaultPersonsProvider>
+      {component}
     </BottomTabBarHeightContext.Provider>
   );
 }
@@ -57,7 +46,6 @@ async function openUrlDialog(getByTestId: (id: string) => any) {
 describe('VerticalBottomButtons Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockFetchHtmlSuccess();
   });
 
   test('renders expand button in collapsed state', async () => {
@@ -179,194 +167,32 @@ describe('VerticalBottomButtons Component', () => {
     expect(queryByTestId('CameraButton')).toBeNull();
   });
 
-  describe('URL import flow', () => {
-    test('opens the URL dialog when the URL button is pressed', async () => {
+  describe('URL import', () => {
+    const urlImportId = 'VerticalBottomButtons::UrlRecipeImport';
+
+    test('keeps the URL import closed without an initial URL by default', async () => {
+      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
+
+      expect(getByTestId(urlImportId + '::IsVisible')).toHaveTextContent('false');
+      expect(getByTestId(urlImportId + '::InitialUrl')).toHaveTextContent('');
+    });
+
+    test('opens the URL import and collapses the menu when the URL button is pressed', async () => {
+      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
+
+      await openUrlDialog(getByTestId);
+
+      expect(getByTestId(urlImportId + '::IsVisible')).toHaveTextContent('true');
+      expect(queryByTestId('ReduceButton')).toBeNull();
+    });
+
+    test('closes the URL import when it ends', async () => {
       const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
       await openUrlDialog(getByTestId);
+      await fireEvent.press(getByTestId(urlImportId + '::OnClose'));
 
-      expect(getByTestId('VerticalBottomButtons::UrlDialog::Title')).toBeTruthy();
-    });
-
-    test('closes the URL dialog and clears the error when cancel is pressed', async () => {
-      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
-
-      await openUrlDialog(getByTestId);
-      await fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::CancelButton'));
-
-      expect(queryByTestId('VerticalBottomButtons::UrlDialog::Title')).toBeNull();
-    });
-
-    test('navigates to scrape results and closes the dialog on successful submit', async () => {
-      mockScrapeRecipeFromHtmlSuccess(createEmptyScrapedRecipe({ title: 'Pasta' }));
-      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
-
-      await openUrlDialog(getByTestId);
-      await fireEvent.changeText(
-        getByTestId('VerticalBottomButtons::UrlDialog::Input::CustomTextInput'),
-        'https://example.com/recipe'
-      );
-      await fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
-
-      await waitFor(() =>
-        expect(mockNavigate).toHaveBeenCalledWith(
-          'RecipeAddScrape',
-          expect.objectContaining({ sourceUrl: 'https://example.com/recipe' })
-        )
-      );
-      expect(queryByTestId('VerticalBottomButtons::UrlDialog::Title')).toBeNull();
-    });
-
-    test('keeps the URL dialog open and shows an error when scraping fails', async () => {
-      mockScrapeRecipeFromHtmlError('No recipe found', 'NoRecipeFoundError');
-      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
-
-      await openUrlDialog(getByTestId);
-      await fireEvent.changeText(
-        getByTestId('VerticalBottomButtons::UrlDialog::Input::CustomTextInput'),
-        'https://example.com/recipe'
-      );
-      await fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
-
-      await waitFor(() =>
-        expect(getByTestId('VerticalBottomButtons::UrlDialog::HelperText')).toHaveTextContent(
-          'urlDialog.errorNoRecipeFound'
-        )
-      );
-      expect(getByTestId('VerticalBottomButtons::UrlDialog::Title')).toBeTruthy();
-      expect(mockNavigate).not.toHaveBeenCalled();
-    });
-
-    test('opens the authentication dialog and hides the URL dialog when scraping requires auth', async () => {
-      mockScrapeRecipeFromHtmlError('Login required', 'AuthenticationRequired', 'quitoque.fr');
-      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
-
-      await openUrlDialog(getByTestId);
-      await fireEvent.changeText(
-        getByTestId('VerticalBottomButtons::UrlDialog::Input::CustomTextInput'),
-        'https://quitoque.fr/recipe'
-      );
-      await fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
-
-      await waitFor(() =>
-        expect(getByTestId('VerticalBottomButtons::AuthDialog::Title')).toBeTruthy()
-      );
-      expect(queryByTestId('VerticalBottomButtons::UrlDialog::Title')).toBeNull();
-    });
-  });
-
-  describe('Authentication flow', () => {
-    async function triggerAuthRequired(getByTestId: (id: string) => any) {
-      mockScrapeRecipeFromHtmlError('Login required', 'AuthenticationRequired', 'quitoque.fr');
-      await openUrlDialog(getByTestId);
-      await fireEvent.changeText(
-        getByTestId('VerticalBottomButtons::UrlDialog::Input::CustomTextInput'),
-        'https://quitoque.fr/recipe'
-      );
-      await fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
-    }
-
-    test('navigates to scrape results and closes the dialog on successful credentials', async () => {
-      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
-
-      await triggerAuthRequired(getByTestId);
-      await waitFor(() =>
-        expect(getByTestId('VerticalBottomButtons::AuthDialog::Title')).toBeTruthy()
-      );
-
-      mockScrapeRecipeAuthenticatedSuccess(createEmptyScrapedRecipe({ title: 'Secured Recipe' }));
-      await fireEvent.changeText(
-        getByTestId('VerticalBottomButtons::AuthDialog::UsernameInput'),
-        'chef'
-      );
-      await fireEvent.changeText(
-        getByTestId('VerticalBottomButtons::AuthDialog::PasswordInput'),
-        'secret'
-      );
-      await fireEvent.press(getByTestId('VerticalBottomButtons::AuthDialog::SubmitButton'));
-
-      await waitFor(() =>
-        expect(mockNavigate).toHaveBeenCalledWith(
-          'RecipeAddScrape',
-          expect.objectContaining({ sourceUrl: 'https://quitoque.fr/recipe' })
-        )
-      );
-      expect(queryByTestId('VerticalBottomButtons::AuthDialog::Title')).toBeNull();
-    });
-
-    test('keeps the auth dialog open and shows an error on failed credentials', async () => {
-      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
-
-      await triggerAuthRequired(getByTestId);
-      await waitFor(() =>
-        expect(getByTestId('VerticalBottomButtons::AuthDialog::Title')).toBeTruthy()
-      );
-
-      mockScrapeRecipeAuthenticatedError('Invalid credentials', 'AuthenticationFailed');
-      await fireEvent.changeText(
-        getByTestId('VerticalBottomButtons::AuthDialog::UsernameInput'),
-        'chef'
-      );
-      await fireEvent.changeText(
-        getByTestId('VerticalBottomButtons::AuthDialog::PasswordInput'),
-        'wrong'
-      );
-      await fireEvent.press(getByTestId('VerticalBottomButtons::AuthDialog::SubmitButton'));
-
-      await waitFor(() =>
-        expect(getByTestId('VerticalBottomButtons::AuthDialog::HelperText')).toHaveTextContent(
-          'urlDialog.errorAuthFailed'
-        )
-      );
-      expect(getByTestId('VerticalBottomButtons::AuthDialog::Title')).toBeTruthy();
-      expect(mockNavigate).not.toHaveBeenCalled();
-    });
-
-    test('closes the auth dialog and clears auth state when cancel is pressed', async () => {
-      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
-
-      await triggerAuthRequired(getByTestId);
-      await waitFor(() =>
-        expect(getByTestId('VerticalBottomButtons::AuthDialog::Title')).toBeTruthy()
-      );
-
-      await fireEvent.press(getByTestId('VerticalBottomButtons::AuthDialog::CancelButton'));
-
-      expect(queryByTestId('VerticalBottomButtons::AuthDialog::Title')).toBeNull();
-    });
-
-    test('ignores auth submit once authRequired has already been cleared', async () => {
-      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
-
-      await triggerAuthRequired(getByTestId);
-      await waitFor(() =>
-        expect(getByTestId('VerticalBottomButtons::AuthDialog::Title')).toBeTruthy()
-      );
-
-      mockScrapeRecipeFromHtmlSuccess(createEmptyScrapedRecipe({ title: 'Pasta' }));
-      await fireEvent.press(getByTestId('ExpandButton'));
-      await fireEvent.press(getByTestId('UrlButton'));
-      await fireEvent.changeText(
-        getByTestId('VerticalBottomButtons::UrlDialog::Input::CustomTextInput'),
-        'https://example.com/recipe'
-      );
-      await fireEvent.press(getByTestId('VerticalBottomButtons::UrlDialog::SubmitButton'));
-
-      await waitFor(() => expect(mockNavigate).toHaveBeenCalled());
-      mockNavigate.mockClear();
-
-      await fireEvent.changeText(
-        getByTestId('VerticalBottomButtons::AuthDialog::UsernameInput'),
-        'chef'
-      );
-      await fireEvent.changeText(
-        getByTestId('VerticalBottomButtons::AuthDialog::PasswordInput'),
-        'secret'
-      );
-      await fireEvent.press(getByTestId('VerticalBottomButtons::AuthDialog::SubmitButton'));
-
-      expect(mockScrapeRecipeAuthenticated).not.toHaveBeenCalled();
-      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(getByTestId(urlImportId + '::IsVisible')).toHaveTextContent('false');
     });
   });
 
