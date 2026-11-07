@@ -2,7 +2,12 @@
 
 Guidance for AI coding agents in this repo — Claude Code, Cursor, and any tool that reads `AGENTS.md`.
 
-/caveman ultra
+## Output
+
+- Terse: no filler, no pleasantries, fragments OK. Code, commits, PRs, security warnings in normal prose.
+- Final answer ≤ 5 bullets, ≤ 80 words: outcome, blocker, next action. Details, evidence, file lists only on request.
+- No progress narration while working.
+- Subagents report ≤ 5 bullets; the main agent compresses, never relays their reports verbatim.
 
 Topic rules live in `.claude/rules/`: `testing.md`, `e2e.md`, `git-workflow.md`, `documentation.md`, `issues.md`.
 

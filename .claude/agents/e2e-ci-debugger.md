@@ -104,3 +104,6 @@ or reload, ASK THE USER to run/reload the app and wait, then re-`inspect_screen`
 - Do not edit CI YAML files without understanding the retry/artifact structure
 
 Always report: the exact failing step, the suspected root cause, and the specific file/line to fix.
+
+Report format: at most 5 bullets (step + exact error, root cause, fix file:line, confidence). No evidence dumps, no log
+excerpts, no tables, no ruled-out lists unless asked.
