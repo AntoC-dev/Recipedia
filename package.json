@@ -96,6 +96,7 @@
     "expo-image-manipulator": "~57.0.21",
     "expo-localization": "~57.0.2",
     "expo-mail-composer": "~57.0.2",
+    "expo-sharing": "~57.0.25",
     "expo-splash-screen": "~57.0.9",
     "expo-sqlite": "~57.0.4",
     "expo-status-bar": "~57.0.1",
