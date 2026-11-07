@@ -1,7 +1,8 @@
 import { parseSelectedRecipes, fetchRecipeImageUrl } from '@utils/RecipeImportOrchestrator';
 import { createEmptyScrapedRecipe } from '@mocks/modules/recipe-scraper-mock';
 import { ScrapedRecipe, ScraperResult } from '@app/modules/recipe-scraper';
-import { DiscoveredRecipe, ParsingProgress, RecipeProvider } from '@customTypes/BulkImportTypes';
+import { DiscoveredRecipe, ParsingProgress } from '@customTypes/BulkImportTypes';
+import { createMockRecipeProvider } from '@mocks/providers/RecipeProvider-mock';
 import { fetchHtml } from '@utils/UrlHelpers';
 import { downloadImageToCache } from '@utils/FileGestion';
 import { bulkImportLogger } from '@utils/logger';
@@ -40,15 +41,6 @@ const scrapedPasta = (overrides: Partial<ScrapedRecipe> = {}): ScrapedRecipe =>
     ...overrides,
   });
 
-const makeProvider = (
-  extractImageFromHtml: (html: string) => string | null = () => null
-): RecipeProvider =>
-  ({
-    id: 'test-provider',
-    name: 'Test Provider',
-    extractImageFromHtml: jest.fn(extractImageFromHtml),
-  }) as unknown as RecipeProvider;
-
 const discovered = (n: number, withImage = true): DiscoveredRecipe => ({
   url: `https://site.com/recipe-${n}`,
   title: `Recipe ${n}`,
@@ -75,7 +67,7 @@ describe('RecipeImportOrchestrator', () => {
       const scrapeFromHtml = jest.fn().mockResolvedValue(successResult(scrapedPasta()));
 
       const updates = await collect(
-        parseSelectedRecipes(makeProvider(), [discovered(1)], { scrapeFromHtml })
+        parseSelectedRecipes(createMockRecipeProvider(), [discovered(1)], { scrapeFromHtml })
       );
 
       const complete = updates[updates.length - 1];
@@ -96,7 +88,7 @@ describe('RecipeImportOrchestrator', () => {
       const scrapeFromHtml = jest.fn().mockResolvedValue(successResult(scrapedPasta()));
 
       const updates = await collect(
-        parseSelectedRecipes(makeProvider(), [discovered(1)], { scrapeFromHtml })
+        parseSelectedRecipes(createMockRecipeProvider(), [discovered(1)], { scrapeFromHtml })
       );
 
       expect(updates.map(u => u.phase)).toEqual(['parsing', 'complete']);
@@ -107,7 +99,7 @@ describe('RecipeImportOrchestrator', () => {
       const scrapeFromHtml = jest.fn().mockResolvedValue(errorResult('no recipe found'));
 
       const updates = await collect(
-        parseSelectedRecipes(makeProvider(), [discovered(1)], { scrapeFromHtml })
+        parseSelectedRecipes(createMockRecipeProvider(), [discovered(1)], { scrapeFromHtml })
       );
 
       const complete = updates[updates.length - 1];
@@ -122,7 +114,7 @@ describe('RecipeImportOrchestrator', () => {
       const scrapeFromHtml = jest.fn();
 
       const updates = await collect(
-        parseSelectedRecipes(makeProvider(), [discovered(1)], { scrapeFromHtml })
+        parseSelectedRecipes(createMockRecipeProvider(), [discovered(1)], { scrapeFromHtml })
       );
 
       const complete = updates[updates.length - 1];
@@ -135,7 +127,7 @@ describe('RecipeImportOrchestrator', () => {
       const scrapeFromHtml = jest.fn();
 
       const updates = await collect(
-        parseSelectedRecipes(makeProvider(), [discovered(1)], { scrapeFromHtml })
+        parseSelectedRecipes(createMockRecipeProvider(), [discovered(1)], { scrapeFromHtml })
       );
 
       expect(updates[updates.length - 1]!.failedRecipes[0]!.error).toBe('boom');
@@ -149,7 +141,7 @@ describe('RecipeImportOrchestrator', () => {
         );
 
       const updates = await collect(
-        parseSelectedRecipes(makeProvider(), [discovered(1, false)], { scrapeFromHtml })
+        parseSelectedRecipes(createMockRecipeProvider(), [discovered(1, false)], { scrapeFromHtml })
       );
 
       expect(updates[updates.length - 1]!.parsedRecipes[0]!.localImageUri).toBeUndefined();
@@ -162,7 +154,7 @@ describe('RecipeImportOrchestrator', () => {
         .mockResolvedValue(successResult(scrapedPasta({ image: null })));
 
       const updates = await collect(
-        parseSelectedRecipes(makeProvider(), [discovered(1, false)], { scrapeFromHtml })
+        parseSelectedRecipes(createMockRecipeProvider(), [discovered(1, false)], { scrapeFromHtml })
       );
 
       expect(updates[updates.length - 1]!.parsedRecipes[0]!.localImageUri).toBeUndefined();
@@ -174,7 +166,7 @@ describe('RecipeImportOrchestrator', () => {
       const scrapeFromHtml = jest.fn().mockResolvedValue(successResult(scrapedPasta()));
 
       const updates = await collect(
-        parseSelectedRecipes(makeProvider(), [discovered(1)], { scrapeFromHtml })
+        parseSelectedRecipes(createMockRecipeProvider(), [discovered(1)], { scrapeFromHtml })
       );
 
       expect(updates[updates.length - 1]!.parsedRecipes[0]!.localImageUri).toBeUndefined();
@@ -185,7 +177,9 @@ describe('RecipeImportOrchestrator', () => {
       const scrapeFromHtml = jest.fn().mockResolvedValue(successResult(scrapedPasta()));
       const recipes = [discovered(1), discovered(2), discovered(3), discovered(4)];
 
-      const collected = collect(parseSelectedRecipes(makeProvider(), recipes, { scrapeFromHtml }));
+      const collected = collect(
+        parseSelectedRecipes(createMockRecipeProvider(), recipes, { scrapeFromHtml })
+      );
       await jest.runAllTimersAsync();
       const updates = await collected;
       jest.useRealTimers();
@@ -200,7 +194,7 @@ describe('RecipeImportOrchestrator', () => {
       controller.abort();
 
       const updates = await collect(
-        parseSelectedRecipes(makeProvider(), [discovered(1)], {
+        parseSelectedRecipes(createMockRecipeProvider(), [discovered(1)], {
           scrapeFromHtml,
           signal: controller.signal,
         })
@@ -218,7 +212,7 @@ describe('RecipeImportOrchestrator', () => {
         .mockResolvedValue(successResult(createEmptyScrapedRecipe({})));
 
       const updates = await collect(
-        parseSelectedRecipes(makeProvider(), [discovered(7, false)], {
+        parseSelectedRecipes(createMockRecipeProvider(), [discovered(7, false)], {
           scrapeFromHtml,
           defaultPersons: 6,
         })
@@ -238,7 +232,7 @@ describe('RecipeImportOrchestrator', () => {
         .mockResolvedValue(successResult(scrapedPasta({ image: null })));
 
       await collect(
-        parseSelectedRecipes(makeProvider(), [discovered(1, true)], { scrapeFromHtml })
+        parseSelectedRecipes(createMockRecipeProvider(), [discovered(1, true)], { scrapeFromHtml })
       );
 
       expect(mockDownload).toHaveBeenCalledWith('https://site.com/discovered-1.jpg');
@@ -249,7 +243,7 @@ describe('RecipeImportOrchestrator', () => {
     const signal = new AbortController().signal;
 
     test('returns the provider-extracted image when it is valid', async () => {
-      const provider = makeProvider(() => 'https://site.com/from-provider.jpg');
+      const provider = createMockRecipeProvider(() => 'https://site.com/from-provider.jpg');
       const scrapeFromHtml = jest.fn();
 
       const result = await fetchRecipeImageUrl(
@@ -264,7 +258,7 @@ describe('RecipeImportOrchestrator', () => {
     });
 
     test('falls back to the scraper image when the provider image is a placeholder', async () => {
-      const provider = makeProvider(() => 'https://site.com/placeholder.jpg');
+      const provider = createMockRecipeProvider(() => 'https://site.com/placeholder.jpg');
       const scrapeFromHtml = jest
         .fn()
         .mockResolvedValue(successResult(scrapedPasta({ image: 'https://site.com/scraped.jpg' })));
@@ -280,7 +274,7 @@ describe('RecipeImportOrchestrator', () => {
     });
 
     test('cleans afcdn image urls returned by the scraper', async () => {
-      const provider = makeProvider();
+      const provider = createMockRecipeProvider();
       const scrapeFromHtml = jest
         .fn()
         .mockResolvedValue(
@@ -298,7 +292,7 @@ describe('RecipeImportOrchestrator', () => {
     });
 
     test('returns null when the scraper image is a placeholder', async () => {
-      const provider = makeProvider();
+      const provider = createMockRecipeProvider();
       const scrapeFromHtml = jest
         .fn()
         .mockResolvedValue(
@@ -316,7 +310,7 @@ describe('RecipeImportOrchestrator', () => {
     });
 
     test('returns null when the scraper has no image', async () => {
-      const provider = makeProvider();
+      const provider = createMockRecipeProvider();
       const scrapeFromHtml = jest
         .fn()
         .mockResolvedValue(successResult(scrapedPasta({ image: null })));
@@ -332,7 +326,7 @@ describe('RecipeImportOrchestrator', () => {
     });
 
     test('returns null when the scrape fails', async () => {
-      const provider = makeProvider();
+      const provider = createMockRecipeProvider();
       const scrapeFromHtml = jest.fn().mockResolvedValue(errorResult('boom'));
 
       const result = await fetchRecipeImageUrl(
@@ -347,7 +341,7 @@ describe('RecipeImportOrchestrator', () => {
 
     test('returns null when fetching the html throws', async () => {
       mockFetchHtml.mockRejectedValue(new Error('offline'));
-      const provider = makeProvider(() => 'https://site.com/from-provider.jpg');
+      const provider = createMockRecipeProvider(() => 'https://site.com/from-provider.jpg');
       const scrapeFromHtml = jest.fn();
 
       const result = await fetchRecipeImageUrl(
@@ -364,7 +358,12 @@ describe('RecipeImportOrchestrator', () => {
       const warnSpy = jest.spyOn(bulkImportLogger, 'warn');
       mockFetchHtml.mockRejectedValue(new TypeError('Network request failed'));
 
-      await fetchRecipeImageUrl(makeProvider(), 'https://site.com/r', signal, jest.fn());
+      await fetchRecipeImageUrl(
+        createMockRecipeProvider(),
+        'https://site.com/r',
+        signal,
+        jest.fn()
+      );
 
       expect(warnSpy).toHaveBeenCalledWith('Failed to fetch recipe image URL', expect.anything());
       const loggedContext = JSON.parse(JSON.stringify(warnSpy.mock.calls[0]![1]));
@@ -382,7 +381,7 @@ describe('RecipeImportOrchestrator', () => {
       mockFetchHtml.mockRejectedValue(new Error('Aborted'));
 
       const result = await fetchRecipeImageUrl(
-        makeProvider(),
+        createMockRecipeProvider(),
         'https://site.com/r',
         controller.signal,
         jest.fn()
@@ -402,7 +401,7 @@ describe('RecipeImportOrchestrator', () => {
       const scrapeFromHtml = jest.fn();
 
       const result = await fetchRecipeImageUrl(
-        makeProvider(),
+        createMockRecipeProvider(),
         'https://site.com/r',
         controller.signal,
         scrapeFromHtml
