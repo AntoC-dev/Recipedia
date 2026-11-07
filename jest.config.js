@@ -53,6 +53,7 @@ module.exports = {
         '^react-native-reanimated$': '<rootDir>/tests/mocks/deps/react-native-reanimated-mock.ts',
         '^react-native-keyboard-controller$': '<rootDir>/tests/mocks/deps/react-native-keyboard-controller-mock.ts',
         '^expo-clipboard$': '<rootDir>/tests/mocks/deps/expo-clipboard-mock.tsx',
+        '^expo-sharing$': '<rootDir>/tests/mocks/deps/expo-sharing-mock.ts',
         '^react-native-webview$': '<rootDir>/tests/mocks/deps/react-native-webview-mock.tsx',
         '^expo-mail-composer$': '<rootDir>/tests/mocks/deps/expo-mail-composer-mock.tsx',
         '^expo-status-bar$': '<rootDir>/tests/mocks/deps/expo-status-bar-mock.tsx',

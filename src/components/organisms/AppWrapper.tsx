@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { RootNavigator } from '@navigation/RootNavigator';
+import { IncomingShareImporter } from '@components/organisms/IncomingShareImporter';
 import { WelcomeScreen } from '@screens/WelcomeScreen';
 import { TutorialProvider } from './TutorialController';
 import { isFirstLaunch, markAsLaunched } from '@utils/firstLaunch';
@@ -150,7 +151,12 @@ export default function AppWrapper() {
       );
 
     case AppMode.Ready:
-      return <RootNavigator />;
+      return (
+        <>
+          <RootNavigator />
+          <IncomingShareImporter />
+        </>
+      );
 
     case AppMode.Loading:
     default:
