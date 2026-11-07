@@ -11,6 +11,9 @@ Guidance for AI coding agents in this repo — Claude Code, Cursor, and any tool
 
 Topic rules live in `.claude/rules/`: `testing.md`, `e2e.md`, `git-workflow.md`, `documentation.md`, `issues.md`.
 
+Using the emulator/simulator dev build (pick a free device, Android preferred, never reload):
+@.claude/docs/device-dev-build.md
+
 ## Agent setup
 
 - MCP servers live in `.mcp.json` (Claude Code) / `.cursor/mcp.json` (Cursor) — kept in sync by
