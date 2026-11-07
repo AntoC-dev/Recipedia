@@ -1,3 +1,21 @@
+## [2.57.0](https://github.com/AntoC-dev/Recipedia/compare/v2.56.1...v2.57.0) (2026-11-07)
+
+### Features
+
+* **recipe:** add manual entry to empty OCR title, description and nutrition ([c996ecc](https://github.com/AntoC-dev/Recipedia/commit/c996ecc2e4928e67725e7ff4f4b9b41f24c4e5b6)), closes [#679](https://github.com/AntoC-dev/Recipedia/issues/679)
+* **recipe:** hide image placeholder behind the scan button ([3902c76](https://github.com/AntoC-dev/Recipedia/commit/3902c7638a34822db0b33e7b9854083e9622f954)), closes [#679](https://github.com/AntoC-dev/Recipedia/issues/679)
+* **recipe:** keep OCR scan buttons on filled fields ([114f54a](https://github.com/AntoC-dev/Recipedia/commit/114f54a39e97bce67c5fa72b6e16d11035e1cdab)), closes [#679](https://github.com/AntoC-dev/Recipedia/issues/679)
+* **recipe:** move OCR scan into filled title and description inputs ([3240e8e](https://github.com/AntoC-dev/Recipedia/commit/3240e8ec4448a75a32c79e5c48e88e0b4b693351)), closes [#679](https://github.com/AntoC-dev/Recipedia/issues/679)
+* **recipe:** put persons and time labels on their own line with inline scan ([10c94d2](https://github.com/AntoC-dev/Recipedia/commit/10c94d279e66743136738e07b168c66b6e41ccad)), closes [#679](https://github.com/AntoC-dev/Recipedia/issues/679) [#679](https://github.com/AntoC-dev/Recipedia/issues/679)
+* **recipe:** redesign OCR form to keep scanning available ([#687](https://github.com/AntoC-dev/Recipedia/issues/687)) ([e5584b3](https://github.com/AntoC-dev/Recipedia/commit/e5584b358f056a2ecda3af7d776cd7621896d58c)), closes [#689](https://github.com/AntoC-dev/Recipedia/issues/689) [#658](https://github.com/AntoC-dev/Recipedia/issues/658) [#698](https://github.com/AntoC-dev/Recipedia/issues/698) [#679](https://github.com/AntoC-dev/Recipedia/issues/679)
+* **recipe:** switch OCR list add buttons from manual entry to new item ([053371e](https://github.com/AntoC-dev/Recipedia/commit/053371e7b57292d28cdeea239f1760206f02ea8f)), closes [#679](https://github.com/AntoC-dev/Recipedia/issues/679)
+
+### Bug Fixes
+
+* **ocr:** isolate persons/time scans and merge scanned nutrition ([68271e2](https://github.com/AntoC-dev/Recipedia/commit/68271e2cca9c1c1b9c1915f15b7bb5c26c952f0b)), closes [#679](https://github.com/AntoC-dev/Recipedia/issues/679)
+* **ocr:** report no data when a persons or time scan reads no number ([51327da](https://github.com/AntoC-dev/Recipedia/commit/51327da303e4d94438411946d0fc4adfc32e682e))
+* **recipe:** dismiss keyboard before opening the scan modal ([aa228e6](https://github.com/AntoC-dev/Recipedia/commit/aa228e6a6d8e0a7d8d678a9f4f90df89af6e0e87)), closes [#679](https://github.com/AntoC-dev/Recipedia/issues/679)
+
 ## [2.56.1](https://github.com/AntoC-dev/Recipedia/compare/v2.56.0...v2.56.1) (2026-11-05)
 
 ### Bug Fixes
