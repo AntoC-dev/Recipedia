@@ -41,7 +41,6 @@ import {
 } from '@customTypes/OCRTypes';
 import {
   endsWithLetters,
-  findAllNumbers,
   hasLettersInMiddle,
   letterRegExp,
   numberAtFirstIndex as numberAtFirstIndex,
@@ -415,117 +414,155 @@ function tranformOCRInOneNumber(
  */
 function tranformOCRInPreparation(ocr: TextRecognitionResult): preparationStepElement[] {
   const steps: { step: preparationStepElement; order: number }[] = [];
+  let pendingStepNumbers: number[] = [];
   let currentStep: preparationStepElement | null = null;
-  let currentOrder = 0;
-  const pendingStepNumbers: number[] = [];
 
-  for (let i = 0; i < ocr.blocks.length; i++) {
-    const block = ocr.blocks[i]!;
+  const startStep = (order: number, step: preparationStepElement) => {
+    pendingStepNumbers = pendingStepNumbers.filter(pending => pending !== order);
+    steps.push({ step, order });
+    return step;
+  };
+
+  for (const block of ocr.blocks) {
     const text = block.text.trim();
     if (!text) {
       continue;
     }
 
-    const stepNumber = extractStepNumber(text);
+    const marker = extractStepMarker(text);
+    const stepMarker =
+      marker &&
+      isPlausibleStepNumber(
+        marker.stepNumber,
+        steps.map(({ order }) => order),
+        pendingStepNumbers
+      )
+        ? marker
+        : null;
 
-    if (stepNumber && isNumberOnlyBlock(text)) {
-      pendingStepNumbers.push(stepNumber);
-    } else if (!hasTextContent(text)) {
-      // Skip blocks with no text content
-    } else if (stepNumber && !isNumberOnlyBlock(text)) {
-      if (currentStep && (currentStep.title || currentStep.description)) {
-        steps.push({ step: currentStep, order: currentOrder });
+    if (!hasTextContent(text)) {
+      if (stepMarker && !pendingStepNumbers.includes(stepMarker.stepNumber)) {
+        pendingStepNumbers.push(stepMarker.stepNumber);
       }
-
-      currentOrder = stepNumber;
-      const { title, description } = parseStepContent(text);
-      currentStep = { title, description };
+    } else if (stepMarker) {
+      currentStep = startStep(stepMarker.stepNumber, parseStepContent(stepMarker.content));
     } else if (pendingStepNumbers.length > 0 && looksLikeTitle(text)) {
-      pendingStepNumbers.sort((a, b) => a - b);
-      const nextStepNumber = pendingStepNumbers.shift()!;
-
-      if (currentStep && (currentStep.title || currentStep.description)) {
-        steps.push({ step: currentStep, order: currentOrder });
-      }
-
-      currentOrder = nextStepNumber;
-      currentStep = { title: formatTitle(text), description: '' };
+      currentStep = startStep(Math.min(...pendingStepNumbers), {
+        title: formatTitle(text),
+        description: '',
+      });
     } else if (currentStep) {
       const separator = currentStep.description ? '\n' : '';
       currentStep.description += separator + text;
     }
   }
 
-  if (currentStep && (currentStep.title || currentStep.description)) {
-    steps.push({ step: currentStep, order: currentOrder });
-  }
-
   return steps.sort((a, b) => a.order - b.order).map(item => item.step);
 }
 
+const maxStepNumberDigits = 2;
+const maxStepNumberGap = 2;
+const stepNumberPunctuation = ['.', ')', ':'];
+
 /**
- * Extracts step number from text if it starts with a number
+ * Checks if a character is an ASCII digit
  *
- * Excludes numbers followed by time units (e.g., "10 min", "5 h") which are
- * cooking instructions, not step numbers.
+ * @param char - Character to check, undefined past the end of a string
+ * @returns True for "0" to "9"
+ */
+const isDigit = (char: string | undefined) => char !== undefined && char >= '0' && char <= '9';
+
+/**
+ * Checks if a character is an uppercase letter, accented ones included
+ *
+ * @param char - Character to check, undefined past the end of a string
+ * @returns True when the character changes once lowercased
+ */
+const isUppercaseLetter = (char: string | undefined) =>
+  char !== undefined && char !== char.toLowerCase();
+
+/**
+ * Extracts the step number a text block starts with, and the content after it
+ *
+ * A leading number is a step number only when it is followed by a step marker:
+ * end of block, ".", ")" or ":" (not a decimal or a clock time), or a
+ * capitalized title word. Ranges ("12-14 min"), decimals ("1,5 l") and
+ * numbers followed by a lowercase word ("30 ml d'eau", "3 gousses") are
+ * quantities, whatever their unit.
  *
  * @param text - Text to extract step number from
- * @returns Step number if found, null otherwise
+ * @returns Step number and the text after its marker, or null if the block does not start a step
  */
-function extractStepNumber(text: string): number | null {
-  if (!numberAtFirstIndex.test(text)) {
+function extractStepMarker(text: string): { stepNumber: number; content: string } | null {
+  let digitCount = 0;
+  while (digitCount <= maxStepNumberDigits && isDigit(text[digitCount])) {
+    digitCount++;
+  }
+  if (digitCount === 0 || digitCount > maxStepNumberDigits) {
     return null;
   }
-  if (startsWithTimeValue(text)) {
-    return null;
+
+  const afterNumber = text.slice(digitCount);
+  const marker = afterNumber.trimStart();
+  const isFollowedBySpace = marker.length < afterNumber.length;
+  const stepNumber = Number(text.slice(0, digitCount));
+
+  if (marker.length === 0) {
+    return { stepNumber, content: '' };
   }
-  return retrieveNumberInStr(text);
+  if (stepNumberPunctuation.includes(marker[0]!) && !isDigit(marker[1])) {
+    return { stepNumber, content: marker.slice(1).trimStart() };
+  }
+  if (isFollowedBySpace && isUppercaseLetter(marker[0])) {
+    return { stepNumber, content: marker };
+  }
+  return null;
 }
 
 /**
- * Checks if text starts with a time value (number followed by time unit)
+ * Checks if a step number fits the steps already found in the same scan
  *
- * @param text - Text to check
- * @returns True if text starts with a time value like "10 min", "5 h", "30 sec"
+ * Step numbers come in a short sequence, possibly out of order across columns,
+ * so a new one must not repeat a known number and must stay close to the
+ * highest one. A number waiting for a title can be claimed by a numbered block.
+ * The first number of a scan is always accepted, so a scan covering only the
+ * second half of a recipe still works.
+ *
+ * @param stepNumber - Candidate step number
+ * @param usedStepNumbers - Step numbers of the steps already created
+ * @param pendingStepNumbers - Standalone step numbers still waiting for a title
+ * @returns True if the candidate can be a step number
  */
-function startsWithTimeValue(text: string): boolean {
-  return /^\d+\s*(min|minutes?|h|hours?|sec|seconds?|mn)\b/i.test(text);
+function isPlausibleStepNumber(
+  stepNumber: number,
+  usedStepNumbers: number[],
+  pendingStepNumbers: number[]
+): boolean {
+  if (pendingStepNumbers.includes(stepNumber)) {
+    return true;
+  }
+  const knownStepNumbers = [...usedStepNumbers, ...pendingStepNumbers];
+  if (knownStepNumbers.length === 0) {
+    return true;
+  }
+  if (knownStepNumbers.includes(stepNumber)) {
+    return false;
+  }
+  return stepNumber <= Math.max(...knownStepNumbers) + maxStepNumberGap;
 }
 
 /**
- * Parses step content to extract title and description from text
+ * Splits step content into a title (first line) and a description (other lines)
  *
- * Handles various formats:
- * - "1. Title" - number with title only
- * - "1. Title\nDescription" - number with title and description
- * - "Title" - standalone title text
- *
- * @param text - Raw text content of the step
+ * @param content - Step text without its step number marker
  * @returns Object containing formatted title and description
  */
-function parseStepContent(text: string): { title: string; description: string } {
-  const lines = text.split('\n');
-  const firstLine = lines[0] ?? '';
-  const remainingLines = lines.slice(1);
-
-  const titleMatch = firstLine.match(/^\d+\.?\s*(.+)$/);
-
-  if (titleMatch && remainingLines.length === 0) {
-    return {
-      title: formatTitle(titleMatch[1] ?? ''),
-      description: '',
-    };
-  } else if (titleMatch && remainingLines.length > 0) {
-    return {
-      title: formatTitle(titleMatch[1] ?? ''),
-      description: formatDescription(remainingLines.join('\n')),
-    };
-  } else {
-    return {
-      title: formatTitle(text),
-      description: '',
-    };
-  }
+function parseStepContent(content: string): preparationStepElement {
+  const [firstLine, ...remainingLines] = content.split('\n');
+  return {
+    title: formatTitle(firstLine!),
+    description: formatDescription(remainingLines.join('\n')),
+  };
 }
 
 /**
@@ -562,16 +599,6 @@ function formatDescription(description: string): string {
  */
 function hasTextContent(text: string): boolean {
   return letterRegExp.test(text);
-}
-
-/**
- * Checks if text block contains only numbers (no letters)
- *
- * @param text - Text to check
- * @returns True if text starts with number and contains no letters
- */
-function isNumberOnlyBlock(text: string): boolean {
-  return numberAtFirstIndex.test(text) && !letterRegExp.test(text);
 }
 
 /**
@@ -1139,23 +1166,6 @@ function assignQuantitiesToIngredients(groups: groupType[], ingredients: ingredi
 function convertToLowerCaseExceptFirstLetter(str: string) {
   const firstLetterIndex = str.search(letterRegExp);
   return str.charAt(firstLetterIndex).toUpperCase() + str.slice(firstLetterIndex + 1).toLowerCase();
-}
-
-/**
- * Retrieves the first number from a string, handling decimals
- *
- * Extracts numeric value from the beginning of a string, stopping at the first letter.
- * Handles decimal numbers with both dot and comma separators.
- *
- * @param str - String to extract number from
- * @returns Extracted number or -1 if no valid number found
- */
-function retrieveNumberInStr(str: string) {
-  const firstLetterIndex = str.search(letterRegExp);
-  const workingStr = firstLetterIndex !== -1 ? str.slice(0, firstLetterIndex) : str;
-
-  const allNum = workingStr.match(findAllNumbers);
-  return allNum ? Number(allNum[0]) : -1;
 }
 
 /**
