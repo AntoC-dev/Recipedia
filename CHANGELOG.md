@@ -1,3 +1,10 @@
+## [2.57.1](https://github.com/AntoC-dev/Recipedia/compare/v2.57.0...v2.57.1) (2026-11-08)
+
+### Bug Fixes
+
+* **scraper:** stop loading Pyodide under the Welcome screen ([1dcc559](https://github.com/AntoC-dev/Recipedia/commit/1dcc559fc315306c5f991f9ed93f526f52b761f4)), closes [#701](https://github.com/AntoC-dev/Recipedia/issues/701)
+* **scraper:** stop loading Pyodide under the Welcome screen ([#702](https://github.com/AntoC-dev/Recipedia/issues/702)) ([fccfb32](https://github.com/AntoC-dev/Recipedia/commit/fccfb32a783a91117dc33bbee3ac145c6288a6c6))
+
 ## [2.57.0](https://github.com/AntoC-dev/Recipedia/compare/v2.56.1...v2.57.0) (2026-11-07)
 
 ### Features
