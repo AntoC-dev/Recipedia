@@ -224,6 +224,18 @@ appId: "com.recipedia"
     text: "[\\s\\S]+"
     label: "Fourth preparation paragraph is displayed"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::3::SectionParagraph"
+    direction: DOWN
+    speed: 20
+    visibilityPercentage: 100
+    label: "Scroll until the whole fourth preparation paragraph is on screen"
+
+- assertNotVisible:
+    id: "RecipePreparation::ReadOnlyStep::4::SectionTitle"
+    label: "No fifth preparation step is created from quantities or time ranges"
+
 - assertNotVisible:
     id: "Recipe::RecipeNutrition::NutritionTable"
     label: "Nutrition table is not displayed (no nutrition data)"

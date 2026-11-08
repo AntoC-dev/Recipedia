@@ -43,6 +43,20 @@ tags:
 
 - scrollUntilVisible:
     element:
+      id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to the first scanned step"
+
+- runFlow:
+    file: "../../asserts/recipe/ocr/aiguillettesPreparationSteps.yaml"
+    env:
+      FIRST_STEP_INDEX: "0"
+    label: "Assert - The scan keeps the four sections with quantities in their content"
+
+- scrollUntilVisible:
+    element:
       id: "Recipe::RecipeNutrition::NutritionEmptyState::Title"
     direction: DOWN
     speed: 20
@@ -63,3 +77,21 @@ tags:
     speed: 20
     timeout: 120000
     label: "Assert - Rescanning appends a second copy of the steps"
+
+- runFlow:
+    file: "../../asserts/recipe/ocr/aiguillettesPreparationSteps.yaml"
+    env:
+      FIRST_STEP_INDEX: "4"
+    label: "Assert - The rescan adds the four sections with quantities kept in their content"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::AddButton::RoundButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to the add step button right after the last step"
+
+- assertNotVisible:
+    id: "RecipePreparation::EditableStep::8::.*"
+    label: "Assert - Neither scan creates extra steps from quantities or time ranges"
