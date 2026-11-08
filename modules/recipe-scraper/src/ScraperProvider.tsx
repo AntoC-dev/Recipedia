@@ -14,16 +14,19 @@ import {AuthWebView} from './ios/AuthWebView';
 import {AuthBridge} from './ios/AuthBridge';
 import type {ScrapeOptions} from './RecipeScraper';
 import {recipeScraper} from './RecipeScraper';
-import type {ScrapedRecipe, ScraperResult} from './types';
+import type {ScraperResult} from './types';
+import {ScraperErrorTypes} from './types';
 import {pyodideLogger} from '@utils/logger';
 
 /**
  * Shape of the scraper context value exposed to consumers via `useScraper()`.
+ *
+ * Both methods resolve to a `ScraperUnavailable` error result when the scraping engine
+ * fails to load, instead of rejecting.
  */
 export interface ScraperContextValue {
-    scrapeRecipeFromHtml: (html: string, url: string, options?: ScrapeOptions) => Promise<ScraperResult<ScrapedRecipe>>;
-    scrapeRecipeAuthenticated: (url: string, username: string, password: string, options?: ScrapeOptions) => Promise<ScraperResult<ScrapedRecipe>>;
-    initError: string | null;
+    scrapeRecipeFromHtml: (html: string, url: string, options?: ScrapeOptions) => Promise<ScraperResult>;
+    scrapeRecipeAuthenticated: (url: string, username: string, password: string, options?: ScrapeOptions) => Promise<ScraperResult>;
 }
 
 interface InternalContextValue extends ScraperContextValue {
@@ -32,11 +35,15 @@ interface InternalContextValue extends ScraperContextValue {
 
 const ScraperContext = createContext<InternalContextValue | null>(null);
 
+/** Extracts a loggable message from an unknown thrown value. */
+function errorToMessage(error: unknown): string {
+    return error instanceof Error ? error.message : String(error);
+}
+
 /** Wraps the app. Owns the scraper instance and renders iOS WebView when needed. */
 export function ScraperProvider({children}: { children: React.ReactNode }) {
     const [warmedUp, setWarmedUp] = useState(false);
     const [authLoginUrl, setAuthLoginUrl] = useState<string | null>(null);
-    const [initError, setInitError] = useState<string | null>(null);
 
     const warmup = () => {
         requestIdleCallback(() => setWarmedUp(true));
@@ -54,9 +61,7 @@ export function ScraperProvider({children}: { children: React.ReactNode }) {
             return;
         }
         recipeScraper.whenReady().catch(error => {
-            const message = error instanceof Error ? error.message : String(error);
-            pyodideLogger.warn('Pyodide failed to initialize', {error: message});
-            setInitError(message);
+            pyodideLogger.warn('Pyodide failed to initialize', {error: errorToMessage(error)});
         });
     }, [warmedUp]);
 
@@ -64,8 +69,12 @@ export function ScraperProvider({children}: { children: React.ReactNode }) {
         html: string,
         url: string,
         options?: ScrapeOptions,
-    ): Promise<ScraperResult<ScrapedRecipe>> => {
-        await recipeScraper.whenReady();
+    ): Promise<ScraperResult> => {
+        try {
+            await recipeScraper.whenReady();
+        } catch (error) {
+            return {success: false, error: {type: ScraperErrorTypes.ScraperUnavailable, message: errorToMessage(error)}};
+        }
         return recipeScraper.scrapeRecipeFromHtml(html, url, options);
     };
 
@@ -74,15 +83,19 @@ export function ScraperProvider({children}: { children: React.ReactNode }) {
         username: string,
         password: string,
         options?: ScrapeOptions,
-    ): Promise<ScraperResult<ScrapedRecipe>> => {
-        await recipeScraper.whenReady();
+    ): Promise<ScraperResult> => {
+        try {
+            await recipeScraper.whenReady();
+        } catch (error) {
+            return {success: false, error: {type: ScraperErrorTypes.ScraperUnavailable, message: errorToMessage(error)}};
+        }
         return recipeScraper.scrapeRecipeAuthenticated(url, username, password, options);
     };
 
     const isIOS = Platform.OS === 'ios';
 
     return (
-        <ScraperContext.Provider value={{warmup, scrapeRecipeFromHtml, scrapeRecipeAuthenticated, initError}}>
+        <ScraperContext.Provider value={{warmup, scrapeRecipeFromHtml, scrapeRecipeAuthenticated}}>
             {children}
             {isIOS && warmedUp && <PyodideWebView/>}
             {isIOS && authLoginUrl !== null && <AuthWebView loginUrl={authLoginUrl}/>}
@@ -92,7 +105,8 @@ export function ScraperProvider({children}: { children: React.ReactNode }) {
 
 /**
  * Hook to access scraper methods from context.
- * Triggers lazy WebView mount on iOS on first consumer render.
+ * Triggers lazy WebView mount on iOS on first consumer render, so call it only from
+ * screens that scrape.
  */
 export function useScraper(): ScraperContextValue {
     const context = useContext(ScraperContext);
@@ -109,6 +123,5 @@ export function useScraper(): ScraperContextValue {
     return {
         scrapeRecipeFromHtml: context.scrapeRecipeFromHtml,
         scrapeRecipeAuthenticated: context.scrapeRecipeAuthenticated,
-        initError: context.initError,
     };
 }

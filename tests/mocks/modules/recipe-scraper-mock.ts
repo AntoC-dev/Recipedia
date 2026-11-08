@@ -1,13 +1,10 @@
 import { ScrapedRecipe, ScraperResult } from '@app/modules/recipe-scraper';
 import { hellofreshKeftasRecipe } from '@test-data/scraperMocks/hellofresh';
 
-export const mockScrapeRecipe = jest.fn<Promise<ScraperResult<ScrapedRecipe>>, [string]>();
-export const mockScrapeRecipeFromHtml = jest.fn<
-  Promise<ScraperResult<ScrapedRecipe>>,
-  [string, string]
->();
+export const mockScrapeRecipe = jest.fn<Promise<ScraperResult>, [string]>();
+export const mockScrapeRecipeFromHtml = jest.fn<Promise<ScraperResult>, [string, string]>();
 export const mockScrapeRecipeAuthenticated = jest.fn<
-  Promise<ScraperResult<ScrapedRecipe>>,
+  Promise<ScraperResult>,
   [string, string, string]
 >();
 export const mockGetSupportedHosts = jest.fn<Promise<ScraperResult<string[]>>, []>();
@@ -18,7 +15,6 @@ export const mockIsPythonReady = jest.fn<Promise<boolean>, []>();
 export const mockUseScraper = jest.fn(() => ({
   scrapeRecipeFromHtml: mockScrapeRecipeFromHtml,
   scrapeRecipeAuthenticated: mockScrapeRecipeAuthenticated,
-  initError: null as string | null,
 }));
 
 export const recipeScraperMock = {
@@ -38,6 +34,7 @@ export const recipeScraperMock = {
     URLError: 'URLError',
     Timeout: 'timeout',
     UnsupportedPlatform: 'UnsupportedPlatform',
+    ScraperUnavailable: 'ScraperUnavailable',
   },
 };
 
@@ -108,7 +105,6 @@ export function resetRecipeScraperMocks() {
   mockUseScraper.mockReturnValue({
     scrapeRecipeFromHtml: mockScrapeRecipeFromHtml,
     scrapeRecipeAuthenticated: mockScrapeRecipeAuthenticated,
-    initError: null,
   });
 }
 

@@ -22,7 +22,7 @@ import {
   IgnoredIngredientPatterns,
 } from '@utils/RecipeScraperConverter';
 import { isScraperSuccess } from '@app/modules/recipe-scraper';
-import type { ScrapedRecipe, ScraperResult } from '@app/modules/recipe-scraper';
+import type { ScraperResult } from '@app/modules/recipe-scraper';
 import { fetchHtml, isPlaceholderImageUrl } from '@utils/UrlHelpers';
 import { downloadImageToCache } from '@utils/FileGestion';
 import { bulkImportLogger, serializeError } from '@utils/logger';
@@ -34,7 +34,7 @@ const FETCH_DELAY_MS = 300;
 const CONCURRENT_PARSE_LIMIT = 3;
 
 /** Function signature for scraping recipe HTML — injected by the caller. */
-export type ScrapeFromHtml = (html: string, url: string) => Promise<ScraperResult<ScrapedRecipe>>;
+export type ScrapeFromHtml = (html: string, url: string) => Promise<ScraperResult>;
 
 /**
  * Options accepted by {@link parseSelectedRecipes}

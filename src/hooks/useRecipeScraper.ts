@@ -28,7 +28,7 @@ import { useState } from 'react';
 import { Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { isScraperSuccess, ScraperErrorTypes, useScraper } from '@app/modules/recipe-scraper';
-import type { ScrapedRecipe, ScraperError, ScraperResult } from '@app/modules/recipe-scraper';
+import type { ScraperError, ScraperResult } from '@app/modules/recipe-scraper';
 import { detectAuthRequired } from '@app/modules/recipe-scraper/src/authDetection';
 import { downloadImageToCache } from '@utils/FileGestion';
 import { serializeError, uiLogger } from '@utils/logger';
@@ -57,6 +57,7 @@ const SCRAPER_ERROR_I18N_KEYS: Record<string, string> = {
   [ScraperErrorTypes.AuthenticationFailed]: 'urlDialog.errorAuthFailed',
   [ScraperErrorTypes.UnsupportedAuthSite]: 'urlDialog.errorUnsupportedAuth',
   [ScraperErrorTypes.UnsupportedPlatform]: 'urlDialog.errorUnsupportedPlatform',
+  [ScraperErrorTypes.ScraperUnavailable]: 'urlDialog.errorScraperUnavailable',
 };
 
 const DEFAULT_SCRAPER_ERROR_I18N_KEY = 'urlDialog.errorScraping';
@@ -122,7 +123,7 @@ export function useRecipeScraper(): UseRecipeScraperReturn {
   const clearError = () => setError(undefined);
 
   const processScrapedData = async (
-    scraperResult: ScraperResult<ScrapedRecipe>,
+    scraperResult: ScraperResult,
     url: string,
     logPrefix: string,
     html?: string

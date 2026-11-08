@@ -2,8 +2,13 @@ import React from 'react';
 import { Platform, Text } from 'react-native';
 import { render, renderHook, act, waitFor } from '@testing-library/react-native';
 
-import { ScraperProvider, useScraper } from '@app/modules/recipe-scraper/src/ScraperProvider';
+import {
+  ScraperContextValue,
+  ScraperProvider,
+  useScraper,
+} from '@app/modules/recipe-scraper/src/ScraperProvider';
 import { recipeScraper } from '@app/modules/recipe-scraper/src/RecipeScraper';
+import { pyodideLogger } from '@utils/logger';
 
 const mockedScraper = recipeScraper as unknown as {
   whenReady: jest.Mock;
@@ -54,14 +59,13 @@ jest.mock('@app/modules/recipe-scraper/src/RecipeScraper', () => ({
   },
 }));
 
+function ScraperWrapper({ children }: { children: React.ReactNode }) {
+  return <ScraperProvider>{children}</ScraperProvider>;
+}
+
 function ScraperConsumer() {
   useScraper();
   return <Text testID='consumer'>consumer</Text>;
-}
-
-function InitErrorProbe() {
-  const { initError } = useScraper();
-  return <Text testID='init-error'>{initError ?? 'none'}</Text>;
 }
 
 describe('ScraperProvider', () => {
@@ -144,14 +148,10 @@ describe('ScraperProvider', () => {
   });
 
   it('exposes scrape methods via useScraper context', async () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <ScraperProvider>{children}</ScraperProvider>
-    );
-    const { result } = await renderHook(() => useScraper(), { wrapper });
+    const { result } = await renderHook(() => useScraper(), { wrapper: ScraperWrapper });
 
     expect(typeof result.current.scrapeRecipeFromHtml).toBe('function');
     expect(typeof result.current.scrapeRecipeAuthenticated).toBe('function');
-    expect(result.current.initError).toBeNull();
   });
 
   it('throws when useScraper is used outside ScraperProvider', async () => {
@@ -165,37 +165,62 @@ describe('ScraperProvider', () => {
     );
   });
 
-  it('surfaces a whenReady failure as initError', async () => {
+  it.each([
+    {
+      method: 'scrapeRecipeFromHtml' as const,
+      rejection: new Error('init boom'),
+      expectedMessage: 'init boom',
+      scrape: (scraper: ScraperContextValue) =>
+        scraper.scrapeRecipeFromHtml('<html>', 'https://example.com'),
+    },
+    {
+      method: 'scrapeRecipeAuthenticated' as const,
+      rejection: 'plain failure',
+      expectedMessage: 'plain failure',
+      scrape: (scraper: ScraperContextValue) =>
+        scraper.scrapeRecipeAuthenticated('https://example.com', 'user', 'pass'),
+    },
+  ])(
+    'returns ScraperUnavailable from $method when the engine fails to load',
+    async ({ method, rejection, expectedMessage, scrape }) => {
+      const { result } = await renderHook(() => useScraper(), { wrapper: ScraperWrapper });
+      mockedScraper.whenReady.mockRejectedValue(rejection);
+
+      const scrapeResult = await scrape(result.current);
+
+      expect(scrapeResult).toEqual({
+        success: false,
+        error: { type: 'ScraperUnavailable', message: expectedMessage },
+      });
+      expect(mockedScraper[method]).not.toHaveBeenCalled();
+    }
+  );
+
+  it('logs and keeps the WebView mounted when the engine fails to load during warmup', async () => {
     Object.defineProperty(Platform, 'OS', { value: 'ios', configurable: true });
-    mockedScraper.whenReady.mockRejectedValueOnce(new Error('init boom'));
+    const warnSpy = jest.spyOn(pyodideLogger, 'warn').mockImplementation(() => undefined);
+    try {
+      mockedScraper.whenReady.mockRejectedValueOnce(new Error('init boom'));
 
-    const { getByTestId } = await render(
-      <ScraperProvider>
-        <InitErrorProbe />
-      </ScraperProvider>
-    );
+      const { queryByTestId } = await render(
+        <ScraperProvider>
+          <ScraperConsumer />
+        </ScraperProvider>
+      );
 
-    await waitFor(() => expect(getByTestId('init-error')).toHaveTextContent('init boom'));
-  });
-
-  it('stringifies a non-Error whenReady failure as initError', async () => {
-    Object.defineProperty(Platform, 'OS', { value: 'ios', configurable: true });
-    mockedScraper.whenReady.mockRejectedValueOnce('plain failure');
-
-    const { getByTestId } = await render(
-      <ScraperProvider>
-        <InitErrorProbe />
-      </ScraperProvider>
-    );
-
-    await waitFor(() => expect(getByTestId('init-error')).toHaveTextContent('plain failure'));
+      await waitFor(() =>
+        expect(warnSpy).toHaveBeenCalledWith('Pyodide failed to initialize', {
+          error: 'init boom',
+        })
+      );
+      expect(queryByTestId('pyodide-webview')).not.toBeNull();
+    } finally {
+      warnSpy.mockRestore();
+    }
   });
 
   it('awaits readiness before delegating scrapeRecipeFromHtml', async () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <ScraperProvider>{children}</ScraperProvider>
-    );
-    const { result } = await renderHook(() => useScraper(), { wrapper });
+    const { result } = await renderHook(() => useScraper(), { wrapper: ScraperWrapper });
 
     await result.current.scrapeRecipeFromHtml('<html>', 'https://example.com', { wildMode: false });
 
@@ -208,10 +233,7 @@ describe('ScraperProvider', () => {
   });
 
   it('awaits readiness before delegating scrapeRecipeAuthenticated', async () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <ScraperProvider>{children}</ScraperProvider>
-    );
-    const { result } = await renderHook(() => useScraper(), { wrapper });
+    const { result } = await renderHook(() => useScraper(), { wrapper: ScraperWrapper });
 
     await result.current.scrapeRecipeAuthenticated('https://example.com', 'user', 'pass');
 

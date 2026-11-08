@@ -11,8 +11,6 @@ export default {
     },
     startTour: 'Explore',
     skip: 'Jump In',
-    pyodideError:
-      'Web recipe import engine could not be loaded. You can still add recipes manually.',
     datasetError: {
       title: 'Dataset Loading Issue',
       message:

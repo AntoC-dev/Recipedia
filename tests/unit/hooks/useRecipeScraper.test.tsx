@@ -19,6 +19,8 @@ import {
 } from '@mocks/utils/FileGestion-mock';
 import { mockFetch, mockFetchHtmlSuccess } from '@mocks/deps/fetch-mock';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
+import { Platform } from 'react-native';
+import { createMockRecipeProvider } from '@mocks/providers/RecipeProvider-mock';
 
 jest.mock(
   '@app/modules/recipe-scraper',
@@ -155,6 +157,24 @@ describe('useRecipeScraper', () => {
         expect(scrapeResult.error).toBe('urlDialog.errorScraping');
       }
       expect(result.current.error).toBe('urlDialog.errorScraping');
+    });
+
+    test('returns translated error when the scraper engine is unavailable', async () => {
+      mockScrapeRecipeFromHtmlError('Pyodide failed', 'ScraperUnavailable');
+
+      const { result } = await renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      let scrapeResult: ScrapeResult | undefined;
+      await act(async () => {
+        scrapeResult = await result.current.scrapeAndPrepare('https://example.com');
+      });
+
+      expect(scrapeResult?.success).toBe(false);
+      if (scrapeResult && !scrapeResult.success) {
+        expect(scrapeResult.error).toBe('urlDialog.errorScraperUnavailable');
+      }
     });
 
     test('returns translated error for NoSchemaFoundInWildMode', async () => {
@@ -304,6 +324,56 @@ describe('useRecipeScraper', () => {
       });
 
       expect(result.current.authRequired?.host).toBe('quitoque.fr');
+    });
+
+    test('detects login redirect on iOS before calling the scraper', async () => {
+      mockFetchHtmlSuccess('<html></html>', 'https://www.quitoque.fr/login');
+
+      const { result } = await renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      let scrapeResult: ScrapeResult | undefined;
+      await act(async () => {
+        scrapeResult = await result.current.scrapeAndPrepare('https://www.quitoque.fr/recipe/123');
+      });
+
+      expect(scrapeResult).toEqual({ success: false, error: 'urlDialog.errorAuthRequired' });
+      expect(result.current.authRequired).toEqual({
+        url: 'https://www.quitoque.fr/recipe/123',
+        host: 'quitoque.fr',
+      });
+      expect(result.current.isLoading).toBe(false);
+      expect(mockScrapeRecipeFromHtml).not.toHaveBeenCalled();
+    });
+
+    test('skips login redirect pre-check on Android and lets the scraper decide', async () => {
+      const originalOS = Platform.OS;
+      Object.defineProperty(Platform, 'OS', { value: 'android', configurable: true });
+      try {
+        mockFetchHtmlSuccess('<html></html>', 'https://www.quitoque.fr/login');
+        mockScrapeRecipeFromHtmlSuccess(hellofreshKeftasRecipe);
+
+        const { result } = await renderHook(() => useRecipeScraper(), {
+          wrapper: createWrapper(),
+        });
+
+        let scrapeResult: ScrapeResult | undefined;
+        await act(async () => {
+          scrapeResult = await result.current.scrapeAndPrepare(
+            'https://www.quitoque.fr/recipe/123'
+          );
+        });
+
+        expect(scrapeResult?.success).toBe(true);
+        expect(result.current.authRequired).toBeNull();
+        expect(mockScrapeRecipeFromHtml).toHaveBeenCalledWith(
+          '<html></html>',
+          'https://www.quitoque.fr/recipe/123'
+        );
+      } finally {
+        Object.defineProperty(Platform, 'OS', { value: originalOS, configurable: true });
+      }
     });
 
     test('clearAuthRequired resets authRequired state', async () => {
@@ -457,6 +527,29 @@ describe('useRecipeScraper', () => {
       });
 
       expect(result.current.isLoading).toBe(false);
+    });
+  });
+
+  describe('fetchImageUrlForRecipe', () => {
+    test('falls back to the scraper image when the provider finds none', async () => {
+      mockFetchHtmlSuccess('<html></html>', 'https://www.hellofresh.fr/recipes/test');
+      mockScrapeRecipeFromHtmlSuccess(hellofreshKeftasRecipe);
+
+      const { result } = await renderHook(() => useRecipeScraper(), {
+        wrapper: createWrapper(),
+      });
+
+      const imageUrl = await result.current.fetchImageUrlForRecipe(
+        createMockRecipeProvider(),
+        'https://www.hellofresh.fr/recipes/test',
+        new AbortController().signal
+      );
+
+      expect(imageUrl).toBe(hellofreshKeftasRecipe.image);
+      expect(mockScrapeRecipeFromHtml).toHaveBeenCalledWith(
+        '<html></html>',
+        'https://www.hellofresh.fr/recipes/test'
+      );
     });
   });
 });

@@ -5,6 +5,8 @@ import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testRecipes } from '@test-data/recipesDataset';
 import { testTags } from '@test-data/tagsDataset';
 import { testIngredients } from '@test-data/ingredientsDataset';
+import { mockUseScraper } from '@mocks/modules/recipe-scraper-mock';
+import { appLogger } from '@utils/logger';
 
 jest.mock('@components/atomic/CustomImage', () =>
   require('@mocks/components/atomic/CustomImage-mock').customImageMock()
@@ -129,6 +131,16 @@ describe('WelcomeScreen Component', () => {
     expect(getByTestId('WelcomeScreen::Card::FeaturesList::2::Icon')).toBeTruthy();
   });
 
+  test('does not start the recipe scraper engine', async () => {
+    const { getByTestId } = await renderWelcomeScreen();
+
+    await waitFor(() => {
+      expect(getByTestId('WelcomeScreen::SkipButton')).toBeTruthy();
+    });
+
+    expect(mockUseScraper).not.toHaveBeenCalled();
+  });
+
   test('handles missing expo config gracefully', async () => {
     const originalConstant = require('expo-constants').default;
     require('expo-constants').default = { expoConfig: null };
@@ -213,6 +225,38 @@ describe('WelcomeScreen Component', () => {
       expect(queryByText(/RecipeDatabase\.tsx/)).toBeNull();
       expect(queryByText(/Sésame doré/)).toBeNull();
     });
+
+    test.each([
+      [
+        'an Error without stack',
+        Object.assign(new Error('No stack'), { stack: undefined }),
+        'No stack',
+      ],
+      ['a plain object', { code: 42 }, JSON.stringify({ code: 42 }, null, 2)],
+      ['a string', 'plain failure', 'plain failure'],
+    ])(
+      'logs details and shows dialog when dataset rejects with %s',
+      async (_label, rejection, expectedDetails) => {
+        const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
+        const errorSpy = jest.spyOn(appLogger, 'error').mockImplementation(() => undefined);
+        try {
+          loadFirstLaunchDataset.mockRejectedValueOnce(rejection);
+
+          const { getByTestId } = await renderWelcomeScreen();
+
+          await waitFor(() => {
+            expect(getByTestId('WelcomeScreen::InitErrorDialog')).toBeTruthy();
+          });
+
+          expect(errorSpy).toHaveBeenCalledWith(
+            'Dataset loading failed - app will work without initial data',
+            { error: expectedDetails }
+          );
+        } finally {
+          errorSpy.mockRestore();
+        }
+      }
+    );
   });
 
   describe('Loading state handling', () => {
@@ -383,6 +427,33 @@ describe('WelcomeScreen Component', () => {
       });
 
       expect(mockOnSkip).not.toHaveBeenCalled();
+    });
+
+    test('proceeds with onSkip when pending skip and dataset fails', async () => {
+      const { loadFirstLaunchDataset } = require('@utils/datasetInitializer');
+      let rejectFn: (err: Error) => void;
+      loadFirstLaunchDataset.mockReturnValueOnce(
+        new Promise((_resolve, reject) => {
+          rejectFn = reject;
+        })
+      );
+
+      const { getByTestId } = await renderWelcomeScreen();
+
+      await waitFor(() => {
+        expect(loadFirstLaunchDataset).toHaveBeenCalled();
+      });
+
+      await fireEvent.press(getByTestId('WelcomeScreen::SkipButton'));
+      expect(mockOnSkip).not.toHaveBeenCalled();
+
+      rejectFn!(new Error('Late failure'));
+
+      await waitFor(() => {
+        expect(mockOnSkip).toHaveBeenCalledTimes(1);
+      });
+
+      expect(mockOnStartTutorial).not.toHaveBeenCalled();
     });
 
     test('does not show loading overlay after dataset fails', async () => {

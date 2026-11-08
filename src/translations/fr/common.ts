@@ -86,6 +86,8 @@ export default {
     errorAuthFailed: "Échec de l'authentification. Vérifiez vos identifiants.",
     errorUnsupportedAuth: "L'authentification n'est pas prise en charge pour ce site",
     errorUnsupportedPlatform: 'Cette fonctionnalité est uniquement disponible sur Android',
+    errorScraperUnavailable:
+      "Le moteur d'import de recettes web n'a pas pu être chargé. Vous pouvez toujours ajouter des recettes manuellement.",
   },
 
   autocomplete: {
