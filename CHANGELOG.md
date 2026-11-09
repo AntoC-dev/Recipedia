@@ -1,3 +1,10 @@
+## [2.57.2](https://github.com/AntoC-dev/Recipedia/compare/v2.57.1...v2.57.2) (2026-11-09)
+
+### Bug Fixes
+
+* **ocr:** stop creating fake preparation steps from quantities ([882828f](https://github.com/AntoC-dev/Recipedia/commit/882828f159f27f7551ce39ea9d140b6cb8ccc64c)), closes [#700](https://github.com/AntoC-dev/Recipedia/issues/700)
+* **ocr:** stop creating fake preparation steps from quantities ([#703](https://github.com/AntoC-dev/Recipedia/issues/703)) ([80c59fd](https://github.com/AntoC-dev/Recipedia/commit/80c59fd55614e2ef1998d5f89fd51deac5f7eff3))
+
 ## [2.57.1](https://github.com/AntoC-dev/Recipedia/compare/v2.57.0...v2.57.1) (2026-11-08)
 
 ### Bug Fixes
