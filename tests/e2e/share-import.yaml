@@ -1,0 +1,13 @@
+platform:
+  ios:
+    disableAnimations: true
+  android:
+    disableAnimations: true
+
+flows:
+  - cases/share-import/ci/*
+
+executionOrder:
+  flowsOrder:
+    - "1 - Share Recipe URL From Browser Flow"
+    - "2 - Share Photo From Gallery App Flow"

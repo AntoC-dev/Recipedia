@@ -1,0 +1,29 @@
+appId: "com.recipedia"
+---
+- openLink:
+    link: "${RECIPE_URL}"
+    label: "Open the recipe page in Safari"
+
+- runFlow:
+    when:
+      visible:
+        id: "xmark.circle.fill"
+    commands:
+      - tapOn:
+          id: "xmark.circle.fill"
+          label: "Close the Safari toolbar tip"
+    label: "Dismiss the optional Safari tip"
+
+- tapOn:
+    id: "MoreMenuButton"
+    label: "Open the Safari menu"
+
+- tapOn:
+    text: "Share"
+    label: "Open the Safari share sheet"
+
+- runFlow:
+    file: "pickRecipediaInShareSheet.yaml"
+    env:
+      SHARE_ROW_Y: "76%"
+    label: "Pick Recipedia in the share sheet"

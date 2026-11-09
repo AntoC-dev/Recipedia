@@ -1,0 +1,58 @@
+appId: "com.recipedia"
+---
+- openLink:
+    link: "${RECIPE_URL}"
+    browser: true
+    label: "Open the recipe page in Chrome"
+
+- runFlow:
+    when:
+      visible:
+        text: "Use without an account"
+    commands:
+      - tapOn:
+          text: "Use without an account"
+          label: "Skip Chrome first-run sign-in"
+    label: "Dismiss optional Chrome first-run screen"
+
+- runFlow:
+    when:
+      visible:
+        text: "No thanks"
+    commands:
+      - tapOn:
+          text: "No thanks"
+          label: "Decline Chrome notifications"
+    label: "Dismiss optional Chrome notifications prompt"
+
+- extendedWaitUntil:
+    visible:
+      id: "com.android.chrome:id/menu_button"
+    timeout: 30000
+    label: "Wait for the Chrome toolbar"
+
+- waitForAnimationToEnd:
+    timeout: 15000
+    label: "Wait for the page to finish loading"
+
+- tapOn:
+    id: "com.android.chrome:id/menu_button"
+    label: "Open the Chrome menu"
+
+- tapOn:
+    text: "Share.*"
+    label: "Share the page"
+
+- runFlow:
+    when:
+      notVisible:
+        text: "Recipedia"
+    commands:
+      - tapOn:
+          text: "More"
+          label: "Open the system share sheet from Chrome's share hub"
+    label: "Reach the system share sheet"
+
+- tapOn:
+    text: "Recipedia"
+    label: "Pick Recipedia in the share sheet"

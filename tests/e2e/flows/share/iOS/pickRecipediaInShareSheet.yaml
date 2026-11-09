@@ -1,0 +1,53 @@
+appId: "com.recipedia"
+---
+- extendedWaitUntil:
+    visible:
+      id: "shareCell"
+      text: "Recipedia"
+    timeout: 15000
+    label: "Wait for Recipedia in the share sheet app row"
+
+- runFlow:
+    when:
+      visible:
+        id: "shareCell"
+        text: "Recipedia"
+        leftOf:
+          id: "shareCell"
+          index: 1
+    file: "tapShareSheetSlot.yaml"
+    env:
+      SLOT_X: "17%"
+    label: "Pick Recipedia in the first slot"
+
+- runFlow:
+    when:
+      visible:
+        id: "shareCell"
+        text: "Recipedia"
+        rightOf:
+          id: "shareCell"
+          index: 0
+        leftOf:
+          id: "shareCell"
+          index: 2
+    file: "tapShareSheetSlot.yaml"
+    env:
+      SLOT_X: "39%"
+    label: "Pick Recipedia in the second slot"
+
+- runFlow:
+    when:
+      visible:
+        id: "shareCell"
+        text: "Recipedia"
+        rightOf:
+          id: "shareCell"
+          index: 1
+        leftOf:
+          id: "shareCell"
+          index: 3
+    file: "tapShareSheetSlot.yaml"
+    env:
+      SLOT_X: "61%"
+    label: "Pick Recipedia in the third slot"

@@ -1,0 +1,66 @@
+name: "2 - Share Photo From Gallery App Flow"
+appId: "com.recipedia"
+tags:
+  - share-import
+---
+- runFlow:
+    file: "../../flows/parameters/language/switchToEnglish.yaml"
+    label: "Setup - Ensure English language"
+
+- tapOn:
+    id: "BottomTabs::Home"
+    label: "Setup - Return to Home screen"
+
+- runFlow:
+    when:
+      platform: Android
+    file: "../../flows/recipe/adding/ocr/android/addMedia.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+      FIELD_NAME: image
+    label: "Setup - Add the recipe photo to the device"
+
+- runFlow:
+    when:
+      platform: iOS
+    file: "../../flows/recipe/adding/ocr/iOS/addMedia.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+      FIELD_NAME: image
+    label: "Setup - Add the recipe photo to the device"
+
+- runFlow:
+    when:
+      platform: Android
+    file: "../../flows/share/android/sharePhotoFromFiles.yaml"
+    label: "Action - Share the photo from Files"
+
+- runFlow:
+    when:
+      platform: iOS
+    file: "../../flows/share/iOS/sharePhotoFromPhotos.yaml"
+    label: "Action - Share the photo from Photos"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeImage::RoundButton"
+    timeout: 15000
+    label: "Assert - Shared photo opens the OCR recipe screen"
+
+- runFlow:
+    file: "../../asserts/recipe/common/buttonsOCREmpty.yaml"
+    label: "Assert - OCR recipe screen is ready to scan"
+
+- tapOn:
+    id: "RecipeImage::RoundButton"
+    label: "Action - Open the OCR image picker"
+
+- extendedWaitUntil:
+    visible:
+      id: "Modal::List#0::SquareButton::Image"
+    timeout: 5000
+    label: "Assert - Shared photo is offered for scanning"
+
+- assertNotVisible:
+    id: "Modal::List#1::SquareButton::Image"
+    label: "Assert - Only the shared photo is offered"
