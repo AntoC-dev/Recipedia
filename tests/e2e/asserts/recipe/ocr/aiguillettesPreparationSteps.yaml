@@ -1,0 +1,55 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::${FIRST_STEP_INDEX}::TextInputTitle::CustomTextInput"
+      text: "Cuire le riz"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Rice step title is the first numbered section"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::${FIRST_STEP_INDEX}::TextInputContent::CustomTextInput"
+      text: "[\\s\\S]*12-14 min[\\s\\S]*"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Cooking time stays in the rice step content instead of becoming a step"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::${Number(FIRST_STEP_INDEX) + 1}::TextInputTitle::CustomTextInput"
+      text: "Cuire les l.*"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Vegetables step title is the second numbered section"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::${Number(FIRST_STEP_INDEX) + 2}::TextInputTitle::CustomTextInput"
+      text: "Faire la sauce"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Sauce step title is the third numbered section"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::${Number(FIRST_STEP_INDEX) + 2}::TextInputContent::CustomTextInput"
+      text: "[\\s\\S]*30 ml d.eau[\\s\\S]*"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Water quantity stays in the sauce step content instead of becoming a step"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::${Number(FIRST_STEP_INDEX) + 3}::TextInputTitle::CustomTextInput"
+      text: "Finir et servir"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Serving step title is the last numbered section"

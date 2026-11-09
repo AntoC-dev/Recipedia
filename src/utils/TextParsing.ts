@@ -9,9 +9,9 @@
  *
  * @example
  * ```typescript
- * import { findAllNumbers, textSeparator } from '@utils/TextParsing';
+ * import { numberAtFirstIndex, textSeparator } from '@utils/TextParsing';
  *
- * const numbers = ingredientText.match(findAllNumbers);
+ * const startsWithQuantity = numberAtFirstIndex.test(ingredientText);
  * const [name, quantity] = encoded.split(textSeparator);
  * ```
  */
@@ -30,9 +30,6 @@ export const noteSeparator = '%%';
 
 /** Regular expression to replace all newline characters */
 export const replaceAllBackToLine = /\n/g;
-
-/** Regular expression to find all numbers in text */
-export const findAllNumbers = /\b\d+\b/g;
 
 /** Regular expression to check if text starts with a number */
 export const numberAtFirstIndex = /^\d/;

@@ -1,6 +1,7 @@
 /* eslint-disable no-loss-of-precision */
 import { TextRecognitionResult } from '@react-native-ml-kit/text-recognition';
-import { FormIngredientElement } from '@customTypes/DatabaseElementTypes';
+import { FormIngredientElement, preparationStepElement } from '@customTypes/DatabaseElementTypes';
+import { buildBlocksResult } from '@data/ocrMocks/builders';
 
 export const iosNamesOcrResult: TextRecognitionResult = {
   blocks: [
@@ -2069,4 +2070,71 @@ export const expectedIosQuantities: string[] = [
   '10 ml',
   '2 pièce',
   '2 cC',
+];
+
+const iosPreparationBlockTexts = [
+  '1',
+  '2',
+  'Cuire le riz',
+  'Veillez à bien respecter les quantités indiquées à gauche pour',
+  'préparer votre recette!',
+  "Portez une casserole d'eau salée à ébullition et faites-y cuire le riz",
+  '12-14 min.',
+  'Égouttez-le et réservez-le à couvert.',
+  'Cuire les légumes',
+  "Pendant ce temps, coupez l'oignon en fines demi-lunes. Épluchez\net râpez la carotte. Coupez le poireau en quatre dans l'épaisseur,\nlavez-le bien, puis ciselez-le finement.",
+  "Faites chauffer un filet d'huile d'olive à feu moyen-vif dans un wok\nou une sauteuse. Faites-y revenir les légumes 4-6 min à couvert.\nRemuez régulièrement.",
+  'CONSEIL: Vous pouvez faire cuire les légumes plus longtemps si vous\nles préférez fondants',
+  '3',
+  '4',
+  'Faire la sauce',
+  "Pendant ce temps, ciselez la ciboulette et l'ail séparément.",
+  'Râpez le gingembre (si vous le souhaitez avec la peau).',
+  "Dans un bol, mélangez I'ail et le gingembre avec la sauce soja\n(voir CONSEIL), l'huile de sésame et, par personne:1 cs de sucre et",
+  "30 ml d'eau.",
+  'Coupez le poulet en 3 aiguillettes.',
+  "CONSEIL:Si vous faites attention à votre consommation de sel ou\nn'aimez pas manger trop salé, réduisez la quantité de sauce soja et de\ngomasio et ne salez pas le plat par la suite.",
+  'Finir et servir',
+  "Faites chauffer un filet d'huile d'olive dans une poêle à feu moyen-vif et faites-y cuire le poulet 2-4 min.",
+  "Ajoutez la sauce et laissez-la réduire 1-2 min à feu vif, ou jusqu'à ce\nqu'elle soit légèrement nappante (ajoutez un peu d'eau si besoin).",
+  'Servez le riz dans des assiettes creuses et disposez les légumes et le\npoulet par-dessus avec la sauce.',
+  'Saupoudrez de ciboulette et de gomasio.',
+  'A vos fourchettes!',
+];
+
+const iosPreparationLineHeight = 20;
+
+let iosPreparationLineIndex = 0;
+
+export const iosPreparationOcrResult: TextRecognitionResult = buildBlocksResult(
+  iosPreparationBlockTexts.map(blockText =>
+    blockText.split('\n').map(text => ({
+      text,
+      top: iosPreparationLineIndex++ * iosPreparationLineHeight,
+      height: iosPreparationLineHeight,
+    }))
+  )
+);
+
+export const expectedIosPreparation: preparationStepElement[] = [
+  {
+    title: 'Cuire le riz',
+    description:
+      "Veillez à bien respecter les quantités indiquées à gauche pour\npréparer votre recette!\nPortez une casserole d'eau salée à ébullition et faites-y cuire le riz\n12-14 min.\nÉgouttez-le et réservez-le à couvert.",
+  },
+  {
+    title: 'Cuire les légumes',
+    description:
+      "Pendant ce temps, coupez l'oignon en fines demi-lunes. Épluchez\net râpez la carotte. Coupez le poireau en quatre dans l'épaisseur,\nlavez-le bien, puis ciselez-le finement.\nFaites chauffer un filet d'huile d'olive à feu moyen-vif dans un wok\nou une sauteuse. Faites-y revenir les légumes 4-6 min à couvert.\nRemuez régulièrement.\nCONSEIL: Vous pouvez faire cuire les légumes plus longtemps si vous\nles préférez fondants",
+  },
+  {
+    title: 'Faire la sauce',
+    description:
+      "Pendant ce temps, ciselez la ciboulette et l'ail séparément.\nRâpez le gingembre (si vous le souhaitez avec la peau).\nDans un bol, mélangez I'ail et le gingembre avec la sauce soja\n(voir CONSEIL), l'huile de sésame et, par personne:1 cs de sucre et\n30 ml d'eau.\nCoupez le poulet en 3 aiguillettes.\nCONSEIL:Si vous faites attention à votre consommation de sel ou\nn'aimez pas manger trop salé, réduisez la quantité de sauce soja et de\ngomasio et ne salez pas le plat par la suite.",
+  },
+  {
+    title: 'Finir et servir',
+    description:
+      "Faites chauffer un filet d'huile d'olive dans une poêle à feu moyen-vif et faites-y cuire le poulet 2-4 min.\nAjoutez la sauce et laissez-la réduire 1-2 min à feu vif, ou jusqu'à ce\nqu'elle soit légèrement nappante (ajoutez un peu d'eau si besoin).\nServez le riz dans des assiettes creuses et disposez les légumes et le\npoulet par-dessus avec la sauce.\nSaupoudrez de ciboulette et de gomasio.\nA vos fourchettes!",
+  },
 ];
