@@ -31,3 +31,12 @@ export function createResolvedSharePayload(
     ...overrides,
   } as ResolvedSharePayload;
 }
+
+export function createResolvedImagePayload(contentUri: string): ResolvedSharePayload {
+  return createResolvedSharePayload({
+    value: contentUri,
+    shareType: 'image',
+    contentType: 'image',
+    contentUri,
+  });
+}

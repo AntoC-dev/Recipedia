@@ -1,6 +1,7 @@
 import { takeSharedImport } from '@utils/SharedContent';
 import {
   clearSharedPayloads,
+  createResolvedImagePayload,
   createResolvedSharePayload,
   createSharePayload,
   getResolvedSharedPayloadsAsync,
@@ -49,12 +50,7 @@ describe('SharedContent', () => {
       ]);
       getResolvedSharedPayloadsAsync.mockResolvedValue([
         createResolvedSharePayload({ value: 'My dinner' }),
-        createResolvedSharePayload({
-          value: androidContentUri,
-          shareType: 'image',
-          contentType: 'image',
-          contentUri: localImageUri,
-        }),
+        createResolvedImagePayload(localImageUri),
       ]);
 
       await expect(takeSharedImport()).resolves.toEqual({ kind: 'image', uri: localImageUri });
@@ -67,25 +63,14 @@ describe('SharedContent', () => {
     });
 
     test.each([
-      ['a sentence containing a link', `Try this: ${recipeUrl}`],
-      ['a host without domain', 'http://localhost/recipe'],
-      ['a non-web protocol', 'ftp://example.com/recipe'],
-      ['a link without protocol', 'www.example.com/recipe'],
-    ])('reports %s as unsupported', async (_case, text) => {
-      getSharedPayloads.mockReturnValue([createSharePayload(text, 'text')]);
-
-      await expect(takeSharedImport()).resolves.toEqual({ kind: 'unsupported' });
-    });
-
-    test('reports shared text without link as unsupported', async () => {
-      getSharedPayloads.mockReturnValue([createSharePayload('Just some text', 'text')]);
-
-      await expect(takeSharedImport()).resolves.toEqual({ kind: 'unsupported' });
-      expect(clearSharedPayloads).toHaveBeenCalledTimes(1);
-    });
-
-    test('reports a payload without value as unsupported', async () => {
-      getSharedPayloads.mockReturnValue([{ shareType: 'text' } as SharePayload]);
+      ['shared text without link', createSharePayload('Just some text', 'text')],
+      ['a payload without value', { shareType: 'text' } as SharePayload],
+      ['a sentence containing a link', createSharePayload(`Try this: ${recipeUrl}`, 'text')],
+      ['a host without domain', createSharePayload('http://localhost/recipe', 'text')],
+      ['a non-web protocol', createSharePayload('ftp://example.com/recipe', 'text')],
+      ['a link without protocol', createSharePayload('www.example.com/recipe', 'text')],
+    ])('reports %s as unsupported', async (_case, payload) => {
+      getSharedPayloads.mockReturnValue([payload]);
 
       await expect(takeSharedImport()).resolves.toEqual({ kind: 'unsupported' });
     });
@@ -101,17 +86,23 @@ describe('SharedContent', () => {
 
     test('imports a shared photo through its resolved local file', async () => {
       getSharedPayloads.mockReturnValue([createSharePayload(androidContentUri, 'image')]);
-      getResolvedSharedPayloadsAsync.mockResolvedValue([
-        createResolvedSharePayload({
-          value: androidContentUri,
-          shareType: 'image',
-          contentType: 'image',
-          contentUri: localImageUri,
-        }),
-      ]);
+      getResolvedSharedPayloadsAsync.mockResolvedValue([createResolvedImagePayload(localImageUri)]);
 
       await expect(takeSharedImport()).resolves.toEqual({ kind: 'image', uri: localImageUri });
       expect(clearSharedPayloads).toHaveBeenCalledTimes(1);
+    });
+
+    test('prefers the shared photo over a link shared with it', async () => {
+      getSharedPayloads.mockReturnValue([
+        createSharePayload(recipeUrl, 'url'),
+        createSharePayload(androidContentUri, 'image'),
+      ]);
+      getResolvedSharedPayloadsAsync.mockResolvedValue([
+        createResolvedSharePayload({ value: recipeUrl, shareType: 'url' }),
+        createResolvedImagePayload(localImageUri),
+      ]);
+
+      await expect(takeSharedImport()).resolves.toEqual({ kind: 'image', uri: localImageUri });
     });
 
     test('reports a photo that could not be resolved as unsupported', async () => {

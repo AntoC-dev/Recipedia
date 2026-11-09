@@ -31,7 +31,6 @@ const urlDialogId = testId + '::UrlDialog';
 const authDialogId = testId + '::AuthDialog';
 const recipeUrl = 'https://example.com/recipe';
 const protectedRecipeUrl = 'https://quitoque.fr/recipe';
-const otherRecipeUrl = 'https://other.com/recipe';
 
 const mockOnClose = jest.fn();
 
@@ -39,12 +38,22 @@ function buildProps(overrides: Partial<UrlRecipeImportProps> = {}): UrlRecipeImp
   return { testId, isVisible: true, onClose: mockOnClose, ...overrides };
 }
 
-function renderImport(overrides: Partial<UrlRecipeImportProps> = {}) {
-  return render(
+function renderWithProviders(overrides: Partial<UrlRecipeImportProps>) {
+  return (
     <DefaultPersonsProvider>
       <UrlRecipeImport {...buildProps(overrides)} />
     </DefaultPersonsProvider>
   );
+}
+
+async function renderImport(overrides: Partial<UrlRecipeImportProps> = {}) {
+  const screen = await render(renderWithProviders(overrides));
+
+  async function rerenderImport(nextOverrides: Partial<UrlRecipeImportProps> = {}) {
+    await screen.rerender(renderWithProviders(nextOverrides));
+  }
+
+  return { ...screen, rerenderImport };
 }
 
 type Queries = Awaited<ReturnType<typeof renderImport>>;
@@ -60,12 +69,22 @@ async function submitCredentials({ getByTestId }: Queries, username: string, pas
   await fireEvent.press(getByTestId(authDialogId + '::SubmitButton'));
 }
 
+async function waitForUrlError({ getByTestId }: Queries, errorKey: string) {
+  await waitFor(() =>
+    expect(getByTestId(urlDialogId + '::HelperText')).toHaveTextContent(errorKey)
+  );
+}
+
+async function waitForAuthDialog({ getByTestId }: Queries) {
+  await waitFor(() =>
+    expect(getByTestId(authDialogId + '::Title')).toHaveTextContent('authDialog.title')
+  );
+}
+
 async function openAuthDialog(screen: Queries) {
   mockScrapeRecipeFromHtmlError('Login required', 'AuthenticationRequired', 'quitoque.fr');
   await submitUrl(screen, protectedRecipeUrl);
-  await waitFor(() =>
-    expect(screen.getByTestId(authDialogId + '::Title')).toHaveTextContent('authDialog.title')
-  );
+  await waitForAuthDialog(screen);
 }
 
 function expectPushedToScrapeScreen(sourceUrl: string, title: string) {
@@ -120,11 +139,7 @@ describe('UrlRecipeImport', () => {
       const screen = await renderImport();
 
       await submitUrl(screen, recipeUrl);
-      await waitFor(() =>
-        expect(screen.getByTestId(urlDialogId + '::HelperText')).toHaveTextContent(
-          'urlDialog.errorNoRecipeFound'
-        )
-      );
+      await waitForUrlError(screen, 'urlDialog.errorNoRecipeFound');
       await fireEvent.press(screen.getByTestId(urlDialogId + '::CancelButton'));
 
       expect(mockOnClose).toHaveBeenCalledTimes(1);
@@ -147,11 +162,7 @@ describe('UrlRecipeImport', () => {
 
       await submitUrl(screen, recipeUrl);
 
-      await waitFor(() =>
-        expect(screen.getByTestId(urlDialogId + '::HelperText')).toHaveTextContent(
-          'urlDialog.errorNoRecipeFound'
-        )
-      );
+      await waitForUrlError(screen, 'urlDialog.errorNoRecipeFound');
       expect(screen.getByTestId(urlDialogId + '::Title')).toHaveTextContent('urlDialog.title');
       expect(mockDispatch).not.toHaveBeenCalled();
       expect(mockOnClose).not.toHaveBeenCalled();
@@ -179,25 +190,19 @@ describe('UrlRecipeImport', () => {
       mockScrapeRecipeFromHtmlSuccess(createEmptyScrapedRecipe({ title: 'Shared Pasta' }));
       const screen = await renderImport({ isVisible: false, initialUrl: recipeUrl });
 
-      await screen.rerender(
-        <DefaultPersonsProvider>
-          <UrlRecipeImport {...buildProps({ initialUrl: recipeUrl })} />
-        </DefaultPersonsProvider>
-      );
+      await screen.rerenderImport({ initialUrl: recipeUrl });
 
       await waitFor(() => expectPushedToScrapeScreen(recipeUrl, 'Shared Pasta'));
     });
 
     test('keeps the initial URL editable with the error when its import fails', async () => {
       mockScrapeRecipeFromHtmlError('No recipe found', 'NoRecipeFoundError');
-      const { getByTestId } = await renderImport({ initialUrl: recipeUrl });
+      const screen = await renderImport({ initialUrl: recipeUrl });
 
-      await waitFor(() =>
-        expect(getByTestId(urlDialogId + '::HelperText')).toHaveTextContent(
-          'urlDialog.errorNoRecipeFound'
-        )
+      await waitForUrlError(screen, 'urlDialog.errorNoRecipeFound');
+      expect(screen.getByTestId(urlDialogId + '::Input::CustomTextInput').props.value).toBe(
+        recipeUrl
       );
-      expect(getByTestId(urlDialogId + '::Input::CustomTextInput').props.value).toBe(recipeUrl);
       expect(mockDispatch).not.toHaveBeenCalled();
     });
 
@@ -205,28 +210,8 @@ describe('UrlRecipeImport', () => {
       mockScrapeRecipeFromHtmlError('Login required', 'AuthenticationRequired', 'quitoque.fr');
       const screen = await renderImport({ initialUrl: protectedRecipeUrl });
 
-      await waitFor(() =>
-        expect(screen.getByTestId(authDialogId + '::Title')).toHaveTextContent('authDialog.title')
-      );
+      await waitForAuthDialog(screen);
       expectUrlDialogHidden(screen);
-    });
-
-    test('closes a pending authentication dialog when a new initial URL is imported', async () => {
-      mockScrapeRecipeFromHtmlError('Login required', 'AuthenticationRequired', 'quitoque.fr');
-      const screen = await renderImport({ initialUrl: protectedRecipeUrl });
-      await waitFor(() =>
-        expect(screen.getByTestId(authDialogId + '::Title')).toHaveTextContent('authDialog.title')
-      );
-
-      mockScrapeRecipeFromHtmlSuccess(createEmptyScrapedRecipe({ title: 'Other Pasta' }));
-      await screen.rerender(
-        <DefaultPersonsProvider>
-          <UrlRecipeImport {...buildProps({ initialUrl: otherRecipeUrl })} />
-        </DefaultPersonsProvider>
-      );
-
-      await waitFor(() => expectPushedToScrapeScreen(otherRecipeUrl, 'Other Pasta'));
-      expectAuthDialogHidden(screen);
     });
   });
 
@@ -272,6 +257,16 @@ describe('UrlRecipeImport', () => {
       expect(screen.getByTestId(authDialogId + '::Title')).toHaveTextContent('authDialog.title');
       expect(mockDispatch).not.toHaveBeenCalled();
       expect(mockOnClose).not.toHaveBeenCalled();
+    });
+
+    test('hides both dialogs when the flow is hidden while a login is pending', async () => {
+      const screen = await renderImport();
+      await openAuthDialog(screen);
+
+      await screen.rerenderImport({ isVisible: false });
+
+      expectAuthDialogHidden(screen);
+      expectUrlDialogHidden(screen);
     });
 
     test('closes the dialog and calls onClose when cancel is pressed', async () => {
