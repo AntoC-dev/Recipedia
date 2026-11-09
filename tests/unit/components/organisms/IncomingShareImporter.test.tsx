@@ -4,7 +4,7 @@ import { StackActions } from '@react-navigation/native';
 import { IncomingShareImporter } from '@components/organisms/IncomingShareImporter';
 import { mockDispatch } from '@mocks/deps/react-navigation-mock';
 import {
-  createResolvedSharePayload,
+  createResolvedImagePayload,
   createSharePayload,
   getResolvedSharedPayloadsAsync,
   getSharedPayloads,
@@ -54,11 +54,11 @@ async function renderImporter(initialPayloads: SharePayload[] = []) {
 
 type Screen = Awaited<ReturnType<typeof renderImporter>>;
 
-function expectUrlImport({ getByTestId, queryByTestId }: Screen, isOpen: boolean, initialUrl = '') {
-  if (!isOpen) {
-    expect(queryByTestId(urlImportId)).toBeNull();
-    return;
-  }
+function expectUrlImportClosed({ queryByTestId }: Screen) {
+  expect(queryByTestId(urlImportId)).toBeNull();
+}
+
+function expectUrlImportOpen({ getByTestId }: Screen, initialUrl: string) {
   expect(getByTestId(urlImportId + '::IsVisible')).toHaveTextContent('true');
   expect(getByTestId(urlImportId + '::InitialUrl')).toHaveTextContent(initialUrl);
 }
@@ -73,14 +73,7 @@ function expectUnsupportedSnackbarShown({ getByTestId }: Screen) {
 
 describe('IncomingShareImporter', () => {
   beforeEach(() => {
-    getResolvedSharedPayloadsAsync.mockResolvedValue([
-      createResolvedSharePayload({
-        value: 'content://media/1',
-        shareType: 'image',
-        contentType: 'image',
-        contentUri: localImageUri,
-      }),
-    ]);
+    getResolvedSharedPayloadsAsync.mockResolvedValue([createResolvedImagePayload(localImageUri)]);
   });
 
   afterEach(() => {
@@ -90,7 +83,7 @@ describe('IncomingShareImporter', () => {
   test('stays idle when nothing was shared', async () => {
     const screen = await renderImporter();
 
-    expectUrlImport(screen, false);
+    expectUrlImportClosed(screen);
     expectUnsupportedSnackbarHidden(screen);
     expect(mockDispatch).not.toHaveBeenCalled();
   });
@@ -102,7 +95,7 @@ describe('IncomingShareImporter', () => {
 
       await screen.receiveShareWhileInBackground(sharedUrlPayloads, nextAppState);
 
-      expectUrlImport(screen, false);
+      expectUrlImportClosed(screen);
     }
   );
 
@@ -114,7 +107,7 @@ describe('IncomingShareImporter', () => {
 
     await screen.receiveShareWhileInBackground(sharedUrlPayloads);
 
-    expectUrlImport(screen, true, recipeUrl);
+    expectUrlImportOpen(screen, recipeUrl);
   });
 
   test('stops listening to app state changes on unmount', async () => {
@@ -133,7 +126,7 @@ describe('IncomingShareImporter', () => {
       expect(mockDispatch).toHaveBeenCalledWith(
         StackActions.push('RecipeAddOcr', { imgUri: localImageUri })
       );
-      expectUrlImport(screen, false);
+      expectUrlImportClosed(screen);
       expectUnsupportedSnackbarHidden(screen);
     });
 
@@ -146,13 +139,24 @@ describe('IncomingShareImporter', () => {
         StackActions.push('RecipeAddOcr', { imgUri: localImageUri })
       );
     });
+
+    test('closes an open URL import when an image is shared', async () => {
+      const screen = await renderImporter(sharedUrlPayloads);
+
+      await screen.receiveShareWhileInBackground(sharedImagePayloads);
+
+      expectUrlImportClosed(screen);
+      expect(mockDispatch).toHaveBeenCalledWith(
+        StackActions.push('RecipeAddOcr', { imgUri: localImageUri })
+      );
+    });
   });
 
   describe('shared URL', () => {
     test('opens the URL import with the shared URL', async () => {
       const screen = await renderImporter(sharedUrlPayloads);
 
-      expectUrlImport(screen, true, recipeUrl);
+      expectUrlImportOpen(screen, recipeUrl);
       expectUnsupportedSnackbarHidden(screen);
       expect(mockDispatch).not.toHaveBeenCalled();
     });
@@ -162,7 +166,15 @@ describe('IncomingShareImporter', () => {
 
       await screen.receiveShareWhileInBackground([createSharePayload(otherRecipeUrl, 'url')]);
 
-      expectUrlImport(screen, true, otherRecipeUrl);
+      expectUrlImportOpen(screen, otherRecipeUrl);
+    });
+
+    test('re-opens the URL import with a new URL shared while the first import is open', async () => {
+      const screen = await renderImporter(sharedUrlPayloads);
+
+      await screen.receiveShareWhileInBackground([createSharePayload(otherRecipeUrl, 'url')]);
+
+      expectUrlImportOpen(screen, otherRecipeUrl);
     });
 
     test('closes the URL import when it ends', async () => {
@@ -170,7 +182,7 @@ describe('IncomingShareImporter', () => {
 
       await fireEvent.press(screen.getByTestId(urlImportId + '::OnClose'));
 
-      expectUrlImport(screen, false);
+      expectUrlImportClosed(screen);
     });
   });
 
@@ -179,7 +191,7 @@ describe('IncomingShareImporter', () => {
       const screen = await renderImporter(sharedTextPayloads);
 
       expectUnsupportedSnackbarShown(screen);
-      expectUrlImport(screen, false);
+      expectUrlImportClosed(screen);
       expect(mockDispatch).not.toHaveBeenCalled();
     });
 

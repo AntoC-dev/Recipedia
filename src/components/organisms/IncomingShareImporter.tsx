@@ -44,6 +44,7 @@ export function IncomingShareImporter() {
     uiLogger.info('Received shared content', { kind: sharedImport.kind });
     switch (sharedImport.kind) {
       case 'image':
+        setSharedUrl(undefined);
         navigation.dispatch(StackActions.push('RecipeAddOcr', { imgUri: sharedImport.uri }));
         break;
       case 'url':
@@ -75,6 +76,7 @@ export function IncomingShareImporter() {
     <>
       {sharedUrl && (
         <UrlRecipeImport
+          key={sharedUrl}
           testId={testId}
           isVisible
           initialUrl={sharedUrl}
