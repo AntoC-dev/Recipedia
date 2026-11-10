@@ -321,6 +321,7 @@ export const IconButton: React.FC<any> = props => (
     testID={props.testID}
     onPress={props.onPress}
     style={props.style}
+    accessibilityLabel={props.accessibilityLabel}
     {...{ iconColor: props.iconColor }}
   >
     <RNText testID={props.testID + '::Icon'}>{props.icon}</RNText>

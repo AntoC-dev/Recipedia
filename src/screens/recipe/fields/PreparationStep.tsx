@@ -8,26 +8,32 @@
  * and never re-render. This is what stops the O(N) cascade the bulk
  * `setValue('recipePreparation', ...)` pattern used to trigger.
  *
+ * The row's delete button removes a blank step at once and asks for
+ * confirmation before removing a step that holds a title or description.
+ *
  * @module screens/recipe/fields/PreparationStep
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useController, UseFormReturn } from 'react-hook-form';
 
 import { EditableStep } from '@components/organisms/RecipePreparation';
+import { ConfirmationDialog } from '@components/dialogs/ConfirmationDialog';
+import { isPreparationStepBlank } from '@utils/RecipeFormHelpers';
 import { RecipeFormInput } from '@schemas/recipeFormSchema';
 import { useInlineErrorFor } from '@screens/recipe/helpers/inlineErrorGate';
 
 type Form = UseFormReturn<RecipeFormInput>;
-type T = (key: string) => string;
+type T = (key: string, options?: Record<string, unknown>) => string;
 
 export interface PreparationStepFieldProps {
   form: Form;
   index: number;
   t: T;
+  onRemove: () => void;
 }
 
-export function PreparationStepField({ form, index, t }: PreparationStepFieldProps) {
+export function PreparationStepField({ form, index, t, onRemove }: PreparationStepFieldProps) {
   const titleCtrl = useController({
     control: form.control,
     name: `recipePreparation.${index}.title` as const,
@@ -58,16 +64,47 @@ export function PreparationStepField({ form, index, t }: PreparationStepFieldPro
     descriptionCtrl.field.onChange(value);
     descriptionCtrl.field.onBlur();
   };
+  const title = titleCtrl.field.value ?? '';
+  const description = descriptionCtrl.field.value ?? '';
+  const [isDeleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+
+  const handleRemovePress = () => {
+    if (isPreparationStepBlank({ title, description })) {
+      onRemove();
+      return;
+    }
+    setDeleteConfirmVisible(true);
+  };
+  const handleDeleteConfirm = () => {
+    setDeleteConfirmVisible(false);
+    onRemove();
+  };
+
   return (
-    <EditableStep
-      index={index}
-      title={titleCtrl.field.value ?? ''}
-      description={descriptionCtrl.field.value ?? ''}
-      onTitleChange={titleCtrl.field.onChange}
-      onDescriptionChange={descriptionCtrl.field.onChange}
-      onTitleCommit={handleTitleCommit}
-      onDescriptionCommit={handleDescriptionCommit}
-      descriptionError={descriptionError}
-    />
+    <>
+      <EditableStep
+        index={index}
+        title={title}
+        description={description}
+        onTitleChange={titleCtrl.field.onChange}
+        onDescriptionChange={descriptionCtrl.field.onChange}
+        onTitleCommit={handleTitleCommit}
+        onDescriptionCommit={handleDescriptionCommit}
+        onRemove={handleRemovePress}
+        descriptionError={descriptionError}
+      />
+      {isDeleteConfirmVisible ? (
+        <ConfirmationDialog
+          testId={`RecipePreparation::EditableStep::${index}::DeleteConfirmation`}
+          isVisible={true}
+          title={t('preparationDeleteStepConfirmTitle', { number: index + 1 })}
+          content={t('preparationDeleteStepConfirmContent')}
+          confirmLabel={t('delete')}
+          cancelLabel={t('cancel')}
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setDeleteConfirmVisible(false)}
+        />
+      ) : null}
+    </>
   );
 }

@@ -242,6 +242,7 @@ describe('EditableStep', () => {
         onDescriptionChange={jest.fn()}
         onTitleCommit={jest.fn()}
         onDescriptionCommit={jest.fn()}
+        onRemove={jest.fn()}
       />
     );
 
@@ -252,6 +253,31 @@ describe('EditableStep', () => {
       getByTestId('RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput').props
         .value
     ).toEqual('My description');
+  });
+
+  it('renders a trash delete button that calls onRemove when pressed', async () => {
+    const onRemove = jest.fn();
+    const { getByTestId } = await renderWithRecipeDialogs(
+      <EditableStep
+        index={1}
+        title='A title'
+        description='A description'
+        onTitleChange={jest.fn()}
+        onDescriptionChange={jest.fn()}
+        onTitleCommit={jest.fn()}
+        onDescriptionCommit={jest.fn()}
+        onRemove={onRemove}
+      />
+    );
+
+    expect(
+      getByTestId('RecipePreparation::EditableStep::1::DeleteButton::Icon').props.children
+    ).toBe('delete');
+    expect(
+      getByTestId('RecipePreparation::EditableStep::1::DeleteButton').props.accessibilityLabel
+    ).toBe('Delete step 2');
+    await fireEvent.press(getByTestId('RecipePreparation::EditableStep::1::DeleteButton'));
+    expect(onRemove).toHaveBeenCalledTimes(1);
   });
 
   it('live-changes title on keystroke and commits on blur', async () => {
@@ -266,6 +292,7 @@ describe('EditableStep', () => {
         onDescriptionChange={jest.fn()}
         onTitleCommit={onTitleCommit}
         onDescriptionCommit={jest.fn()}
+        onRemove={jest.fn()}
       />
     );
 
@@ -292,6 +319,7 @@ describe('EditableStep', () => {
         onDescriptionChange={onDescriptionChange}
         onTitleCommit={jest.fn()}
         onDescriptionCommit={onDescriptionCommit}
+        onRemove={jest.fn()}
       />
     );
 
@@ -316,6 +344,7 @@ describe('EditableStep', () => {
         onDescriptionChange={jest.fn()}
         onTitleCommit={jest.fn()}
         onDescriptionCommit={jest.fn()}
+        onRemove={jest.fn()}
       />
     );
 
@@ -335,6 +364,7 @@ describe('EditableStep', () => {
         onDescriptionChange={jest.fn()}
         onTitleCommit={jest.fn()}
         onDescriptionCommit={jest.fn()}
+        onRemove={jest.fn()}
         descriptionError='Description is required'
       />
     );

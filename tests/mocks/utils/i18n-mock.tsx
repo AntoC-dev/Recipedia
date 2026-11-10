@@ -55,6 +55,8 @@ export function i18nMock() {
     preparationOCRStep: 'Step',
     preparationOCRStepTitle: 'Title of step',
     preparationOCRStepContent: 'Content of step',
+    preparationDeleteStep: 'Delete step {{number}}',
+    preparationDeleteStepConfirmTitle: 'Delete step {{number}}?',
     timeSuffixEdit: 'min',
     'recipeCard.prepTime': 'Prep. {{time}} min',
     'recipeCard.persons': '{{count}} p.',

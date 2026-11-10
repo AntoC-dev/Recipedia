@@ -9,7 +9,7 @@
  * - `RecipePreparation` (default): read-only render of a preparation steps
  *   array.
  * - `EditableStep`: a single editable row with blur-commit title +
- *   description inputs. Used by the per-row field wrapper.
+ *   description inputs and a delete button. Used by the per-row field wrapper.
  * - `PreparationSection`: prefix-text frame around the editable rows, with the
  *   add button and, with `withScan`, the OCR scan button.
  *
@@ -17,10 +17,11 @@
  */
 
 import React from 'react';
-import { View } from 'react-native';
-import { HelperText, Text } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Card, HelperText, IconButton, Text, useTheme } from 'react-native-paper';
 import { preparationStepElement, recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 import { recipeButtonStyles, recipeTextRenderStyles } from '@styles/recipeComponents';
+import { padding } from '@styles/spacing';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { ScanButton } from '@components/molecules/ScanButton';
 import { Icons } from '@assets/Icons';
@@ -62,6 +63,7 @@ export interface EditableStepProps {
   onDescriptionChange: (description: string) => void;
   onTitleCommit: (title: string) => void;
   onDescriptionCommit: (description: string) => void;
+  onRemove: () => void;
   /** Optional translated inline error for the step's description (required by schema). */
   descriptionError?: string;
 }
@@ -159,22 +161,29 @@ export function EditableStep({
   onDescriptionChange,
   onTitleCommit,
   onDescriptionCommit,
+  onRemove,
   descriptionError,
 }: EditableStepProps) {
   const testId = `${TEST_ID}::EditableStep::${index}`;
   const { t } = useI18n();
+  const { colors } = useTheme();
 
   return (
-    <View style={recipeTextRenderStyles.containerSection}>
-      <Text
-        testID={testId + `::Step`}
-        variant='titleLarge'
-        style={recipeTextRenderStyles.headlineElement}
-      >
-        {t('preparationOCRStep')} {index + 1}
-      </Text>
+    <Card mode='outlined' style={stepStyles.card}>
+      <View style={stepStyles.header}>
+        <Text testID={testId + `::Step`} variant='titleLarge' style={stepStyles.headline}>
+          {t('preparationOCRStep')} {index + 1}
+        </Text>
+        <IconButton
+          testID={testId + `::DeleteButton`}
+          icon={Icons.trashIcon}
+          iconColor={colors.error}
+          accessibilityLabel={t('preparationDeleteStep', { number: index + 1 })}
+          onPress={onRemove}
+        />
+      </View>
 
-      <View style={recipeTextRenderStyles.containerSection}>
+      <Card.Content>
         <Text
           testID={testId + `::Title`}
           variant='titleMedium'
@@ -211,7 +220,19 @@ export function EditableStep({
             {descriptionError}
           </HelperText>
         ) : null}
-      </View>
-    </View>
+      </Card.Content>
+    </Card>
   );
 }
+
+const stepStyles = StyleSheet.create({
+  card: { marginHorizontal: padding.medium, marginVertical: padding.small },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: padding.large,
+    paddingRight: padding.verySmall,
+    paddingTop: padding.verySmall,
+  },
+  headline: { flex: 1 },
+});
