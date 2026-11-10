@@ -1,3 +1,14 @@
+## [2.58.0](https://github.com/AntoC-dev/Recipedia/compare/v2.57.2...v2.58.0) (2026-11-10)
+
+### Features
+
+* **import:** receive recipe links and photos shared from other apps ([b0a4d73](https://github.com/AntoC-dev/Recipedia/commit/b0a4d73ba74ad2fc3991ec5e943ecb1cc3b8d01d)), closes [#339](https://github.com/AntoC-dev/Recipedia/issues/339)
+* **import:** receive recipe links and photos shared from other apps ([#708](https://github.com/AntoC-dev/Recipedia/issues/708)) ([eeb19bf](https://github.com/AntoC-dev/Recipedia/commit/eeb19bfb35fdd5993824be0f28e46195c3f47df5)), closes [#339](https://github.com/AntoC-dev/Recipedia/issues/339)
+
+### Bug Fixes
+
+* **import:** restart URL import per share and close it on photo share ([ce4d462](https://github.com/AntoC-dev/Recipedia/commit/ce4d46215154d57607cb271f21cf883d64e1a519))
+
 ## [2.57.2](https://github.com/AntoC-dev/Recipedia/compare/v2.57.1...v2.57.2) (2026-11-09)
 
 ### Bug Fixes
