@@ -16,6 +16,7 @@ import { recipeStateType } from '@customTypes/ScreenTypes';
 import {
   extractTagsName,
   nutritionTableElement,
+  preparationStepElement,
   recipeColumnsNames,
   RecipeDraft,
   TagDraft,
@@ -649,4 +650,16 @@ export function buildRecipeSourceUrlProps({
     sourceUrl,
     onCopied,
   };
+}
+
+/**
+ * Tells whether a preparation step holds no user content, so it can be
+ * deleted without asking for confirmation. Whitespace-only text counts as
+ * empty.
+ *
+ * @param step - The preparation step to inspect
+ * @returns `true` when both the title and the description are blank
+ */
+export function isPreparationStepBlank(step: preparationStepElement): boolean {
+  return !step.title.trim() && !step.description.trim();
 }
