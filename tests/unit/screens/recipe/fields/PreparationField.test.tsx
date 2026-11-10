@@ -4,7 +4,12 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 import { recipeStateType } from '@customTypes/ScreenTypes';
 import { RecipePreparationField } from '@screens/recipe/fields/PreparationField';
 
-import { IMAGE_MODAL_TARGET_TEST_ID, renderWithForm, t } from './fieldsTestHarness';
+import {
+  IMAGE_MODAL_TARGET_TEST_ID,
+  pressDeleteStepAndConfirm,
+  renderWithForm,
+  t,
+} from './fieldsTestHarness';
 
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
 jest.mock('@components/organisms/RecipePreparation', () => {
@@ -134,6 +139,147 @@ describe('RecipePreparationField', () => {
       expect(queryByTestId('RecipePreparation::EditableStep::0::MoveUp')).toBeNull();
       expect(queryByTestId('RecipePreparation::EditableStep::0::MoveDown')).toBeNull();
       expect(queryByTestId('RecipePreparation::EditableStep::0::DragHandle')).toBeNull();
+    });
+  });
+
+  describe('step deletion', () => {
+    const stepA = { title: 'A', description: 'first' };
+    const stepB = { title: 'B', description: 'second' };
+    const stepC = { title: 'C', description: 'third' };
+    const threeSteps = [stepA, stepB, stepC];
+
+    async function renderEditableWithSteps(steps: { title: string; description: string }[]) {
+      return renderWithForm(
+        RecipePreparationField,
+        f => ({ form: f, stackMode: recipeStateType.edit, t }),
+        { recipePreparation: steps }
+      );
+    }
+
+    test('confirming the deletion of a middle step renders the following step renumbered in its place', async () => {
+      const { getByTestId, queryByTestId } = await renderEditableWithSteps(threeSteps);
+
+      await pressDeleteStepAndConfirm(getByTestId, 1);
+
+      expect(getByTestId('RecipePreparation::EditableStep::1::Step').props.children).toEqual([
+        'Step ',
+        2,
+      ]);
+      expect(
+        getByTestId('RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput').props
+          .value
+      ).toBe('C');
+      expect(queryByTestId('RecipePreparation::EditableStep::2')).toBeNull();
+    });
+
+    describe('mixing blank and filled steps', () => {
+      const blankStep = { title: '', description: '' };
+      const filledStep = { title: 'B', description: 'second' };
+
+      test('deleting a filled step leaves no inline error on the untouched blank steps', async () => {
+        const { getByTestId, queryByTestId } = await renderEditableWithSteps([
+          blankStep,
+          filledStep,
+          blankStep,
+        ]);
+
+        await pressDeleteStepAndConfirm(getByTestId, 1);
+
+        await waitFor(() => {
+          expect(queryByTestId('RecipePreparation::EditableStep::0::DescriptionError')).toBeNull();
+          expect(queryByTestId('RecipePreparation::EditableStep::1::DescriptionError')).toBeNull();
+        });
+      });
+
+      test('a filled step shifted into the place of a deleted blank one still asks for confirmation', async () => {
+        const { getByTestId, form } = await renderEditableWithSteps([blankStep, filledStep]);
+
+        await fireEvent.press(getByTestId('RecipePreparation::EditableStep::0::DeleteButton'));
+        await fireEvent.press(getByTestId('RecipePreparation::EditableStep::0::DeleteButton'));
+
+        expect(form.getValues('recipePreparation')).toEqual([filledStep]);
+        expect(
+          getByTestId('RecipePreparation::EditableStep::0::DeleteConfirmation::Title')
+        ).toBeTruthy();
+      });
+    });
+
+    describe('confirmation dialog', () => {
+      test('cancelling one step then deleting another removes only the second one', async () => {
+        const { getByTestId, form } = await renderEditableWithSteps(threeSteps);
+
+        await fireEvent.press(getByTestId('RecipePreparation::EditableStep::0::DeleteButton'));
+        await fireEvent.press(
+          getByTestId('RecipePreparation::EditableStep::0::DeleteConfirmation::CancelButton')
+        );
+        await pressDeleteStepAndConfirm(getByTestId, 2);
+
+        expect(form.getValues('recipePreparation')).toEqual([stepA, stepB]);
+      });
+
+      test('no dialog stays open after the confirmed deletion shifts the next step into place', async () => {
+        const { getByTestId, queryByTestId } = await renderEditableWithSteps(threeSteps);
+
+        await pressDeleteStepAndConfirm(getByTestId, 1);
+
+        expect(
+          queryByTestId('RecipePreparation::EditableStep::1::DeleteConfirmation::Title')
+        ).toBeNull();
+      });
+    });
+
+    describe('inline errors', () => {
+      async function renderWithSecondStepInError() {
+        const rendered = await renderEditableWithSteps([stepA, stepB]);
+        const secondDescription = rendered.getByTestId(
+          'RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput'
+        );
+        await fireEvent.changeText(secondDescription, '');
+        await fireEvent(secondDescription, 'endEditing', { nativeEvent: { text: '' } });
+        await waitFor(() => {
+          expect(
+            rendered.getByTestId('RecipePreparation::EditableStep::1::DescriptionError')
+          ).toBeTruthy();
+        });
+        return rendered;
+      }
+
+      test('an inline error follows its step when a step before it is deleted', async () => {
+        const { getByTestId, queryByTestId } = await renderWithSecondStepInError();
+
+        await pressDeleteStepAndConfirm(getByTestId, 0);
+
+        await waitFor(() => {
+          expect(getByTestId('RecipePreparation::EditableStep::0::DescriptionError')).toBeTruthy();
+        });
+        expect(queryByTestId('RecipePreparation::EditableStep::1')).toBeNull();
+      });
+
+      test('deleting the step with an inline error clears that error', async () => {
+        const { getByTestId, queryByTestId } = await renderWithSecondStepInError();
+
+        await pressDeleteStepAndConfirm(getByTestId, 1);
+
+        await waitFor(() => {
+          expect(queryByTestId('RecipePreparation::EditableStep::0::DescriptionError')).toBeNull();
+        });
+      });
+    });
+
+    test('deleting every step in addOCR mode empties the list and switches the add button to add manually', async () => {
+      const { getByTestId, queryByTestId } = await renderWithForm(
+        RecipePreparationField,
+        f => ({ form: f, stackMode: recipeStateType.addOCR, t }),
+        { recipePreparation: [stepA] }
+      );
+
+      await pressDeleteStepAndConfirm(getByTestId, 0);
+
+      expect(queryByTestId('RecipePreparation::EditableStep::0')).toBeNull();
+      expect(getByTestId('RecipePreparation::IsEmpty').props.children).toBe('true');
+      expect(getByTestId('RecipePreparation::AddButton::RoundButton::Icon').props.children).toBe(
+        'pencil'
+      );
     });
   });
 

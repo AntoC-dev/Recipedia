@@ -20,7 +20,7 @@ import { PreparationStepField } from './PreparationStep';
 import { useStepArray } from './useStepArray';
 
 type Form = UseFormReturn<RecipeFormInput>;
-type T = (key: string) => string;
+type T = (key: string, options?: Record<string, unknown>) => string;
 
 export interface PreparationFieldProps {
   form: Form;
@@ -36,7 +36,7 @@ function ReadOnlyPreparationField({ form }: { form: Form }) {
 
 /** Editable renderer: mounts the step field-array and renders the addOCR empty state. */
 function EditablePreparationField({ form, stackMode, t }: PreparationFieldProps) {
-  const { fields, addStep, length } = useStepArray(form);
+  const { fields, addStep, removeStep, length } = useStepArray(form);
 
   const isAddOCR = stackMode === recipeStateType.addOCR;
 
@@ -48,7 +48,13 @@ function EditablePreparationField({ form, stackMode, t }: PreparationFieldProps)
       withScan={isAddOCR}
     >
       {fields.map((field, index) => (
-        <PreparationStepField key={field.id} form={form} index={index} t={t} />
+        <PreparationStepField
+          key={field.id}
+          form={form}
+          index={index}
+          t={t}
+          onRemove={() => removeStep(index)}
+        />
       ))}
     </PreparationSection>
   );

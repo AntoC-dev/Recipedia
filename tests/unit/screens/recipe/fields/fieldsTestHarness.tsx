@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render, RenderResult } from '@testing-library/react-native';
 import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -57,4 +57,14 @@ export async function renderWithForm<P extends { form: Form }>(
     throw new Error('TestHost failed to capture form');
   }
   return { ...utils, form: formRef.current };
+}
+
+export async function pressDeleteStepAndConfirm(
+  getByTestId: RenderResult['getByTestId'],
+  index: number
+) {
+  await fireEvent.press(getByTestId(`RecipePreparation::EditableStep::${index}::DeleteButton`));
+  await fireEvent.press(
+    getByTestId(`RecipePreparation::EditableStep::${index}::DeleteConfirmation::ConfirmButton`)
+  );
 }

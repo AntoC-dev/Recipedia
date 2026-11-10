@@ -45,6 +45,9 @@ export default {
   preparationOCRStep: 'Étape',
   preparationOCRStepTitle: "Titre de l'étape",
   preparationOCRStepContent: "Contenu de l'étape",
+  preparationDeleteStep: "Supprimer l'étape {{number}}",
+  preparationDeleteStepConfirmTitle: "Supprimer l'étape {{number}} ?",
+  preparationDeleteStepConfirmContent: 'Son titre et son contenu seront retirés de la recette.',
 
   timeReadOnlyBeforePerson: 'Préparation (',
   timeReadOnlyAfterPerson: ' min)',
