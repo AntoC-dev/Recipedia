@@ -104,7 +104,7 @@
     "expo-task-manager": "~57.0.21",
     "html-entities": "2.6.0",
     "i18next": "^25.5.2",
-    "i18next-resources-to-backend": "^1.2.3",
+    "i18next-resources-to-backend": "^1.2.4",
     "minisearch": "7.2.0",
     "numeric-quantity": "2.1.0",
     "react": "19.2.3",
