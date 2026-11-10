@@ -30,6 +30,7 @@ import {
   setupDb,
   teardownDb,
 } from './recipeTestHelpers';
+import { pressDeleteStepAndConfirm } from './fields/fieldsTestHarness';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -132,6 +133,16 @@ describe('RecipeEdit', () => {
         'alerts.unsavedChanges.title'
       );
       expect(mockDispatch).not.toHaveBeenCalled();
+    });
+
+    test('deleting a preparation step arms the discard guard', async () => {
+      const { getByTestId } = await renderRoute(mockRouteEdit);
+
+      await pressDeleteStepAndConfirm(getByTestId, 0);
+
+      await waitFor(() => {
+        expect(isPreventRemoveArmed()).toBe(true);
+      });
     });
 
     test('keeps the user on the form when the discard is cancelled', async () => {
@@ -473,6 +484,23 @@ describe('RecipeEdit', () => {
       const savedRecipe = editRecipeSpy.mock.calls[0]![0];
       expect(savedRecipe.title).toBe('Live-Commit Title');
       expect(savedRecipe.description).toBe('Live-Commit Description');
+
+      editRecipeSpy.mockRestore();
+    });
+
+    test('saves only the remaining steps after a preparation step is deleted', async () => {
+      const editRecipeSpy = jest.spyOn(dbInstance, 'editRecipe');
+      const originalPreparation = mockRouteEdit.recipe.preparation;
+      expect(originalPreparation.length).toBeGreaterThan(1);
+      const { getByTestId } = await renderRoute(mockRouteEdit);
+
+      await pressDeleteStepAndConfirm(getByTestId, 0);
+      await fireEvent.press(getByTestId('Recipe::AppBar::Validate'));
+
+      await waitFor(() => {
+        expect(editRecipeSpy).toHaveBeenCalled();
+      });
+      expect(editRecipeSpy.mock.calls[0]![0].preparation).toEqual(originalPreparation.slice(1));
 
       editRecipeSpy.mockRestore();
     });
