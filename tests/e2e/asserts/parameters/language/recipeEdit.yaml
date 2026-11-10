@@ -109,6 +109,10 @@ appId: "com.recipedia"
     text: "Étape 1"
     label: "Recipe preparation section is displayed in French"
 
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::DeleteButton"
+    label: "Step delete button is displayed"
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::EditableStep::0::Title"

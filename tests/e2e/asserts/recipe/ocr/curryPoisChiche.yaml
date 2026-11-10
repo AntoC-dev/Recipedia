@@ -234,6 +234,10 @@ appId: "com.recipedia"
     label: "Preparation section for first step is rendered"
 
 - assertVisible:
+    id: "RecipePreparation::EditableStep::0::DeleteButton"
+    label: "Delete button for first step is rendered"
+
+- assertVisible:
     id: "RecipePreparation::EditableStep::0::Title"
     text: "Title of step 1 : "
     label: "Intro text for the title of first step is rendered"
@@ -281,6 +285,10 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::1::Title"
     text: "Title of step 2 : "
     label: "Intro text for the title of second step is rendered"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::1::DeleteButton"
+    label: "Delete button for second step is rendered"
 
 - scrollUntilVisible:
     element:
@@ -333,6 +341,10 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::2::Title"
     text: "Title of step 3 : "
     label: "Intro text for the title of third step is rendered"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::2::DeleteButton"
+    label: "Delete button for third step is rendered"
 
 - scrollUntilVisible:
     element:
