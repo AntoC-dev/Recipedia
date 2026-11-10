@@ -1,0 +1,36 @@
+appId: "com.recipedia"
+---
+- launchApp:
+    appId: "com.google.android.documentsui"
+    label: "Open Files as the share source app"
+
+- tapOn:
+    text: "Show roots"
+    label: "Open the Files side menu"
+
+- tapOn:
+    text: "Images"
+    index: 1
+    label: "Open the Images category"
+
+- tapOn:
+    text: "Pictures"
+    label: "Open the Pictures directory"
+
+- extendedWaitUntil:
+    visible:
+      id: "icon_thumb"
+    timeout: 10000
+    label: "Wait for the added photo"
+
+- longPressOn:
+    id: "icon_thumb"
+    label: "Select the photo"
+
+- tapOn:
+    id: "action_menu_share"
+    label: "Share the photo"
+
+- tapOn:
+    text: "Recipedia"
+    label: "Pick Recipedia in the share sheet"

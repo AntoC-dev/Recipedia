@@ -46,6 +46,8 @@ export type UrlInputDialogProps = {
   isLoading: boolean;
   /** Error message to display, if any */
   error?: string;
+  /** URL pre-filled each time the dialog opens (e.g. a URL shared from another app) */
+  initialUrl?: string;
 };
 
 /**
@@ -61,11 +63,12 @@ export function UrlInputDialog({
   onSubmit,
   isLoading,
   error,
+  initialUrl,
 }: UrlInputDialogProps) {
   const { t } = useI18n();
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState(initialUrl ?? '');
   useResetOnChange([isVisible], () => {
-    if (isVisible) setUrl('');
+    if (isVisible) setUrl(initialUrl ?? '');
   });
 
   const validationError =

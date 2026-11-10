@@ -18,6 +18,7 @@
   { "name": "search" },
   { "name": "search-filters" },
   { "name": "settings" },
+  { "name": "share-import", "usesPhotos": true },
   { "name": "shopping" },
   { "name": "tags-db" },
   { "name": "web", "requiresSecrets": true },

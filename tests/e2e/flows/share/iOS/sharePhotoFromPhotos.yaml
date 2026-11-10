@@ -1,0 +1,42 @@
+appId: "com.recipedia"
+---
+- launchApp:
+    appId: "com.apple.mobileslideshow"
+    label: "Open Photos as the share source app"
+
+- runFlow:
+    when:
+      visible:
+        text: "Continue"
+    commands:
+      - tapOn:
+          text: "Continue"
+          label: "Dismiss the Photos what's new screen"
+    label: "Dismiss optional Photos onboarding"
+
+- extendedWaitUntil:
+    visible:
+      text: "Photo, .*"
+    timeout: 30000
+    label: "Wait for the library grid"
+
+- tapOn:
+    text: "Photo, .*"
+    index: 0
+    label: "Open the added photo"
+
+- extendedWaitUntil:
+    visible:
+      text: "Share"
+    timeout: 10000
+    label: "Wait for the photo viewer"
+
+- tapOn:
+    text: "Share"
+    label: "Open the Photos share sheet"
+
+- runFlow:
+    file: "pickRecipediaInShareSheet.yaml"
+    env:
+      SHARE_ROW_Y: "65%"
+    label: "Pick Recipedia in the share sheet"

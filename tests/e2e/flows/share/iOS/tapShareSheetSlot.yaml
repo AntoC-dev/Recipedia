@@ -1,0 +1,5 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    point: "${SLOT_X},${SHARE_ROW_Y}"
+    label: "Tap the share sheet app slot"

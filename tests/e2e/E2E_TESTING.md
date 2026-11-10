@@ -69,6 +69,7 @@ executionOrder:
 | `ocr-gallery` / `ocr-camera-fr` / `ocr-fields` | OCR recipe creation: gallery / camera + French / fields, crop, feedback |
 | `menu` / `shopping`                            | Menu and shopping list                                                  |
 | `settings`                                     | Dark mode, language, season filter, default persons                     |
+| `share-import`                                 | Recipe URL / photo shared from Chrome, Safari, Files, Photos            |
 | `tags-db` / `ingredients-db`                   | Tag and ingredient database management                                  |
 | `duplicates-*`                                 | Duplicate detection for recipes, tags, ingredients                      |
 | `web` / `web-edge-cases`                       | Website import                                                          |
@@ -630,6 +631,17 @@ from tripping visibility assertions, but not one already on screen: a launcher
 ANR raised during boot stays until the launcher restarts, hence the
 `force-stop`. Flows do not handle ANR dialogs: apply the same commands to a
 local emulator.
+
+## iOS Share Sheet
+
+The share sheet runs out of process: its cells report bounds relative to the
+sheet, so `tapOn` a cell lands outside it and dismisses the sheet.
+`flows/share/iOS/pickRecipediaInShareSheet.yaml` finds Recipedia's slot from its
+neighbours (`leftOf`/`rightOf` stay valid in sheet coordinates), then
+`tapShareSheetSlot.yaml` taps that slot by screen percentage. The last slot is
+always "More", so Recipedia sits in slots 1–3. Each source flow passes its app
+row height (`SHARE_ROW_Y`: Safari 76%, Photos 65%). Percentages are calibrated
+on the CI simulator model: recalibrate them if CI changes device.
 
 ## Production Smoke Build
 

@@ -26,6 +26,10 @@ runs:
         {
           echo "EAS_LOCAL_BUILD_WORKINGDIR=${{ runner.temp }}/eas-build"
           echo "USE_CCACHE=1"
+          # ccache: RN's compiler wrapper path is built on PODS_ROOT, which app extensions (expo-sharing)
+          # lack. Env is the lowest-precedence build setting, so only they pick this up.
+          # https://github.com/EvanBacon/expo-apple-targets/issues/118
+          echo 'PODS_ROOT=$(SRCROOT)/Pods'
           echo "CCACHE_DIR=$HOME/Library/Caches/ccache"
           echo "CCACHE_BASEDIR=${{ runner.temp }}/eas-build"
           # /usr/bin/clang is an xcrun trampoline: hash the real toolchain's version, not its content

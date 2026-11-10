@@ -71,6 +71,10 @@ export default {
     takePhoto: 'Take a photo',
   },
 
+  shareImport: {
+    unsupported: "This content can't be imported. Share a recipe web page or a photo.",
+  },
+
   urlDialog: {
     title: 'Import Recipe from URL',
     placeholder: 'Paste recipe URL',

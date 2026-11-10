@@ -10,6 +10,9 @@ import { corruptIngredientType } from '@test-helpers/corruptIngredientType';
 jest.mock('@navigation/RootNavigator', () =>
   require('@mocks/navigation/RootNavigator-mock').rootNavigatorMock()
 );
+jest.mock('@components/organisms/IncomingShareImporter', () =>
+  require('@mocks/components/organisms/IncomingShareImporter-mock').incomingShareImporterMock()
+);
 jest.mock('@screens/WelcomeScreen', () =>
   require('@mocks/screens/WelcomeScreen-mock').welcomeScreenMock()
 );
@@ -55,6 +58,7 @@ describe('AppWrapper Component', () => {
       expect(getByTestId('WelcomeScreen')).toBeTruthy();
       expect(queryByTestId('TutorialProvider')).toBeNull();
       expect(queryByTestId('RootNavigator')).toBeNull();
+      expect(queryByTestId('IncomingShareImporter')).toBeNull();
     });
   });
 
@@ -65,6 +69,7 @@ describe('AppWrapper Component', () => {
 
     await waitFor(() => {
       expect(getByTestId('RootNavigator')).toBeTruthy();
+      expect(getByTestId('IncomingShareImporter')).toBeTruthy();
       expect(queryByTestId('WelcomeScreen')).toBeNull();
       expect(queryByTestId('TutorialProvider')).toBeNull();
     });

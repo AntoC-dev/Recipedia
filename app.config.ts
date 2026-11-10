@@ -121,6 +121,23 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       'expo-background-task',
       'expo-font',
       [
+        'expo-sharing',
+        {
+          ios: {
+            enabled: true,
+            activationRule: {
+              supportsWebUrlWithMaxCount: 1,
+              supportsWebPageWithMaxCount: 1,
+              supportsImageWithMaxCount: 1,
+            },
+          },
+          android: {
+            enabled: true,
+            singleShareMimeTypes: ['text/plain', 'image/*'],
+          },
+        },
+      ],
+      [
         'expo-build-properties',
         {
           android: {

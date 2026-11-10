@@ -106,6 +106,57 @@ describe('UrlInputDialog', () => {
     );
   });
 
+  describe('initialUrl', () => {
+    const initialUrl = 'https://example.com/shared-recipe';
+    const otherUrl = 'https://other.com/recipe';
+    const inputTestId = 'test::UrlDialog::Input::CustomTextInput';
+
+    test('pre-fills the input with the initial URL', async () => {
+      const { getByTestId } = await render(
+        <UrlInputDialog {...defaultProps} initialUrl={initialUrl} />
+      );
+
+      expect(getByTestId(inputTestId).props.value).toBe(initialUrl);
+    });
+
+    test('enables submit and submits the pre-filled URL', async () => {
+      const onSubmit = jest.fn();
+      const { getByTestId } = await render(
+        <UrlInputDialog {...defaultProps} initialUrl={initialUrl} onSubmit={onSubmit} />
+      );
+
+      await fireEvent.press(getByTestId('test::UrlDialog::SubmitButton'));
+
+      expect(onSubmit).toHaveBeenCalledWith(initialUrl);
+    });
+
+    test('restores the initial URL when the dialog reopens after being edited', async () => {
+      const { getByTestId, rerender } = await render(
+        <UrlInputDialog {...defaultProps} initialUrl={initialUrl} />
+      );
+
+      await fireEvent.changeText(getByTestId(inputTestId), otherUrl);
+      await rerender(
+        <UrlInputDialog {...defaultProps} initialUrl={initialUrl} isVisible={false} />
+      );
+      await rerender(<UrlInputDialog {...defaultProps} initialUrl={initialUrl} />);
+
+      expect(getByTestId(inputTestId).props.value).toBe(initialUrl);
+    });
+
+    test('clears the input when reopened without an initial URL', async () => {
+      const { getByTestId, rerender } = await render(
+        <UrlInputDialog {...defaultProps} initialUrl={initialUrl} />
+      );
+
+      await fireEvent.changeText(getByTestId(inputTestId), otherUrl);
+      await rerender(<UrlInputDialog {...defaultProps} isVisible={false} />);
+      await rerender(<UrlInputDialog {...defaultProps} />);
+
+      expect(getByTestId(inputTestId).props.value).toBe('');
+    });
+  });
+
   test('clears URL when dialog becomes visible', async () => {
     const { getByTestId, rerender } = await render(
       <UrlInputDialog {...defaultProps} isVisible={false} />

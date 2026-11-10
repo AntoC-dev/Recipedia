@@ -1,0 +1,14 @@
+name: "1 - Share Recipe URL From Browser Flow"
+appId: "com.recipedia"
+tags:
+  - share-import
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../1_share_url.yaml"
+          label: "Run 1 - Share Recipe URL From Browser Flow"

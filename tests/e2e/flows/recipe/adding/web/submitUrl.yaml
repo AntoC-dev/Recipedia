@@ -30,14 +30,6 @@ appId: "com.recipedia"
     id: "VerticalBottomButtons::UrlDialog::SubmitButton"
     label: "Submit URL for scraping"
 
-- extendedWaitUntil:
-    visible:
-      id: "RecipeImage"
-    timeout: 90000
-    label: "Wait for recipe screen to load after scraping"
-
-- extendedWaitUntil:
-    visible:
-      id: "RecipeTitle::CustomTextInput"
-    timeout: 5000
-    label: "Wait for recipe title to be populated"
+- runFlow:
+    file: "waitForScrapedRecipe.yaml"
+    label: "Wait for the scraped recipe screen"
