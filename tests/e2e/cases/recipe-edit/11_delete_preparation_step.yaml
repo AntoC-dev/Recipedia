@@ -1,0 +1,206 @@
+name: "11 - Recipe Edit Delete Preparation Step Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-edit
+---
+- tapOn:
+    id: "BottomTabs::Search"
+    label: "Action - Navigate to Search screen"
+
+- waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      text: "Sushi Rolls"
+    direction: DOWN
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Action - Scroll to find Sushi Rolls (4 steps)"
+
+- tapOn:
+    text: "Sushi Rolls"
+    label: "Action - Open Sushi Rolls"
+
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
+    label: "Action - Enter edit mode"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::1::DeleteButton"
+    direction: DOWN
+    speed: 20
+    timeout: 30000
+    centerElement: true
+    label: "Scroll to the second step delete button"
+
+- tapOn:
+    id: "RecipePreparation::EditableStep::1::DeleteButton"
+    label: "Action - Delete the second step (Spread rice)"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipePreparation::EditableStep::1::DeleteConfirmation::Title"
+      text: "Delete step 2\\?"
+    timeout: 3000
+    label: "Assert - A step with content asks for confirmation"
+
+- tapOn:
+    id: "RecipePreparation::EditableStep::1::DeleteConfirmation::ConfirmButton"
+    label: "Action - Confirm the deletion"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
+      text: "Add fillings and roll"
+    timeout: 3000
+    label: "Assert - The third step moved into second place"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::Step"
+      text: "Step 1"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll to the first step"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
+    text: "Prepare rice"
+    label: "Assert - Step 1 title is unchanged"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+      text: "Cook the sushi rice and let it cool."
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Assert - Step 1 content is unchanged"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::1::Step"
+      text: "Step 2"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Assert - The moved step is renumbered to Step 2"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
+    text: "Add fillings and roll"
+    label: "Assert - Step 2 title is the former third step"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+      text: "Add salmon and avocado as fillings and roll tightly."
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Assert - Step 2 content is the former third step"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::2::Step"
+      text: "Step 3"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Assert - The last step is renumbered to Step 3"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
+    text: "Serve"
+    label: "Assert - Step 3 title is the former fourth step"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
+      text: "Slice the roll into pieces and serve with soy sauce."
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Assert - Step 3 content is the former fourth step"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::AddButton::RoundButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to the add step button right after the last step"
+
+- assertNotVisible:
+    id: "RecipePreparation::EditableStep::3::TextInputContent::CustomTextInput"
+    label: "Assert - No fourth step remains right above the add button"
+
+- tapOn:
+    id: "Recipe::AppBar::Validate"
+    label: "Action - Save changes"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar::BackButton"
+    timeout: 10000
+    label: "Wait for the saved recipe in read-only mode"
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Action - Leave the saved recipe"
+
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Sushi Rolls"
+    label: "Action - Reopen Sushi Rolls from the database"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
+      text: "1\\) Prepare rice"
+    direction: DOWN
+    speed: 20
+    timeout: 30000
+    centerElement: true
+    label: "Assert - Saved step 1 title"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::0::SectionParagraph"
+    text: "Cook the sushi rice and let it cool."
+    label: "Assert - Saved step 1 content"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
+      text: "2\\) Add fillings and roll"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Assert - Saved step 2 title is the former third step"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::1::SectionParagraph"
+    text: "Add salmon and avocado as fillings and roll tightly."
+    label: "Assert - Saved step 2 content"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::2::SectionTitle"
+      text: "3\\) Serve"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Assert - Saved step 3 title is the former fourth step"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::2::SectionParagraph"
+    text: "Slice the roll into pieces and serve with soy sauce."
+    label: "Assert - Saved step 3 content"
+
+- assertNotVisible:
+    id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
+    label: "Assert - Only three steps are saved, the deleted one is gone"
