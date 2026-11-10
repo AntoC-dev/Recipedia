@@ -3,7 +3,8 @@
  *
  * Owns the RHF `useFieldArray` mount on `recipePreparation`. Exposes the
  * `fields` rendered list, the `append` handler used by the add-step button,
- * and the current `length`.
+ * the `remove` handler used by each step's delete button, and the current
+ * `length`.
  *
  * No parent-level `useWatch('recipePreparation')` is needed here: per-step
  * `useController` subscriptions in `PreparationStep` already isolate each
@@ -22,19 +23,26 @@ type Form = UseFormReturn<RecipeFormInput>;
 export interface UseStepArrayResult {
   fields: ReturnType<typeof useFieldArray<RecipeFormInput, 'recipePreparation'>>['fields'];
   addStep: () => void;
+  removeStep: (index: number) => void;
   length: number;
 }
 
 export function useStepArray(form: Form): UseStepArrayResult {
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: 'recipePreparation',
   });
   /** Appends an empty preparation step (blank title + description). */
   const addStep = () => append({ title: '', description: '' });
+  /** Removes a step, then re-validates the array (RHF's `remove` does not validate in `onTouched` mode). */
+  const removeStep = (index: number) => {
+    remove(index);
+    void form.trigger('recipePreparation');
+  };
   return {
     fields,
     addStep,
+    removeStep,
     length: fields.length,
   };
 }
