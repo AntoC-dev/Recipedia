@@ -229,6 +229,10 @@ appId: "com.recipedia"
     text: ""
     label: "Preparation section for first step is rendered (French)"
 
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::DeleteButton"
+    label: "Delete button for first step is rendered"
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
@@ -286,6 +290,10 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::5::Title"
     text: "Titre de l'étape 6 : "
     label: "Intro text for the title of sixth step is rendered (French)"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::5::DeleteButton"
+    label: "Delete button for sixth step is rendered"
 
 - scrollUntilVisible:
     element:

@@ -71,6 +71,10 @@ appId: "com.recipedia"
     text: "Step 3"
     label: "Preparation #3 step is displayed"
 
+- assertVisible:
+    id: "RecipePreparation::EditableStep::2::DeleteButton"
+    label: "Preparation #3 delete button is displayed"
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::EditableStep::1::Content"
@@ -125,6 +129,10 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::1::Step"
     text: "Step 2"
     label: "Preparation #2 step is displayed"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::1::DeleteButton"
+    label: "Preparation #2 delete button is displayed"
 
 - scrollUntilVisible:
     element:
@@ -191,6 +199,10 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::Step"
     text: "Step 1"
     label: "Preparation #1 step is displayed"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::DeleteButton"
+    label: "Preparation #1 delete button is displayed"
 
 - scrollUntilVisible:
     element:
