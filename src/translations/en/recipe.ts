@@ -47,9 +47,9 @@ export default {
   timeSuffixEdit: 'min',
 
   preparationReadOnly: 'Preparation :',
-  preparationOCRStep: 'Step',
-  preparationOCRStepTitle: 'Title of step',
-  preparationOCRStepContent: 'Content of step',
+  preparationStep: 'Step',
+  preparationStepTitle: 'Title',
+  preparationStepContent: 'Instructions',
   preparationDeleteStep: 'Delete step {{number}}',
   preparationDeleteStepConfirmTitle: 'Delete step {{number}}?',
   preparationDeleteStepConfirmContent: 'Its title and content will be removed from the recipe.',

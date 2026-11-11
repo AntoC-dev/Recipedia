@@ -411,7 +411,7 @@ export function checkPreparation(
         queryByTestId('RecipePreparation::OpenModal::RoundButton::OnPressFunction')
       ).toBeNull();
       prop.recipe.preparation.forEach((step, index) => {
-        expect(getByTestId(`RecipePreparation::EditableStep::${index}::Step`)).toBeTruthy();
+        expect(getByTestId(`RecipePreparation::EditableStep::${index}`)).toBeTruthy();
         expect(getByTestId(`RecipePreparation::EditableStep::${index}::Title`)).toBeTruthy();
         const titleInput = getByTestId(
           `RecipePreparation::EditableStep::${index}::TextInputTitle::CustomTextInput`
@@ -682,7 +682,7 @@ export async function fillMinimalRecipe(getByTestId: GetByIdType, title: string)
   });
 
   await fireEvent.press(getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction'));
-  await waitFor(() => expect(getByTestId('RecipePreparation::EditableStep::0::Step')).toBeTruthy());
+  await waitFor(() => expect(getByTestId('RecipePreparation::EditableStep::0')).toBeTruthy());
   await fireEvent.changeText(
     getByTestId('RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'),
     'Cook pasta until al dente'
