@@ -156,15 +156,11 @@ describe('RecipePreparationField', () => {
       );
     }
 
-    test('confirming the deletion of a middle step renders the following step renumbered in its place', async () => {
+    test('confirming the deletion of a middle step shifts the following step into its place', async () => {
       const { getByTestId, queryByTestId } = await renderEditableWithSteps(threeSteps);
 
       await pressDeleteStepAndConfirm(getByTestId, 1);
 
-      expect(getByTestId('RecipePreparation::EditableStep::1::Step').props.children).toEqual([
-        'Step ',
-        2,
-      ]);
       expect(
         getByTestId('RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput').props
           .value

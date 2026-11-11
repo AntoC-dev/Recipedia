@@ -257,9 +257,7 @@ describe('RecipeAddManual', () => {
       await fireEvent.press(
         getByTestId('RecipePreparation::AddButton::RoundButton::OnPressFunction')
       );
-      await waitFor(() =>
-        expect(getByTestId('RecipePreparation::EditableStep::0::Step')).toBeTruthy()
-      );
+      await waitFor(() => expect(getByTestId('RecipePreparation::EditableStep::0')).toBeTruthy());
       await fireEvent.changeText(
         getByTestId('RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'),
         'Cook pasta until al dente'

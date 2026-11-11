@@ -8,8 +8,8 @@
  *
  * - `RecipePreparation` (default): read-only render of a preparation steps
  *   array.
- * - `EditableStep`: a single editable row with blur-commit title +
- *   description inputs and a delete button. Used by the per-row field wrapper.
+ * - `EditableStep`: a single editable step in a contained card, with blur-commit title + description inputs and a delete
+ *   button. Used by the per-row field wrapper.
  * - `PreparationSection`: prefix-text frame around the editable rows, with the
  *   add button and, with `withScan`, the OCR scan button.
  *
@@ -119,7 +119,7 @@ export function PreparationSection({
       <Text
         testID={`${TEST_ID}::PrefixText`}
         variant={'headlineSmall'}
-        style={recipeTextRenderStyles.containerElement}
+        style={[recipeTextRenderStyles.containerElement, stepStyles.prefixText]}
       >
         {prefixText}
       </Text>
@@ -169,70 +169,61 @@ export function EditableStep({
   const { colors } = useTheme();
 
   return (
-    <Card mode='outlined' style={stepStyles.card}>
-      <View style={stepStyles.header}>
-        <Text testID={testId + `::Step`} variant='titleLarge' style={stepStyles.headline}>
-          {t('preparationOCRStep')} {index + 1}
-        </Text>
-        <IconButton
-          testID={testId + `::DeleteButton`}
-          icon={Icons.trashIcon}
-          iconColor={colors.error}
-          accessibilityLabel={t('preparationDeleteStep', { number: index + 1 })}
-          onPress={onRemove}
+    <View testID={testId} collapsable={false}>
+      <Card
+        mode='contained'
+        style={[stepStyles.card, { backgroundColor: colors.elevation.level1 }]}
+      >
+        <Card.Title
+          title={`${t('preparationStep')} ${index + 1}`}
+          titleVariant='titleMedium'
+          titleStyle={{ color: colors.primary }}
+          right={props => (
+            <IconButton
+              {...props}
+              testID={testId + `::DeleteButton`}
+              icon={Icons.trashIcon}
+              iconColor={colors.error}
+              accessibilityLabel={t('preparationDeleteStep', { number: index + 1 })}
+              onPress={onRemove}
+            />
+          )}
         />
-      </View>
-
-      <Card.Content>
-        <Text
-          testID={testId + `::Title`}
-          variant='titleMedium'
-          style={recipeTextRenderStyles.containerElement}
-        >
-          {t('preparationOCRStepTitle')} {index + 1} :{' '}
-        </Text>
-        <CustomTextInput
-          testID={testId + `::TextInputTitle`}
-          value={title}
-          style={recipeTextRenderStyles.containerElement}
-          onChangeText={onTitleChange}
-          onEndEditing={onTitleCommit}
-          multiline={true}
-        />
-        <Text
-          testID={testId + `::Content`}
-          variant='titleMedium'
-          style={recipeTextRenderStyles.containerElement}
-        >
-          {t('preparationOCRStepContent')} {index + 1} :{' '}
-        </Text>
-        <CustomTextInput
-          testID={testId + `::TextInputContent`}
-          style={recipeTextRenderStyles.containerElement}
-          value={description}
-          onChangeText={onDescriptionChange}
-          onEndEditing={onDescriptionCommit}
-          multiline={true}
-          error={!!descriptionError}
-        />
-        {descriptionError ? (
-          <HelperText testID={testId + `::DescriptionError`} type='error' visible={true}>
-            {descriptionError}
-          </HelperText>
-        ) : null}
-      </Card.Content>
-    </Card>
+        <Card.Content style={stepStyles.content}>
+          <Text testID={testId + `::Title`} variant='labelLarge'>
+            {t('preparationStepTitle')}
+          </Text>
+          <CustomTextInput
+            testID={testId + `::TextInputTitle`}
+            value={title}
+            onChangeText={onTitleChange}
+            onEndEditing={onTitleCommit}
+            multiline={true}
+          />
+          <Text testID={testId + `::Content`} variant='labelLarge'>
+            {t('preparationStepContent')}
+          </Text>
+          <CustomTextInput
+            testID={testId + `::TextInputContent`}
+            value={description}
+            onChangeText={onDescriptionChange}
+            onEndEditing={onDescriptionCommit}
+            multiline={true}
+            error={!!descriptionError}
+          />
+          {descriptionError ? (
+            <HelperText testID={testId + `::DescriptionError`} type='error' visible={true}>
+              {descriptionError}
+            </HelperText>
+          ) : null}
+        </Card.Content>
+      </Card>
+    </View>
   );
 }
 
 const stepStyles = StyleSheet.create({
-  card: { marginHorizontal: padding.medium, marginVertical: padding.small },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: padding.large,
-    paddingRight: padding.verySmall,
-    paddingTop: padding.verySmall,
-  },
-  headline: { flex: 1 },
+  prefixText: { paddingBottom: padding.large },
+  card: { marginBottom: padding.large },
+  content: { gap: padding.small },
 });

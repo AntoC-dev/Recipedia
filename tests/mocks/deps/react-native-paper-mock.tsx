@@ -289,6 +289,7 @@ const CardTitle: React.FC<any> = props => (
       {props.title}
     </RNText>
     <RNText testID={props.testID + '::TitleVariant'}>{props.titleVariant}</RNText>
+    {props.right?.({ size: 24 })}
   </View>
 );
 CardTitle.displayName = 'Card.Title';
