@@ -37,7 +37,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::Content"
-    text: "Content of step 3 : "
+    text: "Instructions"
     label: "Preparation #3 content text is displayed"
 
 - scrollUntilVisible:
@@ -50,7 +50,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::Title"
-    text: "Title of step 3 : "
+    text: "Title"
     label: "Preparation #3 title text is displayed"
 
 - assertVisible:
@@ -60,15 +60,16 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::2::Step"
+      id: "RecipePreparation::EditableStep::2::DeleteButton"
     direction: UP
     speed: 20
     centerElement: true
     label: "Scroll to third preparation step"
 
 - assertVisible:
-    id: "RecipePreparation::EditableStep::2::Step"
     text: "Step 3"
+    childOf:
+      id: "RecipePreparation::EditableStep::2"
     label: "Preparation #3 step is displayed"
 
 - assertVisible:
@@ -85,7 +86,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::Content"
-    text: "Content of step 2 : "
+    text: "Instructions"
     label: "Preparation #2 content text is displayed"
 
 - assertVisible:
@@ -102,7 +103,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::Title"
-    text: "Title of step 2 : "
+    text: "Title"
     label: "Preparation #2 title text is displayed"
 
 - scrollUntilVisible:
@@ -120,14 +121,15 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::1::Step"
+      id: "RecipePreparation::EditableStep::1::DeleteButton"
     direction: UP
     speed: 20
     centerElement: true
 
 - assertVisible:
-    id: "RecipePreparation::EditableStep::1::Step"
     text: "Step 2"
+    childOf:
+      id: "RecipePreparation::EditableStep::1"
     label: "Preparation #2 step is displayed"
 
 - assertVisible:
@@ -144,7 +146,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Content"
-    text: "Content of step 1 : "
+    text: "Instructions"
     label: "Preparation #1 content text is displayed"
 
 - scrollUntilVisible:
@@ -171,7 +173,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Title"
-    text: "Title of step 1 : "
+    text: "Title"
     label: "Preparation #1 title text is displayed"
 
 - scrollUntilVisible:
@@ -189,15 +191,16 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::0::Step"
+      id: "RecipePreparation::EditableStep::0::DeleteButton"
     direction: UP
     speed: 20
     centerElement: true
     label: "Scroll to first preparation step"
 
 - assertVisible:
-    id: "RecipePreparation::EditableStep::0::Step"
     text: "Step 1"
+    childOf:
+      id: "RecipePreparation::EditableStep::0"
     label: "Preparation #1 step is displayed"
 
 - assertVisible:

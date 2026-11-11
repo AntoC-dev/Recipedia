@@ -75,8 +75,9 @@ tags:
     label: "Assert - Blank step removed at once, last step moved up"
 
 - assertVisible:
-    id: "RecipePreparation::EditableStep::1::Step"
     text: "Step 2"
+    childOf:
+      id: "RecipePreparation::EditableStep::1"
     label: "Assert - Moved step is renumbered to Step 2"
 
 - scrollUntilVisible:
@@ -109,8 +110,9 @@ tags:
     label: "Assert - Last step moved into first place"
 
 - assertVisible:
-    id: "RecipePreparation::EditableStep::0::Step"
     text: "Step 1"
+    childOf:
+      id: "RecipePreparation::EditableStep::0"
     label: "Assert - Last step is renumbered to Step 1"
 
 - assertVisible:

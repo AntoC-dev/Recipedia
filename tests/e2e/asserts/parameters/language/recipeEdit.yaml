@@ -98,15 +98,16 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::0::Step"
+      id: "RecipePreparation::EditableStep::0::DeleteButton"
     direction: DOWN
     speed: 20
     centerElement: true
     label: "Scroll to first preparation step"
 
 - assertVisible:
-    id: "RecipePreparation::EditableStep::0::Step"
     text: "Étape 1"
+    childOf:
+      id: "RecipePreparation::EditableStep::0"
     label: "Recipe preparation section is displayed in French"
 
 - assertVisible:
@@ -123,7 +124,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Title"
-    text: "Titre de l'étape 1 : "
+    text: "Titre"
     label: "Intro text for the recipe title of the first step is displayed in French"
 
 - scrollUntilVisible:
@@ -136,7 +137,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Content"
-    text: "Contenu de l'étape 1 : "
+    text: "Instructions"
     label: "Intro text for recipe content of the first step is displayed in French"
 
 - tapOn:
