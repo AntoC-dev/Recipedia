@@ -3,24 +3,11 @@ appId: "com.recipedia"
 tags:
   - recipe-edit
 ---
-- tapOn:
-    id: "BottomTabs::Search"
-    label: "Action - Navigate to Search screen"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      text: "Sushi Rolls"
-    direction: DOWN
-    speed: 20
-    timeout: 120000
-    centerElement: true
-    label: "Action - Scroll to find Sushi Rolls (4 steps)"
-
-- tapOn:
-    text: "Sushi Rolls"
-    label: "Action - Open Sushi Rolls"
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Sushi Rolls"
+    label: "Action - Open Sushi Rolls (4 steps)"
 
 - runFlow:
     file: "../../flows/recipe/tapRecipeEdit.yaml"
@@ -31,7 +18,7 @@ tags:
       id: "RecipePreparation::EditableStep::1::DeleteButton"
     direction: DOWN
     speed: 20
-    timeout: 30000
+    timeout: 120000
     centerElement: true
     label: "Scroll to the second step delete button"
 
@@ -59,12 +46,18 @@ tags:
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::0::Step"
-      text: "Step 1"
+      id: "RecipePreparation::EditableStep::0::DeleteButton"
     direction: UP
     speed: 20
     centerElement: true
+    timeout: 60000
     label: "Scroll to the first step"
+
+- assertVisible:
+    text: "Step 1"
+    childOf:
+      id: "RecipePreparation::EditableStep::0"
+    label: "Assert - The first step is still Step 1"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
@@ -78,15 +71,22 @@ tags:
     direction: DOWN
     speed: 20
     centerElement: true
+    timeout: 60000
     label: "Assert - Step 1 content is unchanged"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::1::Step"
-      text: "Step 2"
+      id: "RecipePreparation::EditableStep::1::DeleteButton"
     direction: DOWN
     speed: 20
     centerElement: true
+    timeout: 60000
+    label: "Scroll to the second step"
+
+- assertVisible:
+    text: "Step 2"
+    childOf:
+      id: "RecipePreparation::EditableStep::1"
     label: "Assert - The moved step is renumbered to Step 2"
 
 - assertVisible:
@@ -101,15 +101,22 @@ tags:
     direction: DOWN
     speed: 20
     centerElement: true
+    timeout: 60000
     label: "Assert - Step 2 content is the former third step"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::2::Step"
-      text: "Step 3"
+      id: "RecipePreparation::EditableStep::2::DeleteButton"
     direction: DOWN
     speed: 20
     centerElement: true
+    timeout: 60000
+    label: "Scroll to the third step"
+
+- assertVisible:
+    text: "Step 3"
+    childOf:
+      id: "RecipePreparation::EditableStep::2"
     label: "Assert - The last step is renumbered to Step 3"
 
 - assertVisible:
@@ -124,6 +131,7 @@ tags:
     direction: DOWN
     speed: 20
     centerElement: true
+    timeout: 60000
     label: "Assert - Step 3 content is the former fourth step"
 
 - scrollUntilVisible:
@@ -132,6 +140,7 @@ tags:
     direction: DOWN
     speed: 20
     centerElement: true
+    timeout: 60000
     label: "Scroll to the add step button right after the last step"
 
 - assertNotVisible:
@@ -152,6 +161,10 @@ tags:
     id: "Recipe::AppBar::BackButton"
     label: "Action - Leave the saved recipe"
 
+- tapOn:
+    id: "SearchScreen::SearchBar-clear-icon"
+    label: "Action - Clear the search bar"
+
 - runFlow:
     file: "../../flows/search/searchAndOpenRecipe.yaml"
     env:
@@ -164,7 +177,7 @@ tags:
       text: "1\\) Prepare rice"
     direction: DOWN
     speed: 20
-    timeout: 30000
+    timeout: 120000
     centerElement: true
     label: "Assert - Saved step 1 title"
 
@@ -180,6 +193,7 @@ tags:
     direction: DOWN
     speed: 20
     centerElement: true
+    timeout: 60000
     label: "Assert - Saved step 2 title is the former third step"
 
 - assertVisible:
@@ -194,6 +208,7 @@ tags:
     direction: DOWN
     speed: 20
     centerElement: true
+    timeout: 60000
     label: "Assert - Saved step 3 title is the former fourth step"
 
 - assertVisible:

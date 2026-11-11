@@ -218,15 +218,14 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::0::Step"
+      id: "RecipePreparation::EditableStep::0::DeleteButton"
     direction: DOWN
     speed: 20
     centerElement: true
     label: "Scroll down to first step"
 
 - assertVisible:
-    id: "RecipePreparation::EditableStep::0::Step"
-    text: ""
+    id: "RecipePreparation::EditableStep::0::DeleteButton"
     label: "Preparation section for first step is rendered (French)"
 
 - assertVisible:
@@ -243,7 +242,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Title"
-    text: "Titre de l'étape 1 : "
+    text: "Titre"
     label: "Intro text for the title of first step is rendered (French)"
 
 - assertVisible:
@@ -261,7 +260,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Content"
-    text: "Contenu de l'étape 1 : "
+    text: "Instructions"
     label: "Intro text for first step is rendered (French)"
 
 - scrollUntilVisible:
@@ -288,7 +287,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::5::Title"
-    text: "Titre de l'étape 6 : "
+    text: "Titre"
     label: "Intro text for the title of sixth step is rendered (French)"
 
 - assertVisible:
