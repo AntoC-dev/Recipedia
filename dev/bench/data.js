@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793876513344,
+  "lastUpdate": 1794482654713,
   "repoUrl": "https://github.com/AntoC-dev/Recipedia",
   "entries": {
     "Screen FPS": [
@@ -678,6 +678,63 @@ window.BENCHMARK_DATA = {
           {
             "name": "05_shopping",
             "value": 59.4,
+            "unit": "fps"
+          },
+          {
+            "name": "06_parameters",
+            "value": 56.4,
+            "unit": "fps"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "AntoC",
+            "username": "AntoC-dev",
+            "email": "129602681+AntoC-dev@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "13a41be32e631fc9a2400192a7830d8d112fc5f7",
+          "message": "chore(deps-dev): bump reassure from 1.6.0 to 1.6.1 in the testing group across 1 directory (#705)\n\nBumps the testing group with 1 update in the / directory:\n[reassure](https://github.com/callstack/reassure).\n\nUpdates `reassure` from 1.6.0 to 1.6.1\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/callstack/reassure/releases\">reassure's\nreleases</a>.</em></p>\n<blockquote>\n<h2>v1.6.1</h2>\n<h2>What's Changed</h2>\n<ul>\n<li>chore: bump simple-git to v4 by <a\nhref=\"https://github.com/blimpich\"><code>@​blimpich</code></a> in <a\nhref=\"https://redirect.github.com/callstack/reassure/pull/594\">callstack/reassure#594</a></li>\n<li>chore: upgrade deps 2026-10-21 by <a\nhref=\"https://github.com/mdjastrzebski\"><code>@​mdjastrzebski</code></a>\nin <a\nhref=\"https://redirect.github.com/callstack/reassure/pull/595\">callstack/reassure#595</a></li>\n</ul>\n<h2>New Contributors</h2>\n<ul>\n<li><a href=\"https://github.com/blimpich\"><code>@​blimpich</code></a>\nmade their first contribution in <a\nhref=\"https://redirect.github.com/callstack/reassure/pull/594\">callstack/reassure#594</a></li>\n</ul>\n<p><strong>Full Changelog</strong>: <a\nhref=\"https://github.com/callstack/reassure/compare/reassure@1.6.0...reassure@1.6.1\">https://github.com/callstack/reassure/compare/reassure@1.6.0...reassure@1.6.1</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/callstack/reassure/commit/201d313a0981684cd978de301e138a0064d71268\"><code>201d313</code></a>\nchore: v1.6.1</li>\n<li><a\nhref=\"https://github.com/callstack/reassure/commit/72e7beb0389b6f6f0c88e1a6bbfed341ce7ff6c2\"><code>72e7beb</code></a>\nchore: upgrade deps 2026-10-21 (<a\nhref=\"https://redirect.github.com/callstack/reassure/issues/595\">#595</a>)</li>\n<li><a\nhref=\"https://github.com/callstack/reassure/commit/509b83f0a579c73dda6e6cecadf02cc0d91190c2\"><code>509b83f</code></a>\nchore: bump simple-git to v4 (<a\nhref=\"https://redirect.github.com/callstack/reassure/issues/594\">#594</a>)</li>\n<li>See full diff in <a\nhref=\"https://github.com/callstack/reassure/compare/reassure@1.6.0...reassure@1.6.1\">compare\nview</a></li>\n</ul>\n</details>\n<br />",
+          "timestamp": "2026-11-10T18:27:22Z",
+          "url": "https://github.com/AntoC-dev/Recipedia/commit/13a41be32e631fc9a2400192a7830d8d112fc5f7"
+        },
+        "date": 1794482653098,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "00_seed",
+            "value": 59.6,
+            "unit": "fps"
+          },
+          {
+            "name": "01_app_start",
+            "value": 59.8,
+            "unit": "fps"
+          },
+          {
+            "name": "02_home",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "03_search",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "04_recipe_view",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "05_shopping",
+            "value": 59.5,
             "unit": "fps"
           },
           {
