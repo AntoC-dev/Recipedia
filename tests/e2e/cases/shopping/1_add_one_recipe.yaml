@@ -11,25 +11,10 @@ tags:
     file: "../../asserts/shopping/en/shoppingEmpty.yaml"
     label: "Assert - Verify empty shopping screen"
 
-- tapOn:
-    id: "BottomTabs::Search"
-    label: "Action - Navigate to Search screen"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::RecipeCards::3::.*"
-    direction: DOWN
-    speed: 20
-    timeout: 60000
-    centerElement: true
-    label: "Action - Scroll to Classic Pancakes recipe"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "SearchScreen::RecipeCards::3::.*"
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Classic Pancakes"
     label: "Action - Open Classic Pancakes recipe"
 
 - tapOn:
@@ -42,11 +27,9 @@ tags:
       RECIPE_NAME: "Classic Pancakes"
     label: "Assert - Verify recipe added alert"
 
-- runFlow:
-    file: "../../flows/search/scrollRecipeListToTop.yaml"
-    env:
-      FIRST_RECIPE_ID: "1"
-    label: "Cleanup - Scroll back to top of Search screen"
+- tapOn:
+    id: "SearchScreen::SearchBar-clear-icon"
+    label: "Cleanup - Clear the search bar"
 
 - tapOn:
     id: "BottomTabs::Shopping"
