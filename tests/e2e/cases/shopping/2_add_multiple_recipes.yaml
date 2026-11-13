@@ -3,24 +3,10 @@ appId: "com.recipedia"
 tags:
   - shopping
 ---
-- tapOn:
-    id: "BottomTabs::Search"
-    label: "Action - Navigate to Search screen"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::RecipeCards::1::.*"
-    direction: DOWN
-    speed: 40
-    centerElement: true
-    label: "Scroll to recipe card"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "SearchScreen::RecipeCards::1::.*"
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Spaghetti Bolognese"
     label: "Action - Open Spaghetti Bolognese recipe"
 
 - tapOn:
@@ -34,6 +20,10 @@ tags:
     label: "Assert - Verify recipe added alert"
 
 - tapOn:
+    id: "SearchScreen::SearchBar-clear-icon"
+    label: "Cleanup - Clear the search bar"
+
+- tapOn:
     id: "BottomTabs::Shopping"
     label: "Verification - Navigate to Shopping screen"
 
@@ -41,24 +31,10 @@ tags:
     file: "../../asserts/shopping/en/shoppingSpaghetti.yaml"
     label: "Assert - Verify Spaghetti ingredients in shopping list"
 
-- tapOn:
-    id: "BottomTabs::Search"
-    label: "Action - Navigate to Search screen"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::RecipeCards::4::.*"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Action - Scroll to Caesar Salad recipe"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "SearchScreen::RecipeCards::4::.*"
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Caesar Salad"
     label: "Action - Open Caesar Salad recipe"
 
 - tapOn:
@@ -71,11 +47,9 @@ tags:
       RECIPE_NAME: "Caesar Salad"
     label: "Assert - Verify recipe added alert"
 
-- runFlow:
-    file: "../../flows/search/scrollRecipeListToTop.yaml"
-    env:
-      FIRST_RECIPE_ID: "1"
-    label: "Cleanup - Scroll back to top of Search screen"
+- tapOn:
+    id: "SearchScreen::SearchBar-clear-icon"
+    label: "Cleanup - Clear the search bar"
 
 - tapOn:
     id: "BottomTabs::Shopping"
@@ -85,24 +59,10 @@ tags:
     file: "../../asserts/shopping/en/shoppingSpaghettiAndCaesar.yaml"
     label: "Assert - Verify Spaghetti and Caesar ingredients in shopping list"
 
-- tapOn:
-    id: "BottomTabs::Search"
-    label: "Action - Navigate to Search screen"
-
-- waitForAnimationToEnd
-
-- scrollUntilVisible:
-    element:
-      id: "SearchScreen::RecipeCards::5::.*"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Action - Scroll to Margherita Pizza recipe"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "SearchScreen::RecipeCards::5::.*"
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Margherita Pizza"
     label: "Action - Open Margherita Pizza recipe"
 
 - tapOn:
@@ -115,11 +75,9 @@ tags:
       RECIPE_NAME: "Margherita Pizza"
     label: "Assert - Verify recipe added alert"
 
-- runFlow:
-    file: "../../flows/search/scrollRecipeListToTop.yaml"
-    env:
-      FIRST_RECIPE_ID: "1"
-    label: "Cleanup - Scroll back to top of Search screen"
+- tapOn:
+    id: "SearchScreen::SearchBar-clear-icon"
+    label: "Cleanup - Clear the search bar"
 
 - tapOn:
     id: "BottomTabs::Shopping"
