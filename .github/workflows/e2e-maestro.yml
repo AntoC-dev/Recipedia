@@ -157,6 +157,7 @@ jobs:
           xcrun simctl spawn booted defaults write -g KeyboardSpellChecking -bool NO
           xcrun simctl spawn booted defaults write com.apple.assistant.support "Assistant Enabled" -bool NO
           xcrun simctl spawn booted defaults write com.apple.Accessibility ReduceTransparencyEnabled -bool YES
+          xcrun simctl spawn booted defaults write -g com.apple.TipKit.HideAllTips -bool YES
           # Decimal separators follow the device region, and the runner default changed between
           # iOS 18.6 and 26.2, silently flipping every "133[.]33 g" assertion. No reboot needed:
           # Maestro relaunches the app per flow, so each process reads the region fresh.
