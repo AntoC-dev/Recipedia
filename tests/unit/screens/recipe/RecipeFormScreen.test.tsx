@@ -1,9 +1,19 @@
-import { fireEvent, waitFor, within } from '@testing-library/react-native';
+import { act, fireEvent, RenderResult, waitFor, within } from '@testing-library/react-native';
 import { KEYBOARD_TOOLBAR_HOST_TYPES, queryAllByHostType } from '@test-helpers/hostQueries';
-import { keyboardToolbarCaretClearance } from '@styles/spacing';
+import { keyboardToolbarCaretClearance, padding } from '@styles/spacing';
 import { isPreventRemoveArmed, resetPreventRemove } from '@mocks/deps/react-navigation-mock';
 import { AddFromScrapeProp, AddManuallyProp } from '@customTypes/RecipeNavigationTypes';
 import { testIngredients } from '@test-data/ingredientsDataset';
+import {
+  KeyboardControllerNative,
+  useKeyboardHandler,
+  useKeyboardState,
+} from 'react-native-keyboard-controller';
+import { AUTOCOMPLETE_ANCHOR_ID } from '@components/molecules/TextInputWithDropDown';
+import { ReadOnlyElement } from '@utils/autocompleteFocusMode';
+import { mockFindNodeHandle } from '@mocks/deps/react-native-find-node-handle-mock';
+import { fakeReadOnlyElement } from '@test-helpers/fakeReadOnlyElement';
+import { scrollViewScrollTo } from '@test-helpers/scrollViewScrollTo';
 
 import { renderRoute, setupDb, teardownDb } from './recipeTestHelpers';
 
@@ -196,5 +206,154 @@ describe('RecipeFormScreen keyboard handling', () => {
     const { getByTestId } = await renderRoute(mockRouteAddManually);
 
     expect(getByTestId('Recipe::ScrollView').props.keyboardShouldPersistTaps).toEqual('handled');
+  });
+});
+
+describe('RecipeFormScreen search-field focus mode', () => {
+  const scrollViewWindowTop = 88;
+  const numericKeyboardHeight = 255;
+  const textKeyboardHeight = 299;
+  const mockRouteAddFromScrape: AddFromScrapeProp = {
+    mode: 'addFromScrape',
+    sourceUrl: 'https://example.com/focus-mode-scrape',
+    scrapedData: {
+      image_Source: 'focus-mode-scrape.jpg',
+      title: 'Wholly Unique Focus Mode Recipe',
+      description: 'A scraped recipe',
+      persons: 4,
+      time: 30,
+      ingredients: [{ ...testIngredients[0], quantity: '100' }],
+      preparation: [{ title: 'Step 1', description: 'Scraped step' }],
+      tags: [],
+    },
+  };
+  const mockedUseKeyboardState = useKeyboardState as jest.Mock;
+  const mockedUseKeyboardHandler = useKeyboardHandler as jest.Mock;
+  const viewPositionInWindow = KeyboardControllerNative.viewPositionInWindow as jest.Mock;
+  const scrollViewElement = fakeReadOnlyElement('ScrollViewWrapper', {
+    top: scrollViewWindowTop,
+    bottom: 2000,
+  });
+  const anchorRect = { top: 900, bottom: 960 };
+  const autocompleteAnchor = fakeReadOnlyElement(AUTOCOMPLETE_ANCHOR_ID, anchorRect);
+  const autocompleteInput = fakeReadOnlyElement('', { top: 905, bottom: 955 }, autocompleteAnchor);
+  const plainInput = fakeReadOnlyElement('', { top: 200, bottom: 250 });
+  let keyboardEndHandler: ((event: { height: number; duration: number }) => void) | null = null;
+  let findNodeHandleSpy: ReturnType<typeof mockFindNodeHandle>;
+
+  function setKeyboardHeight(height: number) {
+    mockedUseKeyboardState.mockImplementation(selector => selector({ height }));
+  }
+
+  async function renderFocusModeRoute() {
+    const rendered = await renderRoute(mockRouteAddFromScrape);
+    await fireEvent(rendered.getByTestId('Recipe::ScrollView'), 'layout', {
+      nativeEvent: { layout: { x: 0, y: 0, width: 0, height: 0 } },
+    });
+    return rendered;
+  }
+
+  async function focus(rendered: RenderResult, target: ReadOnlyElement) {
+    await fireEvent(rendered.getByTestId('Recipe::ScrollView'), 'focus', {
+      target,
+      currentTarget: scrollViewElement,
+    });
+  }
+
+  async function scrollContentTo(rendered: RenderResult, y: number) {
+    await fireEvent.scroll(rendered.getByTestId('Recipe::ScrollView'), {
+      nativeEvent: { contentOffset: { x: 0, y } },
+    });
+  }
+
+  async function keyboardSettles(height: number, duration = 250) {
+    await act(async () => keyboardEndHandler!({ height, duration }));
+  }
+
+  function bottomOffset(rendered: RenderResult) {
+    return rendered.getByTestId('Recipe::ScrollView').props.bottomOffset;
+  }
+
+  function scrolledToYs() {
+    return scrollViewScrollTo().mock.calls.map(([options]) => options.y);
+  }
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    resetPreventRemove();
+    await setupDb();
+    anchorRect.top = 900;
+    mockedUseKeyboardHandler.mockImplementation(handler => {
+      keyboardEndHandler = handler.onEnd;
+    });
+    findNodeHandleSpy = mockFindNodeHandle(42);
+    viewPositionInWindow.mockResolvedValue({ x: 0, y: scrollViewWindowTop, width: 0, height: 0 });
+    setKeyboardHeight(0);
+  });
+
+  afterEach(async () => {
+    findNodeHandleSpy.mockRestore();
+    setKeyboardHeight(0);
+    mockedUseKeyboardHandler.mockReset();
+    keyboardEndHandler = null;
+    await teardownDb();
+  });
+
+  test('keeps a constant bottom offset through autocomplete focus and keyboard events', async () => {
+    setKeyboardHeight(numericKeyboardHeight);
+    const rendered = await renderFocusModeRoute();
+    const offsetBeforeFocus = bottomOffset(rendered);
+
+    await focus(rendered, autocompleteInput);
+    expect(bottomOffset(rendered)).toBe(offsetBeforeFocus);
+
+    await keyboardSettles(numericKeyboardHeight, 0);
+    expect(bottomOffset(rendered)).toBe(offsetBeforeFocus);
+
+    setKeyboardHeight(textKeyboardHeight);
+    await focus(rendered, autocompleteInput);
+    await keyboardSettles(textKeyboardHeight);
+    expect(bottomOffset(rendered)).toBe(offsetBeforeFocus);
+
+    await focus(rendered, plainInput);
+    await keyboardSettles(0);
+    expect(bottomOffset(rendered)).toBe(keyboardToolbarCaretClearance);
+  });
+
+  test('pins the focused autocomplete field once the keyboard has settled', async () => {
+    const rendered = await renderFocusModeRoute();
+    await scrollContentTo(rendered, 120);
+
+    await focus(rendered, autocompleteInput);
+    await keyboardSettles(textKeyboardHeight);
+
+    expect(scrollViewScrollTo()).toHaveBeenCalledWith({
+      y: 120 + 900 - scrollViewWindowTop - padding.small,
+      animated: true,
+    });
+  });
+
+  test('re-pins the field after the numeric to text keyboard switch', async () => {
+    setKeyboardHeight(numericKeyboardHeight);
+    const rendered = await renderFocusModeRoute();
+    await focus(rendered, autocompleteInput);
+    await keyboardSettles(numericKeyboardHeight, 0);
+    const pinnedY = 900 - scrollViewWindowTop - padding.small;
+    await scrollContentTo(rendered, pinnedY);
+    anchorRect.top = scrollViewWindowTop - 44;
+    scrollViewScrollTo().mockClear();
+
+    await keyboardSettles(textKeyboardHeight);
+
+    expect(scrolledToYs()).toEqual([pinnedY - 44 - padding.small]);
+  });
+
+  test('does not scroll for a plain input', async () => {
+    const rendered = await renderFocusModeRoute();
+
+    await focus(rendered, plainInput);
+    await keyboardSettles(textKeyboardHeight);
+
+    expect(scrollViewScrollTo()).not.toHaveBeenCalled();
   });
 });
