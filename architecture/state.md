@@ -18,11 +18,12 @@ Field state = `react-hook-form` (`FormProvider` in
 `src/screens/recipe/RecipeFormScreen.tsx`), read via `useFormContext()` — no
 bespoke context. Other contexts wrapping the form body:
 
-| Context                         | Hook                          | Responsibility                                                                                                                                                   |
-| ------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `RecipeDialogsContext`          | `useRecipeDialogs()`          | Dialog open/close (validation, similarity, queue, image-select modal target); `ScanButton` opens image modal through it                                          |
-| `IngredientFocusContext`        | `useIngredientFocusRef()`     | Ref counter of focused ingredient inputs; lets `useScalingOnPersonsChange` defer scaling during row edit                                                         |
-| `IngredientArrayActionsContext` | `useIngredientArrayActions()` | Shares field-array `applyPatch` so `useRecipeOCR`, `useRecipeScraperValidation` mutate `recipeIngredients` with the same patch shape (sibling row identity kept) |
+| Context                            | Hook                          | Responsibility                                                                                                                                                   |
+| ---------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `RecipeDialogsContext`             | `useRecipeDialogs()`          | Dialog open/close (validation, similarity, queue, image-select modal target); `ScanButton` opens image modal through it                                          |
+| `IngredientFocusContext`           | `useIngredientFocusRef()`     | Ref counter of focused ingredient inputs; lets `useScalingOnPersonsChange` defer scaling during row edit                                                         |
+| `IngredientArrayActionsContext`    | `useIngredientArrayActions()` | Shares field-array `applyPatch` so `useRecipeOCR`, `useRecipeScraperValidation` mutate `recipeIngredients` with the same patch shape (sibling row identity kept) |
+| `AutocompleteMaxListHeightContext` | `useContext`                  | Suggestion list height cap from `AutocompleteFocusScrollView` to every bubble inside it; `undefined` (no cap) without provider                                   |
 
 Intentionally narrow: avoid prop-drilling across `useRecipeIngredients`,
 `useRecipeTags`, `useRecipeOCR`, `useRecipeScraperValidation`, which share the

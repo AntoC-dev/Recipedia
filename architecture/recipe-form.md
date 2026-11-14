@@ -49,9 +49,10 @@
 
 ## Search-field focus mode
 
-- `useAutocompleteFocusMode` pins a focused autocomplete field `padding.small`
-  below the top of the form's `KeyboardAwareScrollView`, so its suggestion
-  bubble opens into the room above the keyboard.
+- `AutocompleteFocusScrollView` (`src/screens/recipe/`) wraps the form's
+  `KeyboardAwareScrollView` (all its props forwarded) and owns all focus-mode
+  state. It pins a focused autocomplete field `padding.small` below its top, so
+  the suggestion bubble opens into the room above the keyboard.
 - Focus detection: `onFocus` on the scroll view wrapper + walk up to
   `AUTOCOMPLETE_ANCHOR_ID`. Focused anchor + wrapper kept in a ref; cleared on
   plain-input focus only (kept across keyboard hide, so reopening the same field
@@ -64,14 +65,14 @@
   it while the keyboard resizes (numeric → text) races the scroll view's own
   keyboard handler (react-native-keyboard-controller #1689) → field ends under
   the app bar.
-- `maxListHeight`: room below the pinned field above the toolbar (not the row
-  count, so stable while typing), passed as a plain prop to each
-  `TextInputWithDropDown` via `RecipeTagsField` → `RecipeTags` and
-  `RecipeIngredientsField` → `IngredientRowField` → `IngredientRow`; applied as
-  list `maxHeight`. Omitted → list uncapped.
-- Hook + helpers stay in `src/screens/recipe/` (only screen with autocomplete
-  inside a keyboard-aware scroll view). Move to `src/hooks/` / `src/utils/` when
-  a second appears.
+- List cap: room below the pinned field above the toolbar (not the row count, so
+  stable while typing), provided through `AutocompleteMaxListHeightContext`
+  (`src/context/`; `AutocompleteBubble` reads it with `useContext` and applies
+  it as list `maxHeight`). No provider / no cap → list uncapped. Only open
+  bubbles re-render on focus and keyboard changes, not `RecipeFormBody`.
+- Pure geometry helpers in `src/utils/autocompleteFocusMode.ts`. Component stays
+  in `src/screens/recipe/` (only screen with autocomplete inside a
+  keyboard-aware scroll view); move to `src/components/` when a second appears.
 
 ## Field hooks
 
