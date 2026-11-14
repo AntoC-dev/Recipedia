@@ -289,6 +289,7 @@ const CardTitle: React.FC<any> = props => (
       {props.title}
     </RNText>
     <RNText testID={props.testID + '::TitleVariant'}>{props.titleVariant}</RNText>
+    {props.right?.({ size: 24 })}
   </View>
 );
 CardTitle.displayName = 'Card.Title';
@@ -321,6 +322,7 @@ export const IconButton: React.FC<any> = props => (
     testID={props.testID}
     onPress={props.onPress}
     style={props.style}
+    accessibilityLabel={props.accessibilityLabel}
     {...{ iconColor: props.iconColor }}
   >
     <RNText testID={props.testID + '::Icon'}>{props.icon}</RNText>

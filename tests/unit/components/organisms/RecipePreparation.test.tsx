@@ -232,49 +232,119 @@ describe('PreparationSection empty state', () => {
 });
 
 describe('EditableStep', () => {
-  it('renders title + description from props', async () => {
-    const { getByTestId } = await renderWithRecipeDialogs(
+  const editableStepTestId = (index: number) => `RecipePreparation::EditableStep::${index}`;
+
+  function renderEditableStep(overrides: Partial<React.ComponentProps<typeof EditableStep>> = {}) {
+    return renderWithRecipeDialogs(
       <EditableStep
         index={0}
-        title='My title'
-        description='My description'
+        title=''
+        description=''
         onTitleChange={jest.fn()}
         onDescriptionChange={jest.fn()}
         onTitleCommit={jest.fn()}
         onDescriptionCommit={jest.fn()}
+        onRemove={jest.fn()}
+        {...overrides}
       />
     );
+  }
+
+  it('renders title + description from props', async () => {
+    const { getByTestId } = await renderEditableStep({
+      title: 'My title',
+      description: 'My description',
+    });
 
     expect(
-      getByTestId('RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput').props.value
+      getByTestId(`${editableStepTestId(0)}::TextInputTitle::CustomTextInput`).props.value
     ).toEqual('My title');
     expect(
-      getByTestId('RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput').props
-        .value
+      getByTestId(`${editableStepTestId(0)}::TextInputContent::CustomTextInput`).props.value
     ).toEqual('My description');
+  });
+
+  it.each([
+    [0, 'Step 1', 'Delete step 1'],
+    [1, 'Step 2', 'Delete step 2'],
+    [9, 'Step 10', 'Delete step 10'],
+  ])(
+    'renders the one-based header and delete label for index %s',
+    async (index, expectedHeader, expectedDeleteLabel) => {
+      const { getByTestId, getByText } = await renderEditableStep({ index });
+
+      expect(getByTestId(editableStepTestId(index))).toBeTruthy();
+      expect(getByText(expectedHeader)).toBeTruthy();
+      expect(getByText('titleMedium')).toBeTruthy();
+      expect(
+        getByTestId(`${editableStepTestId(index)}::DeleteButton`).props.accessibilityLabel
+      ).toBe(expectedDeleteLabel);
+    }
+  );
+
+  it('renders field captions without step number', async () => {
+    const { getByTestId } = await renderEditableStep({ index: 1 });
+
+    expect(getByTestId(`${editableStepTestId(1)}::Title`)).toHaveTextContent('Title', {
+      exact: true,
+    });
+    expect(getByTestId(`${editableStepTestId(1)}::Content`)).toHaveTextContent('Instructions', {
+      exact: true,
+    });
+  });
+
+  it('renders a trash delete button that calls onRemove when pressed', async () => {
+    const onRemove = jest.fn();
+    const { getByTestId } = await renderEditableStep({
+      index: 1,
+      title: 'A title',
+      description: 'A description',
+      onRemove,
+    });
+
+    expect(getByTestId(`${editableStepTestId(1)}::DeleteButton::Icon`).props.children).toBe(
+      'delete'
+    );
+    await fireEvent.press(getByTestId(`${editableStepTestId(1)}::DeleteButton`));
+    expect(onRemove).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not call any input callback when the delete button is pressed', async () => {
+    const onTitleChange = jest.fn();
+    const onDescriptionChange = jest.fn();
+    const onTitleCommit = jest.fn();
+    const onDescriptionCommit = jest.fn();
+    const { getByTestId } = await renderEditableStep({
+      onTitleChange,
+      onDescriptionChange,
+      onTitleCommit,
+      onDescriptionCommit,
+    });
+
+    await fireEvent.press(getByTestId(`${editableStepTestId(0)}::DeleteButton`));
+
+    expect(onTitleChange).not.toHaveBeenCalled();
+    expect(onDescriptionChange).not.toHaveBeenCalled();
+    expect(onTitleCommit).not.toHaveBeenCalled();
+    expect(onDescriptionCommit).not.toHaveBeenCalled();
   });
 
   it('live-changes title on keystroke and commits on blur', async () => {
     const onTitleChange = jest.fn();
     const onTitleCommit = jest.fn();
-    const { getByTestId } = await renderWithRecipeDialogs(
-      <EditableStep
-        index={0}
-        title='Original'
-        description=''
-        onTitleChange={onTitleChange}
-        onDescriptionChange={jest.fn()}
-        onTitleCommit={onTitleCommit}
-        onDescriptionCommit={jest.fn()}
-      />
-    );
+    const onDescriptionChange = jest.fn();
+    const { getByTestId } = await renderEditableStep({
+      title: 'Original',
+      onTitleChange,
+      onTitleCommit,
+      onDescriptionChange,
+    });
 
-    const titleInput = getByTestId(
-      'RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput'
-    );
+    const titleInput = getByTestId(`${editableStepTestId(0)}::TextInputTitle::CustomTextInput`);
     await fireEvent.changeText(titleInput, 'Mid typing');
     expect(onTitleChange).toHaveBeenCalledWith('Mid typing');
     expect(onTitleCommit).not.toHaveBeenCalled();
+    expect(onDescriptionChange).not.toHaveBeenCalled();
 
     await fireEvent(titleInput, 'endEditing', { nativeEvent: { text: 'Final' } });
     expect(onTitleCommit).toHaveBeenCalledWith('Final');
@@ -283,68 +353,60 @@ describe('EditableStep', () => {
   it('live-changes description on keystroke and commits on blur', async () => {
     const onDescriptionChange = jest.fn();
     const onDescriptionCommit = jest.fn();
-    const { getByTestId } = await renderWithRecipeDialogs(
-      <EditableStep
-        index={0}
-        title=''
-        description='Original'
-        onTitleChange={jest.fn()}
-        onDescriptionChange={onDescriptionChange}
-        onTitleCommit={jest.fn()}
-        onDescriptionCommit={onDescriptionCommit}
-      />
-    );
+    const onTitleChange = jest.fn();
+    const { getByTestId } = await renderEditableStep({
+      description: 'Original',
+      onDescriptionChange,
+      onDescriptionCommit,
+      onTitleChange,
+    });
 
-    const descInput = getByTestId(
-      'RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput'
-    );
+    const descInput = getByTestId(`${editableStepTestId(0)}::TextInputContent::CustomTextInput`);
     await fireEvent.changeText(descInput, 'Mid typing');
     expect(onDescriptionChange).toHaveBeenCalledWith('Mid typing');
     expect(onDescriptionCommit).not.toHaveBeenCalled();
+    expect(onTitleChange).not.toHaveBeenCalled();
 
     await fireEvent(descInput, 'endEditing', { nativeEvent: { text: 'Final desc' } });
     expect(onDescriptionCommit).toHaveBeenCalledWith('Final desc');
   });
 
-  it('does not render a description error helper when descriptionError is undefined', async () => {
-    const { queryByTestId, getByTestId } = await renderWithRecipeDialogs(
-      <EditableStep
-        index={0}
-        title=''
-        description=''
-        onTitleChange={jest.fn()}
-        onDescriptionChange={jest.fn()}
-        onTitleCommit={jest.fn()}
-        onDescriptionCommit={jest.fn()}
-      />
-    );
+  it.each([
+    ['undefined', undefined],
+    ['an empty string', ''],
+  ])(
+    'does not render a description error helper when descriptionError is %s',
+    async (_label, descriptionError) => {
+      const { queryByTestId, getByTestId } = await renderEditableStep({ descriptionError });
 
-    expect(queryByTestId('RecipePreparation::EditableStep::0::DescriptionError')).toBeNull();
-    expect(
-      getByTestId('RecipePreparation::EditableStep::0::TextInputContent::error').props.children
-    ).toBe('false');
-  });
+      expect(queryByTestId(`${editableStepTestId(0)}::DescriptionError`)).toBeNull();
+      expect(getByTestId(`${editableStepTestId(0)}::TextInputContent::error`).props.children).toBe(
+        'false'
+      );
+    }
+  );
 
   it('renders the description error helper and flags the input when descriptionError is set', async () => {
-    const { getByTestId } = await renderWithRecipeDialogs(
-      <EditableStep
-        index={2}
-        title='A title'
-        description=''
-        onTitleChange={jest.fn()}
-        onDescriptionChange={jest.fn()}
-        onTitleCommit={jest.fn()}
-        onDescriptionCommit={jest.fn()}
-        descriptionError='Description is required'
-      />
-    );
+    const { getByTestId } = await renderEditableStep({
+      index: 2,
+      title: 'A title',
+      descriptionError: 'Description is required',
+    });
 
-    expect(
-      getByTestId('RecipePreparation::EditableStep::2::DescriptionError').props.children
-    ).toEqual('Description is required');
-    expect(
-      getByTestId('RecipePreparation::EditableStep::2::TextInputContent::error').props.children
-    ).toBe('true');
+    expect(getByTestId(`${editableStepTestId(2)}::DescriptionError`).props.children).toEqual(
+      'Description is required'
+    );
+    expect(getByTestId(`${editableStepTestId(2)}::TextInputContent::error`).props.children).toBe(
+      'true'
+    );
+  });
+
+  it('never flags the title input with an error, even when descriptionError is set', async () => {
+    const { queryByTestId } = await renderEditableStep({
+      descriptionError: 'Description is required',
+    });
+
+    expect(queryByTestId(`${editableStepTestId(0)}::TextInputTitle::error`)).toBeNull();
   });
 });
 

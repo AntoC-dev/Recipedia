@@ -161,11 +161,11 @@ appId: "com.recipedia"
     label: "Preparation #1 text is not displayed"
 
 - assertNotVisible:
-    text: "Title of step 1 : "
+    text: "Title"
     label: "Preparation #1 title text is not displayed"
 
 - assertNotVisible:
-    text: "Content of step 1 : "
+    text: "Instructions"
     label: "Preparation #1 content text is not displayed"
 
 - assertVisible:

@@ -1,0 +1,14 @@
+name: "11 - Recipe Edit Delete Preparation Step Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-edit
+---
+- retry:
+    maxRetries: 2
+    commands:
+      - runFlow:
+          file: "../../../flows/setupTest.yaml"
+          label: "Setup - Launch app and wait for ready"
+      - runFlow:
+          file: "../11_delete_preparation_step.yaml"
+          label: "Run 11 - Recipe Edit Delete Preparation Step Flow"

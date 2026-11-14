@@ -70,21 +70,24 @@ export function editableStepMock({
   onDescriptionChange,
   onTitleCommit,
   onDescriptionCommit,
+  onRemove,
   descriptionError,
 }: EditableStepProps) {
   return (
     <View testID={`${testID}::EditableStep::${index}`}>
-      <Text testID={`${testID}::EditableStep::${index}::Step`}>Step {index + 1}</Text>
-      <Text testID={`${testID}::EditableStep::${index}::Title`}>Title of step {index + 1} : </Text>
+      <Button
+        testID={`${testID}::EditableStep::${index}::DeleteButton`}
+        onPress={onRemove}
+        title='Delete Step'
+      />
+      <Text testID={`${testID}::EditableStep::${index}::Title`}>Title</Text>
       <TextInput
         testID={`${testID}::EditableStep::${index}::TextInputTitle::CustomTextInput`}
         value={title}
         onChangeText={onTitleChange}
         onEndEditing={e => onTitleCommit(e?.nativeEvent?.text ?? title)}
       />
-      <Text testID={`${testID}::EditableStep::${index}::Content`}>
-        Content of step {index + 1} :{' '}
-      </Text>
+      <Text testID={`${testID}::EditableStep::${index}::Content`}>Instructions</Text>
       <TextInput
         testID={`${testID}::EditableStep::${index}::TextInputContent::CustomTextInput`}
         value={description}

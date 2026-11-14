@@ -42,9 +42,12 @@ export default {
   addNoteHint: 'Appui long pour voir/ajouter une note',
 
   preparationReadOnly: 'Préparation : ',
-  preparationOCRStep: 'Étape',
-  preparationOCRStepTitle: "Titre de l'étape",
-  preparationOCRStepContent: "Contenu de l'étape",
+  preparationStep: 'Étape',
+  preparationStepTitle: 'Titre',
+  preparationStepContent: 'Instructions',
+  preparationDeleteStep: "Supprimer l'étape {{number}}",
+  preparationDeleteStepConfirmTitle: "Supprimer l'étape {{number}} ?",
+  preparationDeleteStepConfirmContent: 'Son titre et son contenu seront retirés de la recette.',
 
   timeReadOnlyBeforePerson: 'Préparation (',
   timeReadOnlyAfterPerson: ' min)',

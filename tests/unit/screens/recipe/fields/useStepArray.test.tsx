@@ -1,4 +1,4 @@
-import { act, renderHook } from '@testing-library/react-native';
+import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -83,5 +83,39 @@ describe('useStepArray', () => {
     const prep = formRef.current!.getValues('recipePreparation')!;
     expect(prep[0]).toEqual({ title: 'Keep', description: 'me' });
     expect(prep[1]).toEqual({ title: '', description: '' });
+  });
+
+  test('removeStep deletes the targeted step and keeps the others in order', async () => {
+    const { result, formRef } = await renderUseStepArray([
+      { title: 'A', description: 'first' },
+      { title: 'B', description: 'second' },
+      { title: 'C', description: 'third' },
+    ]);
+
+    await act(() => {
+      result.current.removeStep(1);
+    });
+
+    expect(formRef.current!.getValues('recipePreparation')).toEqual([
+      { title: 'A', description: 'first' },
+      { title: 'C', description: 'third' },
+    ]);
+    expect(result.current.length).toBe(2);
+    expect(result.current.fields).toHaveLength(2);
+  });
+
+  test('removeStep on the only step empties the array and re-validates the preparation', async () => {
+    const { result, formRef } = await renderUseStepArray([{ title: 'A', description: 'only' }]);
+
+    await act(async () => {
+      result.current.removeStep(0);
+    });
+
+    expect(formRef.current!.getValues('recipePreparation')).toEqual([]);
+    await waitFor(() => {
+      expect(formRef.current!.getFieldState('recipePreparation').error?.root?.message).toBe(
+        'alerts.missingElements.titlePreparation'
+      );
+    });
   });
 });
