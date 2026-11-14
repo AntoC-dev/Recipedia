@@ -69,8 +69,6 @@ const primaryColorLight = '#006D38';
 const primaryColorDark = '#79DB95';
 
 export default ({ config }: ConfigContext): ExpoConfig => {
-  const isProduction = process.env.NODE_ENV === 'production';
-
   return {
     ...config,
     name: configuredName,
@@ -165,12 +163,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       },
     },
     owner: 'antoc',
-    // Reduce build overhead for development
-    updates: isProduction
-      ? {}
-      : {
-          enabled: false,
-        },
     experiments: {
       reactCompiler: true,
     },
