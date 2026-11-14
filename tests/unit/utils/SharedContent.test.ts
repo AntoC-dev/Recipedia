@@ -8,6 +8,7 @@ import {
   getSharedPayloads,
   type SharePayload,
 } from '@mocks/deps/expo-sharing-mock';
+import { cachedSharedPhotoUri, mockMoveFileToCache } from '@mocks/utils/FileGestion-mock';
 
 const recipeUrl = 'https://example.com/recipe';
 const localImageUri = 'file:///cache/shared/photo.jpg';
@@ -53,7 +54,10 @@ describe('SharedContent', () => {
         createResolvedImagePayload(localImageUri),
       ]);
 
-      await expect(takeSharedImport()).resolves.toEqual({ kind: 'image', uri: localImageUri });
+      await expect(takeSharedImport()).resolves.toEqual({
+        kind: 'image',
+        uri: cachedSharedPhotoUri,
+      });
     });
 
     test('imports a link shared as text, ignoring surrounding whitespace', async () => {
@@ -84,12 +88,35 @@ describe('SharedContent', () => {
       }
     );
 
-    test('imports a shared photo through its resolved local file', async () => {
+    test('imports a shared photo after moving its resolved file to the app cache', async () => {
       getSharedPayloads.mockReturnValue([createSharePayload(androidContentUri, 'image')]);
       getResolvedSharedPayloadsAsync.mockResolvedValue([createResolvedImagePayload(localImageUri)]);
 
-      await expect(takeSharedImport()).resolves.toEqual({ kind: 'image', uri: localImageUri });
+      await expect(takeSharedImport()).resolves.toEqual({
+        kind: 'image',
+        uri: cachedSharedPhotoUri,
+      });
       expect(clearSharedPayloads).toHaveBeenCalledTimes(1);
+    });
+
+    test('moves the shared photo to the app cache before clearing the share', async () => {
+      getSharedPayloads.mockReturnValue([createSharePayload(androidContentUri, 'image')]);
+      getResolvedSharedPayloadsAsync.mockResolvedValue([createResolvedImagePayload(localImageUri)]);
+
+      await takeSharedImport();
+
+      expect(mockMoveFileToCache).toHaveBeenCalledWith(localImageUri);
+      expect(mockMoveFileToCache.mock.invocationCallOrder[0]).toBeLessThan(
+        clearSharedPayloads.mock.invocationCallOrder[0]!
+      );
+    });
+
+    test('reports a photo that could not be moved as unsupported', async () => {
+      getSharedPayloads.mockReturnValue([createSharePayload(androidContentUri, 'image')]);
+      getResolvedSharedPayloadsAsync.mockResolvedValue([createResolvedImagePayload(localImageUri)]);
+      mockMoveFileToCache.mockResolvedValueOnce('');
+
+      await expect(takeSharedImport()).resolves.toEqual({ kind: 'unsupported' });
     });
 
     test('prefers the shared photo over a link shared with it', async () => {
@@ -102,7 +129,10 @@ describe('SharedContent', () => {
         createResolvedImagePayload(localImageUri),
       ]);
 
-      await expect(takeSharedImport()).resolves.toEqual({ kind: 'image', uri: localImageUri });
+      await expect(takeSharedImport()).resolves.toEqual({
+        kind: 'image',
+        uri: cachedSharedPhotoUri,
+      });
     });
 
     test('reports a photo that could not be resolved as unsupported', async () => {

@@ -11,6 +11,7 @@ import {
   type SharePayload,
 } from '@mocks/deps/expo-sharing-mock';
 import { mockAppStateChanges } from '@mocks/deps/react-native-app-state-mock';
+import { cachedSharedPhotoUri } from '@mocks/utils/FileGestion-mock';
 import { AppStateStatus } from 'react-native';
 
 jest.mock('@react-navigation/native', () =>
@@ -124,7 +125,7 @@ describe('IncomingShareImporter', () => {
 
       expect(mockDispatch).toHaveBeenCalledTimes(1);
       expect(mockDispatch).toHaveBeenCalledWith(
-        StackActions.push('RecipeAddOcr', { imgUri: localImageUri })
+        StackActions.push('RecipeAddOcr', { imgUri: cachedSharedPhotoUri })
       );
       expectUrlImportClosed(screen);
       expectUnsupportedSnackbarHidden(screen);
@@ -136,7 +137,7 @@ describe('IncomingShareImporter', () => {
       await screen.receiveShareWhileInBackground(sharedImagePayloads);
 
       expect(mockDispatch).toHaveBeenCalledWith(
-        StackActions.push('RecipeAddOcr', { imgUri: localImageUri })
+        StackActions.push('RecipeAddOcr', { imgUri: cachedSharedPhotoUri })
       );
     });
 
@@ -147,7 +148,7 @@ describe('IncomingShareImporter', () => {
 
       expectUrlImportClosed(screen);
       expect(mockDispatch).toHaveBeenCalledWith(
-        StackActions.push('RecipeAddOcr', { imgUri: localImageUri })
+        StackActions.push('RecipeAddOcr', { imgUri: cachedSharedPhotoUri })
       );
     });
   });

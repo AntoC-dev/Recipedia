@@ -4,6 +4,10 @@ export const constructImageUri = jest.fn((imageFilename: string): string => imag
 
 export const mockDownloadImageToCache = jest.fn();
 
+export const cachedSharedPhotoUri = '/cache/shared_photo.jpg';
+
+export const mockMoveFileToCache = jest.fn(async (): Promise<string> => cachedSharedPhotoUri);
+
 export const isTemporaryImageUri = jest.fn((): boolean => false);
 
 export const cleanupOrphanedImages = jest.fn().mockResolvedValue(0);
@@ -37,6 +41,7 @@ export function fileGestionMock() {
     copyDatasetImages,
     transformDatasetRecipeImages,
     downloadImageToCache: mockDownloadImageToCache,
+    moveFileToCache: mockMoveFileToCache,
   };
 }
 

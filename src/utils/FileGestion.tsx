@@ -300,6 +300,34 @@ export async function downloadImageToCache(remoteUrl: string): Promise<string> {
 }
 
 /**
+ * Moves a file into the app cache directory
+ *
+ * Use it to keep a file whose owner may delete it, such as a photo shared from
+ * another app. The file is removed with the rest of the cache by {@link clearCache}.
+ *
+ $1Promise resolving to the URI of the file in the app cache, or empty string on failure
+ *
+ * @example
+ * ```typescript
+ * const cachedUri = await moveFileToCache('file:///shared/photo.jpg');
+ * // Returns: "file:///cache/Recipedia/shared_<uuid>.jpg"
+ * ```
+ */
+export async function moveFileToCache(uri: string): Promise<string> {
+  try {
+    const destination = new File(
+      APP_CACHE,
+      `shared_${Crypto.randomUUID()}.${extensionFromUri(uri)}`
+    );
+    await new File(uri).move(destination);
+    return destination.uri;
+  } catch (error) {
+    fileSystemLogger.error('Failed to move file to cache', { uri, error });
+    return '';
+  }
+}
+
+/**
  * Saves a recipe image from cache to permanent storage
  *
  * Bounds the image with `resizeImageToBound` before copying it to permanent

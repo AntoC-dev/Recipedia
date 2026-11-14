@@ -4,6 +4,7 @@ import {
   constructImageUri,
   copyDatasetImages,
   deleteFile,
+  moveFileToCache,
   downloadImageToCache,
   extractFilenameFromUri,
   init,
@@ -20,6 +21,7 @@ import {
   mockFileDelete,
   mockFileDownloadFileAsync,
   mockFileExists,
+  mockFileMove,
 } from '@mocks/deps/expo-file-system-mock';
 import {
   SaveFormat,
@@ -77,6 +79,7 @@ describe('FileGestion Utility', () => {
     mockFileExists.mockReset().mockReturnValue(false);
     mockFileDelete.mockReset();
     mockFileCopy.mockReset();
+    mockFileMove.mockReset();
     mockFileDownloadFileAsync.mockReset();
     mockDirectoryExists.mockReset().mockReturnValue(false);
     mockDirectoryDelete.mockReset();
@@ -525,6 +528,34 @@ describe('FileGestion Utility', () => {
       expect(result).toMatch(/\.gif$/);
       expect(mockImageRef.saveAsync).not.toHaveBeenCalled();
       expect(mockFileCopy).toHaveBeenCalledWith('/temp/huge.gif', expect.anything());
+    });
+  });
+
+  describe('moveFileToCache', () => {
+    test('moves the file into the app cache under a unique name and returns its URI', async () => {
+      mockFileMove.mockResolvedValue(undefined);
+
+      const result = await moveFileToCache('/shared/store/photo.png');
+
+      expect(result).toBe(`${defaultCachePath}shared_${mockUUID}.png`);
+      expect(mockFileMove).toHaveBeenCalledWith(
+        '/shared/store/photo.png',
+        expect.objectContaining({ uri: `${defaultCachePath}shared_${mockUUID}.png` })
+      );
+    });
+
+    test('falls back to jpg when the source has no usable extension', async () => {
+      mockFileMove.mockResolvedValue(undefined);
+
+      await expect(moveFileToCache('content://media/external/images/1')).resolves.toBe(
+        `${defaultCachePath}shared_${mockUUID}.jpg`
+      );
+    });
+
+    test('returns empty string when the move fails', async () => {
+      mockFileMove.mockRejectedValue(new Error('source missing'));
+
+      await expect(moveFileToCache('/shared/store/photo.png')).resolves.toBe('');
     });
   });
 
