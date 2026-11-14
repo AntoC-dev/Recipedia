@@ -130,22 +130,8 @@
     "react-dom": "19.3.0"
   },
   "overrides": {
-    "undici": "^6.28.0",
     "npm": "^12.0.2",
-    "fast-uri": "^4.1.2",
-    "zod-validation-error": "^4.0.0",
-    "brace-expansion@<1.1.18": "1.1.18",
-    "brace-expansion@>=2.0.0 <2.1.4": "2.1.4",
-    "brace-expansion@>=3.0.0 <5.0.9": "5.0.9",
-    "ip-address@>=10.0.0 <10.5.0": "10.5.0",
-    "js-yaml@<4.0.0": "3.15.1",
-    "js-yaml@>=4.0.0 <4.3.1": "4.3.1",
-    "nanoid@<3.3.18": "3.3.18",
-    "tar@>=7.0.0 <7.5.22": "7.5.22",
-    "uuid": "^11.1.1",
-    "shell-quote": "^1.12.0",
-    "simple-git": "^4.0.2",
-    "handlebars": "^4.7.10"
+    "uuid": "^11.1.1"
   },
   "private": true,
   "devDependencies": {
@@ -176,7 +162,6 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.7",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-compiler": "19.1.0-rc.2",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-native": "^5.0.0",
     "husky": "9.1.7",
