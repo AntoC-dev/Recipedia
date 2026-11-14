@@ -1,24 +1,19 @@
 /**
- * Search-field focus mode for the recipe form (see ARCHITECTURE.md).
+ * Search-field focus mode for the recipe form (see architecture/recipe-form.md).
  *
- * @module screens/recipe/helpers/autocompleteKeyboardOffset
+ * @module utils/autocompleteFocusMode
  */
 
 import type { HostInstance } from 'react-native';
 import { AUTOCOMPLETE_ANCHOR_ID } from '@components/molecules/TextInputWithDropDown';
 import {
-  AUTOCOMPLETE_MAX_VISIBLE_ROWS,
+  AUTOCOMPLETE_ROW_HEIGHT,
   getAutocompleteBubbleHeight,
 } from '@components/molecules/AutocompleteBubble';
 import { padding } from '@styles/spacing';
 
 /** Read-only DOM-like element of the native tree; the Strict TypeScript API does not export it */
 export type ReadOnlyElement = NonNullable<HostInstance['parentElement']>;
-
-/** Height of a suggestion bubble showing the maximum number of visible rows */
-export const AUTOCOMPLETE_BUBBLE_MAX_HEIGHT = getAutocompleteBubbleHeight(
-  AUTOCOMPLETE_MAX_VISIBLE_ROWS
-);
 
 /**
  * Finds the autocomplete wrapper enclosing a focused element.
@@ -52,29 +47,55 @@ export function measureAutocompleteFieldHeight(
   return focusedInput.getBoundingClientRect().bottom - anchor.getBoundingClientRect().top;
 }
 
+/** Gap between the top of the scroll view and a pinned autocomplete field */
+export const AUTOCOMPLETE_PIN_GAP = padding.small;
+
 /**
- * `bottomOffset` for the keyboard-aware scroll view. With an autocomplete field focused and the
- * keyboard open, adds room for a full suggestion bubble, capped so the field stays a small gap
- * below the top of the scroll view (the scroll view puts the input's bottom `bottomOffset` above
- * the keyboard).
+ * Maximum height of the suggestion list so the bubble of a field pinned `AUTOCOMPLETE_PIN_GAP`
+ * below the scroll view top ends above the keyboard toolbar: the room between the pinned input's
+ * bottom and the keyboard, minus `baseOffset` (toolbar plus caret clearance) and the bubble's tail
+ * and padding. Independent of the rows shown, so it stays stable while typing.
  *
- * @param baseOffset - Offset used for every other input
+ * @param baseOffset - The form's `bottomOffset` (toolbar plus caret clearance)
  * @param fieldHeight - Height of the focused autocomplete field, `null` for any other input
  * @param scrollViewTop - Window y of the scroll view's top edge, `null` until measured
  * @param windowHeight - Window height, as used by the keyboard-aware scroll view
  * @param keyboardHeight - Height the keyboard has (or is animating to); `0` when hidden
- * @returns The offset, never below `baseOffset`
+ * @returns List height in pixels, never below one suggestion row; `undefined` (no cap) when no
+ *   autocomplete field is focused above an open keyboard or the scroll view is not measured yet
  */
-export function getAutocompleteBottomOffset(
+export function getAutocompleteMaxListHeight(
   baseOffset: number,
   fieldHeight: number | null,
   scrollViewTop: number | null,
   windowHeight: number,
   keyboardHeight: number
-): number {
+): number | undefined {
   if (fieldHeight === null || scrollViewTop === null || keyboardHeight <= 0) {
-    return baseOffset;
+    return undefined;
   }
-  const room = windowHeight - keyboardHeight - scrollViewTop - fieldHeight - padding.small;
-  return Math.max(baseOffset, Math.min(baseOffset + AUTOCOMPLETE_BUBBLE_MAX_HEIGHT, room));
+  const roomBelowPinnedInput =
+    windowHeight - keyboardHeight - scrollViewTop - AUTOCOMPLETE_PIN_GAP - fieldHeight;
+  return Math.max(
+    AUTOCOMPLETE_ROW_HEIGHT,
+    roomBelowPinnedInput - baseOffset - getAutocompleteBubbleHeight(0)
+  );
+}
+
+/**
+ * Scroll position that pins an autocomplete field `AUTOCOMPLETE_PIN_GAP` below the top of the
+ * scroll view.
+ * `anchorTop` and `scrollViewTop` must be measured in the same coordinate space at the same time.
+ *
+ * @param currentScrollY - Current vertical scroll offset of the scroll view
+ * @param anchorTop - Top edge of the focused autocomplete field
+ * @param scrollViewTop - Top edge of the scroll view
+ * @returns The vertical offset to scroll to, never below `0`
+ */
+export function getAutocompletePinScrollY(
+  currentScrollY: number,
+  anchorTop: number,
+  scrollViewTop: number
+): number {
+  return Math.max(0, currentScrollY + anchorTop - scrollViewTop - AUTOCOMPLETE_PIN_GAP);
 }

@@ -29,8 +29,8 @@
  */
 
 import React, { ReactNode, useRef, useState } from 'react';
-import { Keyboard, StyleSheet, View } from 'react-native';
-import { KeyboardAwareScrollView, KeyboardToolbar } from 'react-native-keyboard-controller';
+import { Keyboard, StyleSheet } from 'react-native';
+import { KeyboardToolbar } from 'react-native-keyboard-controller';
 import { Snackbar, useTheme } from 'react-native-paper';
 import { FieldErrors, FormProvider, useForm, useFormContext, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -78,7 +78,7 @@ import {
   useIngredientFocusRef,
 } from '@screens/recipe/IngredientFocusContext';
 import { useScalingOnPersonsChange } from '@screens/recipe/hooks/useScalingOnPersonsChange';
-import { useAutocompleteKeyboardOffset } from '@screens/recipe/hooks/useAutocompleteKeyboardOffset';
+import { AutocompleteFocusScrollView } from '@screens/recipe/AutocompleteFocusScrollView';
 import {
   collectMissingElementsFromErrors,
   markAllRecipeFieldsTouched,
@@ -243,8 +243,6 @@ function RecipeFormBody({
     ripple: colors.primaryContainer,
   };
   const [keyboardToolbarHeight, setKeyboardToolbarHeight] = useState(0);
-  const { bottomOffset, scrollViewWrapperRef, onScrollViewLayout, onScrollViewFocus } =
-    useAutocompleteKeyboardOffset(keyboardToolbarHeight + keyboardToolbarCaretClearance);
   const [imgList, setImgList] = useState<string[]>(() => initialImgList ?? []);
   const slotOnSelectOcrFieldRef = useRef<
     ((croppedUri: string, target: OcrModalTarget) => void) | null
@@ -521,48 +519,40 @@ function RecipeFormBody({
         onValidate={validationFunction}
       />
 
-      <View
-        ref={scrollViewWrapperRef}
-        collapsable={false}
-        style={layout.flexFill}
-        onLayout={onScrollViewLayout}
-        onFocus={onScrollViewFocus}
+      <AutocompleteFocusScrollView
+        testID={RECIPE_TEST_ID + '::ScrollView'}
+        bottomOffset={keyboardToolbarHeight + keyboardToolbarCaretClearance}
+        disableScrollOnKeyboardHide
+        decelerationRate={scrollDecelerationRate}
+        horizontal={false}
+        showsVerticalScrollIndicator={false}
+        style={[layout.flexFill, { backgroundColor: colors.background }]}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps={'handled'}
+        keyboardDismissMode='on-drag'
+        nestedScrollEnabled={true}
       >
-        <KeyboardAwareScrollView
-          testID={RECIPE_TEST_ID + '::ScrollView'}
-          bottomOffset={bottomOffset}
-          disableScrollOnKeyboardHide
-          decelerationRate={scrollDecelerationRate}
-          horizontal={false}
-          showsVerticalScrollIndicator={false}
-          style={[layout.flexFill, { backgroundColor: colors.background }]}
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps={'handled'}
-          keyboardDismissMode='on-drag'
-          nestedScrollEnabled={true}
-        >
-          <RecipeImageField form={form} stackMode={stackMode} />
-          <RecipeTitleField form={form} stackMode={stackMode} t={t} />
-          <RecipeDescriptionField form={form} stackMode={stackMode} t={t} />
-          <RecipeTagsField
-            form={form}
-            stackMode={stackMode}
-            randomTags={randomTags}
-            addTag={tags.addTag}
-            removeTag={tags.removeTag}
-          />
-          <RecipePersonsField form={form} stackMode={stackMode} t={t} />
-          <RecipeIngredientsField form={form} stackMode={stackMode} t={t} />
-          <RecipeTimeField form={form} stackMode={stackMode} t={t} />
-          <RecipePreparationField form={form} stackMode={stackMode} t={t} />
-          <RecipeNutritionField
-            form={form}
-            stackMode={stackMode}
-            parentTestId={RECIPE_TEST_ID}
-            t={t}
-          />
-        </KeyboardAwareScrollView>
-      </View>
+        <RecipeImageField form={form} stackMode={stackMode} />
+        <RecipeTitleField form={form} stackMode={stackMode} t={t} />
+        <RecipeDescriptionField form={form} stackMode={stackMode} t={t} />
+        <RecipeTagsField
+          form={form}
+          stackMode={stackMode}
+          randomTags={randomTags}
+          addTag={tags.addTag}
+          removeTag={tags.removeTag}
+        />
+        <RecipePersonsField form={form} stackMode={stackMode} t={t} />
+        <RecipeIngredientsField form={form} stackMode={stackMode} t={t} />
+        <RecipeTimeField form={form} stackMode={stackMode} t={t} />
+        <RecipePreparationField form={form} stackMode={stackMode} t={t} />
+        <RecipeNutritionField
+          form={form}
+          stackMode={stackMode}
+          parentTestId={RECIPE_TEST_ID}
+          t={t}
+        />
+      </AutocompleteFocusScrollView>
 
       <KeyboardToolbar
         theme={{ light: keyboardToolbarColors, dark: keyboardToolbarColors }}
