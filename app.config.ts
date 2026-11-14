@@ -144,6 +144,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
             enableProguardInReleaseBuilds: true,
             enableShrinkResourcesInReleaseBuilds: true,
             usePrecompiledHeaders: true,
+            // AGP 9 R8 strict full mode: ML Kit's bare `-keep class` rule no longer keeps the no-arg
+            // constructor it creates by reflection. Drop once ML Kit ships firebase-components 18+:
+            // https://github.com/googlesamples/mlkit/issues/1001
+            extraProguardRules:
+              '-keep class * implements com.google.firebase.components.ComponentRegistrar { <init>(); }',
           },
           ios: {
             deploymentTarget: '18.0',
