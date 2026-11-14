@@ -98,7 +98,7 @@ export function PyodideWebView(): React.ReactElement | null {
 
     return (
         <View style={styles.container}>
-            <WebView
+            <WebView<object>
                 ref={webViewRef}
                 source={{uri: bundleUri}}
                 originWhitelist={['*']}

@@ -153,7 +153,6 @@ export function IngredientRowField({
   const releaseFocusSlot = () => {
     if (!isRowFocusedRef.current) return;
     isRowFocusedRef.current = false;
-    // eslint-disable-next-line react-compiler/react-compiler -- ref mutation is the intended escape hatch for cross-component focus tracking
     editingIngredientCountRef.current = Math.max(0, editingIngredientCountRef.current - 1);
   };
   useEffect(() => releaseFocusSlot, [editingIngredientCountRef]);
