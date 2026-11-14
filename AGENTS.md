@@ -18,6 +18,7 @@ Using the emulator/simulator dev build (pick a free device, Android preferred, n
 
 - MCP servers live in `.mcp.json` (Claude Code) / `.cursor/mcp.json` (Cursor) — kept in sync by
   `scripts/sync-cursor.mjs` on pre-commit. Edit `.mcp.json`; Cursor copy is regenerated.
+- Skills live only in `.claude/skills/`; Cursor reads them natively (no copy).
 - The `github` server needs a personal token — export `GITHUB_MCP_PAT` (a GitHub PAT) in your shell env. Never commit
   it; the config references `${GITHUB_MCP_PAT}`.
 
