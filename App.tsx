@@ -17,7 +17,6 @@ import { ScraperProvider } from '@app/modules/recipe-scraper';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { init as initFileSystem } from '@utils/FileGestion';
 import { cleanupOrphanedImages } from '@utils/FileGestion';
-import { unregisterLegacyBackgroundTasks } from '@utils/legacyTaskCleanup';
 import { enableFreeze } from 'react-native-screens';
 import { animationsDisabled } from '@utils/Constants';
 
@@ -53,8 +52,6 @@ function AppContent() {
     const initialize = async () => {
       try {
         appLogger.info('Starting app initialization');
-
-        void unregisterLegacyBackgroundTasks();
 
         initFileSystem();
 
