@@ -3,7 +3,7 @@ const {disableGwpAsan} = require('./gwpAsanManifest');
 
 /**
  * Disables GWP-ASan on Android to avoid a Hermes SIGSEGV
- * (https://github.com/facebook/hermes/issues/2225); see ARCHITECTURE.md.
+ * (https://github.com/facebook/hermes/issues/2225); see architecture/invariants.md.
  *
  * @param {import('@expo/config-plugins').ExportedConfig} config
  */

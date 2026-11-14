@@ -553,7 +553,7 @@ language case.
 ## Decimal Separators (Device Region)
 
 Numbers follow the **device region**, never the app language — see
-`ARCHITECTURE.md` §9 and `src/utils/NumberFormat.ts`.
+`architecture/ui-invariants.md` (Numbers) and `src/utils/NumberFormat.ts`.
 
 `text:` is a full-string **regex**, so a bare `.` is a wildcard: `'8.53 g'` also
 matches `8,53 g`. Write the decimal point as a character class, in the injected

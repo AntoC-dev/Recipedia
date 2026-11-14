@@ -110,7 +110,7 @@ src/
 ## 📖 Documentation
 
 - [API Documentation](https://AntoC-dev.github.io/Recipedia/) — TypeScript reference, auto-generated with TypeDoc
-- [Architecture](ARCHITECTURE.md) — data flow, DB schema, key invariants
+- [Architecture](architecture/README.md) — data flow, DB schema, key invariants
 - [Contributing](CONTRIBUTING.md)
 - [Installation Guide](guides/installation.md)
 - [FAQ](guides/faq.md)
