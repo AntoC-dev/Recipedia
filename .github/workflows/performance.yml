@@ -146,7 +146,7 @@ jobs:
       - name: Setup Maestro CLI
         uses: dniHze/maestro-test-action@v1
         with:
-          version: '2.8.0'
+          version: '2.12.1'
 
       - name: Enable KVM
         run: |

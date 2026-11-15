@@ -35,7 +35,7 @@ export function AuthWebView({loginUrl}: Props): React.ReactElement {
 
     return (
         <View style={styles.container}>
-            <WebView
+            <WebView<object>
                 ref={webViewRef}
                 source={{uri: loginUrl}}
                 originWhitelist={['*']}

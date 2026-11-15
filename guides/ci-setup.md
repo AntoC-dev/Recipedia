@@ -100,7 +100,7 @@ The main E2E jobs run the suites of `.github/e2e-suites.json` in a `fail-fast: f
 - Suites sharing a `group` run one after another in a single job named `<suite>+<suite>`, saving the per-job device setup (~5–7 min on iOS). Only short suites are grouped: a GitHub re-run repeats the whole group.
 - Job timeout: 240 min on iOS, 150 on Android; run step 200 / 120 min.
 
-The main E2E jobs run the full suite list; the performance and production-smoke jobs run a single suite (`performance`, `smoke`). Maestro 2.8.0 is used on both platforms.
+The main E2E jobs run the full suite list; the performance and production-smoke jobs run a single suite (`performance`, `smoke`). Maestro 2.12.1 is used on both platforms.
 
 | | Android | iOS |
 |---|---|---|

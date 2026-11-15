@@ -69,8 +69,6 @@ const primaryColorLight = '#006D38';
 const primaryColorDark = '#79DB95';
 
 export default ({ config }: ConfigContext): ExpoConfig => {
-  const isProduction = process.env.NODE_ENV === 'production';
-
   return {
     ...config,
     name: configuredName,
@@ -118,7 +116,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       'expo-localization',
       'expo-sqlite',
       'expo-mail-composer',
-      'expo-background-task',
       'expo-font',
       [
         'expo-sharing',
@@ -141,12 +138,17 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         'expo-build-properties',
         {
           android: {
-            compileSdkVersion: 36,
+            compileSdkVersion: 37,
             targetSdkVersion: 36,
             buildToolsVersion: '36.0.0',
             enableProguardInReleaseBuilds: true,
             enableShrinkResourcesInReleaseBuilds: true,
             usePrecompiledHeaders: true,
+            // AGP 9 R8 strict full mode: ML Kit's bare `-keep class` rule no longer keeps the no-arg
+            // constructor it creates by reflection. Drop once ML Kit ships firebase-components 18+:
+            // https://github.com/googlesamples/mlkit/issues/1001
+            extraProguardRules:
+              '-keep class * implements com.google.firebase.components.ComponentRegistrar { <init>(); }',
           },
           ios: {
             deploymentTarget: '18.0',
@@ -165,12 +167,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       },
     },
     owner: 'antoc',
-    // Reduce build overhead for development
-    updates: isProduction
-      ? {}
-      : {
-          enabled: false,
-        },
     experiments: {
       reactCompiler: true,
     },

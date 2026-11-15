@@ -13,6 +13,7 @@ import {
   getSharedPayloads,
   type SharePayload,
 } from 'expo-sharing';
+import { moveFileToCache } from '@utils/FileGestion';
 
 /**
  * Import action derived from shared content.
@@ -26,7 +27,8 @@ async function toSharedImport(payloads: SharePayload[]): Promise<SharedImport> {
   if (payloads.some(payload => payload.shareType === 'image')) {
     const resolved = await getResolvedSharedPayloadsAsync();
     const imageUri = resolved.find(payload => payload.contentType === 'image')?.contentUri;
-    return imageUri ? { kind: 'image', uri: imageUri } : { kind: 'unsupported' };
+    const cachedUri = imageUri ? await moveFileToCache(imageUri) : '';
+    return cachedUri ? { kind: 'image', uri: cachedUri } : { kind: 'unsupported' };
   }
   const url = payloads
     .map(payload => payload.value?.trim())
@@ -38,8 +40,8 @@ async function toSharedImport(payloads: SharePayload[]): Promise<SharedImport> {
  * Reads what was shared with the app, maps it to an import action and clears it, so
  * each share is handled once.
  *
- * Only a photo is resolved, which copies it to a local file the OCR can read; a link
- * is handed to the scraper as is.
+ * Only a photo is resolved and moved to the app cache, since clearing the share deletes
+ * the file expo-sharing resolved; a link is handed to the scraper as is.
  *
  * @returns The import action, or `undefined` when nothing was shared
  *

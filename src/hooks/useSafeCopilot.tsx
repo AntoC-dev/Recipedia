@@ -13,7 +13,6 @@ export function useSafeCopilot() {
   try {
     // Intentional try-catch around hook for graceful degradation
     // when CopilotProvider is not in the component tree.
-    // eslint-disable-next-line react-compiler/react-compiler
     return useCopilot();
   } catch {
     return null;
