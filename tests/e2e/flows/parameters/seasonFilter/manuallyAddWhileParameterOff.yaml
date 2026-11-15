@@ -14,7 +14,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::0"
     direction: DOWN
-    speed: 50
+    speed: 20
     centerElement: true
     label: "Scroll to season accordion"
 
@@ -30,7 +30,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::0::Item::0"
     direction: DOWN
-    speed: 50
+    speed: 20
     centerElement: true
     label: "Scroll to first season filter item"
 

@@ -22,7 +22,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::1"
     direction: DOWN
-    speed: 50
+    speed: 20
     centerElement: true
     label: "Scroll to Preparation Time accordion"
 
@@ -38,7 +38,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::FilterAccordion::Accordion::1::Item::0"
     direction: DOWN
-    speed: 50
+    speed: 20
     centerElement: true
     label: "Scroll to first preparation time filter item"
 
