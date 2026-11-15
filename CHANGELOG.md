@@ -1,3 +1,11 @@
+## [2.58.1](https://github.com/AntoC-dev/Recipedia/compare/v2.58.0...v2.58.1) (2026-11-15)
+
+### Bug Fixes
+
+* **android:** keep ML Kit component registrar constructors under R8 ([b62974f](https://github.com/AntoC-dev/Recipedia/commit/b62974f46b39692582052654c468333ab2d6696f)), closes [googlesamples/mlkit#1001](https://github.com/googlesamples/mlkit/issues/1001)
+* **scraper:** pass WebView props type explicitly on iOS ([27c5815](https://github.com/AntoC-dev/Recipedia/commit/27c5815f8e0db6061219cf998b346e555fe53402)), closes [react-native-webview#3977](https://github.com/AntoC-dev/react-native-webview/issues/3977) [#645](https://github.com/AntoC-dev/Recipedia/issues/645)
+* **share:** move shared photo to app cache before clearing the share ([c2f80b4](https://github.com/AntoC-dev/Recipedia/commit/c2f80b4a1ef9b075acb8ced34d84d0f8a905c657))
+
 ## [2.58.0](https://github.com/AntoC-dev/Recipedia/compare/v2.57.2...v2.58.0) (2026-11-10)
 
 ### Features
