@@ -9,4 +9,4 @@ export const DEFAULT_CONFIG: Required<Omit<RecipeScraperPluginConfig, 'buildPyth
     abiFilters: ['arm64-v8a', 'x86_64'],
 };
 
-export const CHAQUOPY_VERSION = '17.0.0';
+export const CHAQUOPY_VERSION = '17.1.0';
