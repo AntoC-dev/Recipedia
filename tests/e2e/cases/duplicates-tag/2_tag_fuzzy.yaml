@@ -73,6 +73,14 @@ tags:
       EDIT_SUFFIX: ""
     label: "Action - Confirm adding fuzzy tag without editing"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::HeaderText"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll back to recipe tags"
+
 - assertVisible:
     id: "RecipeTags::1::Chip"
     label: "Assert - Verify second tag added to recipe"

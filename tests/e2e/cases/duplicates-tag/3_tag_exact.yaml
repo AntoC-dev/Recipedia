@@ -110,6 +110,14 @@ tags:
       VALUE: "Dessert"
     label: "Action - Try to add same tag again"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::HeaderText"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll back to recipe tags"
+
 - assertVisible:
     id: "RecipeTags::0::Chip"
     label: "Assert - Verify only one tag chip exists"
