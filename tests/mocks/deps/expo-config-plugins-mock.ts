@@ -4,8 +4,15 @@ type ModAction<T> = (config: T & { modResults: unknown }) => T & { modResults: u
 
 type ManifestApplication = NonNullable<AndroidManifest['manifest']['application']>[number];
 
-export function expoConfigPluginsMock(androidManifest: unknown, gradleProperties: unknown = []) {
+export function expoConfigPluginsMock(
+  androidManifest: unknown,
+  gradleProperties: unknown = [],
+  appBuildGradle: { language: string; contents: string } = { language: 'groovy', contents: '' }
+) {
   return {
+    withAppBuildGradle: jest.fn(<T extends object>(config: T, action: ModAction<T>) =>
+      action({ ...config, modResults: { ...appBuildGradle } })
+    ),
     withAndroidManifest: jest.fn(<T extends object>(config: T, action: ModAction<T>) =>
       action({ ...config, modResults: androidManifest })
     ),
