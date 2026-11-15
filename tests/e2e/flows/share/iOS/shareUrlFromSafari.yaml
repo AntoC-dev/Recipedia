@@ -1,5 +1,15 @@
 appId: "com.recipedia"
 ---
+- launchApp:
+    appId: "com.apple.mobilesafari"
+    label: "Warm up Safari before opening the link"
+
+- extendedWaitUntil:
+    visible:
+      id: "MoreMenuButton"
+    timeout: 60000
+    label: "Wait for Safari toolbar"
+
 - openLink:
     link: "${RECIPE_URL}"
     label: "Open the recipe page in Safari"
