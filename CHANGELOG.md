@@ -1,3 +1,13 @@
+## [2.59.0](https://github.com/AntoC-dev/Recipedia/compare/v2.58.1...v2.59.0) (2026-11-16)
+
+### Features
+
+* **recipe-form:** add isPreparationStepBlank helper ([96618bb](https://github.com/AntoC-dev/Recipedia/commit/96618bb017f2d8af6ae0555cb46eed98997697e7)), closes [#690](https://github.com/AntoC-dev/Recipedia/issues/690)
+* **recipe-form:** add removeStep to the preparation step array ([aa3267b](https://github.com/AntoC-dev/Recipedia/commit/aa3267b0e9cff1d8de2e27fef585e2b68eb3a67e)), closes [#690](https://github.com/AntoC-dev/Recipedia/issues/690)
+* **recipe:** delete preparation steps in the recipe form ([84280cd](https://github.com/AntoC-dev/Recipedia/commit/84280cde99cfd6722eba86d311a75e9e5f8b04db)), closes [#690](https://github.com/AntoC-dev/Recipedia/issues/690)
+* **recipe:** delete preparation steps in the recipe form ([#715](https://github.com/AntoC-dev/Recipedia/issues/715)) ([7f1013d](https://github.com/AntoC-dev/Recipedia/commit/7f1013d7651daa2f978325b9355c45afcaa2ec51))
+* **recipe:** show editable preparation steps as filled cards ([4eca473](https://github.com/AntoC-dev/Recipedia/commit/4eca473d07f8a2af05954cea65d2b7ef1fe9ce41)), closes [#690](https://github.com/AntoC-dev/Recipedia/issues/690)
+
 ## [2.58.1](https://github.com/AntoC-dev/Recipedia/compare/v2.58.0...v2.58.1) (2026-11-15)
 
 ### Bug Fixes
