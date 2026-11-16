@@ -4,8 +4,8 @@ appId: "com.recipedia"
     text: "Parameters"
     label: "Navigate to Parameters screen"
 
-- tapOn:
-    id: "Parameters::Section::RecipeDefaults::Season::Switch"
+- runFlow:
+    file: "turnSeasonFilterOn.yaml"
     label: "Set season filter to ON"
 
 - tapOn:
@@ -108,6 +108,6 @@ appId: "com.recipedia"
     text: "Parameters"
     label: "Navigate back to Parameters"
 
-- tapOn:
-    id: "Parameters::Section::RecipeDefaults::Season::Switch"
+- runFlow:
+    file: "turnSeasonFilterOff.yaml"
     label: "Reset season filter to OFF"

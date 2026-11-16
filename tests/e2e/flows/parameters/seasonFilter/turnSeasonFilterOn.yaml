@@ -1,0 +1,12 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "Parameters::Section::RecipeDefaults::Season::Switch"
+    label: "Set season filter to ON"
+
+- extendedWaitUntil:
+    visible:
+      id: "Parameters::Section::RecipeDefaults::Season::Switch"
+      checked: true
+    timeout: 10000
+    label: "Wait for season filter switch to be ON"
