@@ -355,24 +355,21 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::0::Step"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll down to the preparation step"
-
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::EditableStep::0::Step"
+      id: "RecipePreparation::EditableStep::0::DeleteButton"
     direction: DOWN
     speed: 20
     centerElement: true
     label: "Scroll down to the first preparation step"
 
 - assertVisible:
-    id: "RecipePreparation::EditableStep::0::Step"
     text: "Step 1"
+    childOf:
+      id: "RecipePreparation::EditableStep::0"
     label: "Preparation section for first step is rendered"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::DeleteButton"
+    label: "Delete button for first step is rendered"
 
 - scrollUntilVisible:
     element:
@@ -384,7 +381,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Title"
-    text: "Title of step 1 : "
+    text: "Title"
     label: "Intro text for the title of first step is rendered"
 
 - scrollUntilVisible:
@@ -410,7 +407,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::0::Content"
-    text: "Content of step 1 : "
+    text: "Instructions"
     label: "Intro text for first step is rendered"
 
 - scrollUntilVisible:
@@ -427,16 +424,21 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::1::Step"
+      id: "RecipePreparation::EditableStep::1::DeleteButton"
     direction: DOWN
     speed: 20
     centerElement: true
     label: "Scroll down to the second step input"
 
 - assertVisible:
-    id: "RecipePreparation::EditableStep::1::Step"
     text: "Step 2"
+    childOf:
+      id: "RecipePreparation::EditableStep::1"
     label: "Preparation section for second step is rendered"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::1::DeleteButton"
+    label: "Delete button for second step is rendered"
 
 - scrollUntilVisible:
     element:
@@ -448,7 +450,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::Title"
-    text: "Title of step 2 : "
+    text: "Title"
     label: "Intro text for the title of second step is rendered"
 
 - scrollUntilVisible:
@@ -474,7 +476,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::Content"
-    text: "Content of step 2 : "
+    text: "Instructions"
     label: "Intro text for second step is rendered"
 
 - scrollUntilVisible:
@@ -491,16 +493,21 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::2::Step"
+      id: "RecipePreparation::EditableStep::2::DeleteButton"
     direction: DOWN
     speed: 20
     centerElement: true
     label: "Scroll down to the third step input"
 
 - assertVisible:
-    id: "RecipePreparation::EditableStep::2::Step"
     text: "Step 3"
+    childOf:
+      id: "RecipePreparation::EditableStep::2"
     label: "Preparation section for third step is rendered"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::2::DeleteButton"
+    label: "Delete button for third step is rendered"
 
 - scrollUntilVisible:
     element:
@@ -512,7 +519,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::Title"
-    text: "Title of step 3 : "
+    text: "Title"
     label: "Intro text for the title of third step is rendered"
 
 - scrollUntilVisible:
@@ -538,7 +545,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::Content"
-    text: "Content of step 3 : "
+    text: "Instructions"
     label: "Intro text for third step is rendered"
 
 - scrollUntilVisible:
@@ -555,16 +562,21 @@ appId: "com.recipedia"
 
 - scrollUntilVisible:
     element:
-      id: "RecipePreparation::EditableStep::3::Step"
+      id: "RecipePreparation::EditableStep::3::DeleteButton"
     direction: DOWN
     speed: 20
     centerElement: true
     label: "Scroll down to the fourth step input"
 
 - assertVisible:
-    id: "RecipePreparation::EditableStep::3::Step"
     text: "Step 4"
+    childOf:
+      id: "RecipePreparation::EditableStep::3"
     label: "Preparation section for Fourth step is rendered"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::3::DeleteButton"
+    label: "Delete button for fourth step is rendered"
 
 - scrollUntilVisible:
     element:
@@ -576,7 +588,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::3::Title"
-    text: "Title of step 4 : "
+    text: "Title"
     label: "Intro text for the title of Fourth step is rendered"
 
 - scrollUntilVisible:
@@ -602,7 +614,7 @@ appId: "com.recipedia"
 
 - assertVisible:
     id: "RecipePreparation::EditableStep::3::Content"
-    text: "Content of step 4 : "
+    text: "Instructions"
     label: "Intro text for Fourth step is rendered"
 
 - scrollUntilVisible:

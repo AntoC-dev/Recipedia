@@ -8,8 +8,8 @@
  *
  * - `RecipePreparation` (default): read-only render of a preparation steps
  *   array.
- * - `EditableStep`: a single editable row with blur-commit title +
- *   description inputs. Used by the per-row field wrapper.
+ * - `EditableStep`: a single editable step in a contained card, with blur-commit title + description inputs and a delete
+ *   button. Used by the per-row field wrapper.
  * - `PreparationSection`: prefix-text frame around the editable rows, with the
  *   add button and, with `withScan`, the OCR scan button.
  *
@@ -17,10 +17,11 @@
  */
 
 import React from 'react';
-import { View } from 'react-native';
-import { HelperText, Text } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Card, HelperText, IconButton, Text, useTheme } from 'react-native-paper';
 import { preparationStepElement, recipeColumnsNames } from '@customTypes/DatabaseElementTypes';
 import { recipeButtonStyles, recipeTextRenderStyles } from '@styles/recipeComponents';
+import { padding } from '@styles/spacing';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { ScanButton } from '@components/molecules/ScanButton';
 import { Icons } from '@assets/Icons';
@@ -62,6 +63,7 @@ export interface EditableStepProps {
   onDescriptionChange: (description: string) => void;
   onTitleCommit: (title: string) => void;
   onDescriptionCommit: (description: string) => void;
+  onRemove: () => void;
   /** Optional translated inline error for the step's description (required by schema). */
   descriptionError?: string;
 }
@@ -117,7 +119,7 @@ export function PreparationSection({
       <Text
         testID={`${TEST_ID}::PrefixText`}
         variant={'headlineSmall'}
-        style={recipeTextRenderStyles.containerElement}
+        style={[recipeTextRenderStyles.containerElement, stepStyles.prefixText]}
       >
         {prefixText}
       </Text>
@@ -159,59 +161,69 @@ export function EditableStep({
   onDescriptionChange,
   onTitleCommit,
   onDescriptionCommit,
+  onRemove,
   descriptionError,
 }: EditableStepProps) {
   const testId = `${TEST_ID}::EditableStep::${index}`;
   const { t } = useI18n();
+  const { colors } = useTheme();
 
   return (
-    <View style={recipeTextRenderStyles.containerSection}>
-      <Text
-        testID={testId + `::Step`}
-        variant='titleLarge'
-        style={recipeTextRenderStyles.headlineElement}
+    <View testID={testId} collapsable={false}>
+      <Card
+        mode='contained'
+        style={[stepStyles.card, { backgroundColor: colors.elevation.level1 }]}
       >
-        {t('preparationOCRStep')} {index + 1}
-      </Text>
-
-      <View style={recipeTextRenderStyles.containerSection}>
-        <Text
-          testID={testId + `::Title`}
-          variant='titleMedium'
-          style={recipeTextRenderStyles.containerElement}
-        >
-          {t('preparationOCRStepTitle')} {index + 1} :{' '}
-        </Text>
-        <CustomTextInput
-          testID={testId + `::TextInputTitle`}
-          value={title}
-          style={recipeTextRenderStyles.containerElement}
-          onChangeText={onTitleChange}
-          onEndEditing={onTitleCommit}
-          multiline={true}
+        <Card.Title
+          title={`${t('preparationStep')} ${index + 1}`}
+          titleVariant='titleMedium'
+          titleStyle={{ color: colors.primary }}
+          right={props => (
+            <IconButton
+              {...props}
+              testID={testId + `::DeleteButton`}
+              icon={Icons.trashIcon}
+              iconColor={colors.error}
+              accessibilityLabel={t('preparationDeleteStep', { number: index + 1 })}
+              onPress={onRemove}
+            />
+          )}
         />
-        <Text
-          testID={testId + `::Content`}
-          variant='titleMedium'
-          style={recipeTextRenderStyles.containerElement}
-        >
-          {t('preparationOCRStepContent')} {index + 1} :{' '}
-        </Text>
-        <CustomTextInput
-          testID={testId + `::TextInputContent`}
-          style={recipeTextRenderStyles.containerElement}
-          value={description}
-          onChangeText={onDescriptionChange}
-          onEndEditing={onDescriptionCommit}
-          multiline={true}
-          error={!!descriptionError}
-        />
-        {descriptionError ? (
-          <HelperText testID={testId + `::DescriptionError`} type='error' visible={true}>
-            {descriptionError}
-          </HelperText>
-        ) : null}
-      </View>
+        <Card.Content style={stepStyles.content}>
+          <Text testID={testId + `::Title`} variant='labelLarge'>
+            {t('preparationStepTitle')}
+          </Text>
+          <CustomTextInput
+            testID={testId + `::TextInputTitle`}
+            value={title}
+            onChangeText={onTitleChange}
+            onEndEditing={onTitleCommit}
+            multiline={true}
+          />
+          <Text testID={testId + `::Content`} variant='labelLarge'>
+            {t('preparationStepContent')}
+          </Text>
+          <CustomTextInput
+            testID={testId + `::TextInputContent`}
+            value={description}
+            onChangeText={onDescriptionChange}
+            onEndEditing={onDescriptionCommit}
+            multiline={true}
+            error={!!descriptionError}
+          />
+          {descriptionError ? (
+            <HelperText testID={testId + `::DescriptionError`} type='error' visible={true}>
+              {descriptionError}
+            </HelperText>
+          ) : null}
+        </Card.Content>
+      </Card>
     </View>
   );
 }
+
+const stepStyles = StyleSheet.create({
+  prefixText: { paddingBottom: padding.large },
+  card: { marginBottom: padding.large },
+  content: { gap: padding.small },
+});

@@ -38,7 +38,13 @@ appId: "com.recipedia"
       platform: iOS
 
 - extendedWaitUntil:
+    notVisible:
+      id: "RecipeOcrLoading::Overlay"
+    timeout: 120000
+    label: "Wait for OCR extraction to finish"
+
+- extendedWaitUntil:
     visible:
-      id: "RecipePreparation::EditableStep::.*::Step"
+      id: "RecipePreparation::EditableStep::.*::DeleteButton"
     timeout: 120000
     label: "Wait for first preparation step to be populated by OCR"

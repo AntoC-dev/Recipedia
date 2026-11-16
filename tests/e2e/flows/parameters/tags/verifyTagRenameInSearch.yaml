@@ -71,7 +71,7 @@ appId: "com.recipedia"
     element:
       id: "SearchScreen::RecipeCards::1::Cover"
     direction: DOWN
-    speed: 50
+    speed: 20
     centerElement: true
     label: "Scroll to recipe card"
 

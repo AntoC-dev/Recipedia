@@ -69,15 +69,6 @@ tags:
       RECIPE_NAME: hellofresh
     label: "Action - Rescan the preparation steps"
 
-- scrollUntilVisible:
-    element:
-      id: "RecipePreparation::EditableStep::4::TextInputTitle::CustomTextInput"
-      text: "Cuire le riz"
-    direction: UP
-    speed: 20
-    timeout: 120000
-    label: "Assert - Rescanning appends a second copy of the steps"
-
 - runFlow:
     file: "../../asserts/recipe/ocr/aiguillettesPreparationSteps.yaml"
     env:

@@ -19,3 +19,4 @@ executionOrder:
     - "8 - Recipe Edit Save Then Cancel Restores Saved Flow"
     - "9 - Recipe Edit Cancel Then Re-Enter No Inline Errors Flow"
     - "10 - Recipe Edit Discard Unsaved Changes Flow"
+    - "11 - Recipe Edit Delete Preparation Step Flow"

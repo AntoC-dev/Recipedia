@@ -1,0 +1,168 @@
+name: "10 - Recipe Create Delete Preparation Step Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-create
+---
+- runFlow:
+    file: "../../flows/recipe/adding/manual/en/openAddManually.yaml"
+    label: "Action - Open manual recipe adding screen"
+
+- runFlow:
+    file: "../../flows/recipe/adding/en/addRecipeImage.yaml"
+    label: "Action - Add recipe image"
+
+- runFlow:
+    file: "../../flows/recipe/adding/createTwoIngredientRecipe.yaml"
+    env:
+      PERSONS: "2"
+      ING0_NAME: "Pasta"
+      ING0_QTY: "200"
+      ING1_NAME: "Tomatoes"
+      ING1_QTY: "100"
+      TIME: "20"
+    label: "Action - Fill Test Recipe with a first step (Cook pasta and mix with tomatoes)"
+
+- runFlow:
+    file: "../../flows/recipe/addRow.yaml"
+    env:
+      SECTION: "RecipePreparation"
+    label: "Action - Add a second, blank step"
+
+- runFlow:
+    file: "../../flows/recipe/addRow.yaml"
+    env:
+      SECTION: "RecipePreparation"
+    label: "Action - Add a third step"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to the third step content"
+
+- runFlow:
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
+    label: "Action - Focus the third step content"
+
+- runFlow:
+    file: "../../flows/inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
+      VALUE: "Serve hot"
+    label: "Action - Fill the third step"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::1::DeleteButton"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll to the blank step delete button"
+
+- tapOn:
+    id: "RecipePreparation::EditableStep::1::DeleteButton"
+    label: "Action - Delete the blank middle step"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+      text: "Serve hot"
+    timeout: 3000
+    label: "Assert - Blank step removed at once, last step moved up"
+
+- assertVisible:
+    text: "Step 2"
+    childOf:
+      id: "RecipePreparation::EditableStep::1"
+    label: "Assert - Moved step is renumbered to Step 2"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::DeleteButton"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll to the first step delete button"
+
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::DeleteButton"
+    label: "Action - Delete the filled first step"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipePreparation::EditableStep::0::DeleteConfirmation::ConfirmButton"
+    timeout: 3000
+    label: "Assert - A step with content asks for confirmation"
+
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::DeleteConfirmation::ConfirmButton"
+    label: "Action - Confirm the deletion"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipePreparation::EditableStep::0::TextInputContent::CustomTextInput"
+      text: "Serve hot"
+    timeout: 3000
+    label: "Assert - Last step moved into first place"
+
+- assertVisible:
+    text: "Step 1"
+    childOf:
+      id: "RecipePreparation::EditableStep::0"
+    label: "Assert - Last step is renumbered to Step 1"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
+    text: ""
+    label: "Assert - The remaining step keeps its empty title"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::AddButton::RoundButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to the add step button right after the last step"
+
+- assertNotVisible:
+    id: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+    label: "Assert - No second step remains right above the add button"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Action - Validate the recipe"
+
+- runFlow:
+    file: "../../asserts/alerts/en/recipeAddedToDatabase.yaml"
+    env:
+      RECIPE_NAME: "Test Recipe"
+    label: "Assert - Recipe added to the database"
+
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Test Recipe"
+    label: "Action - Find the new recipe"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::0::SectionTitle"
+      text: "1\\)\\s*"
+    direction: DOWN
+    speed: 20
+    timeout: 30000
+    centerElement: true
+    label: "Assert - Saved step 1 has the remaining step's empty title"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::0::SectionParagraph"
+    text: "Serve hot"
+    label: "Assert - Saved step 1 content is the remaining step"
+
+- assertNotVisible:
+    id: "RecipePreparation::ReadOnlyStep::1::SectionTitle"
+    label: "Assert - Only the remaining step is saved"

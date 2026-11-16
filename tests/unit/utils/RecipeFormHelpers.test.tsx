@@ -12,6 +12,7 @@ import {
   getServingsScaledFrom,
   getValidationButtonConfig,
   IMAGE_BUTTON_CONFIG,
+  isPreparationStepBlank,
   scaleRecipeForSave,
 } from '@utils/RecipeFormHelpers';
 import { recipeStateType } from '@customTypes/ScreenTypes';
@@ -1133,5 +1134,25 @@ describe('withScan wiring', () => {
     test.each(editableModes)('sets withScan only in addOCR mode (%s)', stackMode => {
       expect(getWithScan(stackMode)).toBe(stackMode === recipeStateType.addOCR);
     });
+  });
+});
+
+describe('isPreparationStepBlank', () => {
+  test.each([
+    ['both fields are empty', { title: '', description: '' }],
+    ['both fields are whitespace only', { title: '  ', description: '\n\t ' }],
+  ])('is blank when %s', (_, step) => {
+    expect(isPreparationStepBlank(step)).toBe(true);
+  });
+
+  test.each([
+    ['only the title is filled', { title: 'Boil', description: '' }],
+    ['only the description is filled', { title: '', description: 'Boil water' }],
+    [
+      'the description is a single character surrounded by spaces',
+      { title: '', description: '  a  ' },
+    ],
+  ])('is not blank when %s', (_, step) => {
+    expect(isPreparationStepBlank(step)).toBe(false);
   });
 });
