@@ -23,6 +23,7 @@ tags:
     speed: 20
     direction: UP
     centerElement: true
+    timeout: 60000
     label: "Scroll to RecipeTitle::CustomTextInput"
 
 - runFlow:
