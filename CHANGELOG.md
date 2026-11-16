@@ -1,3 +1,10 @@
+## [2.59.1](https://github.com/AntoC-dev/Recipedia/compare/v2.59.0...v2.59.1) (2026-11-16)
+
+### Bug Fixes
+
+* **recipe:** pin focused autocomplete field below the app bar ([5d1878a](https://github.com/AntoC-dev/Recipedia/commit/5d1878a2da319dd9c25d4e80e7ac336e9edea824)), closes [#1689](https://github.com/AntoC-dev/Recipedia/issues/1689) [#625](https://github.com/AntoC-dev/Recipedia/issues/625)
+* **recipe:** pin focused autocomplete field below the app bar ([#720](https://github.com/AntoC-dev/Recipedia/issues/720)) ([dda65f3](https://github.com/AntoC-dev/Recipedia/commit/dda65f30667bd7010e49035e01a281b7fd5d38da)), closes [#625](https://github.com/AntoC-dev/Recipedia/issues/625)
+
 ## [2.59.0](https://github.com/AntoC-dev/Recipedia/compare/v2.58.1...v2.59.0) (2026-11-16)
 
 ### Features
