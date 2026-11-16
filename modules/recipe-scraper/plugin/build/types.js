@@ -5,4 +5,4 @@ exports.DEFAULT_CONFIG = {
     pythonVersion: '3.13',
     abiFilters: ['arm64-v8a', 'x86_64'],
 };
-exports.CHAQUOPY_VERSION = '17.0.0';
+exports.CHAQUOPY_VERSION = '17.1.0';

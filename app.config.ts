@@ -140,7 +140,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           android: {
             compileSdkVersion: 37,
             targetSdkVersion: 36,
-            buildToolsVersion: '36.0.0',
+            buildToolsVersion: '37.0.0',
             enableProguardInReleaseBuilds: true,
             enableShrinkResourcesInReleaseBuilds: true,
             usePrecompiledHeaders: true,
