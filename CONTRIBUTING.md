@@ -561,14 +561,14 @@ When submitting a PR, update the relevant docs alongside the code:
 | Change | What to update |
 |--------|----------------|
 | Add/modify exported function or type in `utils/` or `hooks/` | TSDoc block on that export; run `npm run docs:build` |
-| Add a new React Context provider | `ARCHITECTURE.md` — State management section |
-| Introduce a new architectural pattern or invariant | `ARCHITECTURE.md` — relevant section + Key Invariants |
-| Change navigation structure | `ARCHITECTURE.md` — Navigation section |
+| Add a new React Context provider | `architecture/state.md` |
+| Introduce a new architectural pattern or invariant | Relevant `architecture/` doc + `architecture/invariants.md` |
+| Change navigation structure | `architecture/navigation.md` |
 | Add a workflow spanning multiple layers (new import pipeline, new form type) | New file in `guides/` |
 | Add a new dev setup requirement (env var, native dep) | `guides/installation.md` |
 
 Docs files live in:
-- `ARCHITECTURE.md` — system-level overview and invariants (root)
+- `architecture/` — system-level overview and invariants (index: `architecture/README.md`)
 - `guides/` — step-by-step guides for setup, testing, CI, FAQ
 
 #### Documentation Publishing

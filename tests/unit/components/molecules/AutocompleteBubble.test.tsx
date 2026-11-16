@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, RenderResult } from '@testing-library/react-native';
 import {
   AUTOCOMPLETE_DIVIDER_THICKNESS,
   AUTOCOMPLETE_MAX_VISIBLE_ROWS,
@@ -11,6 +11,7 @@ import {
   getAutocompleteListHeight,
   splitHighlight,
 } from '@components/molecules/AutocompleteBubble';
+import { AutocompleteMaxListHeightContext } from '@context/AutocompleteMaxListHeightContext';
 import { scrollDecelerationRate } from '@utils/Constants';
 
 const listId = 'AutocompleteBubble::AutocompleteList';
@@ -110,6 +111,41 @@ describe('AutocompleteBubble', () => {
       />
     );
   }
+
+  async function renderBubbleWithMaxListHeight(maxListHeight: number | undefined) {
+    return render(
+      <AutocompleteMaxListHeightContext.Provider value={maxListHeight}>
+        <AutocompleteBubble
+          testID='AutocompleteBubble'
+          items={manyItems}
+          query=''
+          onSelect={jest.fn()}
+        />
+      </AutocompleteMaxListHeightContext.Provider>
+    );
+  }
+
+  function viewportStyle(getByTestId: RenderResult['getByTestId']) {
+    return StyleSheet.flatten(getByTestId(viewportId).props.style);
+  }
+
+  test('bounds the list container to the provided max list height', async () => {
+    const { getByTestId } = await renderBubbleWithMaxListHeight(70);
+
+    expect(viewportStyle(getByTestId).maxHeight).toBe(70);
+  });
+
+  test('leaves the list container unbounded while the provider has no cap', async () => {
+    const { getByTestId } = await renderBubbleWithMaxListHeight(undefined);
+
+    expect(viewportStyle(getByTestId).maxHeight).toBeUndefined();
+  });
+
+  test('leaves the list container unbounded without a provider', async () => {
+    const { getByTestId } = await renderBubble(['A', 'B']);
+
+    expect(viewportStyle(getByTestId).maxHeight).toBeUndefined();
+  });
 
   test('keeps taps and nested scrolling working inside the form scroll view', async () => {
     const { getByTestId } = await renderBubble(['A', 'B']);

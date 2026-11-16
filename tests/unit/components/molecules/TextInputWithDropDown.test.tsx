@@ -1,5 +1,5 @@
 import React, { act } from 'react';
-import { AccessibilityInfo, Keyboard, View } from 'react-native';
+import { AccessibilityInfo, Keyboard, StyleSheet, View } from 'react-native';
 import { fireEvent, render, waitFor, within, RenderResult } from '@testing-library/react-native';
 import {
   TextInputWithDropDown,
@@ -7,6 +7,7 @@ import {
   filterSuggestions,
   TextInputWithDropDownType,
 } from '@components/molecules/TextInputWithDropDown';
+import { AutocompleteMaxListHeightContext } from '@context/AutocompleteMaxListHeightContext';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
@@ -576,5 +577,39 @@ describe('TextInputWithDropDown accessibility', () => {
     await typeText(getByTestId, 'xyz');
 
     expect(AccessibilityInfo.announceForAccessibility).not.toHaveBeenCalled();
+  });
+});
+
+describe('TextInputWithDropDown max list height', () => {
+  const reference = ['Pasta', 'Pastis', 'Pastry', 'Paste', 'Pastrami', 'Salmon'];
+  const viewportId = 'TextInputWithDropDown::AutocompleteViewport';
+
+  async function renderInsideFocusMode(maxListHeight: number) {
+    return render(
+      <AutocompleteMaxListHeightContext.Provider value={maxListHeight}>
+        <TextInputWithDropDown testID='TextInputWithDropDown' referenceTextArray={reference} />
+      </AutocompleteMaxListHeightContext.Provider>
+    );
+  }
+
+  function viewportMaxHeight(getByTestId: RenderResult['getByTestId']) {
+    return StyleSheet.flatten(getByTestId(viewportId).props.style).maxHeight;
+  }
+
+  test('bounds the suggestion list to the provided max list height', async () => {
+    const { getByTestId } = await renderInsideFocusMode(60);
+
+    await typeText(getByTestId, 'pa');
+
+    expect(viewportMaxHeight(getByTestId)).toBe(60);
+  });
+
+  test('keeps the bound while typing narrows the list', async () => {
+    const { getByTestId } = await renderInsideFocusMode(60);
+
+    await typeText(getByTestId, 'pa');
+    await typeText(getByTestId, 'pastr');
+
+    expect(viewportMaxHeight(getByTestId)).toBe(60);
   });
 });

@@ -31,17 +31,33 @@ tags:
     file: '../../asserts/recipe/inlineErrors/en/ingredientRowError.yaml'
     label: 'Assert - Row inline error visible because the row is dirty but the name is still empty'
 
-- runFlow:
-    file: '../../flows/focusField.yaml'
-    env:
-      TARGET_ID: 'RecipeIngredients::0::NameInput::CustomTextInput'
-    label: 'Action - Focus the ingredient name input'
+- tapOn:
+    id: 'RecipeIngredients::0::QuantityInput'
+    label: 'Action - Reopen the numeric keyboard on the quantity input'
+
+- tapOn:
+    id: 'RecipeIngredients::0::NameInput::CustomTextInput'
+    label: 'Action - Focus the name input, switching to the taller text keyboard'
 
 - inputText:
     text: 'Car'
     label: 'Action - Type a partial name to expose the autocomplete dropdown'
 
 - waitForAnimationToEnd
+
+- extendedWaitUntil:
+    visible:
+      id: 'RecipeIngredients::0::NameInput::CustomTextInput'
+      below:
+        id: 'Recipe::AppBar'
+    timeout: 3000
+    label: 'Assert - Name input pinned below the app bar after the keyboard switch'
+
+- assertVisible:
+    id: 'RecipeIngredients::0::NameInput::AutocompleteItem::Carrots'
+    above:
+      id: 'keyboard.toolbar'
+    label: 'Assert - Suggestion list stays above the keyboard toolbar'
 
 - tapOn:
     id: 'RecipeIngredients::0::NameInput::AutocompleteItem::Carrots'

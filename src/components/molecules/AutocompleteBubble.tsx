@@ -18,9 +18,10 @@
 import { StyleSheet, View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { Divider, Surface, Text, TouchableRipple, useTheme } from 'react-native-paper';
-import React from 'react';
+import React, { useContext } from 'react';
 import { padding } from '@styles/spacing';
 import { scrollDecelerationRate } from '@utils/Constants';
+import { AutocompleteMaxListHeightContext } from '@context/AutocompleteMaxListHeightContext';
 
 /** Fixed height of a suggestion row (M3 menu item height) */
 export const AUTOCOMPLETE_ROW_HEIGHT = 48;
@@ -99,11 +100,15 @@ export type AutocompleteBubbleProps = {
 /**
  * Speech-bubble suggestion list: bounded-height FlashList with a tail pointing at the field.
  *
- * @param props - Test id, suggestions, current query, and select handler
+ * The list height is capped by the surrounding `AutocompleteMaxListHeightContext`, if any; the list
+ * scrolls past it.
+ *
+ * @param props - Test id, suggestions, current query and select handler
  * @returns JSX element rendered in normal layout flow
  */
 export function AutocompleteBubble({ testID, items, query, onSelect }: AutocompleteBubbleProps) {
   const { colors } = useTheme();
+  const maxListHeight = useContext(AutocompleteMaxListHeightContext);
   const bubbleColor = colors.elevation.level2;
   return (
     <View testID={`${testID}::AutocompleteBubble`} style={styles.tailSpace}>
@@ -114,7 +119,7 @@ export function AutocompleteBubble({ testID, items, query, onSelect }: Autocompl
         />
         <View
           testID={`${testID}::AutocompleteViewport`}
-          style={{ height: getAutocompleteListHeight(items.length) }}
+          style={{ height: getAutocompleteListHeight(items.length), maxHeight: maxListHeight }}
         >
           <FlashList
             testID={`${testID}::AutocompleteList`}

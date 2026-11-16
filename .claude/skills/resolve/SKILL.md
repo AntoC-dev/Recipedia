@@ -88,7 +88,7 @@ Goal: reviewers see code with complete tests. Changed files =
 `npm run test:unit`; fix until green.
 
 Exported function/type/class changed in `src/utils/` or `src/hooks/` → spawn `typedoc-documentation-writer`, then
-`npm run docs:build` with no warnings. Update `ARCHITECTURE.md` / `guides/` per `.claude/rules/documentation.md`.
+`npm run docs:build` with no warnings. Update `architecture/` / `guides/` per `.claude/rules/documentation.md`.
 
 ## Step 5 — Review passes
 

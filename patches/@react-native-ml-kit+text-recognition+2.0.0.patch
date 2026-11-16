@@ -103,7 +103,7 @@ diff --git a/node_modules/@react-native-ml-kit/text-recognition/ios/TextRecognit
  
 +#import <objc/runtime.h>
 +
-+// Recipedia: disables ML Kit telemetry (no public opt-out) via private symbols. See ARCHITECTURE.md.
++// Recipedia: disables ML Kit telemetry (no public opt-out) via private symbols. See architecture/invariants.md.
 +@interface RecipediaMLKitTelemetryDisabler : NSObject
 +@end
 +

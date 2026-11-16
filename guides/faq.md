@@ -1,6 +1,6 @@
 # FAQ
 
-For a full architectural overview see [ARCHITECTURE.md](../ARCHITECTURE.md). Testing questions are answered in [testing.md](testing.md), setup problems in [installation.md](installation.md).
+For a full architectural overview see [architecture/](../architecture/README.md). Testing questions are answered in [testing.md](testing.md), setup problems in [installation.md](installation.md).
 
 ## Architecture and data
 

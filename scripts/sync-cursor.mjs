@@ -1,9 +1,6 @@
 import { existsSync, mkdirSync, copyFileSync, cpSync, rmSync } from 'node:fs';
 
-const targets = [
-  { src: '.mcp.json', dest: '.cursor/mcp.json', isDir: false },
-  { src: '.claude/skills', dest: '.cursor/skills', isDir: true },
-];
+const targets = [{ src: '.mcp.json', dest: '.cursor/mcp.json', isDir: false }];
 
 mkdirSync('.cursor', { recursive: true });
 

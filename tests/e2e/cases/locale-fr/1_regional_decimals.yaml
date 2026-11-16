@@ -3,7 +3,7 @@ appId: "com.recipedia"
 tags:
   - locale-fr
 ---
-# Decimals follow the device region, never the app language (ARCHITECTURE.md §9).
+# Decimals follow the device region, never the app language (architecture/ui-invariants.md, Numbers).
 # Each platform proves that from the side it can reach:
 #   Android - device region France, app language English -> commas
 #   iOS     - device region US,     app language French  -> dots
