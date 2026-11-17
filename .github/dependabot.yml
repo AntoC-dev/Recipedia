@@ -88,19 +88,19 @@ updates:
       # expo-doctor stays green); block minor/major (= SDK upgrade, done via
       # `expo install` by hand).
       - dependency-name: "expo"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+        update-types: [ "version-update:semver-major", "version-update:semver-minor" ]
       - dependency-name: "expo-*"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+        update-types: [ "version-update:semver-major", "version-update:semver-minor" ]
       - dependency-name: "@expo/*"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+        update-types: [ "version-update:semver-major", "version-update:semver-minor" ]
       - dependency-name: "react-native*"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+        update-types: [ "version-update:semver-major", "version-update:semver-minor" ]
       - dependency-name: "@react-native*"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+        update-types: [ "version-update:semver-major", "version-update:semver-minor" ]
       - dependency-name: "jest-expo"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+        update-types: [ "version-update:semver-major", "version-update:semver-minor" ]
       - dependency-name: "eslint-config-expo"
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+        update-types: [ "version-update:semver-major", "version-update:semver-minor" ]
       # react / react-dom — FULLY ignored (all update types, patch included):
       # they must move in lockstep with the Expo-pinned React version via
       # `expo install`, never by a lone Dependabot patch. A react-only patch
@@ -114,13 +114,13 @@ updates:
       - dependency-name: "@react-navigation/*"
       - dependency-name: "@testing-library/react-native"
       - dependency-name: "@shopify/flash-list"
-      # Babel / Metro — pinned by babel-preset-expo / jest-expo / metro
+      - dependency-name: "@react-native-community/slider"
+      - dependency-name: "react-native-keyboard-controller"
       - dependency-name: "@babel/*"
       - dependency-name: "babel-*"
       - dependency-name: "metro-*"
-      # Node types — avoid disruptive majors
       - dependency-name: "@types/node"
-        update-types: ["version-update:semver-major"]
+        update-types: [ "version-update:semver-major" ]
 
   # Covers both workflow files (.github/workflows) and the composite actions
   # under .github/actions/*. Dependabot's github-actions updater does NOT scan
@@ -160,4 +160,4 @@ updates:
       # any new major as a deliberate, hand-reviewed upgrade. v5.x patch/minor
       # bumps still flow through to keep the pin fresh.
       - dependency-name: "gradle/actions"
-        update-types: ["version-update:semver-major"]
+        update-types: [ "version-update:semver-major" ]
