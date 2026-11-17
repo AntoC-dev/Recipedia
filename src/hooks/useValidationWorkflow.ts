@@ -7,7 +7,7 @@
  * @module hooks/useValidationWorkflow
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import {
   ingredientTableElement,
   RecipeDraft,
@@ -131,8 +131,6 @@ export function useValidationWorkflow(
   const hasInitializedRef = useRef(false);
   const hasItemsToReviewRef = useRef(false);
   const validationStateRef = useRef<BatchValidationState | null>(null);
-  const findSimilarTagsRef = useRef(findSimilarTags);
-  const findSimilarIngredientsRef = useRef(findSimilarIngredients);
 
   /**
    * Saves validated recipes to the database
@@ -183,14 +181,13 @@ export function useValidationWorkflow(
     }
   };
 
-  const saveRecipesRef = useRef(saveRecipes);
-
   useEffect(() => {
     validationStateRef.current = validationState;
-    findSimilarTagsRef.current = findSimilarTags;
-    findSimilarIngredientsRef.current = findSimilarIngredients;
-    saveRecipesRef.current = saveRecipes;
   });
+
+  const findSimilarTagsForInit = useEffectEvent(findSimilarTags);
+  const findSimilarIngredientsForInit = useEffectEvent(findSimilarIngredients);
+  const saveValidatedRecipes = useEffectEvent(saveRecipes);
 
   useEffect(() => {
     if (hasInitializedRef.current) {
@@ -204,7 +201,9 @@ export function useValidationWorkflow(
       await new Promise(r => setTimeout(r, 100));
 
       setInitStage('matching-tags');
-      const tagResult = processTagsForValidation(state.tagsToValidate, findSimilarTagsRef.current);
+      const tagResult = processTagsForValidation(state.tagsToValidate, name =>
+        findSimilarTagsForInit(name)
+      );
       for (const tag of tagResult.exactMatches) {
         addTagMapping(state, tag.name, tag);
       }
@@ -212,9 +211,8 @@ export function useValidationWorkflow(
       await new Promise(r => setTimeout(r, 100));
 
       setInitStage('matching-ingredients');
-      const ingResult = processIngredientsForValidation(
-        state.ingredientsToValidate,
-        findSimilarIngredientsRef.current
+      const ingResult = processIngredientsForValidation(state.ingredientsToValidate, name =>
+        findSimilarIngredientsForInit(name)
       );
       for (const ing of ingResult.exactMatches) {
         addIngredientMapping(state, ing.name, ing);
@@ -246,7 +244,7 @@ export function useValidationWorkflow(
       } else if (hasItemsToReview) {
         setPhase('reviewing');
       } else {
-        void saveRecipesRef.current(state);
+        void saveValidatedRecipes(state);
       }
     };
 
@@ -293,7 +291,7 @@ export function useValidationWorkflow(
       setPhase('reviewing');
     } else {
       const state = validationStateRef.current;
-      if (state) void saveRecipesRef.current(state);
+      if (state) void saveRecipes(state);
     }
   };
 
@@ -306,7 +304,7 @@ export function useValidationWorkflow(
       bulkImportLogger.error('Start import called but validation state is null');
       return;
     }
-    void saveRecipesRef.current(state);
+    void saveRecipes(state);
   };
 
   const progress = validationState ? getValidationProgress(validationState) : null;

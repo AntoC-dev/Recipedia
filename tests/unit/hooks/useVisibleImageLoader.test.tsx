@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from '@testing-library/react-native';
-import { useVisibleImageLoader } from '@hooks/useVisibleImageLoader';
+import { useVisibleImageLoader, UseVisibleImageLoaderOptions } from '@hooks/useVisibleImageLoader';
 import { DiscoveredRecipe } from '@customTypes/BulkImportTypes';
 import { bulkImportLogger } from '@utils/logger';
 
@@ -636,5 +636,47 @@ describe('useVisibleImageLoader', () => {
     await waitFor(() => {
       expect(result.current.imageMap.get(urlOf(0))).toBe(`${urlOf(0)}/image`);
     });
+  });
+
+  test('uses the latest fetchImageUrl for queued lookups without restarting in-flight ones', async () => {
+    const recipes = [recipeWithoutImage(0), recipeWithoutImage(1)];
+    const visibleUrls = new Set([urlOf(0), urlOf(1)]);
+    let resolveFirstLookup: () => void = () => {};
+    const initialFetchImageUrl = jest.fn(
+      (url: string) =>
+        new Promise<string>(resolve => {
+          resolveFirstLookup = () => resolve(`${url}/initial`);
+        })
+    );
+    const latestFetchImageUrl = jest.fn(async (url: string) => `${url}/latest`);
+
+    const { result, rerender } = await renderHook(
+      ({ fetchImageUrl }: Pick<UseVisibleImageLoaderOptions, 'fetchImageUrl'>) =>
+        useVisibleImageLoader({
+          recipes,
+          visibleUrls,
+          fetchImageUrl,
+          maxConcurrent: 1,
+          debounceMs: 0,
+        }),
+      { initialProps: { fetchImageUrl: initialFetchImageUrl } }
+    );
+
+    await waitFor(() => {
+      expect(initialFetchImageUrl).toHaveBeenCalledTimes(1);
+    });
+
+    await rerender({ fetchImageUrl: latestFetchImageUrl });
+    await act(async () => {
+      resolveFirstLookup();
+    });
+
+    await waitFor(() => {
+      expect(result.current.imageMap.size).toBe(2);
+    });
+    expect(result.current.imageMap.get(urlOf(0))).toBe(`${urlOf(0)}/initial`);
+    expect(result.current.imageMap.get(urlOf(1))).toBe(`${urlOf(1)}/latest`);
+    expect(initialFetchImageUrl).toHaveBeenCalledTimes(1);
+    expect(latestFetchImageUrl).toHaveBeenCalledTimes(1);
   });
 });

@@ -25,8 +25,11 @@ describe('WelcomeScreen Component', () => {
   const mockOnSkip = jest.fn();
   let database: RecipeDatabase;
 
-  const renderWelcomeScreen = async () =>
-    render(<WelcomeScreen onStartTutorial={mockOnStartTutorial} onSkip={mockOnSkip} />);
+  const welcomeScreenElement = (onStartTutorial = mockOnStartTutorial) => (
+    <WelcomeScreen onStartTutorial={onStartTutorial} onSkip={mockOnSkip} />
+  );
+
+  const renderWelcomeScreen = async () => render(welcomeScreenElement());
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -328,6 +331,28 @@ describe('WelcomeScreen Component', () => {
       await waitFor(() => {
         expect(mockOnSkip).toHaveBeenCalledTimes(1);
       });
+    });
+
+    test('calls the latest onStartTutorial when the prop changes while tutorial action is pending', async () => {
+      const { getByTestId, rerender } = await renderWelcomeScreen();
+
+      await waitFor(() => {
+        expect(getByTestId('WelcomeScreen::StartTourButton')).toBeTruthy();
+      });
+
+      await fireEvent.press(getByTestId('WelcomeScreen::StartTourButton'));
+
+      const newOnStartTutorial = jest.fn();
+      await rerender(welcomeScreenElement(newOnStartTutorial));
+
+      await database.addMultipleIngredients(testIngredients);
+      await database.addMultipleTags(testTags);
+      await database.addMultipleRecipes(testRecipes);
+
+      await waitFor(() => {
+        expect(newOnStartTutorial).toHaveBeenCalledTimes(1);
+      });
+      expect(mockOnStartTutorial).not.toHaveBeenCalled();
     });
   });
 

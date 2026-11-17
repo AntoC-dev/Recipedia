@@ -8,7 +8,7 @@
  * @module useRecipeScraperValidation
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useEffectEvent, useRef } from 'react';
 import {
   deduplicateIngredientsByName,
   removeTagByName,
@@ -85,22 +85,18 @@ export function useRecipeScraperValidation(): void {
     );
   };
 
+  const resumeDeferredIngredientValidation = useEffectEvent(() => {
+    const ingredients = pendingIngredientsRef.current;
+    if (!ingredients) return;
+    pendingIngredientsRef.current = null;
+    startIngredientValidation(ingredients);
+  });
+
   useEffect(() => {
-    if (validationQueue === null && pendingIngredientsRef.current) {
-      const ingredients = pendingIngredientsRef.current;
-      pendingIngredientsRef.current = null;
-      startIngredientValidation(ingredients);
-    }
+    if (validationQueue === null) resumeDeferredIngredientValidation();
   }, [validationQueue]);
 
-  // Mount-once: this hook is only invoked from `RecipeAddScrape`, so the route
-  // name already guarantees the addScrape mode. The ref guards re-mounts.
-  useEffect(() => {
-    if (hasRunRef.current) {
-      return;
-    }
-    hasRunRef.current = true;
-
+  const runScraperValidation = useEffectEvent(() => {
     const ingredientItems = getIngredientItems();
     const recipeTags = (form.getValues('recipeTags') ?? []) as tagTableElement[];
     const tagItems = recipeTags.length > 0 ? [...recipeTags] : [];
@@ -131,5 +127,15 @@ export function useRecipeScraperValidation(): void {
       validationLogger.debug('Starting ingredient validation queue');
       startIngredientValidation(ingredientItems);
     }
+  });
+
+  // Mount-once: this hook is only invoked from `RecipeAddScrape`, so the route
+  // name already guarantees the addScrape mode. The ref guards re-mounts.
+  useEffect(() => {
+    if (hasRunRef.current) {
+      return;
+    }
+    hasRunRef.current = true;
+    runScraperValidation();
   }, []);
 }

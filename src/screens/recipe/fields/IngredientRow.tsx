@@ -22,7 +22,7 @@
  * @module screens/recipe/fields/IngredientRow
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useEffectEvent, useRef } from 'react';
 import { useController, UseFormReturn } from 'react-hook-form';
 
 import { IngredientRow } from '@components/organisms/RecipeIngredients';
@@ -155,7 +155,8 @@ export function IngredientRowField({
     isRowFocusedRef.current = false;
     editingIngredientCountRef.current = Math.max(0, editingIngredientCountRef.current - 1);
   };
-  useEffect(() => releaseFocusSlot, [editingIngredientCountRef]);
+  const releaseFocusSlotOnUnmount = useEffectEvent(releaseFocusSlot);
+  useEffect(() => () => releaseFocusSlotOnUnmount(), []);
 
   return (
     <IngredientRow

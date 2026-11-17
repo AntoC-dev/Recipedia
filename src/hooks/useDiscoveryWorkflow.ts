@@ -104,6 +104,8 @@ export function useDiscoveryWorkflow(
       setPhase('discovering');
       setError(null);
 
+      let discoveredRecipeCount = 0;
+
       try {
         const generator = provider.discoverRecipeUrls({
           signal: abortController.signal,
@@ -112,6 +114,7 @@ export function useDiscoveryWorkflow(
         for await (const progressUpdate of generator) {
           setDiscoveryProgress(progressUpdate);
           setRecipes(progressUpdate.recipes);
+          discoveredRecipeCount = progressUpdate.recipes.length;
 
           if (progressUpdate.isComplete) {
             break;
@@ -119,7 +122,7 @@ export function useDiscoveryWorkflow(
         }
 
         bulkImportLogger.info('Discovery finished', {
-          recipeCount: recipes.length,
+          recipeCount: discoveredRecipeCount,
         });
       } catch (err) {
         if (err instanceof Error && err.name === 'AbortError') {

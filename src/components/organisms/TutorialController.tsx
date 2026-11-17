@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useEffectEvent, useRef } from 'react';
 import { StatusBar } from 'react-native';
 import { CopilotProvider, useCopilot } from 'react-native-copilot';
 import { useNavigation } from '@react-navigation/native';
@@ -27,10 +27,10 @@ function TutorialManager({ onComplete }: Pick<TutorialProviderProps, 'onComplete
   const navigation = useNavigation<TabScreenNavigation>();
   const { start, copilotEvents, visible } = useCopilot();
   const hasAutoStartedRef = useRef(false);
-  const startRef = useRef(start);
-  useEffect(() => {
-    startRef.current = start;
+  const startTutorial = useEffectEvent(() => {
+    void start();
   });
+  const notifyComplete = useEffectEvent(onComplete);
 
   /**
    * Handles tutorial start event
@@ -59,9 +59,9 @@ function TutorialManager({ onComplete }: Pick<TutorialProviderProps, 'onComplete
     }
   };
 
-  // Auto-start tutorial once when copilot is ready. `start` is read through a
-  // ref and kept out of the deps: the library returns a new `start` each render,
-  // and depending on it would re-run this effect and cancel the pending timer.
+  // Auto-start tutorial once when copilot is ready. `start` is wrapped in an
+  // effect event: the library returns a new `start` each render, and depending
+  // on it would re-run this effect and cancel the pending timer.
   useEffect(() => {
     if (!copilotEvents || visible || hasAutoStartedRef.current) {
       return;
@@ -70,7 +70,7 @@ function TutorialManager({ onComplete }: Pick<TutorialProviderProps, 'onComplete
     hasAutoStartedRef.current = true;
     tutorialLogger.info('Starting tutorial on next tick');
     const timer = setTimeout(() => {
-      void startRef.current();
+      startTutorial();
     }, TUTORIAL_AUTO_START_DELAY);
 
     return () => {
@@ -86,7 +86,7 @@ function TutorialManager({ onComplete }: Pick<TutorialProviderProps, 'onComplete
 
     const handleStop = () => {
       tutorialLogger.info('Tutorial stopped');
-      onComplete();
+      notifyComplete();
       setTimeout(() => {
         navigation.navigate('Home');
       }, 0);
@@ -101,7 +101,7 @@ function TutorialManager({ onComplete }: Pick<TutorialProviderProps, 'onComplete
       copilotEvents.off('stop', handleStop);
       copilotEvents.off('start', handleStart);
     };
-  }, [copilotEvents, navigation, onComplete]);
+  }, [copilotEvents, navigation]);
 
   return null;
 }

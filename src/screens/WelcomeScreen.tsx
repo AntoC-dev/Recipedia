@@ -45,7 +45,7 @@
  * ```
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useEffectEvent, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { Button, Card, Dialog, IconButton, Portal, Text, useTheme } from 'react-native-paper';
@@ -88,6 +88,8 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
   const canProceed = isDataLoaded || datasetFailed;
 
   const [pendingAction, setPendingAction] = useState<'tutorial' | 'skip' | null>(null);
+  const startTutorial = useEffectEvent(onStartTutorial);
+  const skipToApp = useEffectEvent(onSkip);
 
   useEffect(() => {
     if (isDataLoaded) {
@@ -125,14 +127,14 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
             ? 'Dataset failed - starting tutorial without initial data'
             : 'Data loaded - proceeding with tutorial'
         );
-        onStartTutorial();
+        startTutorial();
       } else {
         tutorialLogger.info(
           datasetFailed
             ? 'Dataset failed - skipping to main app'
             : 'Data loaded - proceeding to main app'
         );
-        onSkip();
+        skipToApp();
       }
       // Clears the one-shot trigger after performing the deferred navigation.
       // This must run in an effect: the action waits on `canProceed` becoming
@@ -140,7 +142,7 @@ export function WelcomeScreen({ onStartTutorial, onSkip }: WelcomeScreenProps) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setPendingAction(null);
     }
-  }, [canProceed, datasetFailed, pendingAction, onStartTutorial, onSkip]);
+  }, [canProceed, datasetFailed, pendingAction]);
 
   const handleStartTutorial = () => {
     if (canProceed) {

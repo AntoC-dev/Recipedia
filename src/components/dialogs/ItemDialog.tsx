@@ -69,7 +69,7 @@
  * ```
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useEffectEvent, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Dialog, HelperText, Portal, Text } from 'react-native-paper';
 import { Controller, Resolver, useForm } from 'react-hook-form';
@@ -157,10 +157,11 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
       mode: 'onChange',
     });
 
-  // item intentionally excluded from deps — avoids mid-edit resets when caller
-  // passes new inline object references on every render.
+  // item read at open time only — avoids mid-edit resets when caller passes
+  // new inline object references on every render.
+  const resetFormToItem = useEffectEvent(() => reset(buildItemFormValues(item)));
   useEffect(() => {
-    if (isVisible) reset(buildItemFormValues(item));
+    if (isVisible) resetFormToItem();
   }, [isVisible]);
 
   const nameValue = watch('name');
@@ -228,6 +229,8 @@ export function ItemDialog({ onClose, isVisible, testId, mode, item }: ItemDialo
     mode,
     findSimilarTagsDetailed,
     findSimilarIngredientsDetailed,
+    setError,
+    clearErrors,
     t,
   ]);
 
