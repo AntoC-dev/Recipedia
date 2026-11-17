@@ -3,10 +3,6 @@ appId: "com.recipedia"
 tags:
   - web
 ---
-- runFlow:
-    file: "../../flows/parameters/language/switchToEnglish.yaml"
-    label: "Setup - Ensure English language"
-
 - tapOn:
     id: "BottomTabs::Home"
     label: "Setup - Return to Home screen"
