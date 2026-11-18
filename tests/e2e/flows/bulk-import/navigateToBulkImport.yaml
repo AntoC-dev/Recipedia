@@ -12,6 +12,7 @@ appId: "com.recipedia"
     direction: DOWN
     speed: 60
     centerElement: true
+    timeout: 60000
     label: "Scroll to Bulk Import section"
 
 - waitForAnimationToEnd
