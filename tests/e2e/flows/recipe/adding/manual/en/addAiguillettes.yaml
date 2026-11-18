@@ -62,34 +62,18 @@ appId: "com.recipedia"
       TARGET_ID: "RecipeTags::List::1::CustomTextInput"
     label: "Focus the TextInput of second tags"
 
+- runFlow:
+    file: "../../../../inputText.yaml"
+    env:
+      TARGET_ID: "RecipeTags::List::1::CustomTextInput"
+      VALUE: "Sea"
+    label: "Filter the tag dropdown so Seafood is the first fully visible item"
+
 - extendedWaitUntil:
     visible:
-      id: "RecipeTags::List::1::AutocompleteItem::Breakfast"
+      id: "RecipeTags::List::1::AutocompleteItem::Seafood"
     timeout: 30000
-    label: "Wait for the autocomplete list to appear"
-
-- tapOn:
-    id: "RecipeTags::List::1::AutocompleteTail"
-    label: "Tap outside the input to close the keyboard so it can't cover the list"
-
-- runFlow:
-    file: "../../../../waitForKeyboardDismiss.yaml"
-    label: "Wait for keyboard to hide before scrolling the list"
-
-- repeat:
-    times: 5
-    while:
-      notVisible:
-        id: "RecipeTags::List::1::AutocompleteItem::Seafood"
-    commands:
-      - swipe:
-          from:
-            id: "RecipeTags::List::1::AutocompleteList"
-          direction: UP
-          duration: 500
-          label: "Scroll the tag dropdown down towards Seafood"
-      - waitForAnimationToEnd:
-          label: "Wait for scrolling animation to end"
+    label: "Wait for the filtered autocomplete list to appear"
 
 - assertVisible:
     id: "RecipeTags::List::1::AutocompleteItem::Seafood"
