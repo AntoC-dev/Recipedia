@@ -5,6 +5,8 @@ appId: "com.recipedia"
     id: "ReduceButton.*"
     label: "Collapse FAB menu"
 
-- waitForAnimationToEnd:
-    timeout: 3000
-    label: "Wait for FAB collapse animation"
+- extendedWaitUntil:
+    visible:
+      id: "ExpandButton.*"
+    timeout: 20000
+    label: "Wait for FAB menu to close"
