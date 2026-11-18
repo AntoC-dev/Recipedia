@@ -56,6 +56,8 @@ export function i18nMock() {
     preparationStepTitle: 'Title',
     preparationStepContent: 'Instructions',
     preparationDeleteStep: 'Delete step {{number}}',
+    preparationMoveStepUp: 'Move step {{number}} up',
+    preparationMoveStepDown: 'Move step {{number}} down',
     preparationDeleteStepConfirmTitle: 'Delete step {{number}}?',
     timeSuffixEdit: 'min',
     'recipeCard.prepTime': 'Prep. {{time}} min',

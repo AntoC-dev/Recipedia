@@ -309,6 +309,64 @@ describe('EditableStep', () => {
     expect(onRemove).toHaveBeenCalledTimes(1);
   });
 
+  it('renders up and down move buttons that call their handlers when pressed', async () => {
+    const onMoveUp = jest.fn();
+    const onMoveDown = jest.fn();
+    const { getByTestId } = await renderEditableStep({ index: 1, onMoveUp, onMoveDown });
+
+    expect(getByTestId(`${editableStepTestId(1)}::MoveUpButton::Icon`).props.children).toBe(
+      'arrow-up'
+    );
+    expect(getByTestId(`${editableStepTestId(1)}::MoveDownButton::Icon`).props.children).toBe(
+      'arrow-down'
+    );
+    expect(getByTestId(`${editableStepTestId(1)}::MoveUpButton`).props.accessibilityLabel).toBe(
+      'Move step 2 up'
+    );
+    expect(getByTestId(`${editableStepTestId(1)}::MoveDownButton`).props.accessibilityLabel).toBe(
+      'Move step 2 down'
+    );
+
+    await fireEvent.press(getByTestId(`${editableStepTestId(1)}::MoveUpButton`));
+    expect(onMoveUp).toHaveBeenCalledTimes(1);
+    expect(onMoveDown).not.toHaveBeenCalled();
+
+    await fireEvent.press(getByTestId(`${editableStepTestId(1)}::MoveDownButton`));
+    expect(onMoveDown).toHaveBeenCalledTimes(1);
+  });
+
+  it('hides both move buttons when no move handler is provided', async () => {
+    const { queryByTestId, getByTestId } = await renderEditableStep();
+
+    expect(queryByTestId(`${editableStepTestId(0)}::MoveUpButton`)).toBeNull();
+    expect(queryByTestId(`${editableStepTestId(0)}::MoveDownButton`)).toBeNull();
+    expect(getByTestId(`${editableStepTestId(0)}::DeleteButton`)).toBeTruthy();
+  });
+
+  it('enables move buttons only when their handler is provided', async () => {
+    const { getByTestId, rerender } = await renderEditableStep({ onMoveDown: jest.fn() });
+
+    expect(getByTestId(`${editableStepTestId(0)}::MoveUpButton`)).toBeDisabled();
+    expect(getByTestId(`${editableStepTestId(0)}::MoveDownButton`)).toBeEnabled();
+
+    await rerender(
+      <EditableStep
+        index={0}
+        title=''
+        description=''
+        onTitleChange={jest.fn()}
+        onDescriptionChange={jest.fn()}
+        onTitleCommit={jest.fn()}
+        onDescriptionCommit={jest.fn()}
+        onRemove={jest.fn()}
+        onMoveUp={jest.fn()}
+      />
+    );
+
+    expect(getByTestId(`${editableStepTestId(0)}::MoveUpButton`)).toBeEnabled();
+    expect(getByTestId(`${editableStepTestId(0)}::MoveDownButton`)).toBeDisabled();
+  });
+
   it('does not call any input callback when the delete button is pressed', async () => {
     const onTitleChange = jest.fn();
     const onDescriptionChange = jest.fn();

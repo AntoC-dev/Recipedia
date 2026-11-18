@@ -71,10 +71,24 @@ export function editableStepMock({
   onTitleCommit,
   onDescriptionCommit,
   onRemove,
+  onMoveUp,
+  onMoveDown,
   descriptionError,
 }: EditableStepProps) {
   return (
     <View testID={`${testID}::EditableStep::${index}`}>
+      <Button
+        testID={`${testID}::EditableStep::${index}::MoveUpButton`}
+        onPress={() => onMoveUp?.()}
+        disabled={!onMoveUp}
+        title='Move Step Up'
+      />
+      <Button
+        testID={`${testID}::EditableStep::${index}::MoveDownButton`}
+        onPress={() => onMoveDown?.()}
+        disabled={!onMoveDown}
+        title='Move Step Down'
+      />
       <Button
         testID={`${testID}::EditableStep::${index}::DeleteButton`}
         onPress={onRemove}

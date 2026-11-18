@@ -119,3 +119,49 @@ describe('useStepArray', () => {
     });
   });
 });
+
+describe('useStepArray moveStep', () => {
+  const threeSteps = [
+    { title: 'A', description: 'first' },
+    { title: 'B', description: 'second' },
+    { title: 'C', description: 'third' },
+  ];
+
+  test.each([
+    [0, 1, ['B', 'A', 'C']],
+    [2, 1, ['A', 'C', 'B']],
+    [0, 2, ['B', 'C', 'A']],
+  ])('moves step %s to position %s', async (from, to, expectedTitles) => {
+    const { result, formRef } = await renderUseStepArray(threeSteps);
+
+    await act(() => {
+      result.current.moveStep(from, to);
+    });
+
+    expect(formRef.current!.getValues('recipePreparation')!.map(step => step.title)).toEqual(
+      expectedTitles
+    );
+    expect(result.current.fields.map(field => field.title)).toEqual(expectedTitles);
+    expect(result.current.length).toBe(3);
+  });
+
+  test('carries a step validation error along with the moved step', async () => {
+    const { result, formRef } = await renderUseStepArray([
+      { title: 'A', description: '' },
+      { title: 'B', description: 'second' },
+    ]);
+    await act(async () => {
+      await formRef.current!.trigger('recipePreparation');
+    });
+    expect(formRef.current!.getFieldState('recipePreparation.0.description').error).toBeDefined();
+
+    await act(() => {
+      result.current.moveStep(0, 1);
+    });
+
+    await waitFor(() => {
+      expect(formRef.current!.getFieldState('recipePreparation.1.description').error).toBeDefined();
+    });
+    expect(formRef.current!.getFieldState('recipePreparation.0.description').error).toBeUndefined();
+  });
+});
