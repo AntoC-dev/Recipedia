@@ -1,0 +1,29 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::${STEP_INDEX}::SectionTitle"
+    direction: DOWN
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Scroll to the saved title of step ${Number(STEP_INDEX) + 1}"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::${STEP_INDEX}::SectionTitle"
+    text: "${Number(STEP_INDEX) + 1}\\) ${STEP_TITLE}"
+    label: "Saved step ${Number(STEP_INDEX) + 1} title is ${STEP_TITLE}"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::ReadOnlyStep::${STEP_INDEX}::SectionParagraph"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to the saved content of step ${Number(STEP_INDEX) + 1}"
+
+- assertVisible:
+    id: "RecipePreparation::ReadOnlyStep::${STEP_INDEX}::SectionParagraph"
+    text: "${STEP_CONTENT}"
+    label: "Saved step ${Number(STEP_INDEX) + 1} content is ${STEP_CONTENT}"

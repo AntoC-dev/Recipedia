@@ -1,0 +1,44 @@
+appId: "com.recipedia"
+---
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::${STEP_INDEX}::DeleteButton"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to the header of step ${Number(STEP_INDEX) + 1}"
+
+- assertVisible:
+    text: "Step ${Number(STEP_INDEX) + 1}"
+    childOf:
+      id: "RecipePreparation::EditableStep::${STEP_INDEX}"
+    label: "Step ${Number(STEP_INDEX) + 1} header is rendered at index ${STEP_INDEX}"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::${STEP_INDEX}::TextInputTitle::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to the title of step ${Number(STEP_INDEX) + 1}"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::${STEP_INDEX}::TextInputTitle::CustomTextInput"
+    text: "${STEP_TITLE}"
+    label: "Step ${Number(STEP_INDEX) + 1} title is ${STEP_TITLE}"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::${STEP_INDEX}::TextInputContent::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to the content of step ${Number(STEP_INDEX) + 1}"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::${STEP_INDEX}::TextInputContent::CustomTextInput"
+    text: "${STEP_CONTENT}"
+    label: "Step ${Number(STEP_INDEX) + 1} content is ${STEP_CONTENT}"

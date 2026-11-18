@@ -1,0 +1,224 @@
+name: "11 - Recipe Create Reorder Preparation Steps Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-create
+---
+- runFlow:
+    file: "../../flows/recipe/adding/manual/en/openAddManually.yaml"
+    label: "Action - Open manual recipe adding screen"
+
+- runFlow:
+    file: "../../flows/recipe/adding/en/addRecipeImage.yaml"
+    label: "Action - Add recipe image"
+
+- runFlow:
+    file: "../../flows/recipe/adding/createTwoIngredientRecipe.yaml"
+    env:
+      PERSONS: "2"
+      ING0_NAME: "Pasta"
+      ING0_QTY: "200"
+      ING1_NAME: "Tomatoes"
+      ING1_QTY: "100"
+      TIME: "20"
+    label: "Action - Fill Test Recipe with a first step (Cook pasta and mix with tomatoes)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to the first step title"
+
+- runFlow:
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
+    label: "Action - Focus the first step title"
+
+- runFlow:
+    file: "../../flows/inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
+      VALUE: "Cook pasta"
+    label: "Action - Title the first step"
+
+- runFlow:
+    file: "../../flows/recipe/addRow.yaml"
+    env:
+      SECTION: "RecipePreparation"
+    label: "Action - Add a second step"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to the second step title"
+
+- runFlow:
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
+    label: "Action - Focus the second step title"
+
+- runFlow:
+    file: "../../flows/inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::1::TextInputTitle::CustomTextInput"
+      VALUE: "Make sauce"
+    label: "Action - Title the second step, Next moves to its content"
+
+- runFlow:
+    file: "../../flows/inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::1::TextInputContent::CustomTextInput"
+      VALUE: "Simmer the tomatoes"
+    label: "Action - Fill the second step content"
+
+- runFlow:
+    file: "../../flows/recipe/addRow.yaml"
+    env:
+      SECTION: "RecipePreparation"
+    label: "Action - Add a third step"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to the third step title"
+
+- runFlow:
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
+    label: "Action - Focus the third step title"
+
+- runFlow:
+    file: "../../flows/inputAndNext.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::2::TextInputTitle::CustomTextInput"
+      VALUE: "Plate"
+    label: "Action - Title the third step, Next moves to its content"
+
+- runFlow:
+    file: "../../flows/inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipePreparation::EditableStep::2::TextInputContent::CustomTextInput"
+      VALUE: "Serve hot"
+    label: "Action - Fill the third step content"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::2::MoveUpButton"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll to the third step move up button"
+
+- tapOn:
+    id: "RecipePreparation::EditableStep::2::MoveUpButton"
+    label: "Action - Move Plate up (order: Cook pasta, Plate, Make sauce)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::MoveDownButton"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll to the first step move down button"
+
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::MoveDownButton"
+    label: "Action - Move Cook pasta down (order: Plate, Cook pasta, Make sauce)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::1::MoveDownButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Scroll to the second step move down button"
+
+- tapOn:
+    id: "RecipePreparation::EditableStep::1::MoveDownButton"
+    label: "Action - Move Cook pasta down again (order: Plate, Make sauce, Cook pasta)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::DeleteButton"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Scroll back to the first step"
+
+- runFlow:
+    file: "../../asserts/recipe/edit/en/preparationStep.yaml"
+    env:
+      STEP_INDEX: "0"
+      STEP_TITLE: "Plate"
+      STEP_CONTENT: "Serve hot"
+    label: "Assert - Step 1 is Plate"
+
+- runFlow:
+    file: "../../asserts/recipe/edit/en/preparationStep.yaml"
+    env:
+      STEP_INDEX: "1"
+      STEP_TITLE: "Make sauce"
+      STEP_CONTENT: "Simmer the tomatoes"
+    label: "Assert - Step 2 is Make sauce"
+
+- runFlow:
+    file: "../../asserts/recipe/edit/en/preparationStep.yaml"
+    env:
+      STEP_INDEX: "2"
+      STEP_TITLE: "Cook pasta"
+      STEP_CONTENT: "Cook pasta and mix with tomatoes"
+    label: "Assert - Step 3 is Cook pasta"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Action - Validate the recipe"
+
+- runFlow:
+    file: "../../asserts/alerts/en/recipeAddedToDatabase.yaml"
+    env:
+      RECIPE_NAME: "Test Recipe"
+    label: "Assert - Recipe added to the database"
+
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Test Recipe"
+    label: "Action - Find the new recipe"
+
+- runFlow:
+    file: "../../asserts/recipe/readonly/preparationStep.yaml"
+    env:
+      STEP_INDEX: "0"
+      STEP_TITLE: "Plate"
+      STEP_CONTENT: "Serve hot"
+    label: "Assert - Saved step 1 is Plate"
+
+- runFlow:
+    file: "../../asserts/recipe/readonly/preparationStep.yaml"
+    env:
+      STEP_INDEX: "1"
+      STEP_TITLE: "Make sauce"
+      STEP_CONTENT: "Simmer the tomatoes"
+    label: "Assert - Saved step 2 is Make sauce"
+
+- runFlow:
+    file: "../../asserts/recipe/readonly/preparationStep.yaml"
+    env:
+      STEP_INDEX: "2"
+      STEP_TITLE: "Cook pasta"
+      STEP_CONTENT: "Cook pasta and mix with tomatoes"
+    label: "Assert - Saved step 3 is Cook pasta"
+
+- assertNotVisible:
+    id: "RecipePreparation::ReadOnlyStep::3::SectionTitle"
+    label: "Assert - No extra step is saved"
