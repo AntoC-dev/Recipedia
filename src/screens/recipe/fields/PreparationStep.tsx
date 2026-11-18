@@ -31,9 +31,18 @@ export interface PreparationStepFieldProps {
   index: number;
   t: T;
   onRemove: () => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }
 
-export function PreparationStepField({ form, index, t, onRemove }: PreparationStepFieldProps) {
+export function PreparationStepField({
+  form,
+  index,
+  t,
+  onRemove,
+  onMoveUp,
+  onMoveDown,
+}: PreparationStepFieldProps) {
   const titleCtrl = useController({
     control: form.control,
     name: `recipePreparation.${index}.title` as const,
@@ -91,6 +100,8 @@ export function PreparationStepField({ form, index, t, onRemove }: PreparationSt
         onTitleCommit={handleTitleCommit}
         onDescriptionCommit={handleDescriptionCommit}
         onRemove={handleRemovePress}
+        onMoveUp={onMoveUp}
+        onMoveDown={onMoveDown}
         descriptionError={descriptionError}
       />
       {isDeleteConfirmVisible ? (

@@ -24,11 +24,12 @@ export interface UseStepArrayResult {
   fields: ReturnType<typeof useFieldArray<RecipeFormInput, 'recipePreparation'>>['fields'];
   addStep: () => void;
   removeStep: (index: number) => void;
+  moveStep: (from: number, to: number) => void;
   length: number;
 }
 
 export function useStepArray(form: Form): UseStepArrayResult {
-  const { fields, append, remove } = useFieldArray({
+  const { fields, append, remove, move } = useFieldArray({
     control: form.control,
     name: 'recipePreparation',
   });
@@ -43,6 +44,7 @@ export function useStepArray(form: Form): UseStepArrayResult {
     fields,
     addStep,
     removeStep,
+    moveStep: move,
     length: fields.length,
   };
 }

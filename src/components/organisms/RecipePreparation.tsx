@@ -8,8 +8,8 @@
  *
  * - `RecipePreparation` (default): read-only render of a preparation steps
  *   array.
- * - `EditableStep`: a single editable step in a contained card, with blur-commit title + description inputs and a delete
- *   button. Used by the per-row field wrapper.
+ * - `EditableStep`: a single editable step in a contained card, with blur-commit title + description inputs, up/down
+ *   move buttons and a delete button. Used by the per-row field wrapper.
  * - `PreparationSection`: prefix-text frame around the editable rows, with the
  *   add button and, with `withScan`, the OCR scan button.
  *
@@ -64,6 +64,13 @@ export interface EditableStepProps {
   onTitleCommit: (title: string) => void;
   onDescriptionCommit: (description: string) => void;
   onRemove: () => void;
+  /** Moves the step one position up; omitted on the first step, which disables the button. */
+  onMoveUp?: () => void;
+  /**
+   * Moves the step one position down; omitted on the last step, which disables the button.
+   * With both move handlers omitted (single step), the move buttons are hidden.
+   */
+  onMoveDown?: () => void;
   /** Optional translated inline error for the step's description (required by schema). */
   descriptionError?: string;
 }
@@ -162,11 +169,14 @@ export function EditableStep({
   onTitleCommit,
   onDescriptionCommit,
   onRemove,
+  onMoveUp,
+  onMoveDown,
   descriptionError,
 }: EditableStepProps) {
   const testId = `${TEST_ID}::EditableStep::${index}`;
   const { t } = useI18n();
   const { colors } = useTheme();
+  const canMove = onMoveUp !== undefined || onMoveDown !== undefined;
 
   return (
     <View testID={testId} collapsable={false}>
@@ -179,14 +189,36 @@ export function EditableStep({
           titleVariant='titleMedium'
           titleStyle={{ color: colors.primary }}
           right={props => (
-            <IconButton
-              {...props}
-              testID={testId + `::DeleteButton`}
-              icon={Icons.trashIcon}
-              iconColor={colors.error}
-              accessibilityLabel={t('preparationDeleteStep', { number: index + 1 })}
-              onPress={onRemove}
-            />
+            <View style={stepStyles.actions}>
+              {canMove ? (
+                <View style={stepStyles.moveActions}>
+                  <IconButton
+                    {...props}
+                    testID={testId + `::MoveUpButton`}
+                    icon={Icons.arrowUp}
+                    accessibilityLabel={t('preparationMoveStepUp', { number: index + 1 })}
+                    disabled={!onMoveUp}
+                    onPress={onMoveUp}
+                  />
+                  <IconButton
+                    {...props}
+                    testID={testId + `::MoveDownButton`}
+                    icon={Icons.arrowDown}
+                    accessibilityLabel={t('preparationMoveStepDown', { number: index + 1 })}
+                    disabled={!onMoveDown}
+                    onPress={onMoveDown}
+                  />
+                </View>
+              ) : null}
+              <IconButton
+                {...props}
+                testID={testId + `::DeleteButton`}
+                icon={Icons.trashIcon}
+                iconColor={colors.error}
+                accessibilityLabel={t('preparationDeleteStep', { number: index + 1 })}
+                onPress={onRemove}
+              />
+            </View>
           )}
         />
         <Card.Content style={stepStyles.content}>
@@ -226,4 +258,6 @@ const stepStyles = StyleSheet.create({
   prefixText: { paddingBottom: padding.large },
   card: { marginBottom: padding.large },
   content: { gap: padding.small },
+  actions: { flexDirection: 'row' },
+  moveActions: { flexDirection: 'row', marginRight: padding.small },
 });

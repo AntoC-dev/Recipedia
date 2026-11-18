@@ -51,6 +51,8 @@ export default {
   preparationStepTitle: 'Title',
   preparationStepContent: 'Instructions',
   preparationDeleteStep: 'Delete step {{number}}',
+  preparationMoveStepUp: 'Move step {{number}} up',
+  preparationMoveStepDown: 'Move step {{number}} down',
   preparationDeleteStepConfirmTitle: 'Delete step {{number}}?',
   preparationDeleteStepConfirmContent: 'Its title and content will be removed from the recipe.',
 
