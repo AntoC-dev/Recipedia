@@ -11,7 +11,7 @@
  * @module components/dialogs/ValidationQueue
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { ingredientTableElement, tagTableElement } from '@customTypes/DatabaseElementTypes';
 import { IngredientWithSimilarity, TagWithSimilarity } from '@customTypes/ValidationTypes';
 import { mergeIngredient } from '@utils/RecipeValidationHelpers';
@@ -53,11 +53,12 @@ export function ValidationQueue({
   const [queue, setQueue] = useState<QueueItem[]>(items as QueueItem[]);
   const lastValidatedRef = useRef<tagTableElement | ingredientTableElement | null>(null);
 
+  const notifyComplete = useEffectEvent(onComplete);
   useEffect(() => {
     if (queue.length === 0) {
-      onComplete();
+      notifyComplete();
     }
-  }, [queue.length, onComplete]);
+  }, [queue.length]);
 
   if (queue.length === 0) return null;
 

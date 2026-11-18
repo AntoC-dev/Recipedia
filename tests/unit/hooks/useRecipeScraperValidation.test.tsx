@@ -578,4 +578,27 @@ describe('useRecipeScraperValidation', () => {
       expect(result.current.validationQueue?.type).toBe('Ingredient');
     });
   });
+
+  test('does not restart validation after the ingredient queue clears and the hook re-renders', async () => {
+    const wrapper = createWrapper([createMockIngredient('UnknownIngredient')], []);
+
+    const { result, rerender } = await renderHook(
+      () => {
+        useRecipeScraperValidation();
+        return useRecipeDialogs();
+      },
+      { wrapper }
+    );
+
+    await waitFor(() => {
+      expect(result.current.validationQueue?.type).toBe('Ingredient');
+    });
+
+    await act(() => {
+      result.current.clearValidationQueue();
+    });
+    await rerender({});
+
+    expect(result.current.validationQueue).toBeNull();
+  });
 });

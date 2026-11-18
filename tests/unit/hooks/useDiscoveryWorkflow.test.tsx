@@ -11,6 +11,7 @@ import { ingredientType } from '@customTypes/DatabaseElementTypes';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
+import { bulkImportLogger } from '@utils/logger';
 
 jest.mock('@context/DefaultPersonsContext', () =>
   require('@mocks/context/DefaultPersonsContext-mock')
@@ -206,6 +207,19 @@ describe('useDiscoveryWorkflow', () => {
       });
 
       expect(result.current.recipes).toHaveLength(2);
+    });
+
+    it('logs the final discovered recipe count when discovery finishes', async () => {
+      const loggerInfoSpy = jest.spyOn(bulkImportLogger, 'info');
+      const provider = createMockProvider();
+      const { result } = await renderHook(() => useDiscoveryWorkflow(provider, 'mock'));
+
+      await waitFor(() => {
+        expect(result.current.phase).toBe('selecting');
+      });
+
+      expect(loggerInfoSpy).toHaveBeenCalledWith('Discovery finished', { recipeCount: 2 });
+      loggerInfoSpy.mockRestore();
     });
   });
 

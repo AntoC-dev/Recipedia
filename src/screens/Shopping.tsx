@@ -54,7 +54,7 @@
  */
 
 import { ComputedShoppingItem } from '@customTypes/DatabaseElementTypes';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { AccessibilityInfo, SectionList, StyleSheet, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
@@ -107,10 +107,6 @@ export function Shopping() {
   const demoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isDialogOpenRef = useRef(false);
   const reducedMotion = useReducedMotion();
-  const shoppingListRef = useRef(shoppingList);
-  useEffect(() => {
-    shoppingListRef.current = shoppingList;
-  });
 
   const stepOrder = TUTORIAL_STEPS.Shopping.order;
   // `currentStep` keeps its last value after the tour is skipped, so only the
@@ -138,29 +134,28 @@ export function Shopping() {
   // as the block empties — keeps the working list free of what is already bought.
   useResetOnChange([nothingLeftToBuy, hasPurchased], () => setIsPurchasedExpanded(isListCleared));
 
+  const closeDemoDialog = useEffectEvent(() => {
+    if (!isDialogOpenRef.current) {
+      return;
+    }
+    setIsDialogOpen(false);
+    setIngredientDataForDialog({ name: '', recipeTitles: [] });
+    isDialogOpenRef.current = false;
+  });
+
+  const toggleDemoDialog = useEffectEvent(() => {
+    if (isDialogOpenRef.current) {
+      closeDemoDialog();
+    } else if (shoppingList.length > 2) {
+      setIngredientDataForDialog(shoppingList[2]!);
+      setIsDialogOpen(true);
+      isDialogOpenRef.current = true;
+    }
+  });
+
   useEffect(() => {
     if (!copilotData || !copilotEvents) {
       return;
-    }
-
-    function closeDialog() {
-      if (!isDialogOpenRef.current) {
-        return;
-      }
-      setIsDialogOpen(false);
-      setIngredientDataForDialog({ name: '', recipeTitles: [] });
-      isDialogOpenRef.current = false;
-    }
-
-    function toggleDemoDialog() {
-      const list = shoppingListRef.current;
-      if (isDialogOpenRef.current) {
-        closeDialog();
-      } else if (list.length > 2) {
-        setIngredientDataForDialog(list[2]!);
-        setIsDialogOpen(true);
-        isDialogOpenRef.current = true;
-      }
     }
 
     function startDemo() {
@@ -171,7 +166,7 @@ export function Shopping() {
         clearInterval(demoIntervalRef.current);
         demoIntervalRef.current = null;
       }
-      demoIntervalRef.current = setInterval(toggleDemoDialog, TUTORIAL_DEMO_INTERVAL);
+      demoIntervalRef.current = setInterval(() => toggleDemoDialog(), TUTORIAL_DEMO_INTERVAL);
     }
 
     function stopDemo() {
@@ -179,7 +174,7 @@ export function Shopping() {
         clearInterval(demoIntervalRef.current);
         demoIntervalRef.current = null;
       }
-      closeDialog();
+      closeDemoDialog();
     }
 
     function handleStepChange(step: CopilotStepData | undefined) {

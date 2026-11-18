@@ -28,16 +28,22 @@ describe('ValidationQueue', () => {
     jest.clearAllMocks();
   });
 
+  const tagQueueElement = (
+    items: TagWithSimilarity[],
+    testID = 'test-validation',
+    onComplete = mockOnComplete
+  ) => (
+    <ValidationQueue
+      type={'Tag'}
+      items={items}
+      onValidated={mockOnValidated}
+      onComplete={onComplete}
+      testId={testID}
+    />
+  );
+
   const renderQueueTags = async (items: TagWithSimilarity[], testID = 'test-validation') => {
-    return render(
-      <ValidationQueue
-        type={'Tag'}
-        items={items}
-        onValidated={mockOnValidated}
-        onComplete={mockOnComplete}
-        testId={testID}
-      />
-    );
+    return render(tagQueueElement(items, testID));
   };
 
   const renderQueueIngredients = async (items: IngredientWithSimilarity[]) => {
@@ -76,6 +82,16 @@ describe('ValidationQueue', () => {
       await renderQueueTags([]);
       expect(mockOnComplete).toHaveBeenCalledTimes(1);
       expect(mockOnValidated).not.toHaveBeenCalled();
+    });
+
+    test('does not call onComplete again when rerendered with a new onComplete instance', async () => {
+      const { rerender } = await renderQueueTags([]);
+      const newOnComplete = jest.fn();
+
+      await rerender(tagQueueElement([], 'test-validation', newOnComplete));
+
+      expect(mockOnComplete).toHaveBeenCalledTimes(1);
+      expect(newOnComplete).not.toHaveBeenCalled();
     });
 
     test('passes empty string newItemName when ingredient has no name', async () => {

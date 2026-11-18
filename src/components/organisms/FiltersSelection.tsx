@@ -40,7 +40,7 @@
  * ```
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useEffectEvent, useRef } from 'react';
 import { TagButton } from '@components/atomic/TagButton';
 import { FilterToggleButton } from '@components/atomic/FilterToggleButton';
 import { Icons } from '@assets/Icons';
@@ -162,6 +162,10 @@ export function FiltersSelection({
     };
   }, [currentStep, copilotData, copilotEvents, reducedMotion, stepOrder, setAddingAFilter]);
 
+  const reportToggleButtonTop = useEffectEvent((windowTop: number) =>
+    onToggleButtonTop?.(windowTop)
+  );
+
   // On focus during the tutorial, the screen is still mid-transition (the
   // spotlight target moves as the safe area settles), so a single measurement
   // can be stale. Measure each frame until the window position stops changing,
@@ -180,7 +184,7 @@ export function FiltersSelection({
           return;
         }
         if ((previousTop !== null && y === previousTop) || attempts >= MAX_MEASURE_ATTEMPTS) {
-          onToggleButtonTop?.(y);
+          reportToggleButtonTop(y);
         } else {
           previousTop = y;
           attempts += 1;
@@ -192,7 +196,7 @@ export function FiltersSelection({
       cancelled = true;
       cancelAnimationFrame(frame);
     };
-  }, [screenFocused, copilotData, onToggleButtonTop]);
+  }, [screenFocused, copilotData]);
 
   return (
     <>

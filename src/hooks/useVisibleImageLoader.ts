@@ -16,7 +16,7 @@
  * @module hooks/useVisibleImageLoader
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { DiscoveredRecipe } from '@customTypes/BulkImportTypes';
 import {
   abortFetches,
@@ -110,11 +110,7 @@ export function useVisibleImageLoader({
   const abortControllersRef = useRef<Map<string, AbortController>>(new Map());
   const activeCountRef = useRef(0);
   const queueRef = useRef<string[]>([]);
-  const fetchImageUrlRef = useRef(fetchImageUrl);
-
-  useEffect(() => {
-    fetchImageUrlRef.current = fetchImageUrl;
-  }, [fetchImageUrl]);
+  const fetchImage = useEffectEvent(fetchImageUrl);
 
   useEffect(() => {
     if (!enabled) return undefined;
@@ -184,8 +180,7 @@ export function useVisibleImageLoader({
         const controller = new AbortController();
         abortControllersRef.current.set(url, controller);
 
-        fetchImageUrlRef
-          .current(url, controller.signal)
+        fetchImage(url, controller.signal)
           .then(imageUrl => {
             if (imageUrl && !controller.signal.aborted) {
               setImageMap(prev => new Map(prev).set(url, imageUrl));

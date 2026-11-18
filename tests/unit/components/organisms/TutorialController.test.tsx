@@ -21,16 +21,20 @@ jest.mock('@react-navigation/native', () =>
 describe('TutorialController Component', () => {
   const mockOnComplete = jest.fn();
 
-  const renderTutorialProvider = async () => {
+  const tutorialProviderElement = (onComplete = mockOnComplete) => {
     const { View, Text } = require('react-native');
-    jest.useFakeTimers();
-    const result = await render(
-      <TutorialProvider onComplete={mockOnComplete}>
+    return (
+      <TutorialProvider onComplete={onComplete}>
         <View testID='test-child'>
           <Text testID='test-child-text'>Test Child</Text>
         </View>
       </TutorialProvider>
     );
+  };
+
+  const renderTutorialProvider = async () => {
+    jest.useFakeTimers();
+    const result = await render(tutorialProviderElement());
     await act(() => jest.advanceTimersByTime(300));
     jest.useRealTimers();
     return result;
@@ -184,6 +188,19 @@ describe('TutorialController Component', () => {
     // Wait for the async navigation to complete
     await new Promise(resolve => setTimeout(resolve, 10));
     expect(mockNavigate).toHaveBeenCalledWith('Home');
+  });
+
+  test('stop listener subscribed before onComplete changes calls the latest onComplete', async () => {
+    setMockCopilotState({ isActive: true });
+    const newOnComplete = jest.fn();
+
+    const { rerender } = await renderTutorialProvider();
+    await rerender(tutorialProviderElement(newOnComplete));
+
+    triggerStopEvent();
+
+    expect(newOnComplete).toHaveBeenCalledTimes(1);
+    expect(mockOnComplete).not.toHaveBeenCalled();
   });
 
   test('handles stepChange event with logging', async () => {

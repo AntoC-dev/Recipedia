@@ -215,7 +215,7 @@ describe('FiltersSelection Component', () => {
       expect(onToggleButtonTop).not.toHaveBeenCalled();
     });
 
-    test('ignores a measurement callback that resolves after the effect is cleaned up', async () => {
+    function captureAnimationFramesWithMeasuredTop(measuredTop: number) {
       const frames: FrameRequestCallback[] = [];
       const rafSpy = jest
         .spyOn(global, 'requestAnimationFrame')
@@ -226,9 +226,18 @@ describe('FiltersSelection Component', () => {
       const cafSpy = jest.spyOn(global, 'cancelAnimationFrame').mockImplementation(() => {});
       MockNativeMethods.measureInWindow.mockImplementation(
         (cb: (x: number, y: number, width: number, height: number) => void) => {
-          cb(0, 42, 100, 50);
+          cb(0, measuredTop, 100, 50);
         }
       );
+      const restore = () => {
+        rafSpy.mockRestore();
+        cafSpy.mockRestore();
+      };
+      return { frames, restore };
+    }
+
+    test('ignores a measurement callback that resolves after the effect is cleaned up', async () => {
+      const { frames, restore } = captureAnimationFramesWithMeasuredTop(42);
       setMockCopilotState({ isActive: true, currentStep: null });
       const onToggleButtonTop = jest.fn();
 
@@ -243,15 +252,51 @@ describe('FiltersSelection Component', () => {
       const staleFrame = frames[0]!;
 
       await rerender(
-        <FiltersSelection {...defaultProps} screenFocused={true} onToggleButtonTop={() => {}} />
+        <FiltersSelection
+          {...defaultProps}
+          screenFocused={false}
+          onToggleButtonTop={onToggleButtonTop}
+        />
       );
 
       staleFrame(0);
 
       expect(onToggleButtonTop).not.toHaveBeenCalled();
 
-      rafSpy.mockRestore();
-      cafSpy.mockRestore();
+      restore();
+    });
+
+    test('keeps measuring and reports to the latest onToggleButtonTop when it changes', async () => {
+      const { frames, restore } = captureAnimationFramesWithMeasuredTop(42);
+      setMockCopilotState({ isActive: true, currentStep: null });
+      const initialOnToggleButtonTop = jest.fn();
+      const latestOnToggleButtonTop = jest.fn();
+
+      const { rerender } = await render(
+        <FiltersSelection
+          {...defaultProps}
+          screenFocused={true}
+          onToggleButtonTop={initialOnToggleButtonTop}
+        />
+      );
+      await rerender(
+        <FiltersSelection
+          {...defaultProps}
+          screenFocused={true}
+          onToggleButtonTop={latestOnToggleButtonTop}
+        />
+      );
+
+      expect(frames).toHaveLength(1);
+      expect(global.cancelAnimationFrame).not.toHaveBeenCalled();
+
+      frames[0]!(0);
+      frames[1]!(0);
+
+      expect(latestOnToggleButtonTop).toHaveBeenCalledWith(42);
+      expect(initialOnToggleButtonTop).not.toHaveBeenCalled();
+
+      restore();
     });
   });
 
