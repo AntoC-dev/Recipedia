@@ -323,6 +323,15 @@ appId: "com.recipedia"
     id: "RecipePreparation::EditableStep::0::DeleteButton"
     label: "Delete button for first step is rendered"
 
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::MoveUpButton"
+    enabled: false
+    label: "Move up button for step 1 is rendered, disabled on the first step"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::0::MoveDownButton"
+    label: "Move down button for step 1 is rendered"
+
 - scrollUntilVisible:
     element:
       id: "RecipePreparation::EditableStep::0::TextInputTitle::CustomTextInput"
@@ -380,6 +389,14 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::DeleteButton"
     label: "Delete button for second step is rendered"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::1::MoveUpButton"
+    label: "Move up button for step 2 is rendered"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::1::MoveDownButton"
+    label: "Move down button for step 2 is rendered"
 - assertVisible:
     id: "RecipePreparation::EditableStep::1::Title"
     text: "Title"
@@ -430,6 +447,15 @@ appId: "com.recipedia"
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::DeleteButton"
     label: "Delete button for third step is rendered"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::2::MoveUpButton"
+    label: "Move up button for step 3 is rendered"
+
+- assertVisible:
+    id: "RecipePreparation::EditableStep::2::MoveDownButton"
+    enabled: false
+    label: "Move down button for step 3 is rendered, disabled on the last step"
 - assertVisible:
     id: "RecipePreparation::EditableStep::2::Title"
     text: "Title"
