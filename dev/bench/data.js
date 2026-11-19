@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794482654713,
+  "lastUpdate": 1795089290369,
   "repoUrl": "https://github.com/AntoC-dev/Recipedia",
   "entries": {
     "Screen FPS": [
@@ -740,6 +740,63 @@ window.BENCHMARK_DATA = {
           {
             "name": "06_parameters",
             "value": 56.4,
+            "unit": "fps"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "semantic-release-bot",
+            "username": "semantic-release-bot",
+            "email": "semantic-release-bot@martynus.net"
+          },
+          "committer": {
+            "name": "semantic-release-bot",
+            "username": "semantic-release-bot",
+            "email": "semantic-release-bot@martynus.net"
+          },
+          "id": "c9c110728fc3ae27efe149d744ac02a697f04ff2",
+          "message": "chore(release): 2.60.0 [skip ci]\n\n## [2.60.0](https://github.com/AntoC-dev/Recipedia/compare/v2.59.1...v2.60.0) (2026-11-19)\n\n### Features\n\n* **recipe:** reorder preparation steps with up/down buttons ([ed01d12](https://github.com/AntoC-dev/Recipedia/commit/ed01d1273bd40d17e05e1760a160c597964f2dec)), closes [#680](https://github.com/AntoC-dev/Recipedia/issues/680)\n* **recipe:** reorder preparation steps with up/down buttons ([#745](https://github.com/AntoC-dev/Recipedia/issues/745)) ([aa96754](https://github.com/AntoC-dev/Recipedia/commit/aa96754171d205429bde7e4ac662dbfd53eaeb8b)), closes [#680](https://github.com/AntoC-dev/Recipedia/issues/680)",
+          "timestamp": "2026-11-19T06:41:57Z",
+          "url": "https://github.com/AntoC-dev/Recipedia/commit/c9c110728fc3ae27efe149d744ac02a697f04ff2"
+        },
+        "date": 1795089288546,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "00_seed",
+            "value": 59.6,
+            "unit": "fps"
+          },
+          {
+            "name": "01_app_start",
+            "value": 59.6,
+            "unit": "fps"
+          },
+          {
+            "name": "02_home",
+            "value": 59.5,
+            "unit": "fps"
+          },
+          {
+            "name": "03_search",
+            "value": 59.4,
+            "unit": "fps"
+          },
+          {
+            "name": "04_recipe_view",
+            "value": 59.3,
+            "unit": "fps"
+          },
+          {
+            "name": "05_shopping",
+            "value": 59.3,
+            "unit": "fps"
+          },
+          {
+            "name": "06_parameters",
+            "value": 56.7,
             "unit": "fps"
           }
         ]
