@@ -1,17 +1,24 @@
 appId: "com.recipedia"
 ---
 # FAB IDs use regex pattern because React Native Paper adds "-container-outer-layer" suffix on iOS
-# A tap during the mount animation is ignored; retry once
-- retry:
-    maxRetries: 1
-    commands:
-      - tapOn:
-          id: "ExpandButton.*"
-          point: "50%, 20%"
-          label: "Tap FAB expand button"
+# A tap during the mount animation is ignored: let the FAB settle before tapping it
+- extendedWaitUntil:
+    visible:
+      id: "ExpandButton.*"
+    timeout: 30000
+    label: "Wait for FAB expand button"
 
-      - extendedWaitUntil:
-          visible:
-            id: "ReduceButton.*"
-          timeout: 3000
-          label: "Wait for FAB menu to open"
+- waitForAnimationToEnd:
+    timeout: 5000
+    label: "Wait for FAB mount animation"
+
+- tapOn:
+    id: "ExpandButton.*"
+    point: "50%, 20%"
+    label: "Tap FAB expand button"
+
+- extendedWaitUntil:
+    visible:
+      id: "ReduceButton.*"
+    timeout: 20000
+    label: "Wait for FAB menu to open"

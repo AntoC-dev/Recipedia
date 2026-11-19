@@ -3,10 +3,6 @@ appId: "com.recipedia"
 tags:
   - settings
 ---
-- runFlow:
-    file: "../../flows/parameters/language/switchToEnglish.yaml"
-    label: "Setup - Ensure English language"
-
 - tapOn:
     id: "BottomTabs::Home"
     label: "Setup - Return to Home screen"
@@ -15,8 +11,8 @@ tags:
     text: "Parameters"
     label: "Action - Navigate to Parameters screen"
 
-- tapOn:
-    id: "Parameters::Section::RecipeDefaults::Season::Switch"
+- runFlow:
+    file: "../../flows/parameters/seasonFilter/turnSeasonFilterOn.yaml"
     label: "Action - Toggle season filter ON"
 
 - tapOn:
@@ -31,8 +27,8 @@ tags:
     text: "Parameters"
     label: "Action - Return to Parameters screen"
 
-- tapOn:
-    id: "Parameters::Section::RecipeDefaults::Season::Switch"
+- runFlow:
+    file: "../../flows/parameters/seasonFilter/turnSeasonFilterOff.yaml"
     label: "Action - Toggle season filter OFF"
 
 - tapOn:

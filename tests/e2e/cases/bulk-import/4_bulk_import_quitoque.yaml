@@ -4,10 +4,6 @@ tags:
   - bulk-import
 ---
 - runFlow:
-    file: "../../flows/parameters/language/switchToEnglish.yaml"
-    label: "Setup - Ensure app is in English (in case previous test failed)"
-
-- runFlow:
     file: "../../flows/bulk-import/navigateToBulkImport.yaml"
     label: "Phase 1 - Navigate to Bulk Import (English)"
 

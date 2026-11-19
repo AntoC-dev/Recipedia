@@ -23,8 +23,10 @@ appId: "com.recipedia"
       platform: iOS
     label: "Select most recent photo from gallery on iOS"
 
-- assertVisible:
-    id: "Modal::List#0::SquareButton::Image"
+- extendedWaitUntil:
+    visible:
+      id: "Modal::List#0::SquareButton::Image"
+    timeout: 60000
     label: "Check that the most recent photo is displayed in the modal"
 
 - tapOn:

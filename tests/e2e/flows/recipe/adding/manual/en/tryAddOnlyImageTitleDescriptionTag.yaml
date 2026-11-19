@@ -9,6 +9,14 @@ appId: "com.recipedia"
 
 - waitForAnimationToEnd
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeTags::RoundButton"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Bring the button back if scroll momentum carried it off screen"
+
 - tapOn:
     id: "RecipeTags::RoundButton"
     label: "Add a new tag"

@@ -15,7 +15,12 @@ tags:
     file: "../../flows/waitForKeyboard.yaml"
     label: "Wait for keyboard to appear"
 
-- inputText: "Ca"
+- runFlow:
+    file: "../../flows/inputText.yaml"
+    env:
+      VALUE: "Ca"
+      TARGET_ID: "SearchScreen::SearchBar"
+    label: "Action - Type 'Ca' in search bar"
 
 - waitForAnimationToEnd:
     label: "Wait for keyboard to finish typing"
