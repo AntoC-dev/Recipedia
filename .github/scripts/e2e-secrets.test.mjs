@@ -65,6 +65,7 @@ const withStubbedTools = (workDir, maestroBody) => {
   writeExecutable(join(binDir, 'maestro'), maestroBody);
   writeExecutable(join(binDir, 'npm'), 'exit 0');
   writeExecutable(join(binDir, 'adb'), 'exit 0');
+  writeExecutable(join(binDir, 'sleep'), 'exit 0');
   writeExecutable(
     join(binDir, 'xcrun'),
     'if [ "$2" = list ]; then echo "    iPhone 16e (UDID) (Booted)"; fi'
@@ -167,24 +168,36 @@ const LATCHED_REPORT = `<testsuites>
 </testsuites>
 `;
 
-const runLatchedIosSuite = ({ firstRunLog, rerunFailingFlow = '', rerunDeadline = '' }) => {
+const SUITE_RUN =
+  'test tests/e2e/ --config=tests/e2e/search.yaml --debug-output=maestro_logs_search --output=report-search.xml --format junit -s 1';
+const expiredDeadline = () => String(Math.floor(Date.now() / 1000) - 1);
+
+const runFailingIosSuite = ({
+  firstRunLog = NO_LATCH_LOG,
+  firstReport = LATCHED_REPORT,
+  retryExit = 0,
+  rerunFailingFlow = '',
+  rerunDeadline = '',
+}) => {
   const workDir = mkdtempSync(join(tmpdir(), 'e2e-rerun-'));
   makeTree(
     {
       'stub/first-run.log': firstRunLog,
-      'stub/report.xml': LATCHED_REPORT,
+      ...(firstReport === null ? {} : { 'stub/report.xml': firstReport }),
     },
     workDir
   );
   const binDir = withStubbedTools(
     workDir,
-    `if [ "$2" = "tests/e2e/" ]; then
+    `echo "$*" >> calls.txt
+if [ "$2" = "tests/e2e/" ] && [ ! -f first-run.done ]; then
+  touch first-run.done
   mkdir -p maestro_logs_search/.maestro/tests/sess
   cp stub/first-run.log maestro_logs_search/.maestro/tests/sess/maestro.log
-  cp stub/report.xml report-search.xml
+  [ -f stub/report.xml ] && cp stub/report.xml report-search.xml
   exit 1
 fi
-echo "$*" >> reruns.txt
+[ "$2" = "tests/e2e/" ] && exit "$RETRY_EXIT"
 [ "$2" = "$RERUN_FAILING_FLOW" ] && exit 1
 exit 0`
   );
@@ -194,55 +207,51 @@ exit 0`
     ['search'],
     {
       ...noCredentials,
+      RETRY_EXIT: String(retryExit),
       RERUN_FAILING_FLOW: rerunFailingFlow,
       E2E_RERUN_DEADLINE: rerunDeadline,
       PATH: `${binDir}:${process.env.PATH}`,
     },
     workDir
   );
-  const rerunsFile = join(workDir, 'reruns.txt');
-  const rerunArgv = existsSync(rerunsFile)
-    ? readFileSync(rerunsFile, 'utf8').split('\n').filter(Boolean)
-    : [];
+  const calls = readFileSync(join(workDir, 'calls.txt'), 'utf8').split('\n').filter(Boolean);
 
-  return { result, rerunArgv };
+  return { result, calls };
 };
 
 test('run-e2e-ios.sh reruns only the failed flows once the driver latched', () => {
-  const { result, rerunArgv } = runLatchedIosSuite({ firstRunLog: LATCH_LOG });
+  const { result, calls } = runFailingIosSuite({ firstRunLog: LATCH_LOG });
 
   assert.equal(result.status, 0, result.stdout + result.stderr);
-  assert.deepEqual(rerunArgv, [
+  assert.deepEqual(calls, [
+    SUITE_RUN,
     'test tests/e2e/cases/search/ci/1_search.yaml --config=tests/e2e/search.yaml --debug-output=maestro_logs_search/rerun-1_search --flatten-debug-output --output=report-rerun-1_search.xml --format junit -s 1',
     'test tests/e2e/cases/search/ci/2_filter.yaml --config=tests/e2e/search.yaml --debug-output=maestro_logs_search/rerun-2_filter --flatten-debug-output --output=report-rerun-2_filter.xml --format junit -s 1',
   ]);
 });
 
 test('run-e2e-ios.sh fails when a rerun flow fails again', () => {
-  const { result, rerunArgv } = runLatchedIosSuite({
+  const { result, calls } = runFailingIosSuite({
     firstRunLog: LATCH_LOG,
     rerunFailingFlow: 'tests/e2e/cases/search/ci/1_search.yaml',
   });
 
   assert.equal(result.status, 1);
-  assert.equal(rerunArgv.length, 2);
+  assert.equal(calls.length, 3);
 });
 
 test('run-e2e-ios.sh skips reruns once earlier suites of the job used up the rerun budget', () => {
-  const { result, rerunArgv } = runLatchedIosSuite({
-    firstRunLog: LATCH_LOG,
-    rerunDeadline: String(Math.floor(Date.now() / 1000) - 1),
-  });
+  const { result, calls } = runFailingIosSuite({ firstRunLog: LATCH_LOG, rerunDeadline: expiredDeadline() });
 
   assert.equal(result.status, 1);
-  assert.deepEqual(rerunArgv, []);
+  assert.deepEqual(calls, [SUITE_RUN]);
 });
 
-test('run-e2e-ios.sh keeps a plain failure without rerunning when the driver never latched', () => {
-  const { result, rerunArgv } = runLatchedIosSuite({ firstRunLog: NO_LATCH_LOG });
+test('run-e2e-ios.sh keeps a plain flow failure without rerunning anything', () => {
+  const { result, calls } = runFailingIosSuite({});
 
   assert.equal(result.status, 1);
-  assert.deepEqual(rerunArgv, []);
+  assert.deepEqual(calls, [SUITE_RUN]);
 });
 
 test('the credential gate honours a multi-suite allow list', () => {

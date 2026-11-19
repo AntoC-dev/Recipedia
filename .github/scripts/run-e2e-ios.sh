@@ -35,6 +35,10 @@ run_maestro() {
     "${MAESTRO_CREDENTIAL_ARGS[@]}"
 }
 
+rerun_budget_spent() {
+  [ "$(date +%s)" -gt "$RERUN_DEADLINE" ]
+}
+
 rerun_failed_flows() {
   local flow_files flow_file flow_id status=0
 
@@ -45,7 +49,7 @@ rerun_failed_flows() {
   fi
 
   while IFS= read -r flow_file; do
-    if [ "$(date +%s)" -gt "$RERUN_DEADLINE" ]; then
+    if rerun_budget_spent; then
       echo "::warning::Skipping the remaining reruns: the step is close to its timeout"
       return 1
     fi
