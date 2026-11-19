@@ -170,7 +170,7 @@
     "lint-staged": "16.4.0",
     "patch-package": "^8.0.1",
     "prettier": "^3.10.1",
-    "pyodide": "314.0.7",
+    "pyodide": "314.0.8",
     "reassure": "1.6.1",
     "semantic-release": "25.0.9",
     "test-renderer": "1.3.1",
