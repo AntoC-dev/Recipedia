@@ -1,3 +1,10 @@
+## [2.60.0](https://github.com/AntoC-dev/Recipedia/compare/v2.59.1...v2.60.0) (2026-11-19)
+
+### Features
+
+* **recipe:** reorder preparation steps with up/down buttons ([ed01d12](https://github.com/AntoC-dev/Recipedia/commit/ed01d1273bd40d17e05e1760a160c597964f2dec)), closes [#680](https://github.com/AntoC-dev/Recipedia/issues/680)
+* **recipe:** reorder preparation steps with up/down buttons ([#745](https://github.com/AntoC-dev/Recipedia/issues/745)) ([aa96754](https://github.com/AntoC-dev/Recipedia/commit/aa96754171d205429bde7e4ac662dbfd53eaeb8b)), closes [#680](https://github.com/AntoC-dev/Recipedia/issues/680)
+
 ## [2.59.1](https://github.com/AntoC-dev/Recipedia/compare/v2.59.0...v2.59.1) (2026-11-16)
 
 ### Bug Fixes
