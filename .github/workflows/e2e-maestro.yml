@@ -120,7 +120,9 @@ jobs:
       - name: Disable macOS background services
         if: inputs.platform == 'ios'
         run: |
-          sudo mdutil -a -i off
+          # Only the volumes the job writes to: `-a` also reaches the Preboot volume, whose
+          # indexing state can still be transitioning on a fresh runner and fails the step.
+          sudo mdutil -i off / /System/Volumes/Data
           sudo tmutil disable
 
       - name: Boot iOS Simulator
