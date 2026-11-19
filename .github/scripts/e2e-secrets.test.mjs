@@ -168,8 +168,11 @@ const LATCHED_REPORT = `<testsuites>
 </testsuites>
 `;
 
+const NO_FLOW_REPORT = '<testsuites>\n</testsuites>\n';
 const SUITE_RUN =
   'test tests/e2e/ --config=tests/e2e/search.yaml --debug-output=maestro_logs_search --output=report-search.xml --format junit -s 1';
+const NO_FLOW_RETRY =
+  'test tests/e2e/ --config=tests/e2e/search.yaml --debug-output=maestro_logs_search/no-flow-retry --flatten-debug-output --output=report-search.xml --format junit -s 1';
 const expiredDeadline = () => String(Math.floor(Date.now() / 1000) - 1);
 
 const runFailingIosSuite = ({
@@ -249,6 +252,32 @@ test('run-e2e-ios.sh skips reruns once earlier suites of the job used up the rer
 
 test('run-e2e-ios.sh keeps a plain flow failure without rerunning anything', () => {
   const { result, calls } = runFailingIosSuite({});
+
+  assert.equal(result.status, 1);
+  assert.deepEqual(calls, [SUITE_RUN]);
+});
+
+for (const [label, firstReport] of [
+  ['writes no report', null],
+  ['reports no flow', NO_FLOW_REPORT],
+]) {
+  test(`run-e2e-ios.sh reruns the whole suite once when Maestro fails and ${label}`, () => {
+    const { result, calls } = runFailingIosSuite({ firstReport });
+
+    assert.equal(result.status, 0, result.stdout + result.stderr);
+    assert.deepEqual(calls, [SUITE_RUN, NO_FLOW_RETRY]);
+  });
+}
+
+test('run-e2e-ios.sh fails when the no-flow retry fails too', () => {
+  const { result, calls } = runFailingIosSuite({ firstReport: NO_FLOW_REPORT, retryExit: 1 });
+
+  assert.equal(result.status, 1);
+  assert.deepEqual(calls, [SUITE_RUN, NO_FLOW_RETRY]);
+});
+
+test('run-e2e-ios.sh skips the no-flow retry once the rerun budget is used up', () => {
+  const { result, calls } = runFailingIosSuite({ firstReport: NO_FLOW_REPORT, rerunDeadline: expiredDeadline() });
 
   assert.equal(result.status, 1);
   assert.deepEqual(calls, [SUITE_RUN]);

@@ -75,6 +75,19 @@ REPORT_FILE="report-${SUITE}.xml"
 MAESTRO_EXIT=0
 run_maestro tests/e2e/ --debug-output="maestro_logs_${SUITE}" --output="$REPORT_FILE" || MAESTRO_EXIT=$?
 
+# A failure before any flow ran is the runner, not the app (e.g. IOSDriverTimeoutException: the
+# XCTest driver never started). No flow result to hide, so retry the suite once in a fresh process.
+if [ "$MAESTRO_EXIT" -ne 0 ] && ! grep -qs '<testcase' "$REPORT_FILE"; then
+  if rerun_budget_spent; then
+    echo "::warning::Maestro failed before any flow ran; no retry, the step is close to its timeout"
+  else
+    echo "::warning::Maestro failed before any flow ran; retrying suite $SUITE once"
+    MAESTRO_EXIT=0
+    run_maestro tests/e2e/ --debug-output="maestro_logs_${SUITE}/no-flow-retry" --flatten-debug-output \
+      --output="$REPORT_FILE" || MAESTRO_EXIT=$?
+  fi
+fi
+
 if [ "$MAESTRO_EXIT" -ne 0 ] && grep -rqsE --include=maestro.log "$DRIVER_LATCH" "maestro_logs_${SUITE}"; then
   echo "::warning::Maestro XCTest driver latched; rerunning failed flows"
   rerun_failed_flows && MAESTRO_EXIT=0
