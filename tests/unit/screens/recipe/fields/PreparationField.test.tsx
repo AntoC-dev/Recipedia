@@ -120,25 +120,85 @@ describe('RecipePreparationField', () => {
   );
 
   describe('step reordering', () => {
-    test('no reorder affordance is rendered in the editable step row', async () => {
-      const { queryByTestId } = await renderWithForm(
+    const stepA = { title: 'A', description: 'first' };
+    const stepB = { title: 'B', description: 'second' };
+    const stepC = { title: 'C', description: 'third' };
+    const threeSteps = [stepA, stepB, stepC];
+    const stepId = (index: number) => `RecipePreparation::EditableStep::${index}`;
+
+    async function renderEditableWithSteps(steps: { title: string; description: string }[]) {
+      return renderWithForm(
         RecipePreparationField,
-        f => ({
-          form: f,
-          stackMode: recipeStateType.edit,
-          t,
-        }),
-        {
-          recipePreparation: [
-            { title: 'A', description: 'first' },
-            { title: 'B', description: 'second' },
-            { title: 'C', description: 'third' },
-          ],
-        }
+        f => ({ form: f, stackMode: recipeStateType.edit, t }),
+        { recipePreparation: steps }
       );
-      expect(queryByTestId('RecipePreparation::EditableStep::0::MoveUp')).toBeNull();
-      expect(queryByTestId('RecipePreparation::EditableStep::0::MoveDown')).toBeNull();
-      expect(queryByTestId('RecipePreparation::EditableStep::0::DragHandle')).toBeNull();
+    }
+
+    test('disables move up on the first step and move down on the last step', async () => {
+      const { getByTestId } = await renderEditableWithSteps(threeSteps);
+
+      expect(getByTestId(`${stepId(0)}::MoveUpButton`)).toBeDisabled();
+      expect(getByTestId(`${stepId(0)}::MoveDownButton`)).toBeEnabled();
+      expect(getByTestId(`${stepId(1)}::MoveUpButton`)).toBeEnabled();
+      expect(getByTestId(`${stepId(1)}::MoveDownButton`)).toBeEnabled();
+      expect(getByTestId(`${stepId(2)}::MoveUpButton`)).toBeEnabled();
+      expect(getByTestId(`${stepId(2)}::MoveDownButton`)).toBeDisabled();
+    });
+
+    test('passes no move handler when there is a single step', async () => {
+      const { getByTestId } = await renderEditableWithSteps([stepA]);
+
+      expect(getByTestId(`${stepId(0)}::MoveUpButton`)).toBeDisabled();
+      expect(getByTestId(`${stepId(0)}::MoveDownButton`)).toBeDisabled();
+    });
+
+    test('moving a step up swaps it with the previous step', async () => {
+      const { getByTestId, form } = await renderEditableWithSteps(threeSteps);
+
+      await fireEvent.press(getByTestId(`${stepId(2)}::MoveUpButton`));
+
+      expect(form.getValues('recipePreparation')!.map(step => step.title)).toEqual(['A', 'C', 'B']);
+      expect(getByTestId(`${stepId(1)}::TextInputTitle::CustomTextInput`).props.value).toBe('C');
+      expect(getByTestId(`${stepId(2)}::TextInputContent::CustomTextInput`).props.value).toBe(
+        'second'
+      );
+    });
+
+    test('moving a step down swaps it with the next step', async () => {
+      const { getByTestId, form } = await renderEditableWithSteps(threeSteps);
+
+      await fireEvent.press(getByTestId(`${stepId(0)}::MoveDownButton`));
+
+      expect(form.getValues('recipePreparation')).toEqual([stepB, stepA, stepC]);
+      expect(getByTestId(`${stepId(0)}::TextInputTitle::CustomTextInput`).props.value).toBe('B');
+    });
+
+    test('text typed in a still-focused step travels with it when it moves', async () => {
+      const { getByTestId, form } = await renderEditableWithSteps(threeSteps);
+
+      await fireEvent.changeText(
+        getByTestId(`${stepId(0)}::TextInputContent::CustomTextInput`),
+        'first, edited'
+      );
+      await fireEvent.press(getByTestId(`${stepId(0)}::MoveDownButton`));
+
+      expect(form.getValues('recipePreparation')).toEqual([
+        stepB,
+        { title: 'A', description: 'first, edited' },
+        stepC,
+      ]);
+      expect(getByTestId(`${stepId(1)}::TextInputContent::CustomTextInput`).props.value).toBe(
+        'first, edited'
+      );
+    });
+
+    test('a step moved to the top loses its move up button', async () => {
+      const { getByTestId } = await renderEditableWithSteps(threeSteps);
+
+      await fireEvent.press(getByTestId(`${stepId(1)}::MoveUpButton`));
+
+      expect(getByTestId(`${stepId(0)}::MoveUpButton`)).toBeDisabled();
+      expect(getByTestId(`${stepId(1)}::MoveUpButton`)).toBeEnabled();
     });
   });
 

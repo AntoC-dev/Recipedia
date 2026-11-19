@@ -1,0 +1,167 @@
+name: "12 - Recipe Edit Reorder Preparation Steps Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-edit
+---
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Sushi Rolls"
+    label: "Action - Open Sushi Rolls (4 steps)"
+
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
+    label: "Action - Enter edit mode"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::2::MoveUpButton"
+    direction: DOWN
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Scroll to the third step move up button"
+
+- tapOn:
+    id: "RecipePreparation::EditableStep::2::MoveUpButton"
+    label: "Action - Move Add fillings and roll up (order: Prepare rice, Add fillings and roll, Spread rice, Serve)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::MoveDownButton"
+    direction: UP
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to the first step move down button"
+
+- tapOn:
+    id: "RecipePreparation::EditableStep::0::MoveDownButton"
+    label: "Action - Move Prepare rice down (order: Add fillings and roll, Prepare rice, Spread rice, Serve)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::3::MoveUpButton"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to the last step move up button"
+
+- tapOn:
+    id: "RecipePreparation::EditableStep::3::MoveUpButton"
+    label: "Action - Move Serve up (order: Add fillings and roll, Prepare rice, Serve, Spread rice)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::1::MoveDownButton"
+    direction: UP
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to the second step move down button"
+
+- tapOn:
+    id: "RecipePreparation::EditableStep::1::MoveDownButton"
+    label: "Action - Move Prepare rice down (order: Add fillings and roll, Serve, Prepare rice, Spread rice)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipePreparation::EditableStep::0::DeleteButton"
+    direction: UP
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll back to the first step"
+
+- runFlow:
+    file: "../../asserts/recipe/edit/en/preparationStep.yaml"
+    env:
+      STEP_INDEX: "0"
+      STEP_TITLE: "Add fillings and roll"
+      STEP_CONTENT: "Add salmon and avocado as fillings and roll tightly."
+    label: "Assert - Step 1 is Add fillings and roll"
+
+- runFlow:
+    file: "../../asserts/recipe/edit/en/preparationStep.yaml"
+    env:
+      STEP_INDEX: "1"
+      STEP_TITLE: "Serve"
+      STEP_CONTENT: "Slice the roll into pieces and serve with soy sauce."
+    label: "Assert - Step 2 is Serve"
+
+- runFlow:
+    file: "../../asserts/recipe/edit/en/preparationStep.yaml"
+    env:
+      STEP_INDEX: "2"
+      STEP_TITLE: "Prepare rice"
+      STEP_CONTENT: "Cook the sushi rice and let it cool."
+    label: "Assert - Step 3 is Prepare rice"
+
+- runFlow:
+    file: "../../asserts/recipe/edit/en/preparationStep.yaml"
+    env:
+      STEP_INDEX: "3"
+      STEP_TITLE: "Spread rice"
+      STEP_CONTENT: "Place a sheet of nori on a bamboo mat and spread rice evenly over it."
+    label: "Assert - Step 4 is Spread rice"
+
+- tapOn:
+    id: "Recipe::AppBar::Validate"
+    label: "Action - Save changes"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar::BackButton"
+    timeout: 10000
+    label: "Wait for the saved recipe in read-only mode"
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Action - Leave the saved recipe"
+
+- tapOn:
+    id: "SearchScreen::SearchBar-clear-icon"
+    label: "Action - Clear the search bar"
+
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Sushi Rolls"
+    label: "Action - Reopen Sushi Rolls from the database"
+
+- runFlow:
+    file: "../../asserts/recipe/readonly/preparationStep.yaml"
+    env:
+      STEP_INDEX: "0"
+      STEP_TITLE: "Add fillings and roll"
+      STEP_CONTENT: "Add salmon and avocado as fillings and roll tightly."
+    label: "Assert - Saved step 1 is Add fillings and roll"
+
+- runFlow:
+    file: "../../asserts/recipe/readonly/preparationStep.yaml"
+    env:
+      STEP_INDEX: "1"
+      STEP_TITLE: "Serve"
+      STEP_CONTENT: "Slice the roll into pieces and serve with soy sauce."
+    label: "Assert - Saved step 2 is Serve"
+
+- runFlow:
+    file: "../../asserts/recipe/readonly/preparationStep.yaml"
+    env:
+      STEP_INDEX: "2"
+      STEP_TITLE: "Prepare rice"
+      STEP_CONTENT: "Cook the sushi rice and let it cool."
+    label: "Assert - Saved step 3 is Prepare rice"
+
+- runFlow:
+    file: "../../asserts/recipe/readonly/preparationStep.yaml"
+    env:
+      STEP_INDEX: "3"
+      STEP_TITLE: "Spread rice"
+      STEP_CONTENT: "Place a sheet of nori on a bamboo mat and spread rice evenly over it."
+    label: "Assert - Saved step 4 is Spread rice"
+
+- assertNotVisible:
+    id: "RecipePreparation::ReadOnlyStep::4::SectionTitle"
+    label: "Assert - No extra step is saved"

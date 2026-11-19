@@ -321,6 +321,7 @@ export const IconButton: React.FC<any> = props => (
   <TouchableOpacity
     testID={props.testID}
     onPress={props.onPress}
+    disabled={props.disabled}
     style={props.style}
     accessibilityLabel={props.accessibilityLabel}
     {...{ iconColor: props.iconColor }}

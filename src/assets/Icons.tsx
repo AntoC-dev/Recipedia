@@ -60,6 +60,8 @@ export const Icons = {
   translate: 'translate',
   chevronRight: 'chevron-right',
   chevronLeft: 'chevron-left',
+  arrowUp: 'arrow-up',
+  arrowDown: 'arrow-down',
   groupPeople: 'account-group',
   apple: 'food-apple',
   tags: 'tag-multiple',

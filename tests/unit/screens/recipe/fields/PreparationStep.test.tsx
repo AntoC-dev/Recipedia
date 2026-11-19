@@ -218,4 +218,45 @@ describe('PreparationStepField', () => {
       expect(queryByTestId(descErrorId)).toBeNull();
     });
   });
+
+  describe('move', () => {
+    const moveUpButtonId = 'RecipePreparation::EditableStep::0::MoveUpButton';
+    const moveDownButtonId = 'RecipePreparation::EditableStep::0::MoveDownButton';
+
+    function renderStepWithMoves(onMoveUp?: () => void, onMoveDown?: () => void) {
+      return renderWithForm(
+        PreparationStepField,
+        form => ({ form, index: 0, t, onRemove: jest.fn(), onMoveUp, onMoveDown }),
+        { recipePreparation: [{ title: 'Boil', description: 'Boil water' }] }
+      );
+    }
+
+    test('forwards move up and move down presses to their handlers', async () => {
+      const onMoveUp = jest.fn();
+      const onMoveDown = jest.fn();
+      const { getByTestId } = await renderStepWithMoves(onMoveUp, onMoveDown);
+
+      await fireEvent.press(getByTestId(moveUpButtonId));
+      expect(onMoveUp).toHaveBeenCalledTimes(1);
+      expect(onMoveDown).not.toHaveBeenCalled();
+
+      await fireEvent.press(getByTestId(moveDownButtonId));
+      expect(onMoveDown).toHaveBeenCalledTimes(1);
+    });
+
+    test('leaves the move buttons disabled without handlers', async () => {
+      const { getByTestId } = await renderStepWithMoves();
+
+      expect(getByTestId(moveUpButtonId)).toBeDisabled();
+      expect(getByTestId(moveDownButtonId)).toBeDisabled();
+    });
+
+    test('moving does not ask for confirmation even when the step has content', async () => {
+      const { getByTestId, queryByTestId } = await renderStepWithMoves(jest.fn(), jest.fn());
+
+      await fireEvent.press(getByTestId(moveDownButtonId));
+
+      expect(queryByTestId(`${deleteConfirmationId}::Title`)).toBeNull();
+    });
+  });
 });

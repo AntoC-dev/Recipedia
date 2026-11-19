@@ -36,7 +36,7 @@ function ReadOnlyPreparationField({ form }: { form: Form }) {
 
 /** Editable renderer: mounts the step field-array and renders the addOCR empty state. */
 function EditablePreparationField({ form, stackMode, t }: PreparationFieldProps) {
-  const { fields, addStep, removeStep, length } = useStepArray(form);
+  const { fields, addStep, removeStep, moveStep, length } = useStepArray(form);
 
   const isAddOCR = stackMode === recipeStateType.addOCR;
 
@@ -54,6 +54,8 @@ function EditablePreparationField({ form, stackMode, t }: PreparationFieldProps)
           index={index}
           t={t}
           onRemove={() => removeStep(index)}
+          onMoveUp={index > 0 ? () => moveStep(index, index - 1) : undefined}
+          onMoveDown={index < length - 1 ? () => moveStep(index, index + 1) : undefined}
         />
       ))}
     </PreparationSection>
