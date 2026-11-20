@@ -24,13 +24,13 @@ Using the emulator/simulator dev build (pick a free device, Android preferred, n
 
 ## Commands
 
-- Tests: `npm run test:unit` (`tests/unit/`), `test:unit:coverage`, `test:integration` (`tests/integration/`),
+- Tests: `pnpm run test:unit` (`tests/unit/`), `test:unit:coverage`, `test:integration` (`tests/integration/`),
   `test:perf` (Reassure render benchmarks)
-- Quality: `npm run quality` — lint + format:check + typecheck + knip + expo:doctor. Also `lint:fix`, `format`,
+- Quality: `pnpm run quality` — lint + format:check + typecheck + knip + expo:doctor. Also `lint:fix`, `format`,
   `typecheck`, `knip:check` (dead code; CI-gated, config in `knip.json`), `security:audit`
 - Build: `build:test:android` / `build:test:ios` (Maestro test APK/app), `build:prod:android` / `build:prod:ios`
   (store builds), `install:android`, `build:clean`
-- Docs: `npm run docs:build` (TypeDoc), `docs:clean`
+- Docs: `pnpm run docs:build` (TypeDoc), `docs:clean`
 
 ## Non-Obvious Architecture Rules
 
@@ -46,4 +46,4 @@ Using the emulator/simulator dev build (pick a free device, Android preferred, n
 - TypeScript strict mode
 - React Native Paper components preferred
 - No comments unless the *why* is non-obvious — code self-documents via names
-- TSDoc for exported functions/types in new files (`npm run docs:build` to verify)
+- TSDoc for exported functions/types in new files (`pnpm run docs:build` to verify)

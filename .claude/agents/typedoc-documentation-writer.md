@@ -39,7 +39,7 @@ Your responsibilities:
    - Focused on API contracts rather than implementation details
 
 5. **Verification Process**: After adding documentation:
-   - Run `npm run docs:build` to verify TypeDoc generation works
+   - Run `pnpm run docs:build` to verify TypeDoc generation works
    - Check for any TypeDoc warnings or errors
    - Ensure generated documentation is readable and complete
    - Fix any formatting or syntax issues

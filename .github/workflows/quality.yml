@@ -19,16 +19,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: ./.github/actions/setup-node-pnpm
         with:
-          node-version: '24'
-          cache: 'npm'
-      - run: npm ci
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
       - name: Cache node modules
         uses: actions/cache/save@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
 
   commit-validation:
     name: Validate Commit Messages
@@ -44,13 +43,11 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
           fail-on-cache-miss: true
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
+      - uses: ./.github/actions/setup-node-pnpm
       - name: Validate commit messages
-        run: npx commitlint --from=${{ github.event.pull_request.base.sha }} --to=${{ github.event.pull_request.head.sha }} --verbose
+        run: pnpm exec commitlint --from=${{ github.event.pull_request.base.sha }} --to=${{ github.event.pull_request.head.sha }} --verbose
 
   lint:
     name: ESLint
@@ -62,12 +59,10 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+      - uses: ./.github/actions/setup-node-pnpm
       - name: Run ESLint
-        run: npm run lint
+        run: pnpm run lint
 
   formatting:
     name: Code Formatting
@@ -79,12 +74,10 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+      - uses: ./.github/actions/setup-node-pnpm
       - name: Check Prettier formatting
-        run: npm run format:check
+        run: pnpm run format:check
 
   typescript:
     name: TypeScript Check
@@ -96,12 +89,10 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+      - uses: ./.github/actions/setup-node-pnpm
       - name: Run TypeScript check
-        run: npm run typecheck
+        run: pnpm run typecheck
 
   knip:
     name: Dead Code Check
@@ -113,12 +104,10 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+      - uses: ./.github/actions/setup-node-pnpm
       - name: Run Knip
-        run: npm run knip:check
+        run: pnpm run knip:check
 
   expo-doctor:
     name: Expo Configuration Check
@@ -130,34 +119,28 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+      - uses: ./.github/actions/setup-node-pnpm
       - name: Run Expo Doctor
-        run: npm run expo:doctor
+        run: pnpm run expo:doctor
 
   security:
     name: Security Audit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
+      - uses: ./.github/actions/setup-node-pnpm
       - name: Security audit
-        run: npm audit --audit-level=critical
+        run: pnpm audit --audit-level critical
 
   ci-scripts:
     name: CI Script Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
+      - uses: ./.github/actions/setup-node-pnpm
       - name: Test CI gate scripts
-        run: npm run test:scripts
+        run: pnpm run test:scripts
 
   documentation:
     name: Documentation Build
@@ -169,12 +152,10 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+      - uses: ./.github/actions/setup-node-pnpm
       - name: Build documentation
-        run: npm run docs:build
+        run: pnpm run docs:build
 
       - name: Upload documentation
         uses: actions/upload-artifact@v7

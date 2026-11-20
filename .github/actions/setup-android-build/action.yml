@@ -36,7 +36,7 @@ runs:
       uses: actions/cache@v6
       with:
         path: ~/.ccache
-        key: ${{ runner.os }}-ccache-android-${{ hashFiles('package-lock.json', 'modules/**', 'plugins/**') }}
+        key: ${{ runner.os }}-ccache-android-${{ hashFiles('pnpm-lock.yaml', 'modules/**', 'plugins/**') }}
         restore-keys: |
           ${{ runner.os }}-ccache-android-
 
@@ -53,7 +53,7 @@ runs:
       uses: actions/cache@v6
       with:
         path: ~/.expo
-        key: ${{ runner.os }}-expo-${{ hashFiles('package-lock.json') }}
+        key: ${{ runner.os }}-expo-${{ hashFiles('pnpm-lock.yaml') }}
         restore-keys: |
           ${{ runner.os }}-expo-
 

@@ -40,10 +40,9 @@ jobs:
       ios_suites: ${{ steps.e2e-matrix.outputs.ios }}
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: ./.github/actions/setup-node-pnpm
         with:
-          node-version: '24'
-          cache: 'npm'
+          cache: 'pnpm'
       - name: Build E2E suite matrices
         id: e2e-matrix
         env:
@@ -52,12 +51,12 @@ jobs:
           echo "is_internal=$IS_INTERNAL" >> "$GITHUB_OUTPUT"
           echo "android=$(node .github/scripts/e2e-matrix.mjs android "$IS_INTERNAL")" >> "$GITHUB_OUTPUT"
           echo "ios=$(node .github/scripts/e2e-matrix.mjs ios "$IS_INTERNAL")" >> "$GITHUB_OUTPUT"
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
       - name: Cache node modules
         uses: actions/cache/save@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
 
   bundle-size:
     name: JS Bundle Size
@@ -71,14 +70,12 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
+      - uses: ./.github/actions/setup-node-pnpm
 
       - name: Export production JS bundle
-        run: npx expo export --platform android --output-dir dist-bundle
+        run: pnpm exec expo export --platform android --output-dir dist-bundle
         env:
           EXPO_PUBLIC_DATASET_TYPE: production
 
@@ -96,23 +93,28 @@ jobs:
           fetch-depth: 0
 
       # No node_modules cache restore here: the steps below checkout the base then
-      # head SHA and `npm ci` for each (deps must match each ref's lockfile), which
-      # would overwrite any restored modules. Instead cache the npm download cache
-      # (~/.npm) so both installs are fast without re-fetching from the registry.
-      - uses: actions/setup-node@v7
+      # head SHA and install each (deps must match each ref's lockfile), which
+      # would overwrite any restored modules. Instead cache the pnpm store so both
+      # installs are fast without re-fetching from the registry.
+      - uses: ./.github/actions/setup-node-pnpm
         with:
-          node-version: '24'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Run Reassure performance tests
         if: github.event_name == 'pull_request'
         run: |
           git checkout ${{ github.event.pull_request.base.sha }}
-          npm ci
-          npm run test:perf:baseline
+          if [ -f pnpm-lock.yaml ]; then
+            pnpm install --frozen-lockfile
+            pnpm run test:perf:baseline
+          else
+            npm ci
+            npm run test:perf:baseline
+            rm -rf node_modules
+          fi
           git checkout ${{ github.sha }}
-          npm ci
-          npm run test:perf
+          pnpm install --frozen-lockfile
+          pnpm run test:perf
 
       - name: Generate compact Reassure summary
         if: github.event_name == 'pull_request'
@@ -152,14 +154,12 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
+      - uses: ./.github/actions/setup-node-pnpm
 
       - name: Run tests with coverage
-        run: npm run test:unit:coverage
+        run: pnpm run test:unit:coverage
 
       - name: Unit tests summary
         uses: test-summary/action@v2
@@ -208,14 +208,12 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
+      - uses: ./.github/actions/setup-node-pnpm
 
       - name: Run integration tests
-        run: npm run test:integration -- --reporters=default --reporters=jest-junit
+        run: pnpm run test:integration --reporters=default --reporters=jest-junit
 
       - name: Integration tests summary
         uses: test-summary/action@v2
@@ -387,11 +385,9 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
+      - uses: ./.github/actions/setup-node-pnpm
 
       - name: Download all E2E JUnit reports
         if: always()
@@ -422,7 +418,7 @@ jobs:
         run: |
           mkdir -p merged-reports
           if find junit-reports -name '*.xml' -type f 2>/dev/null | grep -q .; then
-            npx --yes junit-report-merger@9.0.3 merged-reports/report.xml "junit-reports/**/*.xml"
+            pnpm dlx junit-report-merger@9.0.3 merged-reports/report.xml "junit-reports/**/*.xml"
           else
             echo "No JUnit reports to merge"
           fi
