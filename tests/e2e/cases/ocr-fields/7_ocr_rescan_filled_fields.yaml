@@ -15,6 +15,10 @@ tags:
       RECIPE_NAME: hellofresh
     label: "Action - OCR the title so the input is filled"
 
+- assertNotVisible:
+    id: "Recipe::OcrSnackbar::Action"
+    label: "Assert - Scanning an empty title offers no Undo"
+
 - runFlow:
     file: "../../flows/replaceAndDone.yaml"
     env:
@@ -34,6 +38,119 @@ tags:
       text: "Aiguillettes de poulet façon teriyaki.*"
     timeout: 60000
     label: "Assert - Rescanning the title replaces the typed value"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::OcrSnackbar"
+      containsDescendants:
+        - text: "Title replaced"
+    timeout: 5000
+    label: "Assert - The replace snackbar names the title"
+
+- tapOn:
+    id: "Recipe::OcrSnackbar::Action"
+    label: "Action - Undo the title rescan"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTitle::CustomTextInput"
+      text: "Typed title"
+    timeout: 10000
+    label: "Assert - Undo restores the typed title"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeDescription::ManuallyFill::RoundButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to the description"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeDescription::ManuallyFill::RoundButton"
+    label: "Action - Fill the description manually"
+
+- runFlow:
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeDescription::CustomTextInput"
+    label: "Action - Focus the description input"
+
+- runFlow:
+    file: "../../flows/inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipeDescription::CustomTextInput"
+      VALUE: "Typed description"
+    label: "Action - Type a description manually"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/ocrDescription.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+    label: "Action - Scan the description over the typed one"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeDescription::CustomTextInput"
+      text: "La sauce teriyaki.*"
+    timeout: 60000
+    label: "Assert - Scanning the description replaces the typed value"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::OcrSnackbar"
+      containsDescendants:
+        - text: "Description replaced"
+    timeout: 5000
+    label: "Assert - The replace snackbar names the description"
+
+- tapOn:
+    id: "Recipe::OcrSnackbar::Action"
+    label: "Action - Undo the description scan"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeDescription::CustomTextInput"
+      text: "Typed description"
+    timeout: 10000
+    label: "Assert - Undo restores the typed description"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeImage::RoundButton"
+    direction: UP
+    speed: 20
+    label: "Action - Scroll back to the recipe image"
+
+- tapOn:
+    id: "RecipeImage::RoundButton"
+    label: "Action - Open the image modal over the set image"
+
+- tapOn:
+    id: "Modal::List#1::SquareButton::Image"
+    label: "Action - Pick the title picture as the new image"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/validateWithoutCropping.yaml"
+    label: "Action - Validate the new image without cropping"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::OcrSnackbar"
+      containsDescendants:
+        - text: "Image replaced"
+    timeout: 5000
+    label: "Assert - The replace snackbar names the image"
+
+- tapOn:
+    id: "Recipe::OcrSnackbar::Action"
+    label: "Action - Undo the image replacement"
+
+- assertVisible:
+    id: "RecipeImage::Image"
+    label: "Assert - Undo keeps an image on the recipe"
 
 - runFlow:
     file: "../../flows/recipe/adding/ocr/gallery/ocrPreparation.yaml"
@@ -86,3 +203,104 @@ tags:
 - assertNotVisible:
     id: "RecipePreparation::EditableStep::8::.*"
     label: "Assert - Neither scan creates extra steps from quantities or time ranges"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::AddButton::RoundButton"
+    direction: UP
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Action - Scroll back up to the add-ingredient button"
+
+- repeat:
+    times: 11
+    commands:
+      - scrollUntilVisible:
+          element:
+            id: "RecipeIngredients::AddButton::RoundButton"
+          direction: DOWN
+          speed: 20
+          centerElement: true
+          label: "Action - Center the add-ingredient button"
+      - tapOn:
+          id: "RecipeIngredients::AddButton::RoundButton"
+          label: "Action - Add an empty ingredient row"
+      - waitForAnimationToEnd
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::QuantityInput"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to the first quantity with the keyboard closed"
+
+- runFlow:
+    file: "../../flows/focusField.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+    label: "Action - Focus the first quantity"
+
+- runFlow:
+    file: "../../flows/inputAndDone.yaml"
+    env:
+      TARGET_ID: "RecipeIngredients::0::QuantityInput"
+      VALUE: "999"
+    label: "Action - Type the first quantity manually"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::OpenModalQuantities::RoundButton"
+    direction: DOWN
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll to the ingredient quantities scan button"
+
+- waitForAnimationToEnd
+
+- tapOn:
+    id: "RecipeIngredients::OpenModalQuantities::RoundButton"
+    label: "Action - Scan quantities over the typed one"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/addAndSelectMostRecent.yaml"
+    env:
+      RECIPE_NAME: hellofresh
+      FIELD_NAME: ingredientQuantities
+    label: "Action - Pick the ingredient quantities picture"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeIngredients::10::QuantityInput"
+      text: ".+"
+    timeout: 120000
+    label: "Assert - Scanning quantities fills the last row"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::OcrSnackbar"
+      containsDescendants:
+        - text: "Quantities replaced"
+    timeout: 5000
+    label: "Assert - The replace snackbar names the quantities"
+
+- tapOn:
+    id: "Recipe::OcrSnackbar::Action"
+    label: "Action - Undo the quantities scan"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeIngredients::10::QuantityInput"
+      text: ""
+    timeout: 10000
+    label: "Assert - Undo empties the last row again"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::QuantityInput"
+      text: "999"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Assert - Undo restores the typed first quantity"

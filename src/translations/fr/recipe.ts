@@ -69,6 +69,15 @@ export default {
     noData: 'Aucune donnée de recette trouvée dans l’image.',
     quantityMismatch:
       'Les quantités scannées ne correspondent pas à vos ingrédients. Vérifiez les valeurs.',
+    replaced: {
+      recipeImage: 'Image remplacée',
+      recipeTitle: 'Titre remplacé',
+      recipeDescription: 'Description remplacée',
+      recipePersons: 'Portions remplacées',
+      recipeTime: 'Temps remplacé',
+      recipeNutrition: 'Valeurs nutritionnelles remplacées',
+      recipeIngredients: 'Quantités remplacées',
+    },
   },
 
   editRecipe: 'Modifier la recette',

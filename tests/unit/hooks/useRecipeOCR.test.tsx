@@ -1,7 +1,7 @@
 import React from 'react';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { UseFormReturn } from 'react-hook-form';
-import { useRecipeOCR } from '@hooks/useRecipeOCR';
+import { OcrFillResult, useRecipeOCR } from '@hooks/useRecipeOCR';
 import { RecipeFormProvider, useRecipeForm } from '@test-helpers/recipeFormTestProvider';
 import { RecipeDialogsProvider, useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { createMockRecipeProp } from '@test-helpers/recipeHookTestWrapper';
@@ -1340,12 +1340,12 @@ describe('useRecipeOCR', () => {
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
       const { result } = await renderHook(() => useTestRecipeOCR(), { wrapper });
 
-      let status;
+      let fillResult: OcrFillResult | undefined;
       await act(async () => {
-        status = await result.current.fillOneField('image.jpg', recipeColumnsNames.title);
+        fillResult = await result.current.fillOneField('image.jpg', recipeColumnsNames.title);
       });
 
-      expect(status).toBe('success');
+      expect(fillResult?.status).toBe('success');
     });
 
     test('returns empty when extraction yields nothing', async () => {
@@ -1354,12 +1354,12 @@ describe('useRecipeOCR', () => {
       const wrapper = createOcrWrapper(createMockRecipeProp('addFromPic', undefined, 'test.jpg'));
       const { result } = await renderHook(() => useTestRecipeOCR(), { wrapper });
 
-      let status;
+      let fillResult: OcrFillResult | undefined;
       await act(async () => {
-        status = await result.current.fillOneField('image.jpg', recipeColumnsNames.title);
+        fillResult = await result.current.fillOneField('image.jpg', recipeColumnsNames.title);
       });
 
-      expect(status).toBe('empty');
+      expect(fillResult?.status).toBe('empty');
     });
 
     test('returns empty when no quantities extracted', async () => {
@@ -1377,12 +1377,12 @@ describe('useRecipeOCR', () => {
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
       });
 
-      let status;
+      let fillResult: OcrFillResult | undefined;
       await act(async () => {
-        status = await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
+        fillResult = await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
       });
 
-      expect(status).toBe('empty');
+      expect(fillResult?.status).toBe('empty');
     });
 
     test('returns mismatch when quantity count differs from ingredient rows', async () => {
@@ -1400,12 +1400,12 @@ describe('useRecipeOCR', () => {
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
       });
 
-      let status;
+      let fillResult: OcrFillResult | undefined;
       await act(async () => {
-        status = await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
+        fillResult = await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
       });
 
-      expect(status).toBe('mismatch');
+      expect(fillResult?.status).toBe('mismatch');
     });
 
     test('returns success when quantity count matches ingredient rows', async () => {
@@ -1423,12 +1423,232 @@ describe('useRecipeOCR', () => {
         expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
       });
 
-      let status;
+      let fillResult: OcrFillResult | undefined;
       await act(async () => {
-        status = await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
+        fillResult = await result.current.ocr.fillOneField('image.jpg', 'ingredientQuantities');
       });
 
-      expect(status).toBe('success');
+      expect(fillResult?.status).toBe('success');
+    });
+  });
+
+  describe('fillOneField undo', () => {
+    const scannedNutrition = { energyKcal: 200, protein: 10 };
+    const userTypedNutrition = {
+      energyKcal: 150,
+      energyKj: 628,
+      fat: 5,
+      saturatedFat: 1,
+      carbohydrates: 20,
+      sugars: 3,
+      fiber: 2,
+      protein: 8,
+      salt: 0.5,
+      portionWeight: 250,
+    };
+
+    async function renderOcrWithForm(props: RecipePropType) {
+      const wrapper = createOcrWrapper(props);
+      const { result } = await renderHook(
+        () => ({ ocr: useTestRecipeOCR(), form: useRecipeForm() }),
+        { wrapper }
+      );
+      return result;
+    }
+
+    async function renderEditOcr() {
+      const result = await renderOcrWithForm(createMockRecipeProp('edit', recipeForOcr));
+      await waitFor(() => {
+        expect(result.current.form.form.getValues('recipeIngredients')).toHaveLength(1);
+      });
+      return result;
+    }
+
+    async function scan(
+      result: Awaited<ReturnType<typeof renderOcrWithForm>>,
+      target: OcrModalTarget
+    ) {
+      let fillResult: OcrFillResult | undefined;
+      await act(async () => {
+        fillResult = await result.current.ocr.fillOneField('image.jpg', target);
+      });
+      return fillResult!;
+    }
+
+    async function pressUndo(fillResult: OcrFillResult) {
+      await act(async () => {
+        fillResult.replaced!.undo();
+      });
+    }
+
+    test('scanning a filled title returns replaced and undo restores the exact title', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ recipeTitle: 'Scanned Title' });
+      const result = await renderEditOcr();
+
+      const fillResult = await scan(result, recipeColumnsNames.title);
+
+      expect(fillResult.status).toBe('success');
+      expect(fillResult.replaced?.field).toBe('recipeTitle');
+      expect(result.current.form.form.getValues('recipeTitle')).toBe('Scanned Title');
+
+      await pressUndo(fillResult);
+
+      expect(result.current.form.form.getValues('recipeTitle')).toBe('Test Recipe');
+    });
+
+    test('scanning an empty title returns no replaced handle', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ recipeTitle: 'Scanned Title' });
+      const result = await renderOcrWithForm(
+        createMockRecipeProp('addFromPic', undefined, 'test.jpg')
+      );
+
+      const fillResult = await scan(result, recipeColumnsNames.title);
+
+      expect(fillResult).toEqual({ status: 'success' });
+      expect(result.current.form.form.getValues('recipeTitle')).toBe('Scanned Title');
+    });
+
+    test('scanning the same title as the filled one returns no replaced handle', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ recipeTitle: 'Test Recipe' });
+      const result = await renderEditOcr();
+
+      const fillResult = await scan(result, recipeColumnsNames.title);
+
+      expect(fillResult).toEqual({ status: 'success' });
+    });
+
+    test('scan yielding nothing on a filled title returns no replaced handle', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({});
+      const result = await renderEditOcr();
+
+      const fillResult = await scan(result, recipeColumnsNames.title);
+
+      expect(fillResult).toEqual({ status: 'empty' });
+      expect(result.current.form.form.getValues('recipeTitle')).toBe('Test Recipe');
+    });
+
+    test('scanning a filled description returns replaced and undo restores it', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ recipeDescription: 'Scanned description' });
+      const result = await renderEditOcr();
+
+      const fillResult = await scan(result, recipeColumnsNames.description);
+
+      expect(fillResult.replaced?.field).toBe('recipeDescription');
+
+      await pressUndo(fillResult);
+
+      expect(result.current.form.form.getValues('recipeDescription')).toBe('Test');
+    });
+
+    test('scanning filled persons returns replaced and undo restores the persons count', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ recipePersons: 6 });
+      const result = await renderEditOcr();
+
+      const fillResult = await scan(result, recipeColumnsNames.persons);
+
+      expect(fillResult.replaced?.field).toBe('recipePersons');
+      expect(result.current.form.form.getValues('recipePersons')).toBe(6);
+
+      await pressUndo(fillResult);
+
+      expect(result.current.form.form.getValues('recipePersons')).toBe(4);
+    });
+
+    test('scanning filled time returns replaced and undo restores the time', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ recipeTime: 45 });
+      const result = await renderEditOcr();
+
+      const fillResult = await scan(result, recipeColumnsNames.time);
+
+      expect(fillResult.replaced?.field).toBe('recipeTime');
+      expect(result.current.form.form.getValues('recipeTime')).toBe(45);
+
+      await pressUndo(fillResult);
+
+      expect(result.current.form.form.getValues('recipeTime')).toBe(30);
+    });
+
+    test('scanning nutrition over typed values returns replaced and undo restores the full object', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ recipeNutrition: scannedNutrition });
+      const result = await renderOcrWithForm(
+        createMockRecipeProp('addFromPic', undefined, 'test.jpg')
+      );
+      await act(async () => {
+        result.current.form.form.setValue('recipeNutrition', userTypedNutrition);
+      });
+
+      const fillResult = await scan(result, recipeColumnsNames.nutrition);
+
+      expect(fillResult.replaced?.field).toBe('recipeNutrition');
+      expect(result.current.form.form.getValues('recipeNutrition')).toEqual({
+        ...userTypedNutrition,
+        ...scannedNutrition,
+      });
+
+      await pressUndo(fillResult);
+
+      expect(result.current.form.form.getValues('recipeNutrition')).toEqual(userTypedNutrition);
+    });
+
+    test('scanning nutrition on an empty form returns no replaced handle', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ recipeNutrition: scannedNutrition });
+      const result = await renderOcrWithForm(
+        createMockRecipeProp('addFromPic', undefined, 'test.jpg')
+      );
+
+      const fillResult = await scan(result, recipeColumnsNames.nutrition);
+
+      expect(fillResult.replaced).toBeUndefined();
+    });
+
+    test('scanning quantities on filled rows returns replaced and undo restores the rows', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ ingredientQuantities: ['350'] });
+      const result = await renderEditOcr();
+      const rowsBeforeScan = result.current.form.form.getValues('recipeIngredients');
+
+      const fillResult = await scan(result, 'ingredientQuantities');
+
+      expect(fillResult.replaced?.field).toBe('recipeIngredients');
+      expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe('350');
+
+      await pressUndo(fillResult);
+
+      expect(result.current.form.form.getValues('recipeIngredients')).toEqual(rowsBeforeScan);
+      expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe('200');
+    });
+
+    test('quantity mismatch on filled rows still returns an undo handle', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ ingredientQuantities: ['350', '20'] });
+      const result = await renderEditOcr();
+
+      const fillResult = await scan(result, 'ingredientQuantities');
+
+      expect(fillResult.status).toBe('mismatch');
+      expect(fillResult.replaced?.field).toBe('recipeIngredients');
+
+      await pressUndo(fillResult);
+
+      expect(result.current.form.form.getValues('recipeIngredients')![0]!.quantity).toBe('200');
+    });
+
+    test('scanning quantities equal to the current ones returns no replaced handle', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({ ingredientQuantities: ['200'] });
+      const result = await renderEditOcr();
+
+      const fillResult = await scan(result, 'ingredientQuantities');
+
+      expect(fillResult).toEqual({ status: 'success' });
+    });
+
+    test('appending targets never return a replaced handle', async () => {
+      mockExtractFieldFromImage.mockResolvedValue({
+        recipePreparation: [{ title: 'Step 2', description: 'Bake' }],
+      });
+      const result = await renderEditOcr();
+
+      const fillResult = await scan(result, recipeColumnsNames.preparation);
+
+      expect(fillResult.replaced).toBeUndefined();
     });
   });
 });
