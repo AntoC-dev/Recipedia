@@ -41,7 +41,7 @@ if [ "$PLATFORM" = ios ] && jq -e --arg job "$JOB" \
 fi
 
 # Once per job: every flow's clearState resets the app, and install:android deletes the APK.
-npm run "install:${PLATFORM}" || exit $?
+pnpm run "install:${PLATFORM}" || exit $?
 
 if [ -n "$WARM_UP_PID" ]; then
   WARM_UP_EXIT=0
