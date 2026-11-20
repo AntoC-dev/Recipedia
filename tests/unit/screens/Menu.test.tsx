@@ -1,5 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { Snackbar } from 'react-native-paper';
+import { snackbarDurationsFor } from '@utils/snackbarDuration';
+import { animationsDisabled } from '@utils/Constants';
 import { RecipeDatabase } from '@utils/RecipeDatabase';
 import { testIngredients } from '@test-data/ingredientsDataset';
 import { testTags } from '@test-data/tagsDataset';
@@ -280,7 +281,7 @@ describe('Menu Screen', () => {
       expect(getByTestId(`${removeSnackbarId}::Action::Children`).props.children).toBe('undo');
     });
 
-    test('keeps the undo snackbar up for the long paper duration', async () => {
+    test('keeps the undo snackbar up for the shared action duration', async () => {
       const { getByTestId } = await renderMenuAndWait();
 
       await fireEvent.press(getByTestId(`${screenId}::MenuItem::1::RemoveButton`));
@@ -290,7 +291,7 @@ describe('Menu Screen', () => {
       });
 
       expect(getByTestId(`${removeSnackbarId}::Duration`).props.children).toBe(
-        Snackbar.DURATION_LONG
+        snackbarDurationsFor(animationsDisabled).action
       );
     });
 

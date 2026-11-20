@@ -13,7 +13,8 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
-import { Button, HelperText, Snackbar } from 'react-native-paper';
+import { Button, HelperText } from 'react-native-paper';
+import { AppSnackbar } from '@components/atomic/AppSnackbar';
 import { useNavigation } from '@react-navigation/native';
 import { AppBar } from '@components/organisms/AppBar';
 import { ImageThumbnail } from '@components/molecules/ImageThumbnail';
@@ -181,14 +182,13 @@ export function BugReport() {
         </Button>
       </ScrollView>
 
-      <Snackbar
+      <AppSnackbar
         testID={screenTestId + '::Snackbar'}
         visible={snackbarVisible}
         onDismiss={handleDismiss}
-        duration={Snackbar.DURATION_LONG}
       >
         {snackbarMessage}
-      </Snackbar>
+      </AppSnackbar>
     </ScreenWrapper>
   );
 }
