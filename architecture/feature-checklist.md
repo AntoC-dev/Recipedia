@@ -40,6 +40,6 @@ For non-trivial features; skip steps that don't apply.
 
 **Quality**
 
-- [ ] `npm run quality` passes
-- [ ] `npm run test:unit` passes
-- [ ] `npm run test:integration` passes
+- [ ] `pnpm run quality` passes
+- [ ] `pnpm run test:unit` passes
+- [ ] `pnpm run test:integration` passes

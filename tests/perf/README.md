@@ -46,8 +46,8 @@ baseline.
 - Config: `reassure.config.js`
 
 ```bash
-npm run test:perf            # compare against baseline
-npm run test:perf:baseline   # regenerate baseline
+pnpm run test:perf            # compare against baseline
+pnpm run test:perf:baseline   # regenerate baseline
 ```
 
 ## Layer 2 — Flashlight per-screen (weekly + on demand)
@@ -104,7 +104,7 @@ BUNDLE_CALIBRATE=1 node .github/scripts/check-bundle-size.mjs dist-bundle
 The perf CI scripts under `.github/scripts/` are unit-tested:
 
 ```bash
-npm run test:scripts   # node --test .github/scripts/*.test.mjs
+pnpm run test:scripts   # node --test .github/scripts/*.test.mjs
 ```
 
 ## Related files

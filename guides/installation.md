@@ -6,7 +6,8 @@ Setup for local development. For the project overview see [README.md](../README.
 
 ### All platforms
 
-- **Node.js 24** (the version CI uses) with the bundled npm.
+- **Node.js 24** (the version CI uses).
+- **pnpm**, pinned by `packageManager` in `package.json`. Run `corepack enable pnpm` once; Corepack then fetches the pinned version.
 - **Git**
 
 No global Expo CLI is needed; the project's scripts call the local `expo` binary.
@@ -23,7 +24,7 @@ The app supports Android 7.0+ (minSdk 24, the React Native default); `compileSdk
 
 - **Xcode 26.4 or newer**. Expo SDK 57 requires it, and CI builds with Xcode 26.4.1.
 - Xcode Command Line Tools: `xcode-select --install`
-- The **iOS 26.4 simulator runtime** (Xcode > Settings > Components). This is the runtime CI uses for E2E, and `npm run boot:ios-simulator` looks for it.
+- The **iOS 26.4 simulator runtime** (Xcode > Settings > Components). This is the runtime CI uses for E2E, and `pnpm run boot:ios-simulator` looks for it.
 - A paid Apple Developer account to run on a physical device
 
 The deployment target is iOS 18.0 (`app.config.ts`).
@@ -39,10 +40,10 @@ The web import feature embeds Python through the `modules/recipe-scraper` native
 ```bash
 git clone https://github.com/AntoC-dev/Recipedia.git
 cd Recipedia
-npm install
+pnpm install
 ```
 
-`npm install` also applies `patches/` through `patch-package` (`postinstall`) and installs the Husky git hooks (`prepare`). There are no required `.env` files.
+`pnpm install` also applies `patches/` (`patchedDependencies` in `pnpm-workspace.yaml`) and installs the Husky git hooks (`prepare`). There are no required `.env` files.
 
 ---
 
@@ -51,9 +52,9 @@ npm install
 OCR, the recipe scraper and other native modules do not work in Expo Go. Use a development build.
 
 ```bash
-npm run dev:android   # expo run:android
-npm run dev:ios       # expo run:ios (macOS only)
-npm start             # Metro bundler only, once a development build is installed
+pnpm run dev:android   # expo run:android
+pnpm run dev:ios       # expo run:ios (macOS only)
+pnpm start             # Metro bundler only, once a development build is installed
 ```
 
 `expo run:*` generates the `android/` and `ios/` directories on first run; they are not committed. Both commands use a connected device or a running emulator/simulator.
@@ -61,14 +62,14 @@ npm start             # Metro bundler only, once a development build is installe
 ### iOS simulator that matches CI
 
 ```bash
-npm run boot:ios-simulator
+pnpm run boot:ios-simulator
 ```
 
 `scripts/boot-ios-simulator.sh` reads the device model (iPhone 17e) and `os_version` (26.4) from `.github/workflows/e2e-maestro.yml`, so local simulators follow CI automatically. Override them with environment variables, for example:
 
 ```bash
-IOS_VERSION=26.5 npm run boot:ios-simulator
-DEVICE_MODEL="iPhone 17 Pro" npm run boot:ios-simulator
+IOS_VERSION=26.5 pnpm run boot:ios-simulator
+DEVICE_MODEL="iPhone 17 Pro" pnpm run boot:ios-simulator
 ```
 
 The script fails if no matching simulator is installed; add the runtime in Xcode or use an override.
@@ -87,10 +88,10 @@ The script fails if no matching simulator is installed; add the runtime in Xcode
 `eas.json` defines the build profiles; the `build:*` scripts run them locally with `eas build --local`.
 
 ```bash
-npm run build:test:android   # Maestro profile
-npm run build:test:ios
-npm run install:android      # adb install *.apk, then deletes the apk
-npm run install:ios          # xcrun simctl install booted *.app
+pnpm run build:test:android   # Maestro profile
+pnpm run build:test:ios
+pnpm run install:android      # adb install *.apk, then deletes the apk
+pnpm run install:ios          # xcrun simctl install booted *.app
 ```
 
 See [testing.md](testing.md) for running the E2E suites against these builds.
@@ -100,8 +101,8 @@ See [testing.md](testing.md) for running the E2E suites against these builds.
 ## Verify the setup
 
 ```bash
-npm run quality      # lint + format check + typecheck + knip + expo-doctor
-npm run test         # unit + integration tests
+pnpm run quality      # lint + format check + typecheck + knip + expo-doctor
+pnpm run test         # unit + integration tests
 ```
 
 Both should pass on a clean clone.
@@ -112,8 +113,8 @@ Both should pass on a clean clone.
 
 | Symptom | Fix |
 |---|---|
-| Metro: "Unable to resolve module" | `npm run dev:clean` (`expo start --clear`) |
+| Metro: "Unable to resolve module" | `pnpm run dev:clean` (`expo start --clear`) |
 | Android: "SDK location not found" | Set `ANDROID_HOME`, or create `android/local.properties` with `sdk.dir=/path/to/Android/sdk` |
-| Stale or broken native project (CocoaPods, Gradle) | `npm run build:clean`, then `npx expo prebuild --clean` |
-| `expo-doctor` reports mismatched versions | `npx expo install --fix`; for SDK upgrades follow the [Expo upgrade guide](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/) |
+| Stale or broken native project (CocoaPods, Gradle) | `pnpm run build:clean`, then `pnpm exec expo prebuild --clean` |
+| `expo-doctor` reports mismatched versions | `pnpm exec expo install --fix`; for SDK upgrades follow the [Expo upgrade guide](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/) |
 | `boot:ios-simulator` finds no device | Install the iOS 26.4 runtime in Xcode, or set `IOS_VERSION` / `DEVICE_MODEL` |
