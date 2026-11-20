@@ -81,3 +81,64 @@ tags:
     speed: 20
     centerElement: true
     label: "Assert - Typed portion weight survives the scan"
+
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
+    direction: UP
+    speed: 20
+    centerElement: true
+    label: "Action - Scroll back to the energy kcal input"
+
+- runFlow:
+    file: "../../flows/replaceAndDone.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
+      VALUE: "999"
+    label: "Action - Replace the scanned energy with a typed one"
+
+- runFlow:
+    file: "../../flows/scrollToEndTarget.yaml"
+    env:
+      TARGET_ID: "Recipe::RecipeNutrition::OpenModal::RoundButton"
+    label: "Action - Scroll to the nutrition scan button"
+
+- tapOn:
+    id: "Recipe::RecipeNutrition::OpenModal::RoundButton"
+    label: "Action - Rescan nutrition over the typed energy"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/addAndSelectMostRecent.yaml"
+    env:
+      RECIPE_NAME: quitoqueV2
+      FIELD_NAME: nutrition
+    label: "Action - Pick the nutrition picture"
+
+- scrollUntilVisible:
+    element:
+      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
+      text: "218.*"
+    direction: UP
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Assert - Rescanning nutrition replaces the typed energy"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::OcrSnackbar"
+      containsDescendants:
+        - text: "Valeurs nutritionnelles remplacées"
+    timeout: 5000
+    label: "Assert - The replace snackbar names the nutrition"
+
+- tapOn:
+    id: "Recipe::OcrSnackbar::Action"
+    label: "Action - Undo the nutrition rescan"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::RecipeNutrition::NutritionTable::NutritionRow::EnergyKcal::NumericTextInput"
+      text: "999"
+    timeout: 10000
+    label: "Assert - Undo restores the typed energy"

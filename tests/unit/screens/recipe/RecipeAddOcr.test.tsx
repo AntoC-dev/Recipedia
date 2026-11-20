@@ -15,6 +15,7 @@ import {
   checkTime,
   checkTitle,
   defaultUri,
+  GetByIdType,
   mockNavigation,
   renderRoute,
   setupDb,
@@ -77,7 +78,11 @@ jest.mock('@screens/ModalImageSelect', () => ({
   ModalImageSelect: require('@mocks/screens/ModalImageSelect-mock').modalImageSelectMock,
 }));
 
+const OCR = jest.requireMock('@utils/OCR');
+const ImagePicker = jest.requireMock('@utils/ImagePicker');
+
 describe('RecipeAddOcr', () => {
+  const snackbarActionTestId = 'Recipe::OcrSnackbar::Action';
   const mockRouteAddOCR: AddFromPicProp = { mode: 'addFromPic', imgUri: defaultUri };
   let dbInstance: ReturnType<typeof RecipeDatabase.getInstance>;
 
@@ -207,6 +212,136 @@ describe('RecipeAddOcr', () => {
       await fireEvent.press(getByTestId('Recipe::OcrSnackbar::Dismiss'));
 
       await waitFor(() => expect(queryByTestId('Recipe::OcrSnackbar')).toBeNull());
+    });
+
+    test('no-data snackbar has no undo action', async () => {
+      const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddOCR);
+      (computeOcrFieldStatus as jest.Mock).mockReturnValueOnce('empty');
+
+      await selectImageForTitleTarget(getByTestId);
+
+      await waitFor(() => expect(getByTestId('Recipe::OcrSnackbar')).toBeTruthy());
+      expect(queryByTestId(snackbarActionTestId)).toBeNull();
+    });
+  });
+
+  describe('OCR scan undo', () => {
+    const firstScannedTitle = 'First Scanned Title';
+    const secondScannedTitle = 'Second Scanned Title';
+    const firstCroppedImage = '/path/to/cropped/img';
+    const secondCroppedImage = '/path/to/second/cropped/img';
+
+    async function scanTarget(getByTestId: GetByIdType, openModalTestId: string) {
+      await fireEvent.press(getByTestId(openModalTestId));
+      await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
+      await fireEvent.press(getByTestId('ModalImageSelect::Select'));
+    }
+
+    async function scanTitle(getByTestId: GetByIdType, scannedTitle: string) {
+      (OCR.extractFieldFromImage as jest.Mock).mockResolvedValueOnce({ recipeTitle: scannedTitle });
+      await scanTarget(getByTestId, 'RecipeTitle::OpenModal');
+      await waitFor(() => expectTitle(getByTestId, scannedTitle));
+    }
+
+    async function scanImage(getByTestId: GetByIdType, croppedImage: string) {
+      (ImagePicker.cropImage as jest.Mock).mockResolvedValueOnce(croppedImage);
+      await scanTarget(getByTestId, 'RecipeImage::OpenModal');
+      await waitFor(() => expectImage(getByTestId, croppedImage));
+    }
+
+    function expectTitle(getByTestId: GetByIdType, title: string) {
+      expect(getByTestId('RecipeTitle::TextEditable').props.children).toBe(title);
+    }
+
+    function expectImage(getByTestId: GetByIdType, imageUri: string) {
+      expect(getByTestId('RecipeImage::ImgUri').props.children).toBe(imageUri);
+    }
+
+    async function expectUndoSnackbar(getByTestId: GetByIdType, message: string) {
+      await waitFor(() => {
+        expect(getByTestId('Recipe::OcrSnackbar::Text').props.children).toBe(message);
+      });
+      expect(getByTestId(`${snackbarActionTestId}::Children`).props.children).toBe('undo');
+    }
+
+    test('scanning an empty title shows no snackbar', async () => {
+      const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddOCR);
+
+      await scanTitle(getByTestId, firstScannedTitle);
+
+      expect(queryByTestId('Recipe::OcrSnackbar')).toBeNull();
+    });
+
+    test('rescanning a filled title shows the replaced snackbar with undo', async () => {
+      const { getByTestId } = await renderRoute(mockRouteAddOCR);
+      await scanTitle(getByTestId, firstScannedTitle);
+
+      await scanTitle(getByTestId, secondScannedTitle);
+
+      await expectUndoSnackbar(getByTestId, 'ocrFeedback.replaced.recipeTitle');
+    });
+
+    test('pressing undo restores the title held before the scan', async () => {
+      const { getByTestId } = await renderRoute(mockRouteAddOCR);
+      await scanTitle(getByTestId, firstScannedTitle);
+      await scanTitle(getByTestId, secondScannedTitle);
+      await expectUndoSnackbar(getByTestId, 'ocrFeedback.replaced.recipeTitle');
+
+      await fireEvent.press(getByTestId(snackbarActionTestId));
+
+      await waitFor(() => expectTitle(getByTestId, firstScannedTitle));
+    });
+
+    test('mismatch on a replaced field shows the mismatch message with undo', async () => {
+      const { getByTestId } = await renderRoute(mockRouteAddOCR);
+      await scanTitle(getByTestId, firstScannedTitle);
+      (computeOcrFieldStatus as jest.Mock).mockReturnValueOnce('mismatch');
+
+      await scanTitle(getByTestId, secondScannedTitle);
+
+      await expectUndoSnackbar(getByTestId, 'ocrFeedback.quantityMismatch');
+    });
+
+    test('mismatch without a replaced field shows the mismatch message without undo', async () => {
+      const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddOCR);
+      (computeOcrFieldStatus as jest.Mock).mockReturnValueOnce('mismatch');
+
+      await scanTitle(getByTestId, firstScannedTitle);
+
+      await waitFor(() => {
+        expect(getByTestId('Recipe::OcrSnackbar::Text').props.children).toBe(
+          'ocrFeedback.quantityMismatch'
+        );
+      });
+      expect(queryByTestId(snackbarActionTestId)).toBeNull();
+    });
+
+    test('picking the first image shows no snackbar', async () => {
+      const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddOCR);
+
+      await scanImage(getByTestId, firstCroppedImage);
+
+      expect(queryByTestId('Recipe::OcrSnackbar')).toBeNull();
+    });
+
+    test('replacing a filled image shows the replaced snackbar and undo restores it', async () => {
+      const { getByTestId } = await renderRoute(mockRouteAddOCR);
+      await scanImage(getByTestId, firstCroppedImage);
+
+      await scanImage(getByTestId, secondCroppedImage);
+      await expectUndoSnackbar(getByTestId, 'ocrFeedback.replaced.recipeImage');
+      await fireEvent.press(getByTestId(snackbarActionTestId));
+
+      await waitFor(() => expectImage(getByTestId, firstCroppedImage));
+    });
+
+    test('picking the same image again shows no snackbar', async () => {
+      const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddOCR);
+      await scanImage(getByTestId, firstCroppedImage);
+
+      await scanImage(getByTestId, firstCroppedImage);
+
+      expect(queryByTestId('Recipe::OcrSnackbar')).toBeNull();
     });
   });
 

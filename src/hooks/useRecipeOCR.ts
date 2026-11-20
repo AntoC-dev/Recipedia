@@ -42,9 +42,31 @@ import { makeFormSetter } from '@utils/recipeFormSetters';
 import type { RecipeFormInput } from '@schemas/recipeFormSchema';
 import { useRecipeTags } from '@hooks/useRecipeTags';
 import { useRecipeIngredients } from '@hooks/useRecipeIngredients';
+import { isOcrScanUndoable, OcrUndoableField, undoableFieldForTarget } from '@utils/OcrScanUndo';
 import type { IngredientValidationProps } from '@components/dialogs/ValidationQueue';
 
 type OcrIngredientList = (ingredientTableElement | FormIngredientElement)[];
+
+/**
+ * A filled form field that the latest scan overwrote, with the callback that
+ * restores its pre-scan value.
+ */
+export interface OcrReplacedField {
+  /** Form field the scan overwrote */
+  field: OcrUndoableField;
+  /** Restores the exact value the field held right before the scan */
+  undo: () => void;
+}
+
+/**
+ * Outcome of {@link UseRecipeOCRReturn.fillOneField}.
+ */
+export interface OcrFillResult {
+  /** Non-blocking feedback status for the extraction */
+  status: OcrFieldStatus;
+  /** Set only when the scan replaced a filled field */
+  replaced?: OcrReplacedField;
+}
 
 /**
  * Return value of the useRecipeOCR hook.
@@ -60,9 +82,9 @@ export interface UseRecipeOCRReturn {
   /**
    * Extracts data from an image for a specific recipe field, updates recipe
    * state, and resolves with a non-blocking feedback status the caller can
-   * surface as a snackbar.
+   * surface as a snackbar, plus an undo handle when a filled field was replaced.
    */
-  fillOneField: (uri: string, field: OcrModalTarget) => Promise<OcrFieldStatus>;
+  fillOneField: (uri: string, field: OcrModalTarget) => Promise<OcrFillResult>;
 }
 
 /**
@@ -265,9 +287,9 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
    * @param uri - The image URI to extract data from
    * @param field - The recipe field type to extract
    * @returns Feedback status (`empty` / `mismatch` / `success`) for the caller
-   *   to surface a snackbar.
+   *   to surface a snackbar, and `replaced` when the scan overwrote a filled field.
    */
-  const fillOneField = async (uri: string, field: OcrModalTarget): Promise<OcrFieldStatus> => {
+  const fillOneField = async (uri: string, field: OcrModalTarget): Promise<OcrFillResult> => {
     ocrLogger.info('OCR extraction started', { field, uri });
     setIsProcessingOcrExtraction(true);
     try {
@@ -276,6 +298,7 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
       const recipePersons = form.getValues('recipePersons');
       const recipeTags = (form.getValues('recipeTags') ?? []) as tagTableElement[];
       const recipeIngredients = (form.getValues('recipeIngredients') ?? []) as OcrIngredientList;
+      const undoableField = undoableFieldForTarget(field);
 
       const newFieldData = await extractFieldFromImage(
         uri,
@@ -300,6 +323,8 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
         tagsCount: newFieldData.recipeTags?.length ?? 0,
       });
 
+      const valueBeforeScan = undoableField ? form.getValues(undoableField) : undefined;
+
       if (newFieldData.recipeImage) writeImage(newFieldData.recipeImage);
       if (newFieldData.recipeTitle) writeTitle(newFieldData.recipeTitle);
       if (newFieldData.recipeDescription) writeDescription(newFieldData.recipeDescription);
@@ -318,7 +343,18 @@ export function useRecipeOCR(): UseRecipeOCRReturn {
 
       const status = computeOcrFieldStatus(field, newFieldData, recipeIngredients.length);
       ocrLogger.info('OCR extraction completed', { field, status });
-      return status;
+
+      if (
+        undoableField &&
+        isOcrScanUndoable(undoableField, valueBeforeScan, form.getValues(undoableField))
+      ) {
+        const undo = () => {
+          ocrLogger.info('OCR scan undone', { field });
+          form.setValue(undoableField, valueBeforeScan as never, ocrWriteOptions);
+        };
+        return { status, replaced: { field: undoableField, undo } };
+      }
+      return { status };
     } catch (error) {
       ocrLogger.error('OCR extraction failed', {
         field,

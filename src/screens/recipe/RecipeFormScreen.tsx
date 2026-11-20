@@ -48,6 +48,7 @@ import { useRecipes } from '@hooks/useRecipes';
 import { useUnsavedChangesGuard } from '@hooks/useUnsavedChangesGuard';
 import { AppBar } from '@components/organisms/AppBar';
 import { useI18n } from '@utils/i18n';
+import { isOcrScanUndoable } from '@utils/OcrScanUndo';
 import { Alert } from '@components/dialogs/Alert';
 import { ValidationQueue } from '@components/dialogs/ValidationQueue';
 import { SimilarityDialog } from '@components/dialogs/SimilarityDialog';
@@ -478,7 +479,14 @@ function RecipeFormBody({
       // matches the legacy non-edit path.
       const croppedUri = await cropImage(imgSelected, colors);
       if (croppedUri.length === 0) return;
+      const imageBeforeScan = form.getValues('recipeImage');
       form.setValue('recipeImage', croppedUri);
+      if (mode === 'addFromPic' && isOcrScanUndoable('recipeImage', imageBeforeScan, croppedUri)) {
+        dialogs.showSnackbar(t('ocrFeedback.replaced.recipeImage'), {
+          label: t('undo'),
+          onPress: () => form.setValue('recipeImage', imageBeforeScan),
+        });
+      }
       return;
     }
 
@@ -621,9 +629,11 @@ function RecipeFormBody({
       {FeatureHookSlot ? <FeatureHookSlot {...slotProps} /> : null}
 
       <AppSnackbar
+        key={dialogs.snackbar.showCount}
         visible={dialogs.snackbar.visible}
         onDismiss={dialogs.hideSnackbar}
         aboveBottomAction={!isEditMode}
+        action={dialogs.snackbar.action}
         testID={`${RECIPE_TEST_ID}::OcrSnackbar`}
       >
         {dialogs.snackbar.message}

@@ -37,6 +37,25 @@ tags:
     timeout: 60000
     label: "Assert - Persons scan replaces the default count with the first row of the card"
 
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::OcrSnackbar"
+      containsDescendants:
+        - text: "Servings replaced"
+    timeout: 5000
+    label: "Assert - The replace snackbar names the servings"
+
+- tapOn:
+    id: "Recipe::OcrSnackbar::Action"
+    label: "Action - Undo the persons scan"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipePersons::NumericTextInput"
+      text: "4"
+    timeout: 10000
+    label: "Assert - Undo restores the default persons count"
+
 - runFlow:
     file: "../../flows/replaceAndDone.yaml"
     env:
@@ -130,3 +149,47 @@ tags:
     speed: 20
     centerElement: true
     label: "Assert - Scrolling back keeps the scanned time"
+
+- runFlow:
+    file: "../../flows/replaceAndDone.yaml"
+    env:
+      TARGET_ID: "RecipeTime::NumericTextInput"
+      VALUE: "40"
+    label: "Action - Type 40 minutes and commit with the toolbar Done"
+
+- tapOn:
+    id: "RecipeTime::OpenModal::IconButton"
+    label: "Action - Rescan time through the inline icon"
+
+- runFlow:
+    file: "../../flows/recipe/adding/ocr/gallery/addAndSelectMostRecent.yaml"
+    env:
+      RECIPE_NAME: quitoqueV1
+      FIELD_NAME: personsAndTime
+    label: "Action - Pick the persons and time picture"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTime::NumericTextInput"
+      text: "25"
+    timeout: 60000
+    label: "Assert - Rescanning the time replaces the typed value"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::OcrSnackbar"
+      containsDescendants:
+        - text: "Time replaced"
+    timeout: 5000
+    label: "Assert - The replace snackbar names the time"
+
+- tapOn:
+    id: "Recipe::OcrSnackbar::Action"
+    label: "Action - Undo the time rescan"
+
+- extendedWaitUntil:
+    visible:
+      id: "RecipeTime::NumericTextInput"
+      text: "40"
+    timeout: 10000
+    label: "Assert - Undo restores the typed time"

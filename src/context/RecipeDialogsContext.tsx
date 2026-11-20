@@ -50,16 +50,28 @@ export interface SimilarityDialogState {
 }
 
 /**
+ * Optional action button shown on the feedback snackbar.
+ */
+export interface SnackbarAction {
+  label: string;
+  onPress: () => void;
+}
+
+/**
  * State object for the non-blocking feedback snackbar.
  */
 export interface SnackbarState {
   visible: boolean;
   message: string;
+  action?: SnackbarAction;
+  /** Increments on every show so the snackbar remounts and restarts its timer */
+  showCount: number;
 }
 
 const defaultSnackbarState: SnackbarState = {
   visible: false,
   message: '',
+  showCount: 0,
 };
 
 const defaultSimilarityDialogState: SimilarityDialogState = {
@@ -92,7 +104,7 @@ export interface RecipeDialogsContextType {
   clearValidationQueue: () => void;
 
   snackbar: SnackbarState;
-  showSnackbar: (message: string) => void;
+  showSnackbar: (message: string, action?: SnackbarAction) => void;
   hideSnackbar: () => void;
 
   /** Field the image-select modal currently targets, or `null` when it is closed */
@@ -164,8 +176,8 @@ export function RecipeDialogsProvider({ children }: { children: ReactNode }) {
     setValidationQueue(null);
   };
 
-  const showSnackbar = (message: string) => {
-    setSnackbar({ visible: true, message });
+  const showSnackbar = (message: string, action?: SnackbarAction) => {
+    setSnackbar(prev => ({ visible: true, message, action, showCount: prev.showCount + 1 }));
   };
 
   const hideSnackbar = () => {
