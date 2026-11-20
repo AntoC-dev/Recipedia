@@ -31,7 +31,8 @@
 import React, { ReactNode, useRef, useState } from 'react';
 import { Keyboard, StyleSheet } from 'react-native';
 import { KeyboardToolbar } from 'react-native-keyboard-controller';
-import { Snackbar, useTheme } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
+import { AppSnackbar } from '@components/atomic/AppSnackbar';
 import { FieldErrors, FormProvider, useForm, useFormContext, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -619,14 +620,14 @@ function RecipeFormBody({
 
       {FeatureHookSlot ? <FeatureHookSlot {...slotProps} /> : null}
 
-      <Snackbar
+      <AppSnackbar
         visible={dialogs.snackbar.visible}
         onDismiss={dialogs.hideSnackbar}
-        duration={Snackbar.DURATION_LONG}
+        aboveBottomAction={!isEditMode}
         testID={`${RECIPE_TEST_ID}::OcrSnackbar`}
       >
         {dialogs.snackbar.message}
-      </Snackbar>
+      </AppSnackbar>
     </ScreenWrapper>
   );
 }

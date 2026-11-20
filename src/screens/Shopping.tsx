@@ -62,7 +62,8 @@ import { useSafeCopilot } from '@hooks/useSafeCopilot';
 import { useReducedMotion } from '@hooks/useReducedMotion';
 import { useResetOnChange } from '@hooks/useResetOnChange';
 import { CopilotStepData } from '@customTypes/TutorialTypes';
-import { Divider, Icon, List, Snackbar, Text, useTheme } from 'react-native-paper';
+import { Divider, Icon, List, Text, useTheme } from 'react-native-paper';
+import { AppSnackbar } from '@components/atomic/AppSnackbar';
 import { useI18n } from '@utils/i18n';
 import { useShopping } from '@hooks/useShopping';
 import { useMenu } from '@hooks/useMenu';
@@ -82,9 +83,6 @@ import { shoppingLogger } from '@utils/logger';
 
 /** Type for dialog data containing ingredient and recipe information */
 type ingredientDataForDialog = Pick<ComputedShoppingItem, 'name' | 'recipeTitles'>;
-
-/** How long the undo snackbar stays up — long enough to react while walking. */
-const UNDO_SNACKBAR_DURATION = 5000;
 
 /**
  * Shopping screen component - Categorized shopping list with recipe tracking
@@ -347,16 +345,15 @@ export function Shopping() {
         />
       )}
 
-      <Snackbar
+      <AppSnackbar
         key={undoNonce}
         visible={undoableName !== null}
         onDismiss={() => setUndoableName(null)}
-        duration={UNDO_SNACKBAR_DURATION}
         action={{ label: t('undo'), onPress: undoPurchase }}
         testID={screenId + '::UndoSnackbar'}
       >
         {t('shoppingScreen.itemPurchased', { name: undoableName ?? '' })}
-      </Snackbar>
+      </AppSnackbar>
 
       {copilotData && (
         <CopilotStep text={t('tutorial.shopping.description')} order={stepOrder} name={'Shopping'}>

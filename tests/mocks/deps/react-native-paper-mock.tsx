@@ -732,13 +732,17 @@ export const Snackbar: React.FC<any> & {
       <View testID={props.testID}>
         <RNText testID={props.testID + '::Text'}>{props.children}</RNText>
         <RNText testID={props.testID + '::Duration'}>{props.duration}</RNText>
+        <RNText testID={props.testID + '::WrapperBottom'}>{props.wrapperStyle?.bottom}</RNText>
         {props.onDismiss && (
           <Button testID={props.testID + '::Dismiss'} onPress={props.onDismiss}>
             Dismiss
           </Button>
         )}
         {props.action && (
-          <Button testID={props.testID + '::Action'} onPress={props.action.onPress}>
+          <Button
+            testID={props.action.testID ?? props.testID + '::Action'}
+            onPress={props.action.onPress}
+          >
             {props.action.label}
           </Button>
         )}
