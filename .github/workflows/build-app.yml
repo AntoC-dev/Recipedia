@@ -45,7 +45,7 @@ jobs:
         id: app-key
         if: env.EXPO_TOKEN != ''
         run: |
-          echo "key=app-${{ inputs.artifact-name }}-${{ hashFiles(format('{0}/**', inputs.platform), 'src/**', 'tests/data/**', 'plugins/**', 'modules/**', 'patches/**', 'app.json', 'app.config.ts', 'eas.json', '.easignore', '.python-version', 'package.json', 'package-lock.json', 'metro.config.js', 'babel.config.js', 'tsconfig.json') }}" >> "$GITHUB_OUTPUT"
+          echo "key=app-${{ inputs.artifact-name }}-${{ hashFiles(format('{0}/**', inputs.platform), 'src/**', 'tests/data/**', 'plugins/**', 'modules/**', 'patches/**', 'app.json', 'app.config.ts', 'eas.json', '.easignore', '.python-version', 'package.json', 'pnpm-lock.yaml', 'metro.config.js', 'babel.config.js', 'tsconfig.json') }}" >> "$GITHUB_OUTPUT"
           echo "path=${{ inputs.platform == 'ios' && format('{0}.zip', inputs.app-filename) || inputs.app-filename }}" >> "$GITHUB_OUTPUT"
 
       - name: Restore cached app
@@ -64,19 +64,17 @@ jobs:
         uses: actions/cache@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-node_modules-
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
+      - uses: ./.github/actions/setup-node-pnpm
         with:
-          node-version: '24'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies (for cache miss)
         if: steps.cache-node-modules.outputs.cache-hit != 'true' && steps.app-cache.outputs.cache-hit != 'true'
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Setup Python for Chaquopy
         if: inputs.platform == 'android' && steps.app-cache.outputs.cache-hit != 'true'
@@ -103,7 +101,7 @@ jobs:
           ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
         run: |
           set -o pipefail
-          npm run build:${{ inputs.build-profile }}:${{ inputs.platform }} 2>&1 \
+          pnpm run build:${{ inputs.build-profile }}:${{ inputs.platform }} 2>&1 \
             | tee build-${{ inputs.platform }}.log
 
       - name: Upload build log
@@ -163,7 +161,7 @@ jobs:
           EXPO_PUBLIC_DATASET_TYPE: test
           EXPO_PUBLIC_DISABLE_ANIMATIONS: 'true'
         run: |
-          npx expo prebuild --platform android --no-install --no-clean
+          pnpm exec expo prebuild --platform android --no-install --no-clean
           (cd android && ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=x86_64)
           mv android/app/build/outputs/apk/release/app-release.apk "${{ inputs.app-filename }}"
           echo "✅ APK built: ${{ inputs.app-filename }}"
@@ -177,8 +175,8 @@ jobs:
           EXPO_PUBLIC_DISABLE_ANIMATIONS: 'true'
         run: |
           SCHEME="${SCHEME%.app}"
-          npx expo prebuild --platform ios --no-install --no-clean
-          npx pod-install
+          pnpm exec expo prebuild --platform ios --no-install --no-clean
+          pnpm dlx pod-install
           xcodebuild \
             -workspace "ios/${SCHEME}.xcworkspace" \
             -scheme "${SCHEME}" \
