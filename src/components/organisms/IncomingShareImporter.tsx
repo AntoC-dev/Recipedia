@@ -78,7 +78,6 @@ export function IncomingShareImporter() {
         <UrlRecipeImport
           key={sharedUrl}
           testId={testId}
-          isVisible
           initialUrl={sharedUrl}
           onClose={() => setSharedUrl(undefined)}
         />

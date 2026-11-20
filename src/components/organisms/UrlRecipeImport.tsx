@@ -8,13 +8,17 @@
  * When `initialUrl` is provided, the dialog opens pre-filled and the scrape starts
  * right away; on failure the user can edit the URL and retry.
  *
+ * Shown whenever mounted. Mounting warms up the scraper (Pyodide on iOS), so mount
+ * it only when the flow starts.
+ *
  * @example
  * ```typescript
- * <UrlRecipeImport
- *   testId='VerticalBottomButtons'
- *   isVisible={urlDialogVisible}
- *   onClose={() => setUrlDialogVisible(false)}
- * />
+ * {urlDialogVisible && (
+ *   <UrlRecipeImport
+ *     testId='VerticalBottomButtons'
+ *     onClose={() => setUrlDialogVisible(false)}
+ *   />
+ * )}
  * ```
  */
 
@@ -31,8 +35,6 @@ import { AuthenticationDialog } from '@components/dialogs/AuthenticationDialog';
 export type UrlRecipeImportProps = {
   /** Prefix for the dialogs' testIDs */
   testId: string;
-  /** Whether the import flow is open */
-  isVisible: boolean;
   /** URL to pre-fill and import immediately when the flow opens */
   initialUrl?: string;
   /** Called when the flow ends, whether imported or cancelled */
@@ -45,7 +47,7 @@ export type UrlRecipeImportProps = {
  * @param props - Component props
  * @returns JSX element with the URL and authentication dialogs
  */
-export function UrlRecipeImport({ testId, isVisible, initialUrl, onClose }: UrlRecipeImportProps) {
+export function UrlRecipeImport({ testId, initialUrl, onClose }: UrlRecipeImportProps) {
   const navigation = useNavigation<StackScreenNavigation>();
   const {
     scrapeAndPrepare,
@@ -56,7 +58,7 @@ export function UrlRecipeImport({ testId, isVisible, initialUrl, onClose }: UrlR
     authRequired,
     clearAuthRequired,
   } = useRecipeScraper();
-  const authDialogVisible = isVisible && authRequired !== null;
+  const authDialogVisible = authRequired !== null;
 
   function openScrapedRecipe(result: ScrapeResult) {
     if (!result.success) {
@@ -84,10 +86,10 @@ export function UrlRecipeImport({ testId, isVisible, initialUrl, onClose }: UrlR
   });
 
   useEffect(() => {
-    if (isVisible && initialUrl) {
+    if (initialUrl) {
       importInitialUrl(initialUrl);
     }
-  }, [isVisible, initialUrl]);
+  }, [initialUrl]);
 
   function close() {
     clearAuthRequired();
@@ -99,7 +101,7 @@ export function UrlRecipeImport({ testId, isVisible, initialUrl, onClose }: UrlR
     <>
       <UrlInputDialog
         testId={testId}
-        isVisible={isVisible && !authDialogVisible}
+        isVisible={!authDialogVisible}
         onClose={close}
         onSubmit={url => void importUrl(url)}
         isLoading={isLoading}

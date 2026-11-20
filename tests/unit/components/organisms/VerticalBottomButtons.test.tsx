@@ -170,29 +170,35 @@ describe('VerticalBottomButtons Component', () => {
   describe('URL import', () => {
     const urlImportId = 'VerticalBottomButtons::UrlRecipeImport';
 
-    test('keeps the URL import closed without an initial URL by default', async () => {
+    test('does not mount the URL import while its dialog is closed', async () => {
+      const { queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
+
+      expect(queryByTestId(urlImportId)).toBeNull();
+    });
+
+    test('mounts the URL import without an initial URL when the URL button is pressed', async () => {
       const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
-      expect(getByTestId(urlImportId + '::IsVisible')).toHaveTextContent('false');
+      await openUrlDialog(getByTestId);
+
       expect(getByTestId(urlImportId + '::InitialUrl')).toHaveTextContent('');
     });
 
-    test('opens the URL import and collapses the menu when the URL button is pressed', async () => {
+    test('collapses the menu when the URL button is pressed', async () => {
       const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
       await openUrlDialog(getByTestId);
 
-      expect(getByTestId(urlImportId + '::IsVisible')).toHaveTextContent('true');
       expect(queryByTestId('ReduceButton')).toBeNull();
     });
 
-    test('closes the URL import when it ends', async () => {
-      const { getByTestId } = await renderWithProvider(<VerticalBottomButtons />);
+    test('unmounts the URL import when it ends', async () => {
+      const { getByTestId, queryByTestId } = await renderWithProvider(<VerticalBottomButtons />);
 
       await openUrlDialog(getByTestId);
       await fireEvent.press(getByTestId(urlImportId + '::OnClose'));
 
-      expect(getByTestId(urlImportId + '::IsVisible')).toHaveTextContent('false');
+      expect(queryByTestId(urlImportId)).toBeNull();
     });
   });
 
