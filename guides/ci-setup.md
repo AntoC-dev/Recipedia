@@ -114,6 +114,7 @@ iOS notes:
 - The simulator is configured for determinism: hardware keyboard off, animations and transparency reduced (Liquid Glass flattened), keyboard autocorrect off, locale pinned to `en_US` (decimal separators follow the device region), status bar frozen at 9:41.
 - `npm run boot:ios-simulator` boots the same simulator locally. It reads `model` and `os_version` from `e2e-maestro.yml`, so local runs track CI. Override with `IOS_VERSION` and `DEVICE_MODEL` env vars.
 - `run-e2e-ios.sh` reruns failed flows in a fresh Maestro process when the XCTest driver latches as unreachable (mobile-dev-inc/maestro#3538).
+- `run-e2e-ios.sh` reruns the whole suite once in a fresh Maestro process when Maestro fails before any flow ran (no `<testcase>` in the report), whatever the cause; the usual one is `IOSDriverTimeoutException`, which Maestro prints only to the console. Both reruns stop once the job's rerun budget is spent.
 
 Per-job outputs: `maestro-logs-{platform}-{job}.zip` and `junit-e2e-{platform}-{job}` (a grouped job holds one `{suite}/` folder and one `report-{suite}.xml` per suite). After all E2E jobs finish, `merge-test-artifacts` (runs `always()`) merges the JUnit reports, bundles the logs into `maestro-logs-android.zip` and `maestro-logs-ios.zip` plus `e2e-junit-merged`, scans them for credentials, and deletes the per-suite artifacts. `test-result-summary` then posts a single sticky PR comment combining unit and E2E results.
 
