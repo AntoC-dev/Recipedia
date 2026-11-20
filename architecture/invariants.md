@@ -19,6 +19,9 @@ Must hold — violations cause subtle bugs or break CI. UI rules:
   `fr/`. No hardcoded English in components.
 - **New utility functions outside components need unit tests + TypeDoc.** See
   `CLAUDE.md`.
+- **`useScraper()` only in components mounted for scraping.** Consuming it warms
+  Pyodide (iOS WebView + ~1 min init). Always-mounted screens (Home FAB) mount
+  `UrlRecipeImport` only while its dialog is open.
 
 ## Tests
 
