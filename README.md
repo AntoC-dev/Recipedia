@@ -46,6 +46,7 @@ A React Native recipe management app built with Expo — add, search, and manage
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) (v24 or higher)
+- [pnpm](https://pnpm.io/) via Corepack: `corepack enable pnpm`
 - [Expo CLI](https://docs.expo.dev/get-started/installation/)
 - For Android: [Android Studio](https://developer.android.com/studio) with Android SDK
 - For iOS: [Xcode](https://developer.apple.com/xcode/) (macOS only)
@@ -60,17 +61,17 @@ A React Native recipe management app built with Expo — add, search, and manage
 
 2. **Install dependencies**
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. **Start the development server**
    ```bash
-   npm start
+   pnpm start
    ```
 
 4. **Run on your platform**
-   - **Android**: `npm run dev:android`
-   - **iOS**: `npm run dev:ios`
+   - **Android**: `pnpm run dev:android`
+   - **iOS**: `pnpm run dev:ios`
 
 ## 🏗️ Architecture
 
@@ -116,8 +117,8 @@ src/
 - [FAQ](guides/faq.md)
 
 ```bash
-npm run docs:build    # Generate TypeDoc
-npm run docs:clean    # Clean build
+pnpm run docs:build    # Generate TypeDoc
+pnpm run docs:clean    # Clean build
 ```
 
 ## 🧪 Testing
@@ -125,27 +126,27 @@ npm run docs:clean    # Clean build
 ### Unit Tests
 
 ```bash
-npm run test:unit           # Run unit tests (tests/unit/)
-npm run test:unit:watch     # Watch mode
-npm run test:unit:coverage  # With coverage report
+pnpm run test:unit           # Run unit tests (tests/unit/)
+pnpm run test:unit:watch     # Watch mode
+pnpm run test:unit:coverage  # With coverage report
 ```
 
 ### Integration Tests
 
 ```bash
-npm run test:integration    # Cross-module integration tests (tests/integration/)
+pnpm run test:integration    # Cross-module integration tests (tests/integration/)
 ```
 
 ### Performance Tests
 
 ```bash
-npm run test:perf           # Reassure render benchmarks
+pnpm run test:perf           # Reassure render benchmarks
 ```
 
 ### End-to-End Tests
 
 ```bash
-npm run workflow:build-install::android  # Build + install E2E app on Android
+pnpm run workflow:build-install::android  # Build + install E2E app on Android
 cd tests/e2e && maestro test . --config=smoke.yaml  # Run a Maestro suite
 ```
 
@@ -155,16 +156,16 @@ cd tests/e2e && maestro test . --config=smoke.yaml  # Run a Maestro suite
 
 | Command | Description |
 |---------|-------------|
-| `npm start` | Start Expo development server |
-| `npm run dev:android` | Run on Android device/emulator |
-| `npm run dev:ios` | Run on iOS device/simulator |
-| `npm run quality` | Full quality suite (lint + format + typecheck + expo:doctor) |
-| `npm run lint:fix` | Auto-fix lint issues |
-| `npm run format` | Run Prettier |
-| `npm run typecheck` | TypeScript check |
-| `npm run build:test:android` | Build Android APK for testing |
-| `npm run build:test:ios` | Build iOS app for testing |
-| `npm run release` | Create semantic release |
+| `pnpm start` | Start Expo development server |
+| `pnpm run dev:android` | Run on Android device/emulator |
+| `pnpm run dev:ios` | Run on iOS device/simulator |
+| `pnpm run quality` | Full quality suite (lint + format + typecheck + expo:doctor) |
+| `pnpm run lint:fix` | Auto-fix lint issues |
+| `pnpm run format` | Run Prettier |
+| `pnpm run typecheck` | TypeScript check |
+| `pnpm run build:test:android` | Build Android APK for testing |
+| `pnpm run build:test:ios` | Build iOS app for testing |
+| `pnpm run release` | Create semantic release |
 
 ## 📱 Device Support
 
@@ -185,7 +186,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines. Looking for somethin
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/123-my-feature`)
 3. Make your changes and add tests
-4. Run quality checks (`npm run quality`)
+4. Run quality checks (`pnpm run quality`)
 5. Commit with a conventional message (`feat(#123): add my feature`)
 6. Open a Pull Request
 

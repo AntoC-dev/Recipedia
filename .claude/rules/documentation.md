@@ -4,7 +4,7 @@ When to update TSDoc:
 
 - Added or modified an exported function/type/class in `src/utils/` or `src/hooks/` → update its TSDoc block
 - Changed a function signature → update `@param`/`@returns`
-- After any TSDoc change → run `npm run docs:build` to verify no warnings
+- After any TSDoc change → run `pnpm run docs:build` to verify no warnings
 
 When to update `architecture/` (index `architecture/README.md`):
 

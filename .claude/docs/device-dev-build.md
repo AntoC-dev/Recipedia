@@ -27,7 +27,7 @@ Order:
 ## Bootstrap own Metro (once)
 From the checkout under test, first free port ≥ 8082 (background):
 ```bash
-npx expo start --dev-client --port <port> --offline
+pnpm exec expo start --dev-client --port <port> --offline
 ```
 Wait until `curl -s localhost:<port>/status` = `packager-status:running`. Then open the dev build:
 - Android: `adb reverse tcp:<port> tcp:<port>`, `adb shell am force-stop com.recipedia` (deep link into a running instance crashes), then

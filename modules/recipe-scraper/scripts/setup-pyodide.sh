@@ -32,7 +32,7 @@ fi
 # Verify Pyodide npm package is installed
 if [[ ! -f "$PYODIDE_DIR/pyodide.js" ]]; then
     echo "ERROR: Pyodide npm package not found at $PYODIDE_DIR"
-    echo "       Run 'npm install' first."
+    echo "       Run 'pnpm install' first."
     exit 1
 fi
 
