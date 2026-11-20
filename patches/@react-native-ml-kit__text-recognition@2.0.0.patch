@@ -1,13 +1,13 @@
-diff --git a/node_modules/@react-native-ml-kit/text-recognition/RNMLKitTextRecognition.podspec b/node_modules/@react-native-ml-kit/text-recognition/RNMLKitTextRecognition.podspec
-index 421bcfc..74a715f 100644
---- a/node_modules/@react-native-ml-kit/text-recognition/RNMLKitTextRecognition.podspec
-+++ b/node_modules/@react-native-ml-kit/text-recognition/RNMLKitTextRecognition.podspec
+diff --git a/RNMLKitTextRecognition.podspec b/RNMLKitTextRecognition.podspec
+index 421bcfc47e6ef703db2c0c736b6b0bf151e94454..dfe8e60cebeaaee1650d9c77ae8f08392a07a55f 100644
+--- a/RNMLKitTextRecognition.podspec
++++ b/RNMLKitTextRecognition.podspec
 @@ -23,13 +23,15 @@ Pod::Spec.new do |s|
    s.dependency "React"
    # To recognize Latin script
    s.dependency 'GoogleMLKit/TextRecognition', '8.0.0'
 +  # Recipedia is Latin-only (en/fr). The non-Latin script models add tens of MB to
-+  # the iOS bundle and are never used, so they are stripped via patch-package.
++  # the iOS bundle and are never used, so they are stripped via pnpm patch.
    # To recognize Chinese script
 -  s.dependency 'GoogleMLKit/TextRecognitionChinese', '8.0.0'
 +  # s.dependency 'GoogleMLKit/TextRecognitionChinese', '8.0.0'
@@ -22,16 +22,22 @@ index 421bcfc..74a715f 100644
 +  # s.dependency 'GoogleMLKit/TextRecognitionKorean', '8.0.0'
  end
  
-diff --git a/node_modules/@react-native-ml-kit/text-recognition/android/build.gradle b/node_modules/@react-native-ml-kit/text-recognition/android/build.gradle
-index 6a2e36f..b03f5d5 100644
---- a/node_modules/@react-native-ml-kit/text-recognition/android/build.gradle
-+++ b/node_modules/@react-native-ml-kit/text-recognition/android/build.gradle
+diff --git a/android/.gitignore b/android/.gitignore
+deleted file mode 100644
+index 6125af2eaa4be9a40d1bfc7e41a6051d36010251..0000000000000000000000000000000000000000
+diff --git a/android/.npmignore b/android/.npmignore
+deleted file mode 100644
+index 54b25fb5f27783a2b64096e7f6fe134641586cf9..0000000000000000000000000000000000000000
+diff --git a/android/build.gradle b/android/build.gradle
+index 6a2e36f3607fc1bce5a64e8e518a3ceb97fc16c4..7cc5ed4b4fa57d392cbd2fed3062277acb362ef3 100644
+--- a/android/build.gradle
++++ b/android/build.gradle
 @@ -63,12 +63,14 @@ dependencies {
      implementation 'com.facebook.react:react-native:+'  // From node_modules
      // To recognize Latin script
      implementation 'com.google.mlkit:text-recognition:16.0.1'
 +    // Recipedia is Latin-only (en/fr). The non-Latin script models add several MB
-+    // of bundled OCR models and are never used, so they are stripped via patch-package.
++    // of bundled OCR models and are never used, so they are stripped via pnpm patch.
      // To recognize Chinese script
 -    implementation 'com.google.mlkit:text-recognition-chinese:16.0.1'
 +    // implementation 'com.google.mlkit:text-recognition-chinese:16.0.1'
@@ -45,10 +51,10 @@ index 6a2e36f..b03f5d5 100644
 -    implementation 'com.google.mlkit:text-recognition-korean:16.0.1'
 +    // implementation 'com.google.mlkit:text-recognition-korean:16.0.1'
  }
-diff --git a/node_modules/@react-native-ml-kit/text-recognition/android/src/main/java/com/rnmlkit/textrecognition/TextRecognitionModule.java b/node_modules/@react-native-ml-kit/text-recognition/android/src/main/java/com/rnmlkit/textrecognition/TextRecognitionModule.java
-index 004bfb3..0059c43 100644
---- a/node_modules/@react-native-ml-kit/text-recognition/android/src/main/java/com/rnmlkit/textrecognition/TextRecognitionModule.java
-+++ b/node_modules/@react-native-ml-kit/text-recognition/android/src/main/java/com/rnmlkit/textrecognition/TextRecognitionModule.java
+diff --git a/android/src/main/java/com/rnmlkit/textrecognition/TextRecognitionModule.java b/android/src/main/java/com/rnmlkit/textrecognition/TextRecognitionModule.java
+index 004bfb310545331495514f9572a46a45d0b305f8..3e14f1bfbe7a311589dc1d9822b5869746a5e3e8 100644
+--- a/android/src/main/java/com/rnmlkit/textrecognition/TextRecognitionModule.java
++++ b/android/src/main/java/com/rnmlkit/textrecognition/TextRecognitionModule.java
 @@ -25,10 +25,8 @@ import com.google.mlkit.vision.text.Text;
  import com.google.mlkit.vision.text.TextRecognition;
  import com.google.mlkit.vision.text.TextRecognizer;
@@ -58,7 +64,7 @@ index 004bfb3..0059c43 100644
 -import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions;
 -import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions;
 +// Recipedia is Latin-only (en/fr). Non-Latin script recognizers and their
-+// bundled models are stripped via patch-package to reduce app size.
++// bundled models are stripped via pnpm patch to reduce app size.
  import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
  
  import java.io.IOException;
@@ -87,10 +93,11 @@ index 004bfb3..0059c43 100644
      }
  
      @ReactMethod
-diff --git a/node_modules/@react-native-ml-kit/text-recognition/ios/TextRecognition.m b/node_modules/@react-native-ml-kit/text-recognition/ios/TextRecognition.m
---- a/node_modules/@react-native-ml-kit/text-recognition/ios/TextRecognition.m
-+++ b/node_modules/@react-native-ml-kit/text-recognition/ios/TextRecognition.m
-@@ -3,11 +3,37 @@
+diff --git a/ios/TextRecognition.m b/ios/TextRecognition.m
+index d23fb716debeaa4057f0562ce21c1aa8b8b0a979..1833129cddf9f3e3c3a687dd872dfff09e7e7647 100644
+--- a/ios/TextRecognition.m
++++ b/ios/TextRecognition.m
+@@ -3,10 +3,36 @@
  @import MLKitVision.MLKVisionImage;
  @import MLKitTextRecognition;
  @import MLKitTextRecognitionCommon;
@@ -99,8 +106,8 @@ diff --git a/node_modules/@react-native-ml-kit/text-recognition/ios/TextRecognit
 -@import MLKitTextRecognitionKorean;
 -@import MLKitTextRecognitionDevanagari;
 +// Recipedia is Latin-only (en/fr). Non-Latin script recognizers and their
-+// bundled models are stripped via patch-package to reduce app size.
- 
++// bundled models are stripped via pnpm patch to reduce app size.
++
 +#import <objc/runtime.h>
 +
 +// Recipedia: disables ML Kit telemetry (no public opt-out) via private symbols. See architecture/invariants.md.
@@ -128,11 +135,10 @@ diff --git a/node_modules/@react-native-ml-kit/text-recognition/ios/TextRecognit
 +}
 +
 +@end
-+
+ 
  @implementation TextRecognition
  
- RCT_EXPORT_MODULE()
-@@ -95,16 +121,8 @@
+@@ -95,16 +121,8 @@ RCT_EXPORT_METHOD(recognize: (nonnull NSString*)url
      // if the language param isn't specified, we can assume the user requirement is Latin text recognition
      if (script == nil || [script isEqualToString:@"Latin"]) {
          options = [[MLKTextRecognizerOptions alloc] init];
