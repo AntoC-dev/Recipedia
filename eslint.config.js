@@ -107,6 +107,26 @@ module.exports = defineConfig([
         },
     },
 
+    // Paper's Snackbar is reachable only through AppSnackbar (shared durations and layout)
+    {
+        files: ['src/**/*.{ts,tsx,js,jsx}'],
+        ignores: ['src/components/atomic/AppSnackbar.tsx'],
+        rules: {
+            '@typescript-eslint/no-restricted-imports': [
+                'error',
+                {
+                    paths: [
+                        {
+                            name: 'react-native-paper',
+                            importNames: ['Snackbar'],
+                            message: 'Use AppSnackbar from @components/atomic/AppSnackbar instead.',
+                        },
+                    ],
+                },
+            ],
+        },
+    },
+
     // Test files configuration - follow same rules as main code with minimal exceptions
     {
         files: ['tests/**/*.{ts,tsx,js,jsx}', '**/*.test.{ts,tsx,js,jsx}'],

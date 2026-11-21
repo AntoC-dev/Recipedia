@@ -21,7 +21,8 @@
 
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
-import { Snackbar, useTheme } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
+import { AppSnackbar } from '@components/atomic/AppSnackbar';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { StackScreenParamList, recipeStateType } from '@customTypes/ScreenTypes';
@@ -241,24 +242,25 @@ export function RecipeView({ route, navigation }: RecipeViewProps) {
         onClose={hideDialog}
       />
 
-      <Snackbar
+      <AppSnackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
-        duration={2000}
+        aboveBottomAction
         testID='RecipeSourceUrlSnackbar'
       >
         {t('sourceUrl.copied')}
-      </Snackbar>
+      </AppSnackbar>
 
-      <Snackbar
+      <AppSnackbar
         visible={scalingNoticeVisible}
         onDismiss={() => setScalingNoticeVisible(false)}
+        aboveBottomAction
         duration={SCALING_NOTICE_DURATION}
         action={{ label: t('ok'), onPress: () => setScalingNoticeVisible(false) }}
         testID='RecipeScalingSnackbar'
       >
         {t('servingsScaledNotice', { from: scaledFromServings, to: recipe.persons })}
-      </Snackbar>
+      </AppSnackbar>
     </ScreenWrapper>
   );
 }

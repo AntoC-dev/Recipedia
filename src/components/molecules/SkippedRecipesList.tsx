@@ -10,7 +10,8 @@
 
 import React, { useState } from 'react';
 import { FlatList, StyleProp, StyleSheet, ViewStyle } from 'react-native';
-import { IconButton, List, Snackbar, Surface, useTheme } from 'react-native-paper';
+import { IconButton, List, Surface, useTheme } from 'react-native-paper';
+import { AppSnackbar } from '@components/atomic/AppSnackbar';
 import * as Clipboard from 'expo-clipboard';
 import { SkippedRecipeInfo } from '@customTypes/BulkImportTypes';
 import { useI18n } from '@utils/i18n';
@@ -84,14 +85,13 @@ export function SkippedRecipesList({
           </Surface>
         )}
       />
-      <Snackbar
+      <AppSnackbar
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
-        duration={2000}
         testID={`${testID}::Snackbar`}
       >
         {t('sourceUrl.copied')}
-      </Snackbar>
+      </AppSnackbar>
     </>
   );
 }

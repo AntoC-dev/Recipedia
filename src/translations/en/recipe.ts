@@ -68,6 +68,15 @@ export default {
   ocrFeedback: {
     noData: 'No recipe data found in the image.',
     quantityMismatch: "Scanned quantities don't match your ingredients. Please check the values.",
+    replaced: {
+      recipeImage: 'Image replaced',
+      recipeTitle: 'Title replaced',
+      recipeDescription: 'Description replaced',
+      recipePersons: 'Servings replaced',
+      recipeTime: 'Time replaced',
+      recipeNutrition: 'Nutrition replaced',
+      recipeIngredients: 'Quantities replaced',
+    },
   },
 
   editRecipe: 'Edit Recipe',
