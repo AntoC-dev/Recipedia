@@ -22,9 +22,8 @@ fi
 # The run step times out at 200 min; leave room for a rerun to finish (run-e2e-ios.sh).
 export E2E_RERUN_DEADLINE=$(( $(date +%s) + 9000 ))
 
-# The first `simctl addmedia` on a fresh simulator can outlast Maestro's hardcoded 5 min addMedia
-# timeout, which retry cannot catch. Absorb it here, overlapped with the install. Each photo case
-# deletes the warm-up photo in its own cleanup.
+# Absorb the fresh simulator's slow first Photos work (warm-up-ios-photos.sh) during the install.
+# Each photo case deletes the warm-up photo in its own cleanup.
 WARM_UP_PHOTO=tests/assets/pouletSatay/title.jpg
 WARM_UP_TIMEOUT=${E2E_PHOTOS_WARM_UP_TIMEOUT:-900}
 WARM_UP_PID=""
@@ -35,7 +34,8 @@ if [ "$PLATFORM" = ios ] && jq -e --arg job "$JOB" \
     || echo "::warning::Could not disable the Photos what's new screen"
   echo "📸 Warming up the simulator Photos library..."
   WARM_UP_START=$(date +%s)
-  perl -e 'alarm shift; exec @ARGV' "$WARM_UP_TIMEOUT" xcrun simctl addmedia booted "$WARM_UP_PHOTO" &
+  perl -e 'alarm shift; exec @ARGV' "$WARM_UP_TIMEOUT" \
+    bash "$SCRIPT_DIR/warm-up-ios-photos.sh" "$WARM_UP_PHOTO" &
   WARM_UP_PID=$!
   trap 'kill "$WARM_UP_PID" 2>/dev/null' EXIT
 fi
