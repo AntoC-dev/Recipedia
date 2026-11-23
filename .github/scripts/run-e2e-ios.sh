@@ -39,8 +39,30 @@ rerun_budget_spent() {
   [ "$(date +%s)" -gt "$RERUN_DEADLINE" ]
 }
 
+driver_latched() {
+  grep -rqsE --include=maestro.log "$DRIVER_LATCH" "$1"
+}
+
+run_flow_alone() {
+  local flow_file="$1" run_id="$2"
+  run_maestro "$flow_file" \
+    --debug-output="maestro_logs_${SUITE}/${run_id}" --flatten-debug-output \
+    --output="report-${run_id}.xml" < /dev/null
+}
+
+# The latch is a race, so a rerun can hit it again: retry once more then. Any other failure is the flow's own.
+rerun_flow() {
+  local flow_file="$1" run_id
+  run_id="rerun-$(basename "$flow_file" .yaml)"
+  echo "🔁 Rerunning $flow_file in a fresh Maestro process..."
+  run_flow_alone "$flow_file" "$run_id" && return 0
+  { driver_latched "maestro_logs_${SUITE}/${run_id}" && ! rerun_budget_spent; } || return 1
+  echo "::warning::Maestro XCTest driver latched again during $flow_file; retrying it once more"
+  run_flow_alone "$flow_file" "${run_id}-latch-retry"
+}
+
 rerun_failed_flows() {
-  local flow_files flow_file flow_id status=0
+  local flow_files flow_file status=0
 
   flow_files=$(grep -so '<testcase [^>]*status="ERROR"' "$REPORT_FILE" | sed -E 's/.* file="([^"]*)".*/\1/')
   if [ -z "$flow_files" ]; then
@@ -53,11 +75,7 @@ rerun_failed_flows() {
       echo "::warning::Skipping the remaining reruns: the step is close to its timeout"
       return 1
     fi
-    flow_id=$(basename "$flow_file" .yaml)
-    echo "🔁 Rerunning $flow_file in a fresh Maestro process..."
-    run_maestro "$flow_file" \
-      --debug-output="maestro_logs_${SUITE}/rerun-${flow_id}" --flatten-debug-output \
-      --output="report-rerun-${flow_id}.xml" < /dev/null || status=1
+    rerun_flow "$flow_file" || status=1
   done <<< "$flow_files"
 
   return $status
@@ -88,7 +106,7 @@ if [ "$MAESTRO_EXIT" -ne 0 ] && ! grep -qs '<testcase' "$REPORT_FILE"; then
   fi
 fi
 
-if [ "$MAESTRO_EXIT" -ne 0 ] && grep -rqsE --include=maestro.log "$DRIVER_LATCH" "maestro_logs_${SUITE}"; then
+if [ "$MAESTRO_EXIT" -ne 0 ] && driver_latched "maestro_logs_${SUITE}"; then
   echo "::warning::Maestro XCTest driver latched; rerunning failed flows"
   rerun_failed_flows && MAESTRO_EXIT=0
 fi

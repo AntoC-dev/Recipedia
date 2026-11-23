@@ -174,12 +174,21 @@ const SUITE_RUN =
 const NO_FLOW_RETRY =
   'test tests/e2e/ --config=tests/e2e/search.yaml --debug-output=maestro_logs_search/no-flow-retry --flatten-debug-output --output=report-search.xml --format junit -s 1';
 const expiredDeadline = () => String(Math.floor(Date.now() / 1000) - 1);
+const searchFlow = flowId => `tests/e2e/cases/search/ci/${flowId}.yaml`;
+const rerunCall = (flowId, runId = `rerun-${flowId}`) =>
+  `test ${searchFlow(flowId)} --config=tests/e2e/search.yaml --debug-output=maestro_logs_search/${runId} --flatten-debug-output --output=report-${runId}.xml --format junit -s 1`;
+const SEARCH_RERUN = rerunCall('1_search');
+const SEARCH_LATCH_RETRY = rerunCall('1_search', 'rerun-1_search-latch-retry');
+const FILTER_RERUN = rerunCall('2_filter');
 
 const runFailingIosSuite = ({
   firstRunLog = NO_LATCH_LOG,
   firstReport = LATCHED_REPORT,
   retryExit = 0,
   rerunFailingFlow = '',
+  rerunLog = '',
+  latchRetryExit = 0,
+  rerunSpendsBudget = false,
   rerunDeadline = '',
 }) => {
   const workDir = mkdtempSync(join(tmpdir(), 'e2e-rerun-'));
@@ -201,8 +210,19 @@ if [ "$2" = "tests/e2e/" ] && [ ! -f first-run.done ]; then
   exit 1
 fi
 [ "$2" = "tests/e2e/" ] && exit "$RETRY_EXIT"
-[ "$2" = "$RERUN_FAILING_FLOW" ] && exit 1
+if [ "$2" = "$RERUN_FAILING_FLOW" ]; then
+  out="\${4#--debug-output=}"
+  case "$out" in *-latch-retry) exit "$LATCH_RETRY_EXIT" ;; esac
+  mkdir -p "$out"
+  printf '%s' "$RERUN_LOG" > "$out/maestro.log"
+  [ -n "$RERUN_SPENDS_BUDGET" ] && echo 9999999999 > clock.txt
+  exit 1
+fi
 exit 0`
+  );
+  writeExecutable(
+    join(binDir, 'date'),
+    '[ "$1" = "+%s" ] && [ -f clock.txt ] && { cat clock.txt; exit 0; }\nexec /bin/date "$@"'
   );
 
   const result = runScript(
@@ -212,6 +232,9 @@ exit 0`
       ...noCredentials,
       RETRY_EXIT: String(retryExit),
       RERUN_FAILING_FLOW: rerunFailingFlow,
+      RERUN_LOG: rerunLog,
+      LATCH_RETRY_EXIT: String(latchRetryExit),
+      RERUN_SPENDS_BUDGET: rerunSpendsBudget ? '1' : '',
       E2E_RERUN_DEADLINE: rerunDeadline,
       PATH: `${binDir}:${process.env.PATH}`,
     },
@@ -226,21 +249,47 @@ test('run-e2e-ios.sh reruns only the failed flows once the driver latched', () =
   const { result, calls } = runFailingIosSuite({ firstRunLog: LATCH_LOG });
 
   assert.equal(result.status, 0, result.stdout + result.stderr);
-  assert.deepEqual(calls, [
-    SUITE_RUN,
-    'test tests/e2e/cases/search/ci/1_search.yaml --config=tests/e2e/search.yaml --debug-output=maestro_logs_search/rerun-1_search --flatten-debug-output --output=report-rerun-1_search.xml --format junit -s 1',
-    'test tests/e2e/cases/search/ci/2_filter.yaml --config=tests/e2e/search.yaml --debug-output=maestro_logs_search/rerun-2_filter --flatten-debug-output --output=report-rerun-2_filter.xml --format junit -s 1',
-  ]);
+  assert.deepEqual(calls, [SUITE_RUN, SEARCH_RERUN, FILTER_RERUN]);
 });
 
 test('run-e2e-ios.sh fails when a rerun flow fails again', () => {
   const { result, calls } = runFailingIosSuite({
     firstRunLog: LATCH_LOG,
-    rerunFailingFlow: 'tests/e2e/cases/search/ci/1_search.yaml',
+    rerunFailingFlow: searchFlow('1_search'),
   });
 
   assert.equal(result.status, 1);
   assert.equal(calls.length, 3);
+});
+
+const latchingSearchRerun = { firstRunLog: LATCH_LOG, rerunFailingFlow: searchFlow('1_search'), rerunLog: LATCH_LOG };
+
+test('run-e2e-ios.sh retries a rerun flow once more when the driver latched again during it', () => {
+  const { result, calls } = runFailingIosSuite(latchingSearchRerun);
+
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.deepEqual(calls, [SUITE_RUN, SEARCH_RERUN, SEARCH_LATCH_RETRY, FILTER_RERUN]);
+});
+
+test('run-e2e-ios.sh fails when the latch retry of a rerun flow fails too', () => {
+  const { result, calls } = runFailingIosSuite({ ...latchingSearchRerun, latchRetryExit: 1 });
+
+  assert.equal(result.status, 1);
+  assert.deepEqual(calls, [SUITE_RUN, SEARCH_RERUN, SEARCH_LATCH_RETRY, FILTER_RERUN]);
+});
+
+test('run-e2e-ios.sh skips the latch retry once the rerun used up the rerun budget', () => {
+  const { result, calls } = runFailingIosSuite({ ...latchingSearchRerun, rerunSpendsBudget: true });
+
+  assert.equal(result.status, 1);
+  assert.deepEqual(calls, [SUITE_RUN, SEARCH_RERUN]);
+});
+
+test('run-e2e-ios.sh does not retry a rerun flow that failed without the driver latching', () => {
+  const { result, calls } = runFailingIosSuite({ ...latchingSearchRerun, rerunLog: NO_LATCH_LOG });
+
+  assert.equal(result.status, 1);
+  assert.deepEqual(calls, [SUITE_RUN, SEARCH_RERUN, FILTER_RERUN]);
 });
 
 test('run-e2e-ios.sh skips reruns once earlier suites of the job used up the rerun budget', () => {
