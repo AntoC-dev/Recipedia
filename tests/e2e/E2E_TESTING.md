@@ -514,6 +514,13 @@ Locally, run once per simulator:
 xcrun simctl spawn booted defaults write com.apple.mobileslideshow LastWhatsNewShown -int 9999
 ```
 
+**iOS Photos warm-up.** On a fresh simulator the first `addMedia` is slow, and
+once Photos has opened its library assetsd runs a background "post migration
+actions" pass (~8 min seen in CI) that blocks every `addMedia` past Maestro's
+hardcoded 5 min timeout. For `usesPhotos` suites, `run-e2e-job.sh` runs
+`warm-up-ios-photos.sh` during the install: it imports a photo, opens and closes
+Photos, then waits for the migration to complete.
+
 **Android count wait.** `android/addMedia.yaml` increments
 `output.galleryPhotoCount` (reset in `checkIfCleanIsNeeded.yaml`);
 `android/waitAndVerifyGalleryReady.yaml` waits for `icon_thumbnail` index
