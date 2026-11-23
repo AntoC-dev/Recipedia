@@ -45,7 +45,7 @@ jobs:
         id: app-key
         if: env.EXPO_TOKEN != ''
         run: |
-          echo "key=app-${{ inputs.artifact-name }}-${{ hashFiles(format('{0}/**', inputs.platform), 'src/**', 'tests/data/**', 'plugins/**', 'modules/**', 'patches/**', 'app.json', 'app.config.ts', 'eas.json', '.easignore', '.python-version', 'package.json', 'pnpm-lock.yaml', 'metro.config.js', 'babel.config.js', 'tsconfig.json') }}" >> "$GITHUB_OUTPUT"
+          echo "key=app-${{ inputs.artifact-name }}-${{ hashFiles(format('{0}/**', inputs.platform), 'src/**', 'tests/data/**', 'plugins/**', 'modules/**', 'patches/**', 'app.json', 'app.config.ts', 'eas.json', '.easignore', '.python-version', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'metro.config.js', 'babel.config.js', 'tsconfig.json') }}" >> "$GITHUB_OUTPUT"
           echo "path=${{ inputs.platform == 'ios' && format('{0}.zip', inputs.app-filename) || inputs.app-filename }}" >> "$GITHUB_OUTPUT"
 
       - name: Restore cached app
@@ -64,7 +64,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
           restore-keys: |
             ${{ runner.os }}-node_modules-
 

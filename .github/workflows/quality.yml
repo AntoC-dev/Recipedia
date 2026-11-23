@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache/save@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
 
   commit-validation:
     name: Validate Commit Messages
@@ -43,7 +43,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
           fail-on-cache-miss: true
       - uses: ./.github/actions/setup-node-pnpm
       - name: Validate commit messages
@@ -59,7 +59,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
       - uses: ./.github/actions/setup-node-pnpm
       - name: Run ESLint
         run: pnpm run lint
@@ -74,7 +74,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
       - uses: ./.github/actions/setup-node-pnpm
       - name: Check Prettier formatting
         run: pnpm run format:check
@@ -89,7 +89,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
       - uses: ./.github/actions/setup-node-pnpm
       - name: Run TypeScript check
         run: pnpm run typecheck
@@ -104,7 +104,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
       - uses: ./.github/actions/setup-node-pnpm
       - name: Run Knip
         run: pnpm run knip:check
@@ -119,7 +119,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
       - uses: ./.github/actions/setup-node-pnpm
       - name: Run Expo Doctor
         run: pnpm run expo:doctor
@@ -152,7 +152,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
       - uses: ./.github/actions/setup-node-pnpm
       - name: Build documentation
         run: pnpm run docs:build

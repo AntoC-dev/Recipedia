@@ -56,7 +56,7 @@ jobs:
         uses: actions/cache/save@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
 
   bundle-size:
     name: JS Bundle Size
@@ -70,7 +70,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
 
       - uses: ./.github/actions/setup-node-pnpm
 
@@ -154,7 +154,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
 
       - uses: ./.github/actions/setup-node-pnpm
 
@@ -208,7 +208,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
 
       - uses: ./.github/actions/setup-node-pnpm
 
@@ -385,7 +385,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-node_modules-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml') }}
 
       - uses: ./.github/actions/setup-node-pnpm
 
