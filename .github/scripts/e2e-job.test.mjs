@@ -39,7 +39,9 @@ const runJob = ({
   const workDir = mkdtempSync(join(tmpdir(), 'e2e-job-'));
   const scriptsDir = join(workDir, 'scripts');
   mkdirSync(scriptsDir, { recursive: true });
-  copyFileSync(join(SCRIPTS_DIR, 'run-e2e-job.sh'), join(scriptsDir, 'run-e2e-job.sh'));
+  for (const script of ['run-e2e-job.sh', 'warm-up-ios-photos.sh']) {
+    copyFileSync(join(SCRIPTS_DIR, script), join(scriptsDir, script));
+  }
   writeFile(join(workDir, '.github', 'e2e-suites.json'), JSON.stringify(manifest));
   writeExecutable(join(workDir, 'bin', 'xcrun'), `echo "xcrun $*" >> calls.txt\n${xcrunBody}`);
   for (const stubbedPlatform of ['android', 'ios']) {
@@ -59,6 +61,8 @@ exit 0`
     env: {
       ...process.env,
       FAILING_SUITES: failingSuites.join(' '),
+      E2E_PHOTOS_OPEN_SECONDS: '0',
+      E2E_PHOTOS_MIGRATION_START_GRACE: '0',
       PATH: `${join(workDir, 'bin')}:${process.env.PATH}`,
       ...env,
     },
@@ -146,6 +150,14 @@ test('an iOS job with a photo suite disables the Photos what is new screen befor
 
   assert.ok(disableIndex !== -1, calls.join('\n'));
   assert.ok(disableIndex < calls.findIndex(call => call.startsWith('ios ocr-fields')));
+});
+
+test('an iOS job with a photo suite opens the Photos app during the warm-up, before any suite', () => {
+  const { calls } = runPhotoJob();
+  const launchIndex = calls.indexOf('xcrun simctl launch booted com.apple.mobileslideshow');
+
+  assert.ok(launchIndex !== -1, calls.join('\n'));
+  assert.ok(launchIndex < calls.findIndex(call => call.startsWith('ios ocr-fields')));
 });
 
 test('a grouped iOS job holding a photo suite warms up the Photos library', () => {

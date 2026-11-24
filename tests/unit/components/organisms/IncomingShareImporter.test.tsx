@@ -60,7 +60,6 @@ function expectUrlImportClosed({ queryByTestId }: Screen) {
 }
 
 function expectUrlImportOpen({ getByTestId }: Screen, initialUrl: string) {
-  expect(getByTestId(urlImportId + '::IsVisible')).toHaveTextContent('true');
   expect(getByTestId(urlImportId + '::InitialUrl')).toHaveTextContent(initialUrl);
 }
 

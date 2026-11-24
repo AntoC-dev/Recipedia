@@ -223,11 +223,9 @@ function VerticalBottomButtons() {
               color={colors.onPrimaryContainer}
             />
           </Portal>
-          <UrlRecipeImport
-            testId={testID}
-            isVisible={urlDialogVisible}
-            onClose={() => setUrlDialogVisible(false)}
-          />
+          {urlDialogVisible && (
+            <UrlRecipeImport testId={testID} onClose={() => setUrlDialogVisible(false)} />
+          )}
         </>
       )}
     </View>
