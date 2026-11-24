@@ -3,6 +3,7 @@
   "entry": ["App.tsx!", "src/navigation/**/*.{ts,tsx}!", "modules/**/*.{ts,tsx}!", "tests/**/*.{ts,tsx}"],
   "project": ["src/**/*.{ts,tsx}!"],
   "ignoreExportsUsedInFile": true,
+  "ignoreDependencies": ["expo-build-properties", "expo-dev-client"],
   "rules": {
     "files": "error",
     "exports": "error",
