@@ -1,3 +1,10 @@
+## [2.60.1](https://github.com/AntoC-dev/Recipedia/compare/v2.60.0...v2.60.1) (2026-11-24)
+
+### Bug Fixes
+
+* **import:** mount URL import only while its dialog is open ([9f133a1](https://github.com/AntoC-dev/Recipedia/commit/9f133a17d3a3da39bd0a4c1176dad8949f0bb932)), closes [#719](https://github.com/AntoC-dev/Recipedia/issues/719)
+* **import:** mount URL import only while its dialog is open ([#751](https://github.com/AntoC-dev/Recipedia/issues/751)) ([5bc5023](https://github.com/AntoC-dev/Recipedia/commit/5bc5023c8589a4dd0cd66d742ea3f09ccacf555d))
+
 ## [2.60.0](https://github.com/AntoC-dev/Recipedia/compare/v2.59.1...v2.60.0) (2026-11-19)
 
 ### Features
