@@ -54,7 +54,7 @@ done
 exit 0`
     );
   }
-  writeExecutable(join(workDir, 'bin', 'npm'), `echo "npm $*" >> calls.txt\nexit ${installExit}`);
+  writeExecutable(join(workDir, 'bin', 'pnpm'), `echo "pnpm $*" >> calls.txt\nexit ${installExit}`);
 
   const result = spawnSync('/bin/bash', [join(scriptsDir, 'run-e2e-job.sh'), platform, job], {
     cwd: workDir,
@@ -82,7 +82,7 @@ test('a single-suite job runs that suite once and keeps its exit code', () => {
   assert.equal(result.status, 3);
   assert.deepEqual(
     calls.map(call => call.replace(/ \d+$/, '')),
-    ['npm run install:ios', 'ios search']
+    ['pnpm run install:ios', 'ios search']
   );
 });
 
@@ -92,7 +92,7 @@ test('a grouped job installs the app once, then runs every suite in order', () =
   assert.equal(result.status, 0, result.stdout + result.stderr);
   assert.deepEqual(
     calls.map(call => call.replace(/ \d+$/, '')),
-    ['npm run install:android', 'android app-init', 'android locale-fr', 'android menu']
+    ['pnpm run install:android', 'android app-init', 'android locale-fr', 'android menu']
   );
 });
 
@@ -100,7 +100,7 @@ test('a failed install fails the job without running any suite', () => {
   const { result, calls } = runJob({ platform: 'ios', job: 'app-init+menu', installExit: 4 });
 
   assert.equal(result.status, 4);
-  assert.deepEqual(calls, ['npm run install:ios']);
+  assert.deepEqual(calls, ['pnpm run install:ios']);
 });
 
 test('a failing suite does not stop the rest of its job, which still fails', () => {

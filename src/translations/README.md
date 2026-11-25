@@ -2,8 +2,9 @@
 
 ## Overview
 
-The Recipedia app uses a modular translation system based on i18n-js and expo-localization. The system is organized to
-make translations more maintainable by grouping related translations into separate files.
+The Recipedia app uses a modular translation system based on i18n-js and
+expo-localization. The system is organized to make translations more
+maintainable by grouping related translations into separate files.
 
 ## Structure
 
@@ -32,7 +33,8 @@ src/translations/
 
 ### In Components
 
-To use translations in your components, import the `useI18n` hook from `@utils/i18n`:
+To use translations in your components, import the `useI18n` hook from
+`@utils/i18n`:
 
 ```typescript
 import {useI18n} from '@utils/i18n';
@@ -54,7 +56,7 @@ const MyComponent = () => {
 To change the current language:
 
 ```typescript
-const {setLocale} = useI18n();
+const { setLocale } = useI18n();
 setLocale('fr'); // Change to French
 ```
 
@@ -63,7 +65,7 @@ setLocale('fr'); // Change to French
 To get the current language:
 
 ```typescript
-const {getLocale} = useI18n();
+const { getLocale } = useI18n();
 const currentLanguage = getLocale();
 ```
 
@@ -86,10 +88,11 @@ const currentLanguage = getLocale();
 The translation system has comprehensive tests:
 
 - `tests/unit/utils/i18n.test.tsx`: Tests the i18n utility functions
-- `tests/unit/translations/translations.test.tsx`: Tests the modular translation structure
+- `tests/unit/translations/translations.test.tsx`: Tests the modular translation
+  structure
 
 Run the tests with:
 
 ```bash
-npx jest tests/unit/utils/i18n.test.tsx tests/unit/translations/translations.test.tsx
+pnpm exec jest tests/unit/utils/i18n.test.tsx tests/unit/translations/translations.test.tsx
 ```

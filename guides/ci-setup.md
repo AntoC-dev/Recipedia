@@ -45,22 +45,22 @@ Pipeline behavior worth knowing:
 
 ## Code Quality (`quality.yml`)
 
-After a shared `install` job (caches `node_modules` by `package-lock.json` hash), these jobs run in parallel:
+After a shared `install` job (caches `node_modules` by `pnpm-lock.yaml` hash), these jobs run in parallel:
 
 | Job | Command |
 |---|---|
 | Commit messages (PR only) | `commitlint` over the PR range, Conventional Commits |
-| ESLint | `npm run lint` |
-| Prettier | `npm run format:check` |
-| TypeScript | `npm run typecheck` |
-| Dead code | `npm run knip:check` |
-| Expo Doctor | `npm run expo:doctor` |
-| Security | npm audit, fails on `critical` only, comments on the PR |
-| Documentation | `npm run docs:build`, zero TypeDoc warnings |
+| ESLint | `pnpm run lint` |
+| Prettier | `pnpm run format:check` |
+| TypeScript | `pnpm run typecheck` |
+| Dead code | `pnpm run knip:check` |
+| Expo Doctor | `pnpm run expo:doctor` |
+| Security | pnpm audit, fails on `critical` only, comments on the PR |
+| Documentation | `pnpm run docs:build`, zero TypeDoc warnings |
 
 ## Builds (`build-app.yml`)
 
-Wraps `eas build --local` for both platforms via `npm run build:<profile>:<platform>`. Profiles come from `eas.json`:
+Wraps `eas build --local` for both platforms via `pnpm run build:<profile>:<platform>`. Profiles come from `eas.json`:
 
 | Pipeline profile | `eas.json` profile | Dataset | Used by |
 |---|---|---|---|
@@ -112,7 +112,7 @@ iOS notes:
 
 - Expo SDK 57 requires Xcode >= 26.4. The 26.4 runtime on the runner image no longer ships an iPhone 16e, so CI uses the iPhone 17e, which has the same screen and memory profile.
 - The simulator is configured for determinism: hardware keyboard off, animations and transparency reduced (Liquid Glass flattened), keyboard autocorrect off, locale pinned to `en_US` (decimal separators follow the device region), status bar frozen at 9:41.
-- `npm run boot:ios-simulator` boots the same simulator locally. It reads `model` and `os_version` from `e2e-maestro.yml`, so local runs track CI. Override with `IOS_VERSION` and `DEVICE_MODEL` env vars.
+- `pnpm run boot:ios-simulator` boots the same simulator locally. It reads `model` and `os_version` from `e2e-maestro.yml`, so local runs track CI. Override with `IOS_VERSION` and `DEVICE_MODEL` env vars.
 - `run-e2e-ios.sh` reruns failed flows in a fresh Maestro process when the XCTest driver latches as unreachable (mobile-dev-inc/maestro#3538).
 - `run-e2e-ios.sh` reruns the whole suite once in a fresh Maestro process when Maestro fails before any flow ran (no `<testcase>` in the report), whatever the cause; the usual one is `IOSDriverTimeoutException`, which Maestro prints only to the console. Both reruns stop once the job's rerun budget is spent.
 
@@ -130,9 +130,9 @@ Three layers, with different strictness:
 
 ## Documentation, release, publication
 
-- **Documentation**: `npm run docs:build` (TypeDoc into `docs/`), merges the perf charts, and deploys to GitHub Pages: [https://AntoC-dev.github.io/Recipedia/](https://AntoC-dev.github.io/Recipedia/).
+- **Documentation**: `pnpm run docs:build` (TypeDoc into `docs/`), merges the perf charts, and deploys to GitHub Pages: [https://AntoC-dev.github.io/Recipedia/](https://AntoC-dev.github.io/Recipedia/).
 - **Release**: runs `semantic-release` with `RELEASE_PAT` to create GitHub releases and bump the version.
-- **Publication**: matrix of `android` (`ubuntu-latest`) and `ios` (`macos-26`). Builds with `npm run build:prod:<platform>`, then submits with `npm run submit:<platform>` (iOS also installs Fastlane). The job uses the `production` GitHub environment; configure required reviewers there to gate production deploys.
+- **Publication**: matrix of `android` (`ubuntu-latest`) and `ios` (`macos-26`). Builds with `pnpm run build:prod:<platform>`, then submits with `pnpm run submit:<platform>` (iOS also installs Fastlane). The job uses the `production` GitHub environment; configure required reviewers there to gate production deploys.
 
 ## Secrets
 
@@ -162,7 +162,7 @@ Quality jobs, unit and integration tests, builds, E2E suites and commit validati
 
 ## Debugging CI failures
 
-**Unit / integration tests**: download `unit-test-summary` or `integration-test-summary`, find the failing test, and reproduce with `npm run test:unit` or `npm run test:integration`. For coverage gaps, run `npm run test:unit:coverage` and open `coverage/lcov-report/index.html`.
+**Unit / integration tests**: download `unit-test-summary` or `integration-test-summary`, find the failing test, and reproduce with `pnpm run test:unit` or `pnpm run test:integration`. For coverage gaps, run `pnpm run test:unit:coverage` and open `coverage/lcov-report/index.html`.
 
 **E2E tests**: download `maestro-logs-android.zip` or `maestro-logs-ios.zip`.
 
@@ -173,6 +173,6 @@ Quality jobs, unit and integration tests, builds, E2E suites and commit validati
 
 **Build failures**: download `build-log-{platform}-{profile}` and look for EAS errors (credentials, SDK mismatch, native compile). Check that `EXPO_TOKEN` is valid. For iOS, confirm `/Applications/Xcode_26.4.1.app` still exists on the `macos-26` image.
 
-**Quality failures**: run the matching command locally (`npm run lint:fix`, `npm run format`, `npm run typecheck`, `npm run expo:doctor`, `npm run docs:build`). Commit messages must follow Conventional Commits, e.g. `feat(scope): description`.
+**Quality failures**: run the matching command locally (`pnpm run lint:fix`, `pnpm run format`, `pnpm run typecheck`, `pnpm run expo:doctor`, `pnpm run docs:build`). Commit messages must follow Conventional Commits, e.g. `feat(scope): description`.
 
-**Stale `node_modules` cache**: push a commit that changes `package-lock.json` to change the cache key.
+**Stale `node_modules` cache**: push a commit that changes `pnpm-lock.yaml` to change the cache key.

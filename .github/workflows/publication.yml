@@ -31,14 +31,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
+      - uses: ./.github/actions/setup-node-pnpm
         with:
-          node-version: '24'
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Setup Python for Chaquopy
         if: matrix.platform == 'android'
@@ -61,7 +59,7 @@ jobs:
         run: gem install fastlane
 
       - name: Build for ${{ matrix.platform }}
-        run: npm run build:prod:${{ matrix.platform }}
+        run: pnpm run build:prod:${{ matrix.platform }}
 
       - name: Submit to store (${{ matrix.platform }})
-        run: npm run submit:${{ matrix.platform }}
+        run: pnpm run submit:${{ matrix.platform }}

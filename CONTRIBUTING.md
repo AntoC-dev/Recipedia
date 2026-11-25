@@ -27,7 +27,7 @@ inclusive, and collaborative.
 Before contributing, ensure you have:
 
 - [Node.js](https://nodejs.org/) (v24 or higher)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [pnpm](https://pnpm.io/) via Corepack: `corepack enable pnpm` (version pinned by `packageManager`)
 - [Expo CLI](https://docs.expo.dev/get-started/installation/)
 - [Git](https://git-scm.com/)
 
@@ -50,11 +50,11 @@ For mobile development:
    ```
 4. **Install dependencies**:
    ```bash
-   npm install
+   pnpm install
    ```
 5. **Start development server**:
    ```bash
-   npm start
+   pnpm start
    ```
 
 ## 🏗️ Development Setup
@@ -63,13 +63,13 @@ For mobile development:
 
 ```bash
 # Start Expo development server
-npm start
+pnpm start
 
 # Run on Android
-npm run dev:android
+pnpm run dev:android
 
 # Run on iOS
-npm run dev:ios
+pnpm run dev:ios
 ```
 
 ### Database Development
@@ -84,35 +84,35 @@ The app uses SQLite for local storage. The database is managed through the `Reci
 
 ```bash
 # Development
-npm start                    # Start Expo dev server
-npm run dev:android         # Run on Android
-npm run dev:ios             # Run on iOS
+pnpm start                    # Start Expo dev server
+pnpm run dev:android         # Run on Android
+pnpm run dev:ios             # Run on iOS
 
 # Code Quality
-npm run quality             # Check all quality gates
-npm run lint                # ESLint check
-npm run lint:fix            # ESLint auto-fix
-npm run format              # Format with Prettier
-npm run format:check        # Check formatting
-npm run typecheck           # TypeScript check
+pnpm run quality             # Check all quality gates
+pnpm run lint                # ESLint check
+pnpm run lint:fix            # ESLint auto-fix
+pnpm run format              # Format with Prettier
+pnpm run format:check        # Check formatting
+pnpm run typecheck           # TypeScript check
 
 # Testing
-npm run test:unit           # Run unit tests (tests/unit/)
-npm run test:unit:watch     # Run tests in watch mode
-npm run test:unit:coverage  # Run with coverage
-npm run test:integration    # Run integration tests (tests/integration/)
-npm run workflow:build-install::android  # Build + install E2E app (Android)
+pnpm run test:unit           # Run unit tests (tests/unit/)
+pnpm run test:unit:watch     # Run tests in watch mode
+pnpm run test:unit:coverage  # Run with coverage
+pnpm run test:integration    # Run integration tests (tests/integration/)
+pnpm run workflow:build-install::android  # Build + install E2E app (Android)
 
 # Documentation
-npm run docs:build          # Generate API documentation
-npm run docs:clean          # Clean documentation build
+pnpm run docs:build          # Generate API documentation
+pnpm run docs:clean          # Clean documentation build
 
 # Building
-npm run build:test:android  # Build Android APK
-npm run build:test:ios      # Build iOS app
+pnpm run build:test:android  # Build Android APK
+pnpm run build:test:ios      # Build iOS app
 
 # Release
-npm run release            # Semantic release
+pnpm run release            # Semantic release
 ```
 
 ## 📁 Project Structure
@@ -190,11 +190,11 @@ refactor/321-database-optimization
 ### Before Submitting
 
 - [ ] Code follows project style guidelines
-- [ ] All quality checks pass (`npm run quality:check`)
-- [ ] All tests pass (`npm run test:unit`)
+- [ ] All quality checks pass (`pnpm run quality`)
+- [ ] All tests pass (`pnpm run test:unit`)
 - [ ] New functionality includes tests
 - [ ] Documentation is updated (JSDoc comments and examples)
-- [ ] API documentation builds without warnings (`npm run docs:build`)
+- [ ] API documentation builds without warnings (`pnpm run docs:build`)
 - [ ] Commit messages follow semantic conventions
 - [ ] No merge conflicts with main branch
 - [ ] Pre-commit hooks are set up and working
@@ -247,13 +247,13 @@ All new functionality must include unit tests:
 
 ```bash
 # Run unit tests
-npm run test:unit
+pnpm run test:unit
 
 # Run with coverage
-npm run test:unit:coverage
+pnpm run test:unit:coverage
 
 # Watch mode during development
-npm run test:unit:watch
+pnpm run test:unit:watch
 ```
 
 ### Test Guidelines
@@ -268,7 +268,7 @@ npm run test:unit:watch
 For cross-module flows where regressions repeatedly surface in E2E only, add an integration test under `tests/integration/`:
 
 ```bash
-npm run test:integration
+pnpm run test:integration
 ```
 
 - Exercise the **real pipeline** end-to-end: real hooks, real fuzzy index, real RecipeDatabase, real form context.
@@ -281,7 +281,7 @@ npm run test:integration
 For significant UI changes, consider adding E2E tests:
 
 ```bash
-npm run workflow:build-install::android
+pnpm run workflow:build-install::android
 cd tests/e2e && maestro test . --config=smoke.yaml
 ```
 
@@ -305,13 +305,13 @@ The project enforces code quality through:
 - Define proper types for all functions and components
 - Avoid `any` type usage
 - Use path aliases from `tsconfig.json`
-- All code must pass `npm run typecheck`
+- All code must pass `pnpm run typecheck`
 
 ### Code Formatting
 
 - **Automatic**: Pre-commit hooks format code automatically
-- **Manual**: Run `npm run format` to format all files
-- **Validation**: `npm run format:check` validates formatting
+- **Manual**: Run `pnpm run format` to format all files
+- **Validation**: `pnpm run format:check` validates formatting
 - **Configuration**: See `.prettierrc.js` for settings
 
 ### React Native / React
@@ -478,8 +478,8 @@ Pages. All contributors must maintain documentation quality.
 
 ```bash
 # Generate and test documentation
-npm run docs:build          # Build API documentation
-npm run docs:clean          # Clean documentation files
+pnpm run docs:build          # Build API documentation
+pnpm run docs:clean          # Clean documentation files
 open docs/index.html         # View local documentation
 ```
 
@@ -560,7 +560,7 @@ When submitting a PR, update the relevant docs alongside the code:
 
 | Change | What to update |
 |--------|----------------|
-| Add/modify exported function or type in `utils/` or `hooks/` | TSDoc block on that export; run `npm run docs:build` |
+| Add/modify exported function or type in `utils/` or `hooks/` | TSDoc block on that export; run `pnpm run docs:build` |
 | Add a new React Context provider | `architecture/state.md` |
 | Introduce a new architectural pattern or invariant | Relevant `architecture/` doc + `architecture/invariants.md` |
 | Change navigation structure | `architecture/navigation.md` |

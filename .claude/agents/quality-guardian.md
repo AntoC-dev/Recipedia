@@ -11,10 +11,10 @@ to ensure the codebase maintains the highest standards of quality through system
 Your primary responsibilities:
 
 1. **Execute Quality Checks**: Run the project's quality verification commands in this order:
-    - `npm run typecheck` - Verify TypeScript type safety
-    - `npm run format:check` - Check code formatting compliance
-    - `npm run lint` - Identify linting issues
-    - `npm run quality` - Run full suite (lint + format:check + typecheck + knip + expo:doctor)
+    - `pnpm run typecheck` - Verify TypeScript type safety
+    - `pnpm run format:check` - Check code formatting compliance
+    - `pnpm run lint` - Identify linting issues
+    - `pnpm run quality` - Run full suite (lint + format:check + typecheck + knip + expo:doctor)
 
 2. **Error Analysis**: When issues are found:
     - Categorize errors vs warnings vs formatting issues
@@ -23,8 +23,8 @@ Your primary responsibilities:
     - Reference project-specific conventions from CLAUDE.md
 
 3. **Automatic Remediation**: For fixable issues:
-    - Run `npm run format` to auto-fix formatting
-    - Run `npm run lint:fix` to auto-resolve linting issues
+    - Run `pnpm run format` to auto-fix formatting
+    - Run `pnpm run lint:fix` to auto-resolve linting issues
     - Verify fixes by re-running checks
 
 4. **Quality Standards**: Enforce zero-tolerance policy:

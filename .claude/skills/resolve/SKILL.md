@@ -44,7 +44,7 @@ git worktree add -b <branch> .claude/worktrees/<branch with / → +> origin/main
 ```
 Branch/worktree already exists → reuse via `EnterWorktree(path)`, skip `add`, note in report.
 Then `EnterWorktree(path: "<repo>/.claude/worktrees/<branch with +>")`; verify `pwd` + `git branch --show-current`.
-`npm ci` in the worktree (never hardlink-copy `node_modules`). Copy the gitignored Pyodide bundle (without it:
+`pnpm install --frozen-lockfile` in the worktree (never hardlink-copy `node_modules`). Copy the gitignored Pyodide bundle (without it:
 no scraper, no bulk-import thumbnails):
 ```bash
 mkdir -p modules/recipe-scraper/assets
@@ -58,7 +58,7 @@ Missing in main too → note in report; scraper-dependent E2E = env, not regress
 ## Step 3 — Implement
 
 - **bugfix** — TDD: failing test under `tests/unit/` mirroring `src/`, run
-  `npm run test:unit -- --testPathPattern="<File>.test"`, confirm it fails for the right reason, fix, keep test.
+  `pnpm run test:unit --testPathPatterns="<File>.test"`, confirm it fails for the right reason, fix, keep test.
 - **feature** — non-UI functions outside components, TSDoc, unit tests.
 - **refactor** — behavior-preserving; tests green before and after.
 - **docs** — doc changes only.
@@ -85,10 +85,10 @@ Would an existing case in `tests/e2e/cases/<feature>/` have caught this / exerci
 Goal: reviewers see code with complete tests. Changed files =
 `git diff --name-only origin/main -- src` + `git ls-files -o --exclude-standard src`. Invoke
 `Skill(check-tests, args: <those files>)` — no-arg mode only sees committed changes, useless here. Then
-`npm run test:unit`; fix until green.
+`pnpm run test:unit`; fix until green.
 
 Exported function/type/class changed in `src/utils/` or `src/hooks/` → spawn `typedoc-documentation-writer`, then
-`npm run docs:build` with no warnings. Update `architecture/` / `guides/` per `.claude/rules/documentation.md`.
+`pnpm run docs:build` with no warnings. Update `architecture/` / `guides/` per `.claude/rules/documentation.md`.
 
 ## Step 5 — Review passes
 
@@ -106,8 +106,8 @@ Conflicting suggestions → keep the simpler. One round only.
 ## Step 6 — Quality gate
 
 ```bash
-npm run test:unit
-npm run quality   # lint + format:check + typecheck + knip + expo:doctor
+pnpm run test:unit
+pnpm run quality   # lint + format:check + typecheck + knip + expo:doctor
 ```
 Fix until green. Review-induced logic change without coverage → `check-tests` on those files.
 

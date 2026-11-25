@@ -23,7 +23,7 @@ UDID=$(xcrun simctl list devices available --json | node -e '
 
 if [ -z "$UDID" ]; then
   echo "❌ No available '$DEVICE_MODEL' on iOS $IOS_VERSION." >&2
-  echo "   Install that runtime in Xcode, or override: IOS_VERSION=26.5 npm run boot:ios-simulator" >&2
+  echo "   Install that runtime in Xcode, or override: IOS_VERSION=26.5 pnpm run boot:ios-simulator" >&2
   exit 1
 fi
 

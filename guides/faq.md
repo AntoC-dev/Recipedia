@@ -67,7 +67,7 @@ A new category file must also be exported from each language's `index.ts`. See [
 
 ### What do the quality checks run?
 
-`npm run quality` runs ESLint, Prettier check, `tsc --noEmit`, knip and expo-doctor. Husky and lint-staged run Prettier and `eslint --fix` on staged files at commit time. If a hook fails, fix the cause rather than using `--no-verify`.
+`pnpm run quality` runs ESLint, Prettier check, `tsc --noEmit`, knip and expo-doctor. Husky and lint-staged run Prettier and `eslint --fix` on staged files at commit time. If a hook fails, fix the cause rather than using `--no-verify`.
 
 ### How does the onboarding tutorial work?
 
@@ -75,4 +75,4 @@ It uses `react-native-copilot`. `useSafeCopilot` (`src/hooks/useSafeCopilot.tsx`
 
 ### How do I regenerate the API documentation?
 
-`npm run docs:build` generates TypeDoc output in `docs/` (see `typedoc.json`). The published version is at [AntoC-dev.github.io/Recipedia](https://AntoC-dev.github.io/Recipedia/).
+`pnpm run docs:build` generates TypeDoc output in `docs/` (see `typedoc.json`). The published version is at [AntoC-dev.github.io/Recipedia](https://AntoC-dev.github.io/Recipedia/).
