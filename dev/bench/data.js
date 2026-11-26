@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795089290369,
+  "lastUpdate": 1795696324343,
   "repoUrl": "https://github.com/AntoC-dev/Recipedia",
   "entries": {
     "Screen FPS": [
@@ -797,6 +797,63 @@ window.BENCHMARK_DATA = {
           {
             "name": "06_parameters",
             "value": 56.7,
+            "unit": "fps"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "AntoC",
+            "username": "AntoC-dev",
+            "email": "129602681+AntoC-dev@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "c02455d2a8fb82f1f1a29e754b7c1c16cbdafa25",
+          "message": "chore(deps-dev): bump pyodide from 314.0.7 to 314.0.8 (#728)\n\nBumps [pyodide](https://github.com/pyodide/pyodide) from 314.0.7 to\n314.0.8.\n<details>\n<summary>Release notes</summary>\n<p><em>Sourced from <a\nhref=\"https://github.com/pyodide/pyodide/releases\">pyodide's\nreleases</a>.</em></p>\n<blockquote>\n<h2>314.0.8</h2>\n<p>See changes at <a\nhref=\"https://pyodide.org/en/stable/project/changelog.html#version-314-0-8\">https://pyodide.org/en/stable/project/changelog.html#version-314-0-8</a></p>\n</blockquote>\n</details>\n<details>\n<summary>Commits</summary>\n<ul>\n<li><a\nhref=\"https://github.com/pyodide/pyodide/commit/f37a18559ae11c5f371beb1c9462a13a663fc461\"><code>f37a185</code></a>\nPyodide v314.0.8</li>\n<li><a\nhref=\"https://github.com/pyodide/pyodide/commit/d72563f06cbabf38cad06145f6b93fd969ccb83e\"><code>d72563f</code></a>\nMerge pull request <a\nhref=\"https://redirect.github.com/pyodide/pyodide/issues/6553\">#6553</a>\nfrom hoodmane/backports-for-314.0.8</li>\n<li><a\nhref=\"https://github.com/pyodide/pyodide/commit/939fc19200cefbb2dd6c0812cb440bd3a9876059\"><code>939fc19</code></a>\nBLD ship python pkgconfig files in xbuildenv (<a\nhref=\"https://redirect.github.com/pyodide/pyodide/issues/6556\">#6556</a>)</li>\n<li><a\nhref=\"https://github.com/pyodide/pyodide/commit/38c97720eb1794335e2afe814ac02dedf3259809\"><code>38c9772</code></a>\nFix wrong toJs result on nested list and dict conversion (<a\nhref=\"https://redirect.github.com/pyodide/pyodide/issues/6550\">#6550</a>)</li>\n<li><a\nhref=\"https://github.com/pyodide/pyodide/commit/5f532dc021f3ae1735b966ea839ef1346eb02410\"><code>5f532dc</code></a>\nDrop wasm-gc guard for Safari (<a\nhref=\"https://redirect.github.com/pyodide/pyodide/issues/6552\">#6552</a>)</li>\n<li><a\nhref=\"https://github.com/pyodide/pyodide/commit/0c92e0d1b0f64c9a85606ca5640afb9e2bc16579\"><code>0c92e0d</code></a>\nDo not overwrite current running loop when new event loop is created (<a\nhref=\"https://redirect.github.com/pyodide/pyodide/issues/6342\">#6342</a>)</li>\n<li><a\nhref=\"https://github.com/pyodide/pyodide/commit/821819c119a04fbfbf1926089e5f1ec7ba3df76a\"><code>821819c</code></a>\nFix getBuffer for buffers above 2GB of Wasm heap (<a\nhref=\"https://redirect.github.com/pyodide/pyodide/issues/6546\">#6546</a>)</li>\n<li><a\nhref=\"https://github.com/pyodide/pyodide/commit/3d073c7fe3995eaa89f71599e5040bac2fc14c54\"><code>3d073c7</code></a>\nCI Use ubuntu 24.04 (<a\nhref=\"https://redirect.github.com/pyodide/pyodide/issues/6548\">#6548</a>)</li>\n<li><a\nhref=\"https://github.com/pyodide/pyodide/commit/7ac19f99117dbb980d7e3a732c45088ff1b3905d\"><code>7ac19f9</code></a>\nFix webloop not supporting custom task factory (<a\nhref=\"https://redirect.github.com/pyodide/pyodide/issues/6525\">#6525</a>)</li>\n<li><a\nhref=\"https://github.com/pyodide/pyodide/commit/54bc3f122fa5cf6cc84ba0b68f01a2d1a59ae518\"><code>54bc3f1</code></a>\nFix lost exception in destroy_proxy when debug mode is on (<a\nhref=\"https://redirect.github.com/pyodide/pyodide/issues/6524\">#6524</a>)</li>\n<li>Additional commits viewable in <a\nhref=\"https://github.com/pyodide/pyodide/compare/314.0.7...314.0.8\">compare\nview</a></li>\n</ul>\n</details>\n<br />",
+          "timestamp": "2026-11-26T06:06:13Z",
+          "url": "https://github.com/AntoC-dev/Recipedia/commit/c02455d2a8fb82f1f1a29e754b7c1c16cbdafa25"
+        },
+        "date": 1795696322175,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "00_seed",
+            "value": 58.9,
+            "unit": "fps"
+          },
+          {
+            "name": "01_app_start",
+            "value": 59.1,
+            "unit": "fps"
+          },
+          {
+            "name": "02_home",
+            "value": 58.9,
+            "unit": "fps"
+          },
+          {
+            "name": "03_search",
+            "value": 59.2,
+            "unit": "fps"
+          },
+          {
+            "name": "04_recipe_view",
+            "value": 58.7,
+            "unit": "fps"
+          },
+          {
+            "name": "05_shopping",
+            "value": 58.5,
+            "unit": "fps"
+          },
+          {
+            "name": "06_parameters",
+            "value": 50.3,
             "unit": "fps"
           }
         ]
