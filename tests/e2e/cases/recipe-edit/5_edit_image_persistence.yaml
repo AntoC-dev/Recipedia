@@ -31,7 +31,11 @@ tags:
     id: "Recipe::AppBar::Validate"
     label: "Action - Save changes"
 
-- waitForAnimationToEnd
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar::Edit"
+    timeout: 60000
+    label: "Wait for recipe screen to switch to read-only mode"
 
 - tapOn:
     id: "Recipe::AppBar::BackButton"
