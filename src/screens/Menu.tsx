@@ -17,7 +17,8 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { ScreenWrapper } from '@components/templates/ScreenWrapper';
 import { CopilotStep, walkthroughable } from 'react-native-copilot';
-import { List, Snackbar, Text, useTheme } from 'react-native-paper';
+import { List, Text, useTheme } from 'react-native-paper';
+import { AppSnackbar } from '@components/atomic/AppSnackbar';
 import { useI18n } from '@utils/i18n';
 import { useMenu } from '@hooks/useMenu';
 import { useSafeCopilot } from '@hooks/useSafeCopilot';
@@ -31,8 +32,6 @@ import { menuTableElement, recipeTableElement } from '@customTypes/DatabaseEleme
 const CopilotView = walkthroughable(View);
 
 const screenId = 'MenuScreen';
-
-const REMOVE_SNACKBAR_DURATION = Snackbar.DURATION_LONG;
 
 export function Menu() {
   const { t } = useI18n();
@@ -126,15 +125,14 @@ export function Menu() {
         </ScrollView>
       )}
 
-      <Snackbar
+      <AppSnackbar
         visible={removedRecipe !== null}
         onDismiss={() => setRemovedRecipe(null)}
-        duration={REMOVE_SNACKBAR_DURATION}
         action={{ label: t('undo'), onPress: () => void undoRemove() }}
         testID={`${screenId}::RemoveSnackbar`}
       >
         {t('menuScreen.removedFromMenu')}
-      </Snackbar>
+      </AppSnackbar>
 
       {copilotData && (
         <CopilotStep text={t('tutorial.menu.description')} order={stepOrder} name={'Menu'}>

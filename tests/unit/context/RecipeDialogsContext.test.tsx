@@ -291,6 +291,89 @@ describe('RecipeDialogsContext', () => {
       expect(result.current.snackbar.visible).toBe(false);
       expect(result.current.snackbar.message).toBe('No data found');
     });
+
+    test('showSnackbar without action leaves action undefined', async () => {
+      const wrapper = createDialogsWrapper();
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
+
+      await act(() => {
+        result.current.showSnackbar('No data found');
+      });
+
+      expect(result.current.snackbar.action).toBeUndefined();
+    });
+
+    test('showSnackbar stores the provided action', async () => {
+      const wrapper = createDialogsWrapper();
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
+      const undoAction = { label: 'Undo', onPress: jest.fn() };
+
+      await act(() => {
+        result.current.showSnackbar('Title replaced', undoAction);
+      });
+
+      expect(result.current.snackbar).toEqual({
+        visible: true,
+        message: 'Title replaced',
+        action: undoAction,
+        showCount: 1,
+      });
+    });
+
+    test('snackbar starts hidden with a zero showCount', async () => {
+      const wrapper = createDialogsWrapper();
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
+
+      expect(result.current.snackbar).toEqual({ visible: false, message: '', showCount: 0 });
+    });
+
+    test('showSnackbar increments showCount on every call', async () => {
+      const wrapper = createDialogsWrapper();
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
+
+      await act(() => {
+        result.current.showSnackbar('No data found');
+      });
+      await act(() => {
+        result.current.showSnackbar('No data found');
+      });
+
+      expect(result.current.snackbar.showCount).toBe(2);
+    });
+
+    test('hideSnackbar keeps showCount so the next show still increments it', async () => {
+      const wrapper = createDialogsWrapper();
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
+
+      await act(() => {
+        result.current.showSnackbar('No data found');
+      });
+      await act(() => {
+        result.current.hideSnackbar();
+      });
+      const showCountAfterHide = result.current.snackbar.showCount;
+      await act(() => {
+        result.current.showSnackbar('Title replaced');
+      });
+
+      expect(showCountAfterHide).toBe(1);
+      expect(result.current.snackbar.showCount).toBe(2);
+    });
+
+    test('showSnackbar without action clears a previously stored action', async () => {
+      const wrapper = createDialogsWrapper();
+      const { result } = await renderHook(() => useRecipeDialogs(), { wrapper });
+
+      await act(() => {
+        result.current.showSnackbar('Title replaced', { label: 'Undo', onPress: jest.fn() });
+      });
+      await act(() => {
+        result.current.showSnackbar('No data found');
+      });
+
+      expect(result.current.snackbar.message).toBe('No data found');
+      expect(result.current.snackbar.action).toBeUndefined();
+    });
   });
 
   describe('image modal', () => {

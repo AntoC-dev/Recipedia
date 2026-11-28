@@ -845,4 +845,28 @@ describe('RecipeAddManual', () => {
       );
     });
   });
+
+  test('replacing a filled image outside OCR mode shows no undo snackbar', async () => {
+    const ImagePicker = jest.requireMock('@utils/ImagePicker');
+    const secondCroppedImage = '/path/to/second/cropped/img';
+    const { getByTestId, queryByTestId } = await renderRoute(mockRouteAddManually);
+
+    async function pickImageFromModal() {
+      await fireEvent.press(getByTestId('RecipeImage::OpenModal'));
+      await waitFor(() => expect(getByTestId('ModalImageSelect')).toBeTruthy());
+      await fireEvent.press(getByTestId('ModalImageSelect::Select'));
+    }
+
+    await pickImageFromModal();
+    await waitFor(() => {
+      expect(getByTestId('RecipeImage::ImgUri').props.children).toBe('/path/to/cropped/img');
+    });
+    (ImagePicker.cropImage as jest.Mock).mockResolvedValueOnce(secondCroppedImage);
+    await pickImageFromModal();
+
+    await waitFor(() => {
+      expect(getByTestId('RecipeImage::ImgUri').props.children).toBe(secondCroppedImage);
+    });
+    expect(queryByTestId('Recipe::OcrSnackbar')).toBeNull();
+  });
 });

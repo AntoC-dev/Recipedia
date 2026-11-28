@@ -31,7 +31,8 @@
 import React, { ReactNode, useRef, useState } from 'react';
 import { Keyboard, StyleSheet } from 'react-native';
 import { KeyboardToolbar } from 'react-native-keyboard-controller';
-import { Snackbar, useTheme } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
+import { AppSnackbar } from '@components/atomic/AppSnackbar';
 import { FieldErrors, FormProvider, useForm, useFormContext, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -47,6 +48,7 @@ import { useRecipes } from '@hooks/useRecipes';
 import { useUnsavedChangesGuard } from '@hooks/useUnsavedChangesGuard';
 import { AppBar } from '@components/organisms/AppBar';
 import { useI18n } from '@utils/i18n';
+import { isOcrScanUndoable } from '@utils/OcrScanUndo';
 import { Alert } from '@components/dialogs/Alert';
 import { ValidationQueue } from '@components/dialogs/ValidationQueue';
 import { SimilarityDialog } from '@components/dialogs/SimilarityDialog';
@@ -477,7 +479,14 @@ function RecipeFormBody({
       // matches the legacy non-edit path.
       const croppedUri = await cropImage(imgSelected, colors);
       if (croppedUri.length === 0) return;
+      const imageBeforeScan = form.getValues('recipeImage');
       form.setValue('recipeImage', croppedUri);
+      if (mode === 'addFromPic' && isOcrScanUndoable('recipeImage', imageBeforeScan, croppedUri)) {
+        dialogs.showSnackbar(t('ocrFeedback.replaced.recipeImage'), {
+          label: t('undo'),
+          onPress: () => form.setValue('recipeImage', imageBeforeScan),
+        });
+      }
       return;
     }
 
@@ -619,14 +628,16 @@ function RecipeFormBody({
 
       {FeatureHookSlot ? <FeatureHookSlot {...slotProps} /> : null}
 
-      <Snackbar
+      <AppSnackbar
+        key={dialogs.snackbar.showCount}
         visible={dialogs.snackbar.visible}
         onDismiss={dialogs.hideSnackbar}
-        duration={Snackbar.DURATION_LONG}
+        aboveBottomAction={!isEditMode}
+        action={dialogs.snackbar.action}
         testID={`${RECIPE_TEST_ID}::OcrSnackbar`}
       >
         {dialogs.snackbar.message}
-      </Snackbar>
+      </AppSnackbar>
     </ScreenWrapper>
   );
 }

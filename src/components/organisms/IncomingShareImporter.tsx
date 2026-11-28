@@ -17,7 +17,8 @@
 import React, { useEffect, useEffectEvent, useState } from 'react';
 import { AppState } from 'react-native';
 import { StackActions, useNavigation } from '@react-navigation/native';
-import { Portal, Snackbar } from 'react-native-paper';
+import { Portal } from 'react-native-paper';
+import { AppSnackbar } from '@components/atomic/AppSnackbar';
 import { StackScreenNavigation } from '@customTypes/ScreenTypes';
 import { SharedImport, takeSharedImport } from '@utils/SharedContent';
 import { useI18n } from '@utils/i18n';
@@ -83,13 +84,13 @@ export function IncomingShareImporter() {
         />
       )}
       <Portal>
-        <Snackbar
+        <AppSnackbar
           testID={testId + '::UnsupportedSnackbar'}
           visible={unsupportedVisible}
           onDismiss={() => setUnsupportedVisible(false)}
         >
           {t('shareImport.unsupported')}
-        </Snackbar>
+        </AppSnackbar>
       </Portal>
     </>
   );

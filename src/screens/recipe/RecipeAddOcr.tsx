@@ -27,10 +27,21 @@ import { useRandomTagSuggestions } from '@hooks/useRandomTagSuggestions';
 import { useRecipeDialogs } from '@context/RecipeDialogsContext';
 import { useI18n } from '@utils/i18n';
 import { ocrLogger } from '@utils/logger';
+import type { OcrUndoableField } from '@utils/OcrScanUndo';
+import type { OcrFieldStatus } from '@utils/OCR';
 import { LoadingOverlay } from '@components/dialogs/LoadingOverlay';
 import { FeatureHookSlotProps, RecipeFormScreen } from '@screens/recipe/RecipeFormScreen';
 
 export type RecipeAddOcrProps = NativeStackScreenProps<StackScreenParamList, 'RecipeAddOcr'>;
+
+function ocrFeedbackMessageKey(
+  status: OcrFieldStatus,
+  replacedField?: OcrUndoableField
+): string | undefined {
+  if (status === 'empty') return 'ocrFeedback.noData';
+  if (status === 'mismatch') return 'ocrFeedback.quantityMismatch';
+  return replacedField && `ocrFeedback.replaced.${replacedField}`;
+}
 
 /**
  * Renderless-except-for-overlay component invoked inside the form providers.
@@ -51,9 +62,10 @@ function OcrFeatureSlot({ setOnSelectOcrField }: FeatureHookSlotProps) {
     setOnSelectOcrField((croppedUri, target) => {
       void ocr
         .fillOneField(croppedUri, target)
-        .then(status => {
-          if (status === 'empty') showSnackbar(t('ocrFeedback.noData'));
-          else if (status === 'mismatch') showSnackbar(t('ocrFeedback.quantityMismatch'));
+        .then(({ status, replaced }) => {
+          const messageKey = ocrFeedbackMessageKey(status, replaced?.field);
+          if (!messageKey) return;
+          showSnackbar(t(messageKey), replaced && { label: t('undo'), onPress: replaced.undo });
         })
         .catch(error => {
           ocrLogger.warn('OCR field fill rejected', { target, error: String(error) });
