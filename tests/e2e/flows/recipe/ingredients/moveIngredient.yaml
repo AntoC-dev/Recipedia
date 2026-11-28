@@ -1,0 +1,18 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "RecipeIngredients::${INDEX}::ActionsButton"
+    label: "Open the actions menu of ingredient (index ${INDEX})"
+
+- assertVisible:
+    id: "RecipeIngredients::${INDEX}::Move${DIRECTION}Item"
+    enabled: true
+    label: "Move ${DIRECTION} item of ingredient (index ${INDEX}) is enabled"
+
+- tapOn:
+    id: "RecipeIngredients::${INDEX}::Move${DIRECTION}Item"
+    label: "Move ingredient (index ${INDEX}) ${DIRECTION}"
+
+- assertNotVisible:
+    id: "RecipeIngredients::${INDEX}::Move${DIRECTION}Item"
+    label: "Actions menu of ingredient (index ${INDEX}) is closed"

@@ -1,0 +1,318 @@
+name: "13 - Recipe Edit Reorder Ingredients Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-edit
+---
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Sushi Rolls"
+    label: "Action - Open Sushi Rolls (6 ingredients)"
+
+- runFlow:
+    file: "../../flows/recipe/tapRecipeEdit.yaml"
+    label: "Action - Enter edit mode"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::2::ActionsButton"
+    direction: DOWN
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Scroll to the third ingredient actions button"
+
+- runFlow:
+    file: "../../flows/recipe/ingredients/moveIngredient.yaml"
+    env:
+      INDEX: "2"
+      DIRECTION: "Up"
+    label: "Action - Move Salmon up (order: Sushi Rice, Salmon, Nori Sheets, Avocado, Soy Sauce, Sesame Seeds)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::ActionsButton"
+    direction: UP
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to the first ingredient actions button"
+
+- runFlow:
+    file: "../../flows/recipe/ingredients/moveIngredient.yaml"
+    env:
+      INDEX: "0"
+      DIRECTION: "Down"
+    label: "Action - Move Sushi Rice down (order: Salmon, Sushi Rice, Nori Sheets, Avocado, Soy Sauce, Sesame Seeds)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::5::ActionsButton"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to the last ingredient actions button"
+
+- runFlow:
+    file: "../../flows/recipe/ingredients/moveIngredient.yaml"
+    env:
+      INDEX: "5"
+      DIRECTION: "Up"
+    label: "Action - Move Sesame Seeds up (order: Salmon, Sushi Rice, Nori Sheets, Avocado, Sesame Seeds, Soy Sauce)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    direction: UP
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll back to the first ingredient"
+
+- assertVisible:
+    id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    text: "Salmon"
+    label: "Ingredient 1 is Salmon"
+
+- assertVisible:
+    id: "RecipeIngredients::0::QuantityInput"
+    text: "200"
+    label: "Ingredient 1 quantity is 200"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::NameInput::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to ingredient 2"
+
+- assertVisible:
+    id: "RecipeIngredients::1::NameInput::CustomTextInput"
+    text: "Sushi Rice"
+    label: "Ingredient 2 is Sushi Rice"
+
+- assertVisible:
+    id: "RecipeIngredients::1::QuantityInput"
+    text: "250"
+    label: "Ingredient 2 quantity is 250"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::2::NameInput::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to ingredient 3"
+
+- assertVisible:
+    id: "RecipeIngredients::2::NameInput::CustomTextInput"
+    text: "Nori Sheets"
+    label: "Ingredient 3 is Nori Sheets"
+
+- assertVisible:
+    id: "RecipeIngredients::2::QuantityInput"
+    text: "5"
+    label: "Ingredient 3 quantity is 5"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::3::NameInput::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to ingredient 4"
+
+- assertVisible:
+    id: "RecipeIngredients::3::NameInput::CustomTextInput"
+    text: "Avocado"
+    label: "Ingredient 4 is Avocado"
+
+- assertVisible:
+    id: "RecipeIngredients::3::QuantityInput"
+    text: "100"
+    label: "Ingredient 4 quantity is 100"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::4::NameInput::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to ingredient 5"
+
+- assertVisible:
+    id: "RecipeIngredients::4::NameInput::CustomTextInput"
+    text: "Sesame Seeds"
+    label: "Ingredient 5 is Sesame Seeds"
+
+- assertVisible:
+    id: "RecipeIngredients::4::QuantityInput"
+    text: "2"
+    label: "Ingredient 5 quantity is 2"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::5::NameInput::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to ingredient 6"
+
+- assertVisible:
+    id: "RecipeIngredients::5::NameInput::CustomTextInput"
+    text: "Soy Sauce"
+    label: "Ingredient 6 is Soy Sauce"
+
+- assertVisible:
+    id: "RecipeIngredients::5::QuantityInput"
+    text: "50"
+    label: "Ingredient 6 quantity is 50"
+
+- tapOn:
+    id: "Recipe::AppBar::Validate"
+    label: "Action - Save changes"
+
+- extendedWaitUntil:
+    visible:
+      id: "Recipe::AppBar::BackButton"
+    timeout: 10000
+    label: "Wait for the saved recipe in read-only mode"
+
+- tapOn:
+    id: "Recipe::AppBar::BackButton"
+    label: "Action - Leave the saved recipe"
+
+- tapOn:
+    id: "SearchScreen::SearchBar-clear-icon"
+    label: "Action - Clear the search bar"
+
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Sushi Rolls"
+    label: "Action - Reopen Sushi Rolls from the database"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::IngredientName"
+    direction: DOWN
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Scroll to saved ingredient 1"
+
+- assertVisible:
+    id: "RecipeIngredients::0::IngredientName"
+    text: "Salmon.*"
+    label: "Saved ingredient 1 is Salmon"
+
+- assertVisible:
+    id: "RecipeIngredients::0::QuantityAndUnit"
+    text: "200 g"
+    label: "Saved ingredient 1 quantity is 200 g"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::IngredientName"
+    direction: DOWN
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Scroll to saved ingredient 2"
+
+- assertVisible:
+    id: "RecipeIngredients::1::IngredientName"
+    text: "Sushi Rice.*"
+    label: "Saved ingredient 2 is Sushi Rice"
+
+- assertVisible:
+    id: "RecipeIngredients::1::QuantityAndUnit"
+    text: "250 g"
+    label: "Saved ingredient 2 quantity is 250 g"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::2::IngredientName"
+    direction: DOWN
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Scroll to saved ingredient 3"
+
+- assertVisible:
+    id: "RecipeIngredients::2::IngredientName"
+    text: "Nori Sheets.*"
+    label: "Saved ingredient 3 is Nori Sheets"
+
+- assertVisible:
+    id: "RecipeIngredients::2::QuantityAndUnit"
+    text: "5 pieces"
+    label: "Saved ingredient 3 quantity is 5 pieces"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::3::IngredientName"
+    direction: DOWN
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Scroll to saved ingredient 4"
+
+- assertVisible:
+    id: "RecipeIngredients::3::IngredientName"
+    text: "Avocado.*"
+    label: "Saved ingredient 4 is Avocado"
+
+- assertVisible:
+    id: "RecipeIngredients::3::QuantityAndUnit"
+    text: "100 g"
+    label: "Saved ingredient 4 quantity is 100 g"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::4::IngredientName"
+    direction: DOWN
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Scroll to saved ingredient 5"
+
+- assertVisible:
+    id: "RecipeIngredients::4::IngredientName"
+    text: "Sesame Seeds.*"
+    label: "Saved ingredient 5 is Sesame Seeds"
+
+- assertVisible:
+    id: "RecipeIngredients::4::QuantityAndUnit"
+    text: "2 g"
+    label: "Saved ingredient 5 quantity is 2 g"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::5::IngredientName"
+    direction: DOWN
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Scroll to saved ingredient 6"
+
+- assertVisible:
+    id: "RecipeIngredients::5::IngredientName"
+    text: "Soy Sauce.*"
+    label: "Saved ingredient 6 is Soy Sauce"
+
+- assertVisible:
+    id: "RecipeIngredients::5::QuantityAndUnit"
+    text: "50 ml"
+    label: "Saved ingredient 6 quantity is 50 ml"
+
+- assertNotVisible:
+    id: "RecipeIngredients::6::IngredientName"
+    label: "Assert - No extra ingredient is saved"
