@@ -24,10 +24,16 @@ function Harness({
   countRef,
   row = { name: 'Flour', quantity: '100', unit: 'g' },
   editIngredients = jest.fn(),
+  removeIngredient = jest.fn(),
+  onMoveUp,
+  onMoveDown,
 }: {
   countRef: React.MutableRefObject<number>;
   row?: RecipeFormInput['recipeIngredients'][number];
   editIngredients?: (index: number, formatted: string) => void;
+  removeIngredient?: (index: number) => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
 }) {
   const form = useForm<RecipeFormInput>({
     defaultValues: {
@@ -49,7 +55,9 @@ function Harness({
       testID={testID}
       availableIngredients={[]}
       editIngredients={editIngredients}
-      removeIngredient={jest.fn()}
+      removeIngredient={removeIngredient}
+      onMoveUp={onMoveUp}
+      onMoveDown={onMoveDown}
       openNoteDialog={jest.fn()}
       editingIngredientCountRef={countRef}
     />
@@ -127,5 +135,39 @@ describe('IngredientRowField commit resolution', () => {
     await fireEvent(getByTestId(`${testID}::0::OnIngredientChange`), 'press', '100@@g--Flour');
 
     expect(editIngredients).not.toHaveBeenCalled();
+  });
+});
+
+describe('IngredientRowField row actions', () => {
+  test('forwards move handlers to the row', async () => {
+    const onMoveUp = jest.fn();
+    const onMoveDown = jest.fn();
+    const { getByTestId } = await render(
+      <Harness countRef={{ current: 0 }} onMoveUp={onMoveUp} onMoveDown={onMoveDown} />
+    );
+
+    await fireEvent.press(getByTestId(`${testID}::0::OnMoveUp`));
+    await fireEvent.press(getByTestId(`${testID}::0::OnMoveDown`));
+
+    expect(onMoveUp).toHaveBeenCalledTimes(1);
+    expect(onMoveDown).toHaveBeenCalledTimes(1);
+  });
+
+  test('leaves both move actions disabled without handlers', async () => {
+    const { getByTestId } = await render(<Harness countRef={{ current: 0 }} />);
+
+    expect(getByTestId(`${testID}::0::OnMoveUp`)).toBeDisabled();
+    expect(getByTestId(`${testID}::0::OnMoveDown`)).toBeDisabled();
+  });
+
+  test('removes the row at its own index', async () => {
+    const removeIngredient = jest.fn();
+    const { getByTestId } = await render(
+      <Harness countRef={{ current: 0 }} removeIngredient={removeIngredient} />
+    );
+
+    await fireEvent.press(getByTestId(`${testID}::0::OnRemoveIngredient`));
+
+    expect(removeIngredient).toHaveBeenCalledWith(0);
   });
 });

@@ -213,27 +213,6 @@ describe('IngredientRow', () => {
     expect(lastCall).toContain('Test string');
   });
 
-  it('triggers onRemove + onOpenNote when their buttons are pressed', async () => {
-    const onRemove = jest.fn();
-    const onOpenNote = jest.fn();
-    const { getByTestId } = await renderWithRecipeDialogs(
-      <IngredientRow
-        testID={TEST_ID}
-        index={2}
-        ingredient={baseIngredient}
-        availableIngredients={[]}
-        onCommit={jest.fn()}
-        onRemove={onRemove}
-        onOpenNote={onOpenNote}
-      />
-    );
-
-    await fireEvent.press(getByTestId(`${TEST_ID}::2::DeleteButton`));
-    expect(onRemove).toHaveBeenCalledTimes(1);
-    await fireEvent.press(getByTestId(`${TEST_ID}::2::NoteButton`));
-    expect(onOpenNote).toHaveBeenCalledTimes(1);
-  });
-
   function renderRow(overrides: Partial<React.ComponentProps<typeof IngredientRow>> = {}) {
     return renderWithRecipeDialogs(
       <IngredientRow
@@ -251,14 +230,44 @@ describe('IngredientRow', () => {
 
   const nameInputMockId = `${TEST_ID}::0::NameInput::TextInputWithDropdown`;
 
-  it('orders the row cells as name, quantity, unit, note then delete', async () => {
+  const rowTestId = `${TEST_ID}::0`;
+
+  it('opens the note dialog from the note button', async () => {
+    const onOpenNote = jest.fn();
+    const { getByTestId } = await renderRow({ onOpenNote });
+
+    await fireEvent.press(getByTestId(`${rowTestId}::NoteButton`));
+    expect(onOpenNote).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders the row actions menu closed', async () => {
+    const { getByTestId } = await renderRow();
+
+    expect(getByTestId(`${rowTestId}::ActionsMenu`).props.visible).toBe(false);
+  });
+
+  it.each([
+    ['MoveUpItem', 'onMoveUp'],
+    ['MoveDownItem', 'onMoveDown'],
+    ['DeleteItem', 'onRemove'],
+  ] as const)('wires %s of the actions menu to %s', async (itemId, handlerName) => {
+    const handlers = { onMoveUp: jest.fn(), onMoveDown: jest.fn(), onRemove: jest.fn() };
+    const { getByTestId } = await renderRow(handlers);
+
+    await fireEvent.press(getByTestId(`${rowTestId}::ActionsButton`));
+    await fireEvent.press(getByTestId(`${rowTestId}::${itemId}`));
+
+    expect(handlers[handlerName]).toHaveBeenCalledTimes(1);
+  });
+
+  it('orders the row cells as name, quantity, unit, note then actions', async () => {
     const { getByTestId } = await renderRow();
     const expectedOrder = [
       `${nameInputMockId}::Value`,
       `${TEST_ID}::0::QuantityInput`,
       `${TEST_ID}::0::Unit`,
       `${TEST_ID}::0::NoteButton`,
-      `${TEST_ID}::0::DeleteButton`,
+      `${TEST_ID}::0::ActionsButton`,
     ];
 
     const renderedOrder = getByTestId(`${TEST_ID}::0::Row`)

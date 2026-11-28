@@ -471,6 +471,111 @@ describe('RecipeIngredientsField', () => {
     );
   });
 
+  describe('reordering', () => {
+    const flourRow = {
+      id: 1,
+      name: 'Flour',
+      quantity: '200',
+      unit: 'g',
+      type: ingredientType.cereal,
+      season: [],
+    };
+    const sugarRow = {
+      id: 2,
+      name: 'Sugar',
+      quantity: '100',
+      unit: 'g',
+      type: ingredientType.sugar,
+      season: [],
+    };
+    const butterRow = {
+      id: 3,
+      name: 'Butter',
+      quantity: '50',
+      unit: 'g',
+      type: ingredientType.dairy,
+      season: [],
+    };
+    const rowId = (index: number) => `RecipeIngredients::${index}`;
+
+    function renderEditableWithRows(rows: RecipeFormInput['recipeIngredients']) {
+      return renderWithForm(
+        RecipeIngredientsField,
+        form => ({ form, stackMode: recipeStateType.edit, t }),
+        { recipeIngredients: rows }
+      );
+    }
+
+    test('disables move up on the first row and move down on the last row', async () => {
+      const { getByTestId } = await renderEditableWithRows([flourRow, sugarRow, butterRow]);
+
+      expect(getByTestId(`${rowId(0)}::OnMoveUp`)).toBeDisabled();
+      expect(getByTestId(`${rowId(0)}::OnMoveDown`)).toBeEnabled();
+      expect(getByTestId(`${rowId(1)}::OnMoveUp`)).toBeEnabled();
+      expect(getByTestId(`${rowId(1)}::OnMoveDown`)).toBeEnabled();
+      expect(getByTestId(`${rowId(2)}::OnMoveUp`)).toBeEnabled();
+      expect(getByTestId(`${rowId(2)}::OnMoveDown`)).toBeDisabled();
+    });
+
+    test('passes no move handler when there is a single row', async () => {
+      const { getByTestId } = await renderEditableWithRows([flourRow]);
+
+      expect(getByTestId(`${rowId(0)}::OnMoveUp`)).toBeDisabled();
+      expect(getByTestId(`${rowId(0)}::OnMoveDown`)).toBeDisabled();
+    });
+
+    test('moving a row up swaps it with the previous row', async () => {
+      const { getByTestId, form } = await renderEditableWithRows([flourRow, sugarRow, butterRow]);
+
+      await fireEvent.press(getByTestId(`${rowId(2)}::OnMoveUp`));
+
+      expect(form.getValues('recipeIngredients')!.map(row => row.name)).toEqual([
+        'Flour',
+        'Butter',
+        'Sugar',
+      ]);
+      expect(getByTestId(`${rowId(1)}::NameInput::Value`).props.children).toBe('Butter');
+    });
+
+    test('moving a row down swaps it with the next row and keeps its values', async () => {
+      const { getByTestId, form } = await renderEditableWithRows([flourRow, sugarRow, butterRow]);
+
+      await fireEvent.press(getByTestId(`${rowId(0)}::OnMoveDown`));
+
+      expect(form.getValues('recipeIngredients')).toEqual([sugarRow, flourRow, butterRow]);
+      expect(getByTestId(`${rowId(1)}::QuantityInput`).props.children).toBe('200');
+    });
+
+    test('a row error follows its row when moved', async () => {
+      const unresolvedRow = {
+        name: 'Mystery',
+        quantity: '1',
+      } as RecipeFormInput['recipeIngredients'][number];
+      const { getByTestId, queryByTestId, form } = await renderEditableWithRows([
+        flourRow,
+        unresolvedRow,
+      ]);
+      await act(async () => {
+        await form.handleSubmit(jest.fn())();
+      });
+      await waitFor(() => expect(getByTestId(`${rowId(1)}::Error`)).toBeTruthy());
+
+      await fireEvent.press(getByTestId(`${rowId(1)}::OnMoveUp`));
+
+      await waitFor(() => expect(getByTestId(`${rowId(0)}::Error`)).toBeTruthy());
+      expect(queryByTestId(`${rowId(1)}::Error`)).toBeNull();
+    });
+
+    test('a row moved to the top loses its move up handler', async () => {
+      const { getByTestId } = await renderEditableWithRows([flourRow, sugarRow, butterRow]);
+
+      await fireEvent.press(getByTestId(`${rowId(1)}::OnMoveUp`));
+
+      expect(getByTestId(`${rowId(0)}::OnMoveUp`)).toBeDisabled();
+      expect(getByTestId(`${rowId(1)}::OnMoveUp`)).toBeEnabled();
+    });
+  });
+
   describe('read-only mode', () => {
     test('renders ingredients via the read-only organism without edit affordances', async () => {
       const ingredients = [
