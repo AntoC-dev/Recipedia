@@ -1,3 +1,10 @@
+## [2.61.0](https://github.com/AntoC-dev/Recipedia/compare/v2.60.1...v2.61.0) (2026-11-28)
+
+### Features
+
+* **recipe:** undo an OCR scan that replaced a filled field ([8b50cdc](https://github.com/AntoC-dev/Recipedia/commit/8b50cdc6a0736e7f16c8db0d071752218da74a49)), closes [#689](https://github.com/AntoC-dev/Recipedia/issues/689)
+* **recipe:** undo an OCR scan that replaced a filled field ([#748](https://github.com/AntoC-dev/Recipedia/issues/748)) ([48a53ad](https://github.com/AntoC-dev/Recipedia/commit/48a53ad564c2601012f8ecc219e06c6cf494167b))
+
 ## [2.60.1](https://github.com/AntoC-dev/Recipedia/compare/v2.60.0...v2.60.1) (2026-11-24)
 
 ### Bug Fixes
