@@ -1,11 +1,12 @@
 import React from 'react';
-import { act, fireEvent, screen } from '@testing-library/react-native';
+import { fireEvent, screen } from '@testing-library/react-native';
 import { measureRenders } from 'reassure';
 import { TextInputWithDropDown } from '@components/molecules/TextInputWithDropDown';
 import { IngredientRow } from '@components/organisms/RecipeIngredients';
 import { performanceTags } from '@assets/datasets/performance/tags';
 import { performanceIngredients } from '@assets/datasets/performance/ingredients';
 import { HEAVY_WARMUP } from './perfOptions';
+import { settle } from './settle';
 
 const tagNames = performanceTags.map(tag => tag.name).sort();
 const ingredientNames = performanceIngredients.map(ingredient => ingredient.name).sort();
@@ -38,12 +39,6 @@ function IngredientNameDropdown() {
   );
 }
 
-async function flushListFrames() {
-  await act(async () => {
-    await new Promise(resolve => setTimeout(resolve, 50));
-  });
-}
-
 async function focusInput(inputId: string) {
   await fireEvent(screen.getByTestId(`${inputId}::CustomTextInput`), 'focus');
 }
@@ -59,7 +54,7 @@ describe('TextInputWithDropDown Performance', () => {
       ...HEAVY_WARMUP,
       scenario: async () => {
         await focusInput(tagInputId);
-        await flushListFrames();
+        await settle();
       },
     });
   });
@@ -70,11 +65,11 @@ describe('TextInputWithDropDown Performance', () => {
       ...HEAVY_WARMUP,
       scenario: async () => {
         await focusInput(tagInputId);
-        await flushListFrames();
+        await settle();
         await typeInInput(tagInputId, 'a');
-        await flushListFrames();
+        await settle();
         await typeInInput(tagInputId, 'an');
-        await flushListFrames();
+        await settle();
       },
     });
   });
@@ -85,7 +80,7 @@ describe('TextInputWithDropDown Performance', () => {
       ...HEAVY_WARMUP,
       scenario: async () => {
         await focusInput(ingredientNameInputId);
-        await flushListFrames();
+        await settle();
       },
     });
   });

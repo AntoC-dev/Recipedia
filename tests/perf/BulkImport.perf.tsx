@@ -30,9 +30,10 @@ jest.mock('@hooks/useDiscoveryWorkflow', () => {
   const { useDiscoveryWorkflowMock } = require('@mocks/hooks/useDiscoveryWorkflow-mock');
   return { useDiscoveryWorkflow: useDiscoveryWorkflowMock };
 });
-jest.mock('@components/organisms/ValidationReviewList', () =>
-  require('@mocks/components/organisms/ValidationReviewList-mock')
-);
+jest.mock('@components/organisms/ValidationReviewList', () => ({
+  ValidationReviewList: require('@mocks/components/organisms/ValidationReviewList-mock')
+    .validationReviewListMock,
+}));
 
 function generateMockRecipes(
   count: number,
