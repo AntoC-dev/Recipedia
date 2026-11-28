@@ -268,8 +268,9 @@ describe('Search Screen Performance - Large Dataset', () => {
   });
 
   test('re-render after adding recipe with 1000 recipes', async () => {
+    let addedRecipe: recipeTableElement | undefined;
     const scenario = async () => {
-      await database.addRecipe({
+      addedRecipe = await database.addRecipe({
         title: `ExtraRecipe${Date.now()}`,
         description: '',
         ingredients: [],
@@ -282,6 +283,12 @@ describe('Search Screen Performance - Large Dataset', () => {
       });
     };
 
-    await measureRenders(<SearchWrapper />, { runs: 5, scenario });
+    await measureRenders(<SearchWrapper />, {
+      runs: 5,
+      scenario,
+      afterEach: async () => {
+        if (addedRecipe) await database.deleteRecipe(addedRecipe);
+      },
+    });
   });
 });

@@ -4,6 +4,8 @@ export default {
   confirm: 'Confirmer',
   cancel: 'Annuler',
   delete: 'Supprimer',
+  moveUp: 'Monter',
+  moveDown: 'Descendre',
   edit: 'Modifier',
   add: 'Ajouter',
   remove: 'Retirer',

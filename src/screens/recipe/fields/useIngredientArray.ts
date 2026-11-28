@@ -4,8 +4,8 @@
  *
  * Owns:
  * - The RHF `useFieldArray` mount on `recipeIngredients`.
- * - Append/remove handlers that trigger validation when the array shrinks
- *   (RHF's `remove` does not validate on its own in `onTouched` mode).
+ * - Append/remove/move handlers; remove and move trigger validation (RHF's
+ *   `remove` / `move` do not validate on their own in `onTouched` mode).
  * - The `editIngredients` patch path that routes name-change commits through
  *   the fuzzy DB match queue.
  * - The derived `availableIngredients` list — the DB master list minus the
@@ -44,6 +44,7 @@ export interface UseIngredientArrayResult {
   availableIngredients: string[];
   handleAddIngredient: () => void;
   handleRemoveIngredient: (index: number) => void;
+  handleMoveIngredient: (from: number, to: number) => void;
   handleEditIngredient: (index: number, formatted: string) => void;
   rowCount: number;
 }
@@ -144,6 +145,11 @@ export function useIngredientArray({ form }: UseIngredientArrayParams): UseIngre
     fieldArray.remove(index);
     void form.trigger('recipeIngredients');
   };
+  /** Moves a row, then re-validates so row errors follow their row to its new index. */
+  const handleMoveIngredient = (from: number, to: number) => {
+    fieldArray.move(from, to);
+    void form.trigger('recipeIngredients');
+  };
   /** Routes a formatted-string edit through `useRecipeIngredients`, applying the emitted patch. */
   const handleEditIngredient = (index: number, formatted: string) => {
     editIngredients(index, formatted, applyEditPatch);
@@ -186,6 +192,7 @@ export function useIngredientArray({ form }: UseIngredientArrayParams): UseIngre
     availableIngredients,
     handleAddIngredient,
     handleRemoveIngredient,
+    handleMoveIngredient,
     handleEditIngredient,
     rowCount,
   };

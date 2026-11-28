@@ -72,6 +72,42 @@ appId: "com.recipedia"
     label: "First ingredient is Pasta"
 
 - assertVisible:
+    id: "RecipeIngredients::0::ActionsButton"
+    label: "Actions button of Pasta is visible"
+- tapOn:
+    id: "RecipeIngredients::0::ActionsButton"
+    label: "Open the actions menu of Pasta"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveUpItem"
+    enabled: false
+    label: "Move up item of Pasta is disabled on the first ingredient"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveUpItem-title"
+    text: "Move up"
+    label: "Move up item of Pasta is labelled Move up"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveDownItem"
+    enabled: true
+    label: "Move down item of Pasta is enabled"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveDownItem-title"
+    text: "Move down"
+    label: "Move down item of Pasta is labelled Move down"
+- assertVisible:
+    id: "RecipeIngredients::0::DeleteItem"
+    enabled: true
+    label: "Delete item of Pasta is enabled"
+- assertVisible:
+    id: "RecipeIngredients::0::DeleteItem-title"
+    text: "Delete"
+    label: "Delete item of Pasta is labelled Delete"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "0"
+    label: "Dismiss the actions menu of Pasta"
+
+- assertVisible:
     id: "RecipeIngredients::1::QuantityInput"
     text: "100"
     label: "Tomatoes quantity is 100"
@@ -80,3 +116,27 @@ appId: "com.recipedia"
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
     text: "Tomatoes"
     label: "Second ingredient is Tomatoes"
+
+- assertVisible:
+    id: "RecipeIngredients::1::ActionsButton"
+    label: "Actions button of Tomatoes is visible"
+- tapOn:
+    id: "RecipeIngredients::1::ActionsButton"
+    label: "Open the actions menu of Tomatoes"
+- assertVisible:
+    id: "RecipeIngredients::1::MoveUpItem"
+    enabled: true
+    label: "Move up item of Tomatoes is enabled"
+- assertVisible:
+    id: "RecipeIngredients::1::MoveDownItem"
+    enabled: false
+    label: "Move down item of Tomatoes is disabled on the last ingredient"
+- assertVisible:
+    id: "RecipeIngredients::1::DeleteItem"
+    enabled: true
+    label: "Delete item of Tomatoes is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "1"
+    label: "Dismiss the actions menu of Tomatoes"

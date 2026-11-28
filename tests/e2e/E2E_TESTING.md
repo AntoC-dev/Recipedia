@@ -195,6 +195,15 @@ field:
   `RecipePreparation`) — scroll to an add button and tap it. Add **every row up
   front**, keyboard closed (dragging dismisses the keyboard), so a chain never
   needs an add button; Next only reaches rows that already exist.
+- Editable ingredient rows have no inline delete: `::ActionsButton` opens a
+  Paper menu with `::MoveUpItem` (disabled on the first row), `::MoveDownItem`
+  (disabled on the last row), both hidden on a single row, and `::DeleteItem`;
+  titles on `::<Item>-title`. Act with
+  `flows/recipe/ingredients/moveIngredient.yaml` (`INDEX`, `DIRECTION`: `Up` or
+  `Down`) or `deleteIngredientFromRecipe.yaml` (`INDEX`). Recipe edit asserts
+  check the menu inline per row (tap, each item with explicit `enabled`), then
+  close it with `dismissIngredientActionsMenu.yaml` (`INDEX`: taps the same row
+  name input, covered by the menu backdrop).
 - `flows/recipe/adding/createTwoIngredientRecipe.yaml` — the one shared fill for
   the Test Recipe family (title, persons, two ingredients, time, one step), all
   values passed as `env`. Opening the form (FAB / add manually, image) and

@@ -178,6 +178,42 @@ appId: "com.recipedia"
     text: "Pasta"
     label: "Ingredient Pasta is rendered"
 
+- assertVisible:
+    id: "RecipeIngredients::0::ActionsButton"
+    label: "Actions button of Pasta is visible"
+- tapOn:
+    id: "RecipeIngredients::0::ActionsButton"
+    label: "Open the actions menu of Pasta"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveUpItem"
+    enabled: false
+    label: "Move up item of Pasta is disabled on the first ingredient"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveUpItem-title"
+    text: "Move up"
+    label: "Move up item of Pasta is labelled Move up"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveDownItem"
+    enabled: true
+    label: "Move down item of Pasta is enabled"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveDownItem-title"
+    text: "Move down"
+    label: "Move down item of Pasta is labelled Move down"
+- assertVisible:
+    id: "RecipeIngredients::0::DeleteItem"
+    enabled: true
+    label: "Delete item of Pasta is enabled"
+- assertVisible:
+    id: "RecipeIngredients::0::DeleteItem-title"
+    text: "Delete"
+    label: "Delete item of Pasta is labelled Delete"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "0"
+    label: "Dismiss the actions menu of Pasta"
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::NameInput::CustomTextInput"
@@ -199,6 +235,30 @@ appId: "com.recipedia"
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
     text: "Basil Leaves"
     label: "Ingredient Basil Leaves is rendered"
+
+- assertVisible:
+    id: "RecipeIngredients::1::ActionsButton"
+    label: "Actions button of Basil Leaves is visible"
+- tapOn:
+    id: "RecipeIngredients::1::ActionsButton"
+    label: "Open the actions menu of Basil Leaves"
+- assertVisible:
+    id: "RecipeIngredients::1::MoveUpItem"
+    enabled: true
+    label: "Move up item of Basil Leaves is enabled"
+- assertVisible:
+    id: "RecipeIngredients::1::MoveDownItem"
+    enabled: true
+    label: "Move down item of Basil Leaves is enabled"
+- assertVisible:
+    id: "RecipeIngredients::1::DeleteItem"
+    enabled: true
+    label: "Delete item of Basil Leaves is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "1"
+    label: "Dismiss the actions menu of Basil Leaves"
 
 - scrollUntilVisible:
     element:
@@ -222,6 +282,30 @@ appId: "com.recipedia"
     text: "Parmesan"
     label: "Ingredient Parmesan is rendered"
 
+- assertVisible:
+    id: "RecipeIngredients::2::ActionsButton"
+    label: "Actions button of Parmesan is visible"
+- tapOn:
+    id: "RecipeIngredients::2::ActionsButton"
+    label: "Open the actions menu of Parmesan"
+- assertVisible:
+    id: "RecipeIngredients::2::MoveUpItem"
+    enabled: true
+    label: "Move up item of Parmesan is enabled"
+- assertVisible:
+    id: "RecipeIngredients::2::MoveDownItem"
+    enabled: true
+    label: "Move down item of Parmesan is enabled"
+- assertVisible:
+    id: "RecipeIngredients::2::DeleteItem"
+    enabled: true
+    label: "Delete item of Parmesan is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "2"
+    label: "Dismiss the actions menu of Parmesan"
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::3::QuantityInput"
@@ -243,6 +327,30 @@ appId: "com.recipedia"
     text: "Olive Oil"
     label: "Ingredient Olive Oil is rendered"
 
+- assertVisible:
+    id: "RecipeIngredients::3::ActionsButton"
+    label: "Actions button of Olive Oil is visible"
+- tapOn:
+    id: "RecipeIngredients::3::ActionsButton"
+    label: "Open the actions menu of Olive Oil"
+- assertVisible:
+    id: "RecipeIngredients::3::MoveUpItem"
+    enabled: true
+    label: "Move up item of Olive Oil is enabled"
+- assertVisible:
+    id: "RecipeIngredients::3::MoveDownItem"
+    enabled: true
+    label: "Move down item of Olive Oil is enabled"
+- assertVisible:
+    id: "RecipeIngredients::3::DeleteItem"
+    enabled: true
+    label: "Delete item of Olive Oil is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "3"
+    label: "Dismiss the actions menu of Olive Oil"
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::4::QuantityInput"
@@ -263,6 +371,30 @@ appId: "com.recipedia"
     id: "RecipeIngredients::4::NameInput::CustomTextInput"
     text: "Pine Nuts"
     label: "Ingredient Pine Nuts is rendered"
+
+- assertVisible:
+    id: "RecipeIngredients::4::ActionsButton"
+    label: "Actions button of Pine Nuts is visible"
+- tapOn:
+    id: "RecipeIngredients::4::ActionsButton"
+    label: "Open the actions menu of Pine Nuts"
+- assertVisible:
+    id: "RecipeIngredients::4::MoveUpItem"
+    enabled: true
+    label: "Move up item of Pine Nuts is enabled"
+- assertVisible:
+    id: "RecipeIngredients::4::MoveDownItem"
+    enabled: false
+    label: "Move down item of Pine Nuts is disabled on the last ingredient"
+- assertVisible:
+    id: "RecipeIngredients::4::DeleteItem"
+    enabled: true
+    label: "Delete item of Pine Nuts is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "4"
+    label: "Dismiss the actions menu of Pine Nuts"
 
 - scrollUntilVisible:
     element:

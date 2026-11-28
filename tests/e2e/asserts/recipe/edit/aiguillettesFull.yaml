@@ -299,8 +299,28 @@ appId: "com.recipedia"
     text: "Avocado"
     label: "Ingredient #3 name text is displayed"
 - assertVisible:
-    id: "RecipeIngredients::2::DeleteButton"
-    label: "Delete button for ingredient 2 is visible"
+    id: "RecipeIngredients::2::ActionsButton"
+    label: "Actions button of Avocado is visible"
+- tapOn:
+    id: "RecipeIngredients::2::ActionsButton"
+    label: "Open the actions menu of Avocado"
+- assertVisible:
+    id: "RecipeIngredients::2::MoveUpItem"
+    enabled: true
+    label: "Move up item of Avocado is enabled"
+- assertVisible:
+    id: "RecipeIngredients::2::MoveDownItem"
+    enabled: false
+    label: "Move down item of Avocado is disabled on the last ingredient"
+- assertVisible:
+    id: "RecipeIngredients::2::DeleteItem"
+    enabled: true
+    label: "Delete item of Avocado is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "2"
+    label: "Dismiss the actions menu of Avocado"
 
 - scrollUntilVisible:
     element:
@@ -337,8 +357,28 @@ appId: "com.recipedia"
     text: "Onions"
     label: "Ingredient #1 name text is displayed"
 - assertVisible:
-    id: "RecipeIngredients::1::DeleteButton"
-    label: "Delete button for ingredient 1 is visible"
+    id: "RecipeIngredients::1::ActionsButton"
+    label: "Actions button of Onions is visible"
+- tapOn:
+    id: "RecipeIngredients::1::ActionsButton"
+    label: "Open the actions menu of Onions"
+- assertVisible:
+    id: "RecipeIngredients::1::MoveUpItem"
+    enabled: true
+    label: "Move up item of Onions is enabled"
+- assertVisible:
+    id: "RecipeIngredients::1::MoveDownItem"
+    enabled: true
+    label: "Move down item of Onions is enabled"
+- assertVisible:
+    id: "RecipeIngredients::1::DeleteItem"
+    enabled: true
+    label: "Delete item of Onions is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "1"
+    label: "Dismiss the actions menu of Onions"
 
 - assertVisible:
     id: "RecipeIngredients::1::Unit"
@@ -368,8 +408,40 @@ appId: "com.recipedia"
     text: "Chicken Breast"
     label: "Ingredient #0 name text is displayed"
 - assertVisible:
-    id: "RecipeIngredients::0::DeleteButton"
-    label: "Delete button for ingredient 0 is visible"
+    id: "RecipeIngredients::0::ActionsButton"
+    label: "Actions button of Chicken Breast is visible"
+- tapOn:
+    id: "RecipeIngredients::0::ActionsButton"
+    label: "Open the actions menu of Chicken Breast"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveUpItem"
+    enabled: false
+    label: "Move up item of Chicken Breast is disabled on the first ingredient"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveUpItem-title"
+    text: "Move up"
+    label: "Move up item of Chicken Breast is labelled Move up"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveDownItem"
+    enabled: true
+    label: "Move down item of Chicken Breast is enabled"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveDownItem-title"
+    text: "Move down"
+    label: "Move down item of Chicken Breast is labelled Move down"
+- assertVisible:
+    id: "RecipeIngredients::0::DeleteItem"
+    enabled: true
+    label: "Delete item of Chicken Breast is enabled"
+- assertVisible:
+    id: "RecipeIngredients::0::DeleteItem-title"
+    text: "Delete"
+    label: "Delete item of Chicken Breast is labelled Delete"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "0"
+    label: "Dismiss the actions menu of Chicken Breast"
 
 - assertVisible:
     id: "RecipeIngredients::0::Unit"

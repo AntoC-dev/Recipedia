@@ -10,7 +10,7 @@
  * - `IngredientsTable`: prefix-text + DataTable frame around the mapped rows, with
  *   an add-row button or, with `withScan`, the OCR button row.
  * - `IngredientRow`: a single editable row with blur-commit quantity + name
- *   inputs, note dialog trigger, and delete button.
+ *   inputs, note dialog trigger, and an actions menu (move up / move down / delete).
  * - `IngredientsOcrButtons`: the shared `addOCR` button row (scan names,
  *   optional scan quantities, add manually).
  * - `IngredientsAddEmpty`: the empty-state block rendered in `addOCR` mode
@@ -26,6 +26,7 @@ import { DataTable, HelperText, IconButton, Text, useTheme } from 'react-native-
 import { FormIngredientElement, ingredientTableElement } from '@customTypes/DatabaseElementTypes';
 import { RoundButton } from '@components/atomic/RoundButton';
 import { ScanButton } from '@components/molecules/ScanButton';
+import { RowActionsMenu } from '@components/molecules/RowActionsMenu';
 import { Icons, iconsSize } from '@assets/Icons';
 import { NumericTextInput } from '@components/atomic/NumericTextInput';
 import { TextInputWithDropDown } from '@components/molecules/TextInputWithDropDown';
@@ -163,7 +164,7 @@ export function IngredientsTable({
             {''}
           </DataTable.Title>
           <DataTable.Title
-            testID={headerTestId + '::Delete'}
+            testID={headerTestId + '::Actions'}
             style={[cellStyles.header, cellStyles.iconCell, { borderColor }]}
           >
             {''}
@@ -233,6 +234,13 @@ export interface IngredientRowProps {
    */
   onSelectName?: (name: string) => void;
   onRemove: () => void;
+  /** Moves the row one position up; omitted on the first row, which disables the menu item. */
+  onMoveUp?: () => void;
+  /**
+   * Moves the row one position down; omitted on the last row, which disables the menu item.
+   * With both move handlers omitted (single row), the move items are hidden.
+   */
+  onMoveDown?: () => void;
   onOpenNote: () => void;
   /** Optional focus handler called when any row input gains focus. */
   onFocus?: () => void;
@@ -250,6 +258,8 @@ export function IngredientRow({
   onLiveNameChange,
   onSelectName,
   onRemove,
+  onMoveUp,
+  onMoveDown,
   onOpenNote,
   onFocus,
   onBlur,
@@ -272,7 +282,7 @@ export function IngredientRow({
   };
 
   const trailingCells = (
-    <React.Fragment>
+    <>
       <DataTable.Cell style={cellStyles.quantityCell} accessible={false}>
         <NumericTextInput
           testID={`${testID}::${index}::QuantityInput`}
@@ -315,21 +325,19 @@ export function IngredientRow({
         style={[cellStyles.iconCell, { borderBottomColor: borderColor }]}
         accessible={false}
       >
-        <IconButton
-          testID={`${testID}::${index}::DeleteButton`}
-          icon={Icons.trashIcon}
-          iconColor={colors.error}
-          onPress={onRemove}
-          size={iconsSize.medium}
-          style={cellStyles.iconButton}
+        <RowActionsMenu
+          testID={`${testID}::${index}`}
+          onMoveUp={onMoveUp}
+          onMoveDown={onMoveDown}
+          onDelete={onRemove}
         />
       </DataTable.Cell>
-    </React.Fragment>
+    </>
   );
 
   function renderRow(nameInput: React.ReactElement, dropdown: React.ReactElement | null) {
     return (
-      <React.Fragment>
+      <>
         <DataTable.Row
           testID={`${testID}::${index}::Row`}
           style={[cellStyles.tableLine, cellStyles.noBottomBorder]}
@@ -346,7 +354,7 @@ export function IngredientRow({
             {rowError}
           </HelperText>
         ) : null}
-      </React.Fragment>
+      </>
     );
   }
 

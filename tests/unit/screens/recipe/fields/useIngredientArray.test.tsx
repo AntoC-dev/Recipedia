@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, renderHook } from '@testing-library/react-native';
+import { act, renderHook, waitFor } from '@testing-library/react-native';
 import {
   FormProvider,
   useForm,
@@ -183,6 +183,57 @@ describe('useIngredientArray', () => {
 
       expect(formRef.current!.getValues('recipeIngredients')).toHaveLength(1);
       expect(formRef.current!.getValues('recipeIngredients')![0]!.name).toBe('Flour');
+    });
+  });
+
+  describe('handleMoveIngredient', () => {
+    const butter = { ...flour, id: 3, name: 'Butter' };
+
+    test.each([
+      [0, 1, ['Sugar', 'Flour', 'Butter']],
+      [2, 1, ['Flour', 'Butter', 'Sugar']],
+      [0, 2, ['Sugar', 'Butter', 'Flour']],
+    ])('moves row %s to position %s', async (from, to, expectedNames) => {
+      const { wrapper, formRef } = createTestWrapper({ recipeIngredients: [flour, sugar, butter] });
+      const { result } = await renderHook(useTestHook, { wrapper });
+
+      await act(() => {
+        result.current.handleMoveIngredient(from, to);
+      });
+
+      expect(formRef.current!.getValues('recipeIngredients')!.map(row => row.name)).toEqual(
+        expectedNames
+      );
+      expect(result.current.fieldArray.fields.map(field => field.name)).toEqual(expectedNames);
+      expect(result.current.rowCount).toBe(3);
+    });
+
+    test('marks the form dirty', async () => {
+      const { wrapper } = createTestWrapper({ recipeIngredients: [flour, sugar] });
+      const { result } = await renderHook(useTestHookWithDirtyState, { wrapper });
+
+      await act(() => {
+        result.current.array.handleMoveIngredient(0, 1);
+      });
+
+      expect(result.current.isDirty).toBe(true);
+    });
+
+    test('re-validates so the row error follows the moved row', async () => {
+      const unresolvedRow = { name: 'Mystery' } as RecipeFormInput['recipeIngredients'][number];
+      const { wrapper, formRef } = createTestWrapper({
+        recipeIngredients: [flour, unresolvedRow],
+      });
+      const { result } = await renderHook(useTestHook, { wrapper });
+
+      await act(() => {
+        result.current.handleMoveIngredient(1, 0);
+      });
+
+      await waitFor(() => {
+        expect(formRef.current!.getFieldState('recipeIngredients.0').error).toBeDefined();
+      });
+      expect(formRef.current!.getFieldState('recipeIngredients.1').error).toBeUndefined();
     });
   });
 

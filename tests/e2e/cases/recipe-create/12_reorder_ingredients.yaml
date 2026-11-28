@@ -1,0 +1,135 @@
+name: "12 - Recipe Create Reorder Ingredients Flow"
+appId: "com.recipedia"
+tags:
+  - recipe-create
+---
+- runFlow:
+    file: "../../flows/recipe/adding/manual/en/openAddManually.yaml"
+    label: "Action - Open manual recipe adding screen"
+
+- runFlow:
+    file: "../../flows/recipe/adding/en/addRecipeImage.yaml"
+    label: "Action - Add recipe image"
+
+- runFlow:
+    file: "../../flows/recipe/adding/createTwoIngredientRecipe.yaml"
+    env:
+      PERSONS: "2"
+      ING0_NAME: "Pasta"
+      ING0_QTY: "200"
+      ING1_NAME: "Tomatoes"
+      ING1_QTY: "100"
+      TIME: "20"
+    label: "Action - Fill Test Recipe (2 persons, Pasta 200g, Tomatoes 100g)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::ActionsButton"
+    direction: UP
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to the first ingredient actions button"
+
+- runFlow:
+    file: "../../flows/recipe/ingredients/moveIngredient.yaml"
+    env:
+      INDEX: "0"
+      DIRECTION: "Down"
+    label: "Action - Move Pasta down (order: Tomatoes, Pasta)"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    direction: UP
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll back to the first ingredient"
+
+- assertVisible:
+    id: "RecipeIngredients::0::NameInput::CustomTextInput"
+    text: "Tomatoes"
+    label: "Ingredient 1 is Tomatoes"
+
+- assertVisible:
+    id: "RecipeIngredients::0::QuantityInput"
+    text: "100"
+    label: "Ingredient 1 quantity is 100"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::NameInput::CustomTextInput"
+    direction: DOWN
+    speed: 20
+    timeout: 60000
+    centerElement: true
+    label: "Scroll to ingredient 2"
+
+- assertVisible:
+    id: "RecipeIngredients::1::NameInput::CustomTextInput"
+    text: "Pasta"
+    label: "Ingredient 2 is Pasta"
+
+- assertVisible:
+    id: "RecipeIngredients::1::QuantityInput"
+    text: "200"
+    label: "Ingredient 2 quantity is 200"
+
+- tapOn:
+    id: "Recipe::BottomActionButton"
+    label: "Action - Validate the recipe"
+
+- runFlow:
+    file: "../../asserts/alerts/en/recipeAddedToDatabase.yaml"
+    env:
+      RECIPE_NAME: "Test Recipe"
+    label: "Assert - Recipe added to the database"
+
+- runFlow:
+    file: "../../flows/search/searchAndOpenRecipe.yaml"
+    env:
+      RECIPE_NAME: "Test Recipe"
+    label: "Action - Find the new recipe"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::IngredientName"
+    direction: DOWN
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Scroll to saved ingredient 1"
+
+- assertVisible:
+    id: "RecipeIngredients::0::IngredientName"
+    text: "Tomatoes.*"
+    label: "Saved ingredient 1 is Tomatoes"
+
+- assertVisible:
+    id: "RecipeIngredients::0::QuantityAndUnit"
+    text: "200 g"
+    label: "Saved ingredient 1 quantity is 200 g"
+
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::1::IngredientName"
+    direction: DOWN
+    speed: 20
+    timeout: 120000
+    centerElement: true
+    label: "Scroll to saved ingredient 2"
+
+- assertVisible:
+    id: "RecipeIngredients::1::IngredientName"
+    text: "Pasta.*"
+    label: "Saved ingredient 2 is Pasta"
+
+- assertVisible:
+    id: "RecipeIngredients::1::QuantityAndUnit"
+    text: "400 g"
+    label: "Saved ingredient 2 quantity is 400 g"
+
+- assertNotVisible:
+    id: "RecipeIngredients::2::IngredientName"
+    label: "Assert - No extra ingredient is saved"

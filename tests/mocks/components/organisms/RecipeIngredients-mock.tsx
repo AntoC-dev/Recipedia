@@ -90,6 +90,8 @@ export function ingredientRowMock({
   onLiveNameChange,
   onSelectName,
   onRemove,
+  onMoveUp,
+  onMoveDown,
   onOpenNote,
   onFocus,
   onBlur,
@@ -128,6 +130,18 @@ export function ingredientRowMock({
         testID={`${testID}::${index}::OnRemoveIngredient`}
         onPress={onRemove}
         title={`Remove row ${index}`}
+      />
+      <Button
+        testID={`${testID}::${index}::OnMoveUp`}
+        onPress={() => onMoveUp?.()}
+        disabled={!onMoveUp}
+        title={`Move up row ${index}`}
+      />
+      <Button
+        testID={`${testID}::${index}::OnMoveDown`}
+        onPress={() => onMoveDown?.()}
+        disabled={!onMoveDown}
+        title={`Move down row ${index}`}
       />
       <Button
         testID={`${testID}::${index}::NoteButton`}

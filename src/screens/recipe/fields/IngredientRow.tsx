@@ -41,6 +41,8 @@ export interface IngredientRowFieldProps {
   rowError?: string;
   editIngredients: (index: number, formatted: string) => void;
   removeIngredient: (index: number) => void;
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
   openNoteDialog: (index: number) => void;
   testID: string;
   editingIngredientCountRef: React.MutableRefObject<number>;
@@ -53,6 +55,8 @@ export function IngredientRowField({
   rowError,
   editIngredients,
   removeIngredient,
+  onMoveUp,
+  onMoveDown,
   openNoteDialog,
   testID,
   editingIngredientCountRef,
@@ -169,6 +173,8 @@ export function IngredientRowField({
       onLiveNameChange={value => nameCtrl.field.onChange(value)}
       onSelectName={handleSelectName}
       onRemove={() => removeIngredient(index)}
+      onMoveUp={onMoveUp}
+      onMoveDown={onMoveDown}
       onOpenNote={() => openNoteDialog(index)}
       onFocus={acquireFocusSlot}
       onBlur={() => {

@@ -54,6 +54,42 @@ appId: "com.recipedia"
     text: "Flour"
     label: "First ingredient is Flour"
 
+- assertVisible:
+    id: "RecipeIngredients::0::ActionsButton"
+    label: "Actions button of Flour is visible"
+- tapOn:
+    id: "RecipeIngredients::0::ActionsButton"
+    label: "Open the actions menu of Flour"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveUpItem"
+    enabled: false
+    label: "Move up item of Flour is disabled on the first ingredient"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveUpItem-title"
+    text: "Move up"
+    label: "Move up item of Flour is labelled Move up"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveDownItem"
+    enabled: true
+    label: "Move down item of Flour is enabled"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveDownItem-title"
+    text: "Move down"
+    label: "Move down item of Flour is labelled Move down"
+- assertVisible:
+    id: "RecipeIngredients::0::DeleteItem"
+    enabled: true
+    label: "Delete item of Flour is enabled"
+- assertVisible:
+    id: "RecipeIngredients::0::DeleteItem-title"
+    text: "Delete"
+    label: "Delete item of Flour is labelled Delete"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "0"
+    label: "Dismiss the actions menu of Flour"
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::1::QuantityInput"
@@ -71,6 +107,30 @@ appId: "com.recipedia"
     id: "RecipeIngredients::1::NameInput::CustomTextInput"
     text: "Cocoa Powder"
     label: "Second ingredient is Cocoa Powder"
+
+- assertVisible:
+    id: "RecipeIngredients::1::ActionsButton"
+    label: "Actions button of Cocoa Powder is visible"
+- tapOn:
+    id: "RecipeIngredients::1::ActionsButton"
+    label: "Open the actions menu of Cocoa Powder"
+- assertVisible:
+    id: "RecipeIngredients::1::MoveUpItem"
+    enabled: true
+    label: "Move up item of Cocoa Powder is enabled"
+- assertVisible:
+    id: "RecipeIngredients::1::MoveDownItem"
+    enabled: true
+    label: "Move down item of Cocoa Powder is enabled"
+- assertVisible:
+    id: "RecipeIngredients::1::DeleteItem"
+    enabled: true
+    label: "Delete item of Cocoa Powder is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "1"
+    label: "Dismiss the actions menu of Cocoa Powder"
 
 - scrollUntilVisible:
     element:
@@ -90,6 +150,30 @@ appId: "com.recipedia"
     text: "Sugar"
     label: "Third ingredient is Sugar"
 
+- assertVisible:
+    id: "RecipeIngredients::2::ActionsButton"
+    label: "Actions button of Sugar is visible"
+- tapOn:
+    id: "RecipeIngredients::2::ActionsButton"
+    label: "Open the actions menu of Sugar"
+- assertVisible:
+    id: "RecipeIngredients::2::MoveUpItem"
+    enabled: true
+    label: "Move up item of Sugar is enabled"
+- assertVisible:
+    id: "RecipeIngredients::2::MoveDownItem"
+    enabled: true
+    label: "Move down item of Sugar is enabled"
+- assertVisible:
+    id: "RecipeIngredients::2::DeleteItem"
+    enabled: true
+    label: "Delete item of Sugar is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "2"
+    label: "Dismiss the actions menu of Sugar"
+
 - scrollUntilVisible:
     element:
       id: "RecipeIngredients::3::QuantityInput"
@@ -107,3 +191,27 @@ appId: "com.recipedia"
     id: "RecipeIngredients::3::NameInput::CustomTextInput"
     text: "Butter"
     label: "Fourth ingredient is Butter"
+
+- assertVisible:
+    id: "RecipeIngredients::3::ActionsButton"
+    label: "Actions button of Butter is visible"
+- tapOn:
+    id: "RecipeIngredients::3::ActionsButton"
+    label: "Open the actions menu of Butter"
+- assertVisible:
+    id: "RecipeIngredients::3::MoveUpItem"
+    enabled: true
+    label: "Move up item of Butter is enabled"
+- assertVisible:
+    id: "RecipeIngredients::3::MoveDownItem"
+    enabled: false
+    label: "Move down item of Butter is disabled on the last ingredient"
+- assertVisible:
+    id: "RecipeIngredients::3::DeleteItem"
+    enabled: true
+    label: "Delete item of Butter is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "3"
+    label: "Dismiss the actions menu of Butter"

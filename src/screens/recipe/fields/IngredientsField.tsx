@@ -65,6 +65,7 @@ function EditableIngredientsField({ form, stackMode, t }: IngredientsFieldProps)
     availableIngredients,
     handleAddIngredient,
     handleRemoveIngredient,
+    handleMoveIngredient,
     handleEditIngredient,
     rowCount,
   } = useIngredientArray({ form });
@@ -135,6 +136,8 @@ function EditableIngredientsField({ form, stackMode, t }: IngredientsFieldProps)
         rowError={rowError}
         editIngredients={handleEditIngredient}
         removeIngredient={handleRemoveIngredient}
+        onMoveUp={index > 0 ? () => handleMoveIngredient(index, index - 1) : undefined}
+        onMoveDown={index < rowCount - 1 ? () => handleMoveIngredient(index, index + 1) : undefined}
         openNoteDialog={setNoteDialogIndex}
         editingIngredientCountRef={editingIngredientCountRef}
       />
@@ -144,7 +147,7 @@ function EditableIngredientsField({ form, stackMode, t }: IngredientsFieldProps)
   const tableChildren = fieldArray.fields.map((field, index) => renderRow(field.id, index));
 
   return (
-    <React.Fragment>
+    <>
       <IngredientsTable
         testID={testID}
         prefixText={prefixText}
@@ -169,7 +172,7 @@ function EditableIngredientsField({ form, stackMode, t }: IngredientsFieldProps)
         onClose={() => setNoteDialogIndex(null)}
         onSave={handleNoteDialogSave}
       />
-    </React.Fragment>
+    </>
   );
 }
 

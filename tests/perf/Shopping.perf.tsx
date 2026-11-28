@@ -11,11 +11,16 @@ import { NavigationContainer } from '@react-navigation/native';
 import { SeasonFilterProvider } from '@context/SeasonFilterContext';
 import { DefaultPersonsProvider } from '@context/DefaultPersonsContext';
 import { computeShoppingList } from '@utils/ShoppingComputation';
+import { HEAVY_WARMUP } from './perfOptions';
+import { settle } from './settle';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
 );
 jest.mock('@utils/i18n', () => require('@mocks/utils/i18n-mock').i18nMock());
+jest.mock('react-native-paper', () =>
+  require('@mocks/deps/react-native-paper-collapsible-accordion-mock').collapsibleAccordionPaperMock()
+);
 
 const Stack = createNativeStackNavigator();
 
@@ -163,5 +168,37 @@ describe('Shopping Screen Performance', () => {
     };
 
     await measureRenders(<ShoppingWrapper />, { runs: 10, scenario });
+  });
+
+  test('re-render after expanding a large purchased section', async () => {
+    const purchasedCount = 50;
+    const recipes = database.get_recipes();
+    for (const recipe of recipes) {
+      const shopping = computeShoppingList(
+        database.get_menu(),
+        database.get_recipes(),
+        database.get_purchasedIngredients()
+      );
+      if (shopping.length > purchasedCount) {
+        break;
+      }
+      await database.addRecipeToMenu(recipe);
+    }
+    const shopping = computeShoppingList(
+      database.get_menu(),
+      database.get_recipes(),
+      database.get_purchasedIngredients()
+    );
+    expect(shopping.length).toBeGreaterThan(purchasedCount);
+    for (const item of shopping.slice(0, purchasedCount)) {
+      await database.setPurchased(item.name, true);
+    }
+
+    const scenario = async () => {
+      await fireEvent.press(screen.getByTestId('ShoppingScreen::SectionList::Purchased::Header'));
+      await settle();
+    };
+
+    await measureRenders(<ShoppingWrapper />, { runs: 10, ...HEAVY_WARMUP, scenario });
   });
 });
