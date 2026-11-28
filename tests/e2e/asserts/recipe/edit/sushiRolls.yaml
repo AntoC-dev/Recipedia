@@ -155,8 +155,8 @@ appId: "com.recipedia"
     text: "Name"
     label: "Column Ingredient name is rendered"
 - assertVisible:
-    id: "RecipeIngredients::Header::Delete"
-    label: "Column for the delete button is rendered"
+    id: "RecipeIngredients::Header::Actions"
+    label: "Column for the actions button is rendered"
 
 - scrollUntilVisible:
     element:
@@ -179,8 +179,40 @@ appId: "com.recipedia"
     text: "Sushi Rice"
     label: "Ingredient Sushi Rice is rendered"
 - assertVisible:
-    id: "RecipeIngredients::0::DeleteButton"
-    label: "Delete button for ingredient 0 is visible"
+    id: "RecipeIngredients::0::ActionsButton"
+    label: "Actions button of Sushi Rice is visible"
+- tapOn:
+    id: "RecipeIngredients::0::ActionsButton"
+    label: "Open the actions menu of Sushi Rice"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveUpItem"
+    enabled: false
+    label: "Move up item of Sushi Rice is disabled on the first ingredient"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveUpItem-title"
+    text: "Move up"
+    label: "Move up item of Sushi Rice is labelled Move up"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveDownItem"
+    enabled: true
+    label: "Move down item of Sushi Rice is enabled"
+- assertVisible:
+    id: "RecipeIngredients::0::MoveDownItem-title"
+    text: "Move down"
+    label: "Move down item of Sushi Rice is labelled Move down"
+- assertVisible:
+    id: "RecipeIngredients::0::DeleteItem"
+    enabled: true
+    label: "Delete item of Sushi Rice is enabled"
+- assertVisible:
+    id: "RecipeIngredients::0::DeleteItem-title"
+    text: "Delete"
+    label: "Delete item of Sushi Rice is labelled Delete"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "0"
+    label: "Dismiss the actions menu of Sushi Rice"
 
 - scrollUntilVisible:
     element:
@@ -203,8 +235,28 @@ appId: "com.recipedia"
     text: "Nori Sheets"
     label: "Ingredient Nori Sheets is rendered"
 - assertVisible:
-    id: "RecipeIngredients::1::DeleteButton"
-    label: "Delete button for ingredient 1 is visible"
+    id: "RecipeIngredients::1::ActionsButton"
+    label: "Actions button of Nori Sheets is visible"
+- tapOn:
+    id: "RecipeIngredients::1::ActionsButton"
+    label: "Open the actions menu of Nori Sheets"
+- assertVisible:
+    id: "RecipeIngredients::1::MoveUpItem"
+    enabled: true
+    label: "Move up item of Nori Sheets is enabled"
+- assertVisible:
+    id: "RecipeIngredients::1::MoveDownItem"
+    enabled: true
+    label: "Move down item of Nori Sheets is enabled"
+- assertVisible:
+    id: "RecipeIngredients::1::DeleteItem"
+    enabled: true
+    label: "Delete item of Nori Sheets is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "1"
+    label: "Dismiss the actions menu of Nori Sheets"
 
 - scrollUntilVisible:
     element:
@@ -227,8 +279,28 @@ appId: "com.recipedia"
     text: "Salmon"
     label: "Ingredient Salmon is rendered"
 - assertVisible:
-    id: "RecipeIngredients::2::DeleteButton"
-    label: "Delete button for ingredient 2 is visible"
+    id: "RecipeIngredients::2::ActionsButton"
+    label: "Actions button of Salmon is visible"
+- tapOn:
+    id: "RecipeIngredients::2::ActionsButton"
+    label: "Open the actions menu of Salmon"
+- assertVisible:
+    id: "RecipeIngredients::2::MoveUpItem"
+    enabled: true
+    label: "Move up item of Salmon is enabled"
+- assertVisible:
+    id: "RecipeIngredients::2::MoveDownItem"
+    enabled: true
+    label: "Move down item of Salmon is enabled"
+- assertVisible:
+    id: "RecipeIngredients::2::DeleteItem"
+    enabled: true
+    label: "Delete item of Salmon is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "2"
+    label: "Dismiss the actions menu of Salmon"
 
 - scrollUntilVisible:
     element:
@@ -251,8 +323,28 @@ appId: "com.recipedia"
     text: "Avocado"
     label: "Ingredient Avocado is rendered"
 - assertVisible:
-    id: "RecipeIngredients::3::DeleteButton"
-    label: "Delete button for ingredient 3 is visible"
+    id: "RecipeIngredients::3::ActionsButton"
+    label: "Actions button of Avocado is visible"
+- tapOn:
+    id: "RecipeIngredients::3::ActionsButton"
+    label: "Open the actions menu of Avocado"
+- assertVisible:
+    id: "RecipeIngredients::3::MoveUpItem"
+    enabled: true
+    label: "Move up item of Avocado is enabled"
+- assertVisible:
+    id: "RecipeIngredients::3::MoveDownItem"
+    enabled: true
+    label: "Move down item of Avocado is enabled"
+- assertVisible:
+    id: "RecipeIngredients::3::DeleteItem"
+    enabled: true
+    label: "Delete item of Avocado is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "3"
+    label: "Dismiss the actions menu of Avocado"
 
 - scrollUntilVisible:
     element:
@@ -275,8 +367,28 @@ appId: "com.recipedia"
     text: "Soy Sauce"
     label: "Ingredient Soy Sauce is rendered"
 - assertVisible:
-    id: "RecipeIngredients::4::DeleteButton"
-    label: "Delete button for ingredient 4 is visible"
+    id: "RecipeIngredients::4::ActionsButton"
+    label: "Actions button of Soy Sauce is visible"
+- tapOn:
+    id: "RecipeIngredients::4::ActionsButton"
+    label: "Open the actions menu of Soy Sauce"
+- assertVisible:
+    id: "RecipeIngredients::4::MoveUpItem"
+    enabled: true
+    label: "Move up item of Soy Sauce is enabled"
+- assertVisible:
+    id: "RecipeIngredients::4::MoveDownItem"
+    enabled: true
+    label: "Move down item of Soy Sauce is enabled"
+- assertVisible:
+    id: "RecipeIngredients::4::DeleteItem"
+    enabled: true
+    label: "Delete item of Soy Sauce is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "4"
+    label: "Dismiss the actions menu of Soy Sauce"
 
 - scrollUntilVisible:
     element:
@@ -299,8 +411,28 @@ appId: "com.recipedia"
     text: "Sesame Seeds"
     label: "Ingredient Sesame Seeds is rendered"
 - assertVisible:
-    id: "RecipeIngredients::5::DeleteButton"
-    label: "Delete button for ingredient 5 is visible"
+    id: "RecipeIngredients::5::ActionsButton"
+    label: "Actions button of Sesame Seeds is visible"
+- tapOn:
+    id: "RecipeIngredients::5::ActionsButton"
+    label: "Open the actions menu of Sesame Seeds"
+- assertVisible:
+    id: "RecipeIngredients::5::MoveUpItem"
+    enabled: true
+    label: "Move up item of Sesame Seeds is enabled"
+- assertVisible:
+    id: "RecipeIngredients::5::MoveDownItem"
+    enabled: false
+    label: "Move down item of Sesame Seeds is disabled on the last ingredient"
+- assertVisible:
+    id: "RecipeIngredients::5::DeleteItem"
+    enabled: true
+    label: "Delete item of Sesame Seeds is enabled"
+- runFlow:
+    file: "../../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "5"
+    label: "Dismiss the actions menu of Sesame Seeds"
 
 - scrollUntilVisible:
     element:

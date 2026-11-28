@@ -1,17 +1,9 @@
 appId: "com.recipedia"
 ---
-- scrollUntilVisible:
-    element:
-      id: "RecipeIngredients::8::DeleteButton"
-    direction: DOWN
-    speed: 20
-    centerElement: true
-    label: "Scroll to ingredient to delete"
-
-- waitForAnimationToEnd
-
-- tapOn:
-    id: "RecipeIngredients::8::DeleteButton"
+- runFlow:
+    file: "../../../ingredients/deleteIngredientFromRecipe.yaml"
+    env:
+      INDEX: "8"
     label: "Delete the 'conserve' line as it is not an ingredient to keep"
 
 - extendedWaitUntil:

@@ -1,0 +1,9 @@
+appId: "com.recipedia"
+---
+- tapOn:
+    id: "RecipeIngredients::${INDEX}::NameInput::CustomTextInput"
+    label: "Tap the name input of the same row: the menu backdrop covers it and closes the menu anchored on the actions button"
+
+- assertNotVisible:
+    id: "RecipeIngredients::${INDEX}::DeleteItem"
+    label: "Actions menu of ingredient (index ${INDEX}) is closed"

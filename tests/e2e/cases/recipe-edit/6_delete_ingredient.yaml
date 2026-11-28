@@ -58,6 +58,40 @@ tags:
     id: "RecipeIngredients::1::Row"
     label: "Assert - Pasta row is gone after deletion"
 
+- scrollUntilVisible:
+    element:
+      id: "RecipeIngredients::0::ActionsButton"
+    direction: DOWN
+    speed: 20
+    timeout: 30000
+    label: "Scroll to the remaining ingredient actions button"
+
+- assertVisible:
+    id: "RecipeIngredients::0::ActionsButton"
+    label: "Actions button of Tomatoes is visible"
+- tapOn:
+    id: "RecipeIngredients::0::ActionsButton"
+    label: "Open the actions menu of Tomatoes"
+- assertVisible:
+    id: "RecipeIngredients::0::DeleteItem"
+    enabled: true
+    label: "Delete item of Tomatoes is enabled"
+- assertVisible:
+    id: "RecipeIngredients::0::DeleteItem-title"
+    text: "Delete"
+    label: "Delete item of Tomatoes is labelled Delete"
+- assertNotVisible:
+    id: "RecipeIngredients::0::MoveUpItem"
+    label: "Move up item is hidden on Tomatoes, the only ingredient"
+- assertNotVisible:
+    id: "RecipeIngredients::0::MoveDownItem"
+    label: "Move down item is hidden on Tomatoes, the only ingredient"
+- runFlow:
+    file: "../../flows/recipe/ingredients/dismissIngredientActionsMenu.yaml"
+    env:
+      INDEX: "0"
+    label: "Dismiss the actions menu of Tomatoes"
+
 - tapOn:
     id: "Recipe::AppBar::Validate"
     label: "Action - Save changes"
