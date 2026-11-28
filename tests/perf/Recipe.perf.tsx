@@ -1,4 +1,5 @@
 import React from 'react';
+import { fireEvent, screen } from '@testing-library/react-native';
 import { measureRenders } from 'reassure';
 import { RecipeView } from '@screens/recipe/RecipeView';
 import { RecipeEdit } from '@screens/recipe/RecipeEdit';
@@ -16,6 +17,7 @@ import { ScrapedRecipeData } from '@customTypes/RecipeNavigationTypes';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StackScreenParamList } from '@customTypes/ScreenTypes';
 import { HEAVY_WARMUP } from './perfOptions';
+import { settle } from './settle';
 
 jest.mock('@react-navigation/native', () =>
   require('@mocks/deps/react-navigation-mock').reactNavigationMock()
@@ -129,6 +131,18 @@ const testRecipe: recipeTableElement = {
   persons: 4,
   season: [],
   image_Source: '',
+};
+
+const editedRowIndex = 12;
+const editedRowId = `RecipeIngredients::${editedRowIndex}`;
+
+const recipeWith25Ingredients: recipeTableElement = {
+  ...testRecipe,
+  ingredients: performanceIngredients.slice(0, 25).map((ing, index) => ({
+    ...ing,
+    id: index + 1,
+    quantity: '100',
+  })),
 };
 
 describe('Recipe Screen Performance', () => {
@@ -282,5 +296,36 @@ describe('Recipe Screen Performance', () => {
       },
     };
     await measureRenders(<ViewWrapper recipe={fullRecipe} />, { runs: 10 });
+  });
+
+  test('re-render while typing in one ingredient name of 25 in edit mode', async () => {
+    const nameInputId = `${editedRowId}::NameInput::CustomTextInput`;
+    const scenario = async () => {
+      await fireEvent(screen.getByTestId(nameInputId), 'focus');
+      await settle();
+      for (const typed of ['P', 'Pe', 'Pep', 'Pepp', 'Peppe']) {
+        await fireEvent.changeText(screen.getByTestId(nameInputId), typed);
+        await settle();
+      }
+    };
+    await measureRenders(<EditWrapper recipe={recipeWith25Ingredients} />, {
+      runs: 10,
+      ...HEAVY_WARMUP,
+      scenario,
+    });
+  });
+
+  test('re-render after moving one ingredient of 25 up in edit mode', async () => {
+    const scenario = async () => {
+      await fireEvent.press(screen.getByTestId(`${editedRowId}::ActionsButton`));
+      await settle();
+      await fireEvent.press(screen.getByTestId(`${editedRowId}::MoveUpItem`));
+      await settle();
+    };
+    await measureRenders(<EditWrapper recipe={recipeWith25Ingredients} />, {
+      runs: 10,
+      ...HEAVY_WARMUP,
+      scenario,
+    });
   });
 });
