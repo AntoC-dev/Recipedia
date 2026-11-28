@@ -97,7 +97,13 @@ export const Menu: React.FC<any> & { Item: React.FC<any> } = props => (
 );
 
 const MenuItem: React.FC<any> = props => (
-  <TouchableOpacity testID={props.testID} onPress={props.onPress}>
+  <TouchableOpacity testID={props.testID} onPress={props.onPress} disabled={props.disabled}>
+    {props.leadingIcon ? (
+      <RNText testID={props.testID + '::LeadingIcon'}>{props.leadingIcon}</RNText>
+    ) : null}
+    {props.theme ? (
+      <RNText testID={props.testID + '::Theme'}>{JSON.stringify(props.theme)}</RNText>
+    ) : null}
     <RNText>{props.title || props.children}</RNText>
   </TouchableOpacity>
 );

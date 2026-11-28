@@ -62,6 +62,7 @@ export const Icons = {
   chevronLeft: 'chevron-left',
   arrowUp: 'arrow-up',
   arrowDown: 'arrow-down',
+  dotsVertical: 'dots-vertical',
   groupPeople: 'account-group',
   apple: 'food-apple',
   tags: 'tag-multiple',

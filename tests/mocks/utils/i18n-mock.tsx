@@ -92,6 +92,8 @@ export function i18nMock() {
     'recipe.nutrition.salt': 'recipe.nutrition.salt',
 
     delete: 'delete',
+    moveUp: 'Move up',
+    moveDown: 'Move down',
     cancel: 'cancel',
     'bulkImport.validation.pickTagFor': 'Pick a tag for: {{name}}',
     'bulkImport.validation.pickIngredientFor': 'Pick an ingredient for: {{name}}',
